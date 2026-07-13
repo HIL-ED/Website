@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Founders Quest: Pixel Republic</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body {
+    height:100%; background:#0b0f1a; overflow:hidden;
+    font-family:'Press Start 2P', monospace;
+    -webkit-user-select:none; user-select:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #wrap { position:relative; width:100%; max-width:960px; aspect-ratio:16/9; }
+  canvas {
+    width:100%; height:100%; display:block;
+    image-rendering:pixelated; image-rendering:crisp-edges;
+    background:#1a2340; border:4px solid #f2c14e;
+    box-shadow:0 0 0 4px #7a3b2e, 0 12px 40px rgba(0,0,0,.6);
+  }
+  /* Touch controls */
+  #touch { position:absolute; inset:0; pointer-events:none; display:none; }
+  .tbtn {
+    position:absolute; pointer-events:auto;
+    width:70px; height:70px; border-radius:12px;
+    background:rgba(242,193,78,.25); border:3px solid rgba(242,193,78,.7);
+    color:#fff; font-family:'Press Start 2P'; font-size:22px;
+    display:flex; align-items:center; justify-content:center;
+    touch-action:none;
+  }
+  .tbtn:active { background:rgba(242,193,78,.55); }
+  #tleft { left:14px; bottom:16px; }
+  #tright { left:96px; bottom:16px; }
+  #tjump { right:16px; bottom:16px; width:84px; height:84px; }
+  @media (hover:none) and (pointer:coarse) { #touch { display:block; } }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c" width="960" height="540"></canvas>
+  <div id="touch">
+    <div class="tbtn" id="tleft">&#9664;</div>
+    <div class="tbtn" id="tright">&#9654;</div>
+    <div class="tbtn" id="tjump">&#9650;</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 960, H = 540;
+ctx.imageSmoothingEnabled = false;
+
+// ---------- CONFIG ----------
+const GRAV = 0.62, MOVE_ACC = 0.85, FRICTION = 0.80, MAX_VX = 4.4;
+const TERM_VY = 16, COYOTE = 6, JUMP_BUFFER = 6, STAR_TIME = 9000;
+
+// ---------- CHARACTERS ----------
+const CHARS = [
+  { id:'jefferson', name:'JEFFERSON', title:'The Author',   coat:'#6b8f3d', accent:'#c9d98a', jump:12.0, speed:4.4, blurb:'Balanced. Wrote the Declaration.' },
+  { id:'madison',   name:'MADISON',   title:'The Architect', coat:'#3d5a8f', accent:'#8ab0e6', jump:13.4, speed:4.0, blurb:'Higher jump. Father of the Constitution.' },
+  { id:'hamilton',  name:'HAMILTON',  title:'The Firebrand', coat:'#7a3b2e', accent:'#e0a07a', jump:11.4, speed:5.2, blurb:'Faster runner. Fought for a strong union.' },
+];
+
+// ---------- QUESTION BANK ----------
+// tier: 1 easy, 2 medium, 3 hard.  a = index of correct option
+const QBANK = {
+  declaration: [
+    {t:1,q:"Who was the primary author of the Declaration of Independence?",o:["Thomas Jefferson","King George III","Benjamin Franklin","Paul Revere"],a:0},
+    {t:1,q:"In what year was the Declaration of Independence adopted?",o:["1620","1776","1787","1812"],a:1},
+    {t:1,q:"The Declaration says people have rights to life, liberty, and the pursuit of ___.",o:["Property","Power","Happiness","Wealth"],a:2},
+    {t:2,q:"According to the Declaration, governments get their power from ___.",o:["The king","The consent of the governed","The army","The church"],a:1},
+    {t:2,q:"The Declaration lists grievances against which ruler?",o:["Napoleon","King Louis XVI","King George III","Queen Elizabeth"],a:2},
+    {t:2,q:"Rights that cannot be taken away are called ___.",o:["Unalienable rights","State rights","Voting rights","Royal rights"],a:0},
+    {t:3,q:"Which Enlightenment thinker shaped Jefferson's ideas on natural rights?",o:["Karl Marx","John Locke","Adam Smith","Thomas Hobbes"],a:1},
+    {t:3,q:"The idea that people may overthrow a government that abuses them is the right to ___.",o:["Taxation","Revolution","Silence","Trade"],a:1},
+    {t:1,q:"The Declaration announced independence from which country?",o:["France","Spain","Great Britain","Mexico"],a:2},
+    {t:1,q:"Independence Day marks the Declaration's adoption in which month?",o:["May","July","September","December"],a:1},
+    {t:1,q:'The Declaration states "all men are created ___."',o:["free","equal","wealthy","loyal"],a:1},
+    {t:2,q:"Which body approved the Declaration of Independence?",o:["Parliament","The Second Continental Congress","The Supreme Court","The House of Lords"],a:1},
+    {t:2,q:"According to the Declaration, the main job of government is to protect people's ___.",o:["armies","rights","taxes","borders"],a:1},
+    {t:2,q:"The list of complaints against King George III is called the list of ___.",o:["laws","grievances","amendments","compromises"],a:1},
+    {t:2,q:"The signers pledged their lives, fortunes, and sacred ___.",o:["honor","gold","land","crowns"],a:0},
+    {t:3,q:"The principle that government power comes from the people is called ___.",o:["popular sovereignty","monarchy","feudalism","mercantilism"],a:0},
+    {t:3,q:"Locke wrote of life, liberty, and property; Jefferson changed 'property' to the pursuit of ___.",o:["wealth","happiness","power","peace"],a:1},
+    {t:3,q:"The Declaration's grievances were written mainly to justify the colonies' ___.",o:["taxes","independence","trade","religion"],a:1},
+  ],
+  articles: [
+    {t:1,q:"Under the Articles of Confederation, most power belonged to the ___.",o:["President","States","Supreme Court","King"],a:1},
+    {t:1,q:"The Articles created a national government with only which branch?",o:["Executive","Judicial","Legislative","Military"],a:2},
+    {t:1,q:"What document came AFTER the Articles of Confederation?",o:["Magna Carta","The Constitution","Bill of Rights only","Mayflower Compact"],a:1},
+    {t:2,q:"A major weakness: the national government could NOT ___.",o:["Declare war","Levy taxes","Name states","Sign treaties"],a:1},
+    {t:2,q:"Which uprising exposed the weakness of the Articles?",o:["Boston Tea Party","Shays' Rebellion","Whiskey Rebellion","Bacon's Rebellion"],a:1},
+    {t:2,q:"Under the Articles, the government struggled to raise a national ___.",o:["Flag","Army","Holiday","Anthem"],a:1},
+    {t:3,q:"Amending the Articles of Confederation required approval of how many states?",o:["A simple majority","Nine states","All thirteen states","Just Congress"],a:2},
+    {t:3,q:"The Articles are BEST described as creating a government that was ___.",o:["Too strong","Too weak","Perfectly balanced","A monarchy"],a:1},
+    {t:1,q:"The Articles of Confederation were the first ___ of the United States.",o:["constitution","treaty","army","colony"],a:0},
+    {t:1,q:"Under the Articles, there was no national ___ branch to enforce laws.",o:["executive","state","local","county"],a:0},
+    {t:1,q:"How many states originally made up the new nation under the Articles?",o:["9","11","13","15"],a:2},
+    {t:2,q:"Under the Articles, the power to coin money and set trade rules mostly belonged to the ___.",o:["president","states","king","courts"],a:1},
+    {t:2,q:"A success of this era was the Northwest ___, which organized new territories.",o:["Ordinance","Treaty","Tax","Compromise"],a:0},
+    {t:2,q:"To fund the government, Congress under the Articles had to ___ the states for money.",o:["command","request","seize","fine"],a:1},
+    {t:2,q:"Because it could not enforce its laws, the national government was ___.",o:["too weak","too strong","a monarchy","a democracy"],a:0},
+    {t:3,q:"The meeting called to fix the Articles became the ___ Convention.",o:["Constitutional","Continental","Annapolis","Hartford"],a:0},
+    {t:3,q:"Shays' Rebellion alarmed leaders because Congress could not raise a national ___ to stop it.",o:["tax","army","court","bank"],a:1},
+    {t:3,q:"The Articles created what kind of government, where states kept most power?",o:["a confederation","a monarchy","an empire","a dictatorship"],a:0},
+  ],
+  constitution: [
+    {t:1,q:"The first three words of the Constitution are ___.",o:["Four score and","We the People","In the year","Life and liberty"],a:1},
+    {t:1,q:"The Constitution divides the government into how many branches?",o:["One","Two","Three","Five"],a:2},
+    {t:1,q:"The first ten amendments are known as the ___.",o:["Preamble","Bill of Rights","Articles","Great Compromise"],a:1},
+    {t:2,q:"Keeping one branch from gaining too much power is called ___.",o:["Federalism","Checks and balances","Ratification","Nullification"],a:1},
+    {t:2,q:"Dividing power between national and state governments is called ___.",o:["Democracy","Federalism","Monarchy","Anarchy"],a:1},
+    {t:2,q:"Which branch makes the laws?",o:["Executive","Legislative","Judicial","Military"],a:1},
+    {t:3,q:"The Great Compromise created a Congress with how many houses?",o:["One","Two","Three","Four"],a:1},
+    {t:3,q:"Freedom of speech is protected by which amendment?",o:["First","Second","Fifth","Tenth"],a:0},
+    {t:3,q:"The president can reject a bill passed by Congress using the ___.",o:["Filibuster","Veto","Pardon","Subpoena"],a:1},
+    {t:1,q:"The introduction to the Constitution is called the ___.",o:["Preamble","Bill of Rights","Article","Amendment"],a:0},
+    {t:1,q:"Which branch is headed by the President?",o:["Legislative","Executive","Judicial","State"],a:1},
+    {t:1,q:"Which branch includes the Supreme Court?",o:["Legislative","Executive","Judicial","Federal"],a:2},
+    {t:2,q:"The two houses of Congress are the Senate and the House of ___.",o:["Lords","Representatives","Governors","Delegates"],a:1},
+    {t:2,q:"Approval of the Constitution by the states was called ___.",o:["ratification","nullification","secession","delegation"],a:0},
+    {t:2,q:"Supporters of the Constitution who wanted a strong national government were the ___.",o:["Federalists","Anti-Federalists","Loyalists","Tories"],a:0},
+    {t:2,q:"The Great Compromise settled a dispute over state ___ in Congress.",o:["taxes","representation","borders","armies"],a:1},
+    {t:3,q:"The power of courts to strike down unconstitutional laws is called judicial ___.",o:["review","restraint","order","branch"],a:0},
+    {t:3,q:"To become law, a bill must pass both houses of Congress and be signed by the ___.",o:["President","Chief Justice","Speaker","Governor"],a:0},
+    {t:3,q:"The Tenth Amendment reserves powers not given to the federal government to the ___.",o:["states","courts","president","army"],a:0},
+  ]
+};
+
+// ---------- LEVELS ----------
+// world units in px. groundY is top of ground. gaps = ranges with no ground.
+// gate = full-height solid pillar (must answer to pass). coin block = optional, floating.
+const GATE_Y = 60, GATE_H = 400;
+function gate(x,reward){ return {x,y:GATE_Y,w:44,h:GATE_H,gate:true,reward}; }
+function coin(x,y){ return {x,y,w:40,h:40,reward:'coin'}; }
+
+const LEVELS = [
+  {
+    name:"BREAK FROM BRITAIN", doc:"declaration", width:4700, groundY:460, sky:'#243b6b', hills:'#1a2a4d',
+    gaps:[[500,640],[1000,1240],[1760,1900],[2600,2740],[3200,3440],[3760,3900],[4360,4500]],
+    platforms:[ {x:540,y:388,w:70,h:20},{x:1790,y:388,w:70,h:20},{x:3790,y:388,w:70,h:20},{x:4390,y:388,w:70,h:20} ],
+    blocks:[ gate(860,'spring'), coin(1420,250), gate(2120,'coin'), coin(2440,230), gate(3060,'coin'), coin(4050,240) ],
+    enemies:[
+      {type:'redcoat',x:1480,y:0,min:1400,max:1650},
+      {type:'redcoat',x:2340,y:0,min:2280,max:2560},
+      {type:'redcoat',x:3560,y:0,min:3500,max:3700},
+      {type:'redcoat',x:4200,y:0,min:4150,max:4320},
+    ],
+    goalX:4560
+  },
+  {
+    name:"A FRAIL UNION", doc:"articles", width:4800, groundY:460, sky:'#3a2a4d', hills:'#241a35',
+    gaps:[[560,700],[1100,1340],[1900,2020],[2700,2840],[3520,3760],[4260,4400]],
+    platforms:[ {x:590,y:388,w:70,h:20},{x:1930,y:388,w:70,h:20},{x:4290,y:388,w:70,h:20} ],
+    blocks:[ gate(960,'spring'), coin(1470,250), gate(1650,'star'), gate(2500,'coin'), gate(3150,'star'), coin(3900,240) ],
+    enemies:[
+      {type:'redcoat',x:1500,y:0,min:1400,max:1600},
+      {type:'tyrant', x:1790,y:0,min:1720,max:1870},
+      {type:'redcoat',x:2200,y:0,min:2100,max:2360},
+      {type:'tyrant', x:3350,y:0,min:3250,max:3450},
+      {type:'redcoat',x:4050,y:0,min:3950,max:4150},
+    ],
+    goalX:4640
+  },
+  {
+    name:"A MORE PERFECT UNION", doc:"constitution", width:5200, groundY:460, sky:'#14324a', hills:'#0d2233',
+    gaps:[[520,660],[1080,1320],[1800,1920],[2400,2640],[3050,3190],[3700,3940],[4450,4590]],
+    platforms:[ {x:550,y:388,w:70,h:20},{x:1830,y:388,w:70,h:20},{x:3070,y:388,w:70,h:20},{x:4470,y:388,w:70,h:20} ],
+    blocks:[ gate(880,'spring'), coin(1430,240), gate(1600,'star'), gate(2200,'star'), coin(2900,250), gate(3350,'coin'), gate(4150,'star'), coin(4700,240) ],
+    enemies:[
+      {type:'redcoat',x:720,y:0,min:670,max:850},
+      {type:'tyrant', x:1740,y:0,min:1680,max:1790},
+      {type:'tyrant', x:2340,y:0,min:2280,max:2390},
+      {type:'redcoat',x:2760,y:0,min:2700,max:2860},
+      {type:'redcoat',x:3560,y:0,min:3450,max:3650},
+      {type:'tyrant', x:4320,y:0,min:4250,max:4400},
+      {type:'redcoat',x:4700,y:0,min:4650,max:4780},
+    ],
+    goalX:5040
+  },
+];
+
+// ---------- STATE ----------
+let state = 'title';      // title, select, play, question, levelclear, win, gameover
+let selIndex = 0;
+let charData = CHARS[0];
+let levelIdx = 0;
+let level = null;
+let answeredCount = 0;      // drives difficulty
+let usedQ = new Set();      // question keys already asked (avoid repeats)
+let score = 0;
+let hearts = 3;
+let camX = 0;
+let starTimer = 0;
+let floaters = [];          // floating text feedback
+let questionData = null;    // {block, question, doc}
+let qHover = -1;
+let particles = [];
+
+const player = {
+  x:80, y:0, w:26, h:34, vx:0, vy:0, onGround:false,
+  face:1, coyote:0, jumpBuf:0, canSuper:false, invuln:0,
+  safeX:80, safeY:400, anim:0
+};
+
+// ---------- INPUT ----------
+const keys = {};
+const pressed = {};
+window.addEventListener('keydown', e=>{
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Space'].includes(e.key)) e.preventDefault();
+  if(!keys[e.key]) pressed[e.key]=true;
+  keys[e.key]=true;
+  handleMenuKey(e.key);
+});
+window.addEventListener('keyup', e=>{ keys[e.key]=false; });
+
+canvas.addEventListener('click', onPointer);
+canvas.addEventListener('mousemove', onMouseMove);
+canvas.addEventListener('touchstart', function(e){
+  const p = touchPos(e); if(p){ handlePointer(p.x,p.y); }
+}, {passive:true});
+
+function touchPos(e){
+  const t = e.changedTouches && e.changedTouches[0]; if(!t) return null;
+  const r = canvas.getBoundingClientRect();
+  return { x:(t.clientX-r.left)*(W/r.width), y:(t.clientY-r.top)*(H/r.height) };
+}
+function onPointer(e){
+  const r = canvas.getBoundingClientRect();
+  handlePointer((e.clientX-r.left)*(W/r.width),(e.clientY-r.top)*(H/r.height));
+}
+function onMouseMove(e){
+  if(state!=='select' && state!=='question') return;
+  const r = canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width), my=(e.clientY-r.top)*(H/r.height);
+  if(state==='question'){ qHover = hitAnswer(mx,my); }
+}
+
+function handlePointer(x,y){
+  if(state==='title'){ startSelect(); return; }
+  if(state==='select'){
+    // character cards
+    for(let i=0;i<CHARS.length;i++){
+      const cx = 140 + i*240;
+      if(x>cx-90 && x<cx+90 && y>150 && y<420){ selIndex=i; }
+    }
+    if(x>W/2-120 && x<W/2+120 && y>450 && y<510){ beginGame(); }
+    return;
+  }
+  if(state==='question'){
+    const idx = hitAnswer(x,y);
+    if(idx>=0) answerQuestion(idx);
+    return;
+  }
+  if(state==='win' || state==='gameover'){ state='title'; return; }
+  if(state==='levelclear'){ nextLevel(); return; }
+}
+function handleMenuKey(k){
+  if(state==='title' && (k===' '||k==='Enter'||k==='Space')) startSelect();
+  else if(state==='select'){
+    if(k==='ArrowLeft') selIndex=(selIndex+CHARS.length-1)%CHARS.length;
+    else if(k==='ArrowRight') selIndex=(selIndex+1)%CHARS.length;
+    else if(k==='Enter'||k===' '||k==='Space') beginGame();
+  } else if(state==='question'){
+    if(k==='1') answerQuestion(0); else if(k==='2') answerQuestion(1);
+    else if(k==='3') answerQuestion(2); else if(k==='4') answerQuestion(3);
+  } else if(state==='levelclear' && (k==='Enter'||k===' '||k==='Space')) nextLevel();
+  else if((state==='win'||state==='gameover') && (k==='Enter'||k===' '||k==='Space')) state='title';
+}
+function hitAnswer(x,y){
+  for(let i=0;i<4;i++){
+    const by = 300 + i*52;
+    if(x>140 && x<820 && y>by-22 && y<by+22) return i;
+  }
+  return -1;
+}
+
+// touch move buttons
+function bindHold(id,key){
+  const el=document.getElementById(id);
+  const on=e=>{ e.preventDefault(); keys[key]=true; if(key==='ArrowUp') pressed[key]=true; };
+  const off=e=>{ e.preventDefault(); keys[key]=false; };
+  el.addEventListener('touchstart',on,{passive:false});
+  el.addEventListener('touchend',off,{passive:false});
+  el.addEventListener('touchcancel',off,{passive:false});
+  el.addEventListener('mousedown',on); el.addEventListener('mouseup',off); el.addEventListener('mouseleave',off);
+}
+bindHold('tleft','ArrowLeft'); bindHold('tright','ArrowRight'); bindHold('tjump','ArrowUp');
+
+// ---------- FLOW ----------
+function startSelect(){ state='select'; selIndex=0; }
+function beginGame(){
+  charData = CHARS[selIndex];
+  levelIdx = 0; score=0; hearts=3; answeredCount=0; usedQ.clear();
+  loadLevel(0);
+  state='play';
+}
+function loadLevel(i){
+  levelIdx=i; level=JSON.parse(JSON.stringify(LEVELS[i]));
+  level.enemies.forEach(e=>{ e.y=level.groundY - (e.type==='tyrant'?46:32); e.vx=(Math.random()<.5?-1:1)*0.9; e.alive=true; });
+  level.blocks.forEach(b=>{ b.asked=false; b.used=false; b.bump=0; });
+  player.x=80; player.y=level.groundY-player.h; player.vx=0; player.vy=0;
+  player.canSuper=false; player.invuln=60; player.safeX=80; player.safeY=level.groundY-player.h;
+  camX=0; starTimer=0; floaters=[]; particles=[];
+}
+function nextLevel(){
+  if(levelIdx+1 < LEVELS.length){ loadLevel(levelIdx+1); state='play'; }
+  else state='win';
+}
+
+// ---------- HELPERS ----------
+function overGap(x){
+  for(const g of level.gaps){ if(x>g[0] && x<g[1]) return true; }
+  return false;
+}
+function rectsOverlap(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y; }
+function addFloat(x,y,text,color){ floaters.push({x,y,text,color,life:70}); }
+function burst(x,y,color){ for(let i=0;i<10;i++) particles.push({x,y,vx:(Math.random()-.5)*5,vy:-Math.random()*5-1,life:30,color}); }
+
+// ---------- UPDATE ----------
+function update(dt){
+  if(state!=='play') return;
+  const p=player;
+  // horizontal input
+  let ax=0;
+  if(keys['ArrowLeft']||keys['a']||keys['A']) { ax-=MOVE_ACC; p.face=-1; }
+  if(keys['ArrowRight']||keys['d']||keys['D']){ ax+=MOVE_ACC; p.face=1; }
+  p.vx += ax;
+  if(ax===0) p.vx*=FRICTION;
+  const maxv = charData.speed;
+  if(p.vx>maxv) p.vx=maxv; if(p.vx<-maxv) p.vx=-maxv;
+  if(Math.abs(p.vx)<0.05) p.vx=0;
+
+  // jump buffering + coyote
+  const jumpKey = keys['ArrowUp']||keys['w']||keys['W']||keys[' ']||keys['Space'];
+  if(pressed['ArrowUp']||pressed['w']||pressed['W']||pressed[' ']||pressed['Space']) p.jumpBuf=JUMP_BUFFER;
+  if(p.jumpBuf>0) p.jumpBuf--;
+  if(p.coyote>0) p.coyote--;
+
+  let jumpVel = charData.jump;
+  if(p.canSuper) jumpVel += 6.0;
+  if(p.jumpBuf>0 && (p.onGround||p.coyote>0)){
+    p.vy=-jumpVel; p.onGround=false; p.coyote=0; p.jumpBuf=0;
+    burst(p.x+p.w/2,p.y+p.h,'#f2c14e');
+  }
+  // variable jump height (full height once you have the Spring, so gaps stay clearable)
+  if(!jumpKey && p.vy<-4 && !p.canSuper) p.vy=-4;
+
+  // gravity
+  p.vy+=GRAV; if(p.vy>TERM_VY) p.vy=TERM_VY;
+
+  // integrate X
+  p.x+=p.vx;
+  if(p.x<0) p.x=0; if(p.x+p.w>level.width) p.x=level.width-p.w;
+
+  // platform collision X (solid platforms + blocks)
+  const solids = getSolids();
+  for(const s of solids){
+    if(rectsOverlap(p,s)){
+      if(p.vx>0) p.x=s.x-p.w; else if(p.vx<0) p.x=s.x+s.w;
+      p.vx=0;
+      if(s.block && !s.block.used) triggerBlock(s.block);
+    }
+  }
+
+  // integrate Y
+  p.y+=p.vy;
+  p.onGround=false;
+  // ground
+  if(!overGap(p.x+p.w/2) && !overGap(p.x+2) && !overGap(p.x+p.w-2)){
+    if(p.y+p.h > level.groundY){
+      p.y=level.groundY-p.h; p.vy=0; p.onGround=true;
+    }
+  }
+  // platforms / blocks Y
+  for(const s of solids){
+    if(rectsOverlap(p,s)){
+      if(p.vy>0){ p.y=s.y-p.h; p.vy=0; p.onGround=true; }
+      else if(p.vy<0){
+        p.y=s.y+s.h; p.vy=0;
+        if(s.block && !s.block.used){ triggerBlock(s.block); }
+      }
+    }
+  }
+  if(p.onGround){ p.coyote=COYOTE; if(!overGap(p.x+p.w/2)){ p.safeX=p.x; p.safeY=p.y; } }
+
+  // fell in pit
+  if(p.y>H+80){ damage(true); }
+
+  // animation
+  if(Math.abs(p.vx)>0.3 && p.onGround) p.anim+=0.25; else p.anim=0;
+  if(p.invuln>0) p.invuln--;
+
+  // star timer
+  if(starTimer>0){ starTimer-=dt; if(starTimer<0) starTimer=0; }
+
+  // enemies
+  for(const e of level.enemies){
+    if(!e.alive) continue;
+    e.x+=e.vx;
+    if(e.x<e.min){ e.x=e.min; e.vx*=-1; }
+    if(e.x>e.max){ e.x=e.max; e.vx*=-1; }
+    const eb={x:e.x,y:e.y,w:(e.type==='tyrant'?32:28),h:(e.type==='tyrant'?46:32)};
+    if(rectsOverlap(p,eb)){
+      const stomping = p.vy>0 && (p.y+p.h) < e.y+18;
+      if(starTimer>0){
+        e.alive=false; score+=150; burst(e.x,e.y,'#f2c14e'); addFloat(e.x,e.y-10,'+150','#f2c14e');
+      } else if(e.type==='redcoat' && stomping){
+        e.alive=false; score+=100; p.vy=-8; burst(e.x,e.y,'#c0392b'); addFloat(e.x,e.y-10,'+100','#fff');
+      } else if(e.type==='tyrant' && stomping){
+        // can't stomp a tyrant without a star -> bounce + damage
+        p.vy=-6; damage(false);
+      } else {
+        damage(false);
+      }
+    }
+  }
+
+  // coin blocks can also be triggered by side contact (friendlier)
+  for(const b of level.blocks){
+    if(b.bump>0) b.bump--;
+    if(b.used||b.gate) continue;
+    const bb={x:b.x,y:b.y,w:b.w,h:b.h};
+    if(rectsOverlap(p,bb)) triggerBlock(b);
+  }
+
+  // goal
+  if(p.x > level.goalX){ score+=500; state='levelclear'; }
+
+  // camera
+  camX = p.x + p.w/2 - W*0.4;
+  if(camX<0) camX=0; if(camX>level.width-W) camX=level.width-W;
+
+  // floaters/particles
+  floaters.forEach(f=>{ f.y-=0.6; f.life--; });
+  floaters=floaters.filter(f=>f.life>0);
+  particles.forEach(pt=>{ pt.x+=pt.vx; pt.y+=pt.vy; pt.vy+=0.3; pt.life--; });
+  particles=particles.filter(pt=>pt.life>0);
+
+  // clear one-frame pressed
+  for(const k in pressed) pressed[k]=false;
+}
+
+function getSolids(){
+  const arr=[];
+  for(const pl of level.platforms) arr.push({x:pl.x,y:pl.y,w:pl.w,h:pl.h});
+  for(const b of level.blocks){ if(!b.used) arr.push({x:b.x,y:b.y,w:b.w,h:b.h,block:b}); }
+  return arr;
+}
+
+function damage(fell){
+  const p=player;
+  if(p.invuln>0 && !fell) return;
+  hearts--; p.invuln=90;
+  burst(p.x+p.w/2,p.y+p.h/2,'#c0392b');
+  if(hearts<=0){ state='gameover'; return; }
+  if(fell){
+    p.x=p.safeX; p.y=p.safeY-4; p.vx=0; p.vy=0;
+  } else {
+    p.vy=-6; p.vx=-p.face*4;
+  }
+}
+
+// ---------- QUESTIONS ----------
+function triggerBlock(b){
+  if(b.used||b.asked) return;
+  b.asked=true; b.bump=8;
+  const q = pickQuestion(level.doc);
+  questionData = { block:b, q };
+  qHover=-1;
+  state='question';
+}
+function pickQuestion(doc){
+  // difficulty ramps with total answered across the game
+  let tier = 1;
+  if(answeredCount>=3) tier=2;
+  if(answeredCount>=6) tier=3;
+  const pool = QBANK[doc];
+  // find unused at target tier, else any unused, else any
+  let cands = pool.filter((q,i)=>q.t===tier && !usedQ.has(doc+i));
+  if(!cands.length) cands = pool.filter((q,i)=>!usedQ.has(doc+i));
+  if(!cands.length){ usedQ.clear(); cands = pool.slice(); }
+  const q = cands[Math.floor(Math.random()*cands.length)];
+  const idx = pool.indexOf(q);
+  usedQ.add(doc+idx);
+  return q;
+}
+function answerQuestion(idx){
+  const b=questionData.block, q=questionData.q;
+  if(idx===q.a){
+    b.used=true; b.asked=true;
+    answeredCount++; score+=200;
+    addFloat(b.x, b.y+ (b.gate?120:-20), 'CORRECT!', '#7bd47b');
+    burst(b.x+b.w/2, b.gate?400:b.y, '#7bd47b');
+    grantReward(b.reward, b);
+  } else if(b.gate){
+    // mastery gate: costs a heart, knock back, and try again
+    hearts--; player.invuln=70;
+    player.vx=-6; player.x-=10; player.vy=-5;
+    b.asked=false; // re-triggerable
+    addFloat(b.x, b.y+120, 'WRONG - TRY AGAIN', '#e06666');
+    if(hearts<=0){ state='gameover'; questionData=null; return; }
+  } else {
+    b.used=true; // optional coin block is consumed
+    addFloat(b.x, b.y-20, 'MISSED', '#e06666');
+  }
+  questionData=null;
+  state='play';
+}
+function grantReward(type,b){
+  const fy = b.gate ? 360 : b.y-42;
+  if(type==='spring'){ player.canSuper=true; addFloat(b.x,fy,'LIBERTY SPRING!','#8ab0e6'); }
+  else if(type==='star'){ starTimer=STAR_TIME; addFloat(b.x,fy,'LIBERTY STAR!','#f2c14e'); }
+  else { score+=100; addFloat(b.x,fy,'+100 COIN','#f2c14e'); }
+}
+
+// ---------- PIXEL DRAW HELPERS ----------
+function px(x,y,w,h,color){ ctx.fillStyle=color; ctx.fillRect(Math.round(x),Math.round(y),w,h); }
+
+function drawFounder(sx,sy,cd,face,walkFrame,flash){
+  // 26x34 stylized 8-bit colonial figure
+  ctx.save();
+  ctx.translate(sx,sy);
+  if(face<0){ ctx.translate(26,0); ctx.scale(-1,1); }
+  const skin='#e8b98f', wig='#f3f0e6', coat=cd.coat, acc=cd.accent, boot='#2a2320', breech='#d9cdae';
+  if(flash){ ctx.globalAlpha=0.5; }
+  // boots / legs (walk anim)
+  const step = walkFrame%2===0?0:2;
+  px(4,30,7,4,boot); px(15,30,7,4-0+0,boot);
+  px(5,24,6,6,breech); px(15,24,6,6,breech);
+  if(step){ px(4,30,7,4,boot); px(16,30,7,4,boot); }
+  // coat body
+  px(4,14,18,12,coat);
+  px(3,15,2,9,coat); px(21,15,2,9,coat);
+  // cravat
+  px(11,13,4,6,'#f3f0e6');
+  // accent trim (buttons)
+  px(12,15,2,2,acc); px(12,19,2,2,acc);
+  // arms
+  px(1,15,3,8,coat); px(22,15,3,8,coat);
+  // head
+  px(8,4,10,10,skin);
+  // wig/hair sides
+  px(6,5,3,9,wig); px(17,5,3,9,wig);
+  px(7,3,12,3,wig);
+  // eye
+  px(14,7,2,2,'#2a2320');
+  ctx.restore();
+}
+
+function drawRedcoat(sx,sy,frame){
+  const coat='#b53a2c', face='#e8b98f', hat='#171717', pants='#2b2b2b';
+  px(sx+8,sy+2,12,5,hat);       // shako hat
+  px(sx+9,sy-2,10,4,hat);
+  px(sx+9,sy+7,9,7,face);        // face
+  px(sx+6,sy+13,16,12,coat);     // coat
+  px(sx+11,sy+15,2,8,'#f2c14e'); // buttons
+  const s=frame%2===0?0:2;
+  px(sx+7,sy+25,5,6,pants); px(sx+16-s,sy+25,5,6,pants);
+}
+function drawTyrant(sx,sy,frame){
+  const robe='#5b2a86', face='#d8c0a0', crown='#f2c14e';
+  // crown
+  px(sx+8,sy-4,16,4,crown); px(sx+8,sy-8,3,4,crown); px(sx+14,sy-8,3,4,crown); px(sx+20,sy-8,3,4,crown);
+  px(sx+9,sy+0,14,10,face);      // face
+  px(sx+12,sy+4,2,2,'#3a1e1e'); px(sx+18,sy+4,2,2,'#3a1e1e');
+  px(sx+4,sy+10,24,30,robe);     // robe
+  px(sx+14,sy+12,4,24,'#7a44a8');
+  const s=frame%2===0?0:2;
+  px(sx+7,sy+40,6,6,'#2b2b2b'); px(sx+19-s,sy+40,6,6,'#2b2b2b');
+}
+function drawBlock(b){
+  const x=b.x-camX;
+  if(x+b.w<0||x>W) return;
+  if(b.gate){
+    // full-height portcullis pillar
+    if(b.used){
+      // opened: faint archway posts on the sides only
+      px(x,GATE_Y,6,GATE_H,'#4a5a34'); px(x+b.w-6,GATE_Y,6,GATE_H,'#4a5a34');
+      return;
+    }
+    const col = b.reward==='star' ? '#7a5aa8' : (b.reward==='spring' ? '#3d6ab0' : '#c98a24');
+    const lite = b.reward==='star' ? '#b48fe0' : (b.reward==='spring' ? '#7aa6e6' : '#f2c14e');
+    px(x,GATE_Y,b.w,GATE_H,col);
+    for(let yy=GATE_Y; yy<GATE_Y+GATE_H; yy+=20){ px(x+4,yy,b.w-8,10,lite); }
+    px(x,GATE_Y,b.w,6,'#0d1526'); px(x,GATE_Y+GATE_H-6,b.w,6,'#0d1526');
+    // ? sign near eye level
+    const cy=300;
+    px(x+2,cy-24,b.w-4,48,'#0d1526');
+    ctx.fillStyle=lite; ctx.font='24px "Press Start 2P"'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('?', x+b.w/2, cy+2);
+    ctx.textBaseline='alphabetic';
+    return;
+  }
+  const y=b.y - (b.bump>0?4:0);
+  if(b.used){
+    px(x,y,40,40,'#6b5a3a'); px(x+2,y+2,36,36,'#877249');
+  } else {
+    px(x,y,40,40,'#c98a24'); px(x+3,y+3,34,34,'#f2c14e');
+    px(x+3,y+3,34,4,'#ffe8a3'); px(x+3,y+33,34,4,'#a9741c');
+  }
+  ctx.fillStyle=b.used?'#5a4a2e':'#5a3a10';
+  ctx.font='20px "Press Start 2P"'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(b.used?'':'?', x+20, y+22);
+  ctx.textBaseline='alphabetic';
+}
+
+// ---------- RENDER ----------
+function render(){
+  ctx.clearRect(0,0,W,H);
+  if(state==='title'){ drawTitle(); return; }
+  if(state==='select'){ drawSelect(); return; }
+  if(state==='win'){ drawEnd(true); return; }
+  if(state==='gameover'){ drawEnd(false); return; }
+
+  drawWorld();
+  if(state==='question') drawQuestion();
+  if(state==='levelclear') drawLevelClear();
+  drawHUD();
+}
+
+function drawWorld(){
+  // sky
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,level.sky); g.addColorStop(1,'#0a1220');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // stars/parallax dots
+  ctx.fillStyle='rgba(255,255,255,.25)';
+  for(let i=0;i<40;i++){ const sx=((i*137 - camX*0.2)%W+W)%W; ctx.fillRect(sx, (i*53)%220, 2,2); }
+  // hills
+  ctx.fillStyle=level.hills;
+  for(let i=-1;i<8;i++){
+    const bx = i*280 - (camX*0.4)%280;
+    ctx.beginPath(); ctx.moveTo(bx,H); ctx.lineTo(bx+140,300); ctx.lineTo(bx+280,H); ctx.closePath(); ctx.fill();
+  }
+  // ground with gaps
+  const gy=level.groundY;
+  ctx.fillStyle='#3e2f1c';
+  let cursor=0;
+  const segs=[];
+  const sorted=[...level.gaps].sort((a,b)=>a[0]-b[0]);
+  for(const gp of sorted){ segs.push([cursor,gp[0]]); cursor=gp[1]; }
+  segs.push([cursor,level.width]);
+  for(const s of segs){
+    const x0=s[0]-camX, w=s[1]-s[0];
+    if(x0+w<0||x0>W) continue;
+    px(x0,gy,w,H-gy,'#3e2f1c');
+    px(x0,gy,w,10,'#5c7a3a');          // grass top
+    px(x0,gy+10,w,4,'#4a6330');
+    // brick texture
+    ctx.fillStyle='rgba(0,0,0,.18)';
+    for(let bx=Math.floor(x0/40)*40; bx<x0+w; bx+=40){ ctx.fillRect(bx,gy+16,2,H-gy); }
+  }
+  // platforms
+  for(const pl of level.platforms){
+    const x=pl.x-camX; if(x+pl.w<0||x>W) continue;
+    px(x,pl.y,pl.w,pl.h,'#8a5a2c'); px(x,pl.y,pl.w,5,'#b07a3e'); px(x,pl.y+pl.h-4,pl.w,4,'#5c3a1c');
+  }
+  // blocks
+  for(const b of level.blocks) drawBlock(b);
+  // goal flag
+  const fx=level.goalX-camX;
+  if(fx<W+40){
+    px(fx,level.groundY-140,6,140,'#d8d2c0');
+    ctx.fillStyle='#c0392b';
+    ctx.beginPath(); ctx.moveTo(fx+6,level.groundY-140); ctx.lineTo(fx+56,level.groundY-122); ctx.lineTo(fx+6,level.groundY-104); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='10px "Press Start 2P"'; ctx.textAlign='center';
+    ctx.fillText('★', fx+30, level.groundY-118);
+  }
+  // enemies
+  for(const e of level.enemies){
+    if(!e.alive) continue;
+    const sx=e.x-camX; if(sx< -40||sx>W) continue;
+    const frame=Math.floor(Date.now()/180);
+    if(e.type==='tyrant') drawTyrant(sx,e.y,frame); else drawRedcoat(sx,e.y,frame);
+  }
+  // particles
+  for(const pt of particles){ px(pt.x-camX,pt.y,3,3,pt.color); }
+  // player
+  const flashing = player.invuln>0 && Math.floor(Date.now()/80)%2===0;
+  if(starTimer>0){
+    const hue=Math.floor(Date.now()/60)%360;
+    ctx.save(); ctx.shadowBlur=16; ctx.shadowColor=`hsl(${hue},90%,60%)`;
+    drawFounder(player.x-camX, player.y, charData, player.face, Math.floor(player.anim), false);
+    ctx.restore();
+  } else {
+    drawFounder(player.x-camX, player.y, charData, player.face, Math.floor(player.anim), flashing);
+  }
+  // floaters
+  ctx.textAlign='center'; ctx.font='10px "Press Start 2P"';
+  for(const f of floaters){ ctx.fillStyle=f.color; ctx.fillText(f.text, f.x-camX, f.y); }
+  ctx.textAlign='left';
+}
+
+function drawHUD(){
+  // top bar
+  ctx.fillStyle='rgba(10,14,26,.7)'; ctx.fillRect(0,0,W,44);
+  // hearts
+  for(let i=0;i<3;i++){
+    const hx=14+i*30;
+    ctx.fillStyle = i<hearts ? '#e0364e' : '#40202a';
+    ctx.fillRect(hx,14,8,8); ctx.fillRect(hx+10,14,8,8); ctx.fillRect(hx+4,20,10,10); ctx.fillRect(hx+6,28,6,6);
+  }
+  ctx.fillStyle='#f2c14e'; ctx.font='12px "Press Start 2P"'; ctx.textAlign='left';
+  ctx.fillText('SCORE '+score, 130, 27);
+  ctx.textAlign='center'; ctx.fillStyle='#fff';
+  ctx.fillText('LVL '+(levelIdx+1)+': '+level.name, W/2, 27);
+  // power indicators
+  ctx.textAlign='right';
+  let px2=W-14;
+  if(starTimer>0){ ctx.fillStyle='#f2c14e'; ctx.fillText('★STAR '+Math.ceil(starTimer/1000), px2, 27); }
+  else if(player.canSuper){ ctx.fillStyle='#8ab0e6'; ctx.fillText('⬆ SPRING', px2, 27); }
+  ctx.textAlign='left';
+}
+
+function drawQuestion(){
+  const q=questionData.q;
+  ctx.fillStyle='rgba(6,10,20,.86)'; ctx.fillRect(0,0,W,H);
+  // panel
+  ctx.fillStyle='#1c2742'; ctx.fillRect(80,90,800,400);
+  ctx.strokeStyle='#f2c14e'; ctx.lineWidth=4; ctx.strokeRect(80,90,800,400);
+  ctx.fillStyle='#f2c14e'; ctx.font='12px "Press Start 2P"'; ctx.textAlign='center';
+  const tierName = q.t===1?'★ EASY':(q.t===2?'★★ MEDIUM':'★★★ HARD');
+  ctx.fillText(tierName+'  •  '+level.doc.toUpperCase(), W/2, 130);
+  // question (wrapped)
+  ctx.fillStyle='#fff'; ctx.font='13px "Press Start 2P"';
+  wrapText(q.q, W/2, 180, 720, 22);
+  // answers
+  for(let i=0;i<4;i++){
+    const by=300+i*52;
+    const hovered = qHover===i;
+    ctx.fillStyle = hovered ? '#2f4a7a' : '#233458';
+    ctx.fillRect(140,by-22,680,44);
+    ctx.strokeStyle = hovered ? '#f2c14e' : '#3f5688'; ctx.lineWidth=2; ctx.strokeRect(140,by-22,680,44);
+    ctx.fillStyle='#f2c14e'; ctx.font='12px "Press Start 2P"'; ctx.textAlign='left';
+    ctx.fillText((i+1)+'.', 156, by+5);
+    ctx.fillStyle='#fff'; ctx.font='11px "Press Start 2P"';
+    ctx.fillText(q.o[i], 190, by+5);
+  }
+  ctx.textAlign='center'; ctx.fillStyle='#9fb0d0'; ctx.font='9px "Press Start 2P"';
+  ctx.fillText('CLICK / TAP  •  OR PRESS 1-4', W/2, 470);
+  ctx.textAlign='left';
+}
+function wrapText(text,cx,y,maxW,lh){
+  const words=text.split(' '); let line=''; const lines=[];
+  for(const w of words){
+    const test=line?line+' '+w:w;
+    if(ctx.measureText(test).width>maxW && line){ lines.push(line); line=w; }
+    else line=test;
+  }
+  if(line) lines.push(line);
+  ctx.textAlign='center';
+  lines.forEach((l,i)=>ctx.fillText(l,cx,y+i*lh));
+}
+
+function drawLevelClear(){
+  ctx.fillStyle='rgba(6,10,20,.8)'; ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';
+  ctx.fillStyle='#7bd47b'; ctx.font='26px "Press Start 2P"';
+  ctx.fillText('DOCUMENT SECURED!', W/2, 210);
+  ctx.fillStyle='#fff'; ctx.font='13px "Press Start 2P"';
+  ctx.fillText('You mastered the '+docTitle(level.doc), W/2, 260);
+  ctx.fillStyle='#f2c14e'; ctx.font='14px "Press Start 2P"';
+  ctx.fillText('SCORE  '+score, W/2, 320);
+  ctx.fillStyle='#9fb0d0'; ctx.font='11px "Press Start 2P"';
+  ctx.fillText(levelIdx+1<LEVELS.length?'PRESS SPACE / TAP TO CONTINUE':'PRESS SPACE / TAP', W/2, 380);
+  ctx.textAlign='left';
+}
+function docTitle(d){ return d==='declaration'?'Declaration of Independence':(d==='articles'?'Articles of Confederation':'Constitution'); }
+
+function drawTitle(){
+  ctx.fillStyle='#101a30'; ctx.fillRect(0,0,W,H);
+  // scanline vibe
+  ctx.fillStyle='rgba(255,255,255,.03)';
+  for(let y=0;y<H;y+=4) ctx.fillRect(0,y,W,2);
+  ctx.textAlign='center';
+  ctx.fillStyle='#f2c14e'; ctx.font='40px "Press Start 2P"';
+  ctx.fillText('FOUNDERS', W/2, 180);
+  ctx.fillText('QUEST', W/2, 230);
+  ctx.fillStyle='#8ab0e6'; ctx.font='14px "Press Start 2P"';
+  ctx.fillText('~ PIXEL REPUBLIC ~', W/2, 275);
+  // little founder
+  drawFounder(W/2-13, 320, CHARS[0], 1, 0, false);
+  ctx.fillStyle=(Math.floor(Date.now()/500)%2)?'#fff':'#f2c14e';
+  ctx.font='13px "Press Start 2P"';
+  ctx.fillText('PRESS SPACE / TAP TO START', W/2, 430);
+  ctx.fillStyle='#5f7099'; ctx.font='9px "Press Start 2P"';
+  ctx.fillText('Humanities Immersed Learning', W/2, 500);
+  ctx.textAlign='left';
+}
+
+function drawSelect(){
+  ctx.fillStyle='#101a30'; ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';
+  ctx.fillStyle='#f2c14e'; ctx.font='20px "Press Start 2P"';
+  ctx.fillText('CHOOSE YOUR FOUNDER', W/2, 90);
+  for(let i=0;i<CHARS.length;i++){
+    const cd=CHARS[i], cx=140+i*240, sel=i===selIndex;
+    ctx.fillStyle = sel?'#22345c':'#182640';
+    ctx.fillRect(cx-90,150,180,270);
+    ctx.strokeStyle = sel?'#f2c14e':'#33456e'; ctx.lineWidth=sel?4:2;
+    ctx.strokeRect(cx-90,150,180,270);
+    drawFounder(cx-13,180,cd,1,0,false);
+    // scale up founder a touch
+    ctx.fillStyle='#fff'; ctx.font='12px "Press Start 2P"';
+    ctx.fillText(cd.name, cx, 250);
+    ctx.fillStyle=cd.accent; ctx.font='9px "Press Start 2P"';
+    ctx.fillText(cd.title, cx, 272);
+    ctx.fillStyle='#9fb0d0'; ctx.font='8px "Press Start 2P"';
+    wrapText(cd.blurb, cx, 300, 160, 16);
+    // stats
+    ctx.fillStyle='#f2c14e'; ctx.font='8px "Press Start 2P"';
+    ctx.fillText('JUMP '+'|'.repeat(Math.round((cd.jump-10)*2)), cx, 370);
+    ctx.fillText('SPEED '+'|'.repeat(Math.round((cd.speed-3.5)*2.5)), cx, 388);
+  }
+  // start button
+  const bs=(Math.floor(Date.now()/500)%2);
+  ctx.fillStyle= bs?'#f2c14e':'#c98a24';
+  ctx.fillRect(W/2-120,450,240,50);
+  ctx.fillStyle='#101a30'; ctx.font='14px "Press Start 2P"';
+  ctx.fillText('START  ▶', W/2, 482);
+  ctx.fillStyle='#5f7099'; ctx.font='8px "Press Start 2P"';
+  ctx.fillText('◀ ▶ TO CHOOSE   •   ENTER / TAP TO START', W/2, 528);
+  ctx.textAlign='left';
+}
+
+function drawEnd(won){
+  ctx.fillStyle= won?'#12321f':'#301418'; ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';
+  if(won){
+    ctx.fillStyle='#7bd47b'; ctx.font='30px "Press Start 2P"';
+    ctx.fillText('A REPUBLIC!', W/2, 200);
+    ctx.fillStyle='#fff'; ctx.font='12px "Press Start 2P"';
+    wrapText('You founded a nation on the Declaration, survived the Articles, and forged the Constitution.', W/2, 250, 720, 24);
+  } else {
+    ctx.fillStyle='#e0364e'; ctx.font='30px "Press Start 2P"';
+    ctx.fillText('GAME OVER', W/2, 210);
+    ctx.fillStyle='#fff'; ctx.font='12px "Press Start 2P"';
+    ctx.fillText('The union has faltered... try again!', W/2, 260);
+  }
+  ctx.fillStyle='#f2c14e'; ctx.font='16px "Press Start 2P"';
+  ctx.fillText('FINAL SCORE  '+score, W/2, 340);
+  ctx.fillStyle=(Math.floor(Date.now()/500)%2)?'#fff':'#9fb0d0'; ctx.font='11px "Press Start 2P"';
+  ctx.fillText('PRESS SPACE / TAP FOR TITLE', W/2, 410);
+  ctx.textAlign='left';
+}
+
+// ---------- LOOP ----------
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(48, now-last); last=now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
