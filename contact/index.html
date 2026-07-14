@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanities Immersed Learning — Contact Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: #e4d8c2; color: #201e1d;
+    font-family: 'Figtree', system-ui, sans-serif;
+    display: flex; justify-content: center;
+    padding: 48px 20px;
+  }
+  a { color: #cc6b31; }
+  a:hover { color: #9f3f20; }
+
+  .page {
+    width: 100%; max-width: 1000px;
+    background: #f5ead8; border-radius: 28px; overflow: hidden;
+    box-shadow: 0 12px 32px rgba(46,43,37,0.22);
+  }
+
+  .nav {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 48px; background: #f9f4ed;
+    border-bottom: 1px solid rgba(32,30,29,0.08);
+  }
+  .nav .brand {
+    margin-right: auto; text-decoration: none;
+    font-family: 'Caprasimo', serif; font-size: 20px; color: #16305c;
+  }
+  .nav .brand:hover { color: #16305c; opacity: .85; }
+  .nav a.navlink {
+    text-decoration: none; color: #201e1d;
+    font-size: 14px; font-weight: 600;
+  }
+  .nav a.navlink:hover { color: #9f3f20; }
+
+  .intro {
+    padding: 48px 48px 8px; text-align: center;
+  }
+  .intro h1 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 34px; margin: 0 0 10px; color: #201e1d;
+  }
+  .intro p {
+    font-size: 15px; opacity: .8; margin: 0 auto; max-width: 52ch;
+  }
+
+  .content {
+    display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px;
+    padding: 32px 48px 48px;
+  }
+
+  .info {
+    background: #ebddc5; border-radius: 24px; padding: 32px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .info h2 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 20px; margin: 0; color: #201e1d;
+  }
+  .info-item { font-size: 14px; line-height: 1.7; }
+  .info-item .label {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: #645c50; font-weight: 700; margin-bottom: 4px;
+  }
+
+  form {
+    background: #cc6b31; border-radius: 24px; padding: 32px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  form h2 {
+    font-family: 'Caprasimo', serif; font-weight: 400; font-size: 20px;
+    margin: 0 0 6px; color: #fff2eb;
+  }
+  form label {
+    font-size: 12px; font-weight: 600; color: #fff2eb; margin-bottom: -6px;
+  }
+  form input, form select, form textarea {
+    min-height: 44px; padding: 10px 16px; font: inherit; font-size: 14px;
+    background: #fff2eb; border: 1px solid transparent; border-radius: 16px;
+    color: #201e1d; width: 100%;
+  }
+  form textarea { min-height: 110px; padding-top: 12px; border-radius: 16px; resize: vertical; }
+  form button {
+    margin-top: 6px; font-family: 'Caprasimo', serif; font-size: 15px;
+    color: #cc6b31; background: #fff2eb; border: none; padding: 13px 20px;
+    border-radius: 999px; cursor: pointer;
+  }
+  form button:hover { filter: brightness(0.96); }
+
+  footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 48px; background: #f9f4ed;
+    border-top: 1px solid rgba(32,30,29,0.08);
+    font-size: 13px; opacity: .7;
+  }
+  footer a { text-decoration: none; }
+
+  @media (max-width: 700px) {
+    .nav { flex-wrap: wrap; padding: 16px 24px; }
+    .intro { padding: 32px 24px 8px; }
+    .content { grid-template-columns: 1fr; padding: 24px 24px 32px; }
+    footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="nav">
+    <a class="brand" href="../">Humanities Immersed Learning</a>
+    <a class="navlink" href="../">Home</a>
+    <a class="navlink" href="../games/">Games</a>
+  </div>
+
+  <div class="intro">
+    <h1>Get in Touch</h1>
+    <p>Questions about a license, a title, or bringing a game into your classroom? We'd love to hear from you.</p>
+  </div>
+
+  <div class="content">
+    <div class="info">
+      <h2>Reach Us Directly</h2>
+      <div class="info-item">
+        <span class="label">Email</span>
+        <a href="mailto:humanitiesimmersed@gmail.com">humanitiesimmersed@gmail.com</a>
+      </div>
+      <div class="info-item">
+        <span class="label">Response Time</span>
+        We typically reply within 1–2 school days.
+      </div>
+      <div class="info-item">
+        <span class="label">Looking for a sample?</span>
+        Mention your grade level and subject in the message and we'll match you with a title.
+      </div>
+    </div>
+
+    <form action="https://formsubmit.co/humanitiesimmersed@gmail.com" method="POST">
+      <h2>Send a Message</h2>
+
+      <input type="hidden" name="_subject" value="New message from the HIL contact page">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="true">
+      <input type="text" name="_honey" style="display:none">
+
+      <label for="name">Name</label>
+      <input type="text" id="name" name="Name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="Email" required>
+
+      <label for="role">I am a...</label>
+      <select id="role" name="I am a">
+        <option>Teacher</option>
+        <option>Student</option>
+        <option>Parent</option>
+        <option>Administrator</option>
+        <option>Other</option>
+      </select>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="Message" required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+
+  <footer>
+    <div>© 2026 Humanities Immersed Learning LLC</div>
+    <div><a href="../">Back to Home</a></div>
+  </footer>
+</div>
+</body>
+</html>
