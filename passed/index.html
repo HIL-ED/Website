@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passed! — A Policy Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1B2D;
+    --bg-2:#0B1420;
+    --bg-top:#16273f;
+    --panel:#16263D;
+    --panel-alt:#1C2E48;
+    --border:#2A3C56;
+    --text:#EDEFF2;
+    --muted:#93A6BE;
+    --brass:#C6A15B;
+    --brass-dim:#8E7546;
+    --opinion:#4FB6A8;
+    --local:#E0A458;
+    --state:#8B7FD1;
+    --federal:#C15C8A;
+    --opposition:#B4483E;
+    --good:#5FBF7A;
+    --theme-accent:#C6A15B;
+    --radius:10px;
+  }
+  body.theme-healthcare{ --bg:#0F222E; --bg-2:#0A1820; --bg-top:#1B3345; --theme-accent:#6FA8DC; }
+  body.theme-wage{ --bg:#10241A; --bg-2:#0B1A13; --bg-top:#183D29; --theme-accent:#7CC576; }
+  body.theme-tax{ --bg:#241C0F; --bg-2:#1A140A; --bg-top:#3A2E17; --theme-accent:#D9B44A; }
+  body.theme-housing{ --bg:#241509; --bg-2:#1A0F06; --bg-top:#3A2211; --theme-accent:#E08A52; }
+  body.theme-education{ --bg:#180F2E; --bg-2:#110A21; --bg-top:#271A45; --theme-accent:#A594E8; }
+  body.theme-environment{ --bg:#0E2417; --bg-2:#0A1A10; --bg-top:#183F27; --theme-accent:#5FC17C; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, var(--bg-top) 0%, var(--bg) 55%, var(--bg-2) 100%);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    transition:background .6s ease;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces',serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  button{font-family:'Inter',sans-serif;cursor:pointer;}
+  button:focus-visible, input:focus-visible, .role-card:focus-visible{
+    outline:2px solid var(--brass); outline-offset:2px;
+  }
+  .screen{display:none; min-height:100vh; padding:28px 20px 60px;}
+  .screen.active{display:block;}
+  .wrap{max-width:1180px; margin:0 auto;}
+
+  /* ---------- START SCREEN ---------- */
+  .masthead{
+    text-align:center; padding:18px 0 30px; border-bottom:1px solid var(--border); margin-bottom:32px;
+  }
+  .eyebrow{
+    letter-spacing:.18em; text-transform:uppercase; font-size:12px; color:var(--brass);
+    font-family:'IBM Plex Mono',monospace; margin-bottom:10px;
+  }
+  .masthead h1{font-size:44px; font-weight:700; margin:0 0 10px; letter-spacing:-.01em;}
+  .masthead p{color:var(--muted); max-width:640px; margin:0 auto; font-size:16px; line-height:1.55;}
+
+  .standard-box{
+    max-width:760px; margin:22px auto 0; background:var(--panel); border:1px solid var(--border);
+    border-left:3px solid var(--brass); border-radius:var(--radius); padding:14px 18px; font-size:14px; color:var(--muted);
+  }
+  .standard-box b{color:var(--text);}
+
+  .section-label{
+    font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:34px 0 14px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  .name-picker{max-width:760px; margin:6px auto 8px; text-align:center;}
+  .name-picker-label{font-size:12.5px; color:var(--muted); margin-bottom:10px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.1em;}
+  .name-pill-row{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .name-pill{
+    background:var(--panel); border:1px solid var(--border); color:var(--text); padding:9px 16px;
+    border-radius:20px; font-size:13.5px;
+  }
+  .name-pill:hover{border-color:var(--brass-dim);}
+  .name-pill.selected{border-color:var(--brass); background:var(--panel-alt); color:var(--brass); font-weight:600;}
+
+  .role-grid{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-top:10px;
+  }
+  .policy-grid{grid-template-columns:repeat(6,1fr); margin-bottom:8px;}
+  @media (max-width:920px){ .policy-grid{grid-template-columns:repeat(2,1fr);} }
+  .policy-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;}
+  .policy-tag{
+    font-size:10.5px; font-family:'IBM Plex Mono',monospace; padding:2px 6px; border-radius:5px;
+    border:1px solid var(--border); color:var(--muted);
+  }
+  .policy-tag.up{color:var(--good); border-color:var(--good);}
+  .policy-tag.down{color:var(--opposition); border-color:var(--opposition);}
+  .policy-card{border-top:3px solid var(--policy-accent, var(--border));}
+  .policy-card .role-icon{filter:drop-shadow(0 0 6px color-mix(in srgb, var(--policy-accent, transparent) 40%, transparent));}
+  .policy-grid .role-card.policy-card.selected{border-color:var(--policy-accent, var(--brass)); box-shadow:0 0 0 1px var(--policy-accent, var(--brass)) inset;}
+  .role-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 14px; text-align:left; color:var(--text); transition:border-color .15s, transform .15s, background .15s;
+    display:flex; flex-direction:column; gap:8px; min-height:100%;
+  }
+  .role-card:hover{border-color:var(--brass-dim); transform:translateY(-2px);}
+  .role-card.selected{border-color:var(--brass); background:var(--panel-alt); box-shadow:0 0 0 1px var(--brass) inset;}
+  .role-icon{font-size:26px;}
+  .role-card h3{margin:0; font-size:17px;}
+  .role-tag{font-size:11.5px; color:var(--brass); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.06em;}
+  .role-desc{font-size:12.5px; color:var(--muted); line-height:1.5; flex-grow:1;}
+  .role-stats{display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;}
+  .role-stat-chip{
+    font-size:10.5px; font-family:'IBM Plex Mono',monospace; padding:2px 6px; border-radius:5px;
+    background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border);
+  }
+  .role-trait{font-size:11.5px; line-height:1.5;}
+  .role-trait.strength{color:var(--good);}
+  .role-trait.weakness{color:var(--opposition);}
+
+  .start-cta-row{display:flex; justify-content:center; margin-top:34px;}
+  .btn-primary{
+    background:linear-gradient(180deg,#D6B476,var(--brass)); color:#20160A; border:none;
+    padding:14px 34px; font-size:15.5px; font-weight:700; border-radius:8px; letter-spacing:.02em;
+  }
+  .btn-primary:disabled{opacity:.4; cursor:not-allowed;}
+  .btn-primary:not(:disabled):hover{filter:brightness(1.08);}
+
+  /* ---------- GAME SCREEN ---------- */
+  .game-header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:20px;
+  }
+  .gh-left{display:flex; align-items:center; gap:12px;}
+  .gh-left .role-icon{font-size:28px;}
+  .gh-title{font-size:20px; font-weight:600; margin:0;}
+  .gh-sub{font-size:12.5px; color:var(--muted); margin:0;}
+  .gh-right{display:flex; align-items:center; gap:22px;}
+  .stat-pill{text-align:right;}
+  .stat-pill .num{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; color:var(--brass);}
+  .stat-pill .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .btn-advance{
+    background:var(--brass); color:#20160A; border:none; padding:12px 22px; border-radius:8px;
+    font-weight:700; font-size:14.5px; white-space:nowrap;
+  }
+  .btn-advance:hover{filter:brightness(1.08);}
+  .btn-ghost{
+    background:transparent; border:1px solid var(--border); color:var(--muted); padding:8px 12px;
+    border-radius:7px; font-size:12.5px;
+  }
+  .btn-ghost:hover{border-color:var(--muted); color:var(--text);}
+
+  /* Bill tracker (signature element) */
+  .tracker{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 24px 16px; margin-bottom:22px;
+  }
+  .tracker-title{font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:16px; font-family:'IBM Plex Mono',monospace;}
+  .tracker-rail{display:flex; align-items:flex-start; position:relative;}
+  .tracker-stage{flex:1; text-align:center; position:relative; z-index:2;}
+  .tracker-dot{
+    width:20px; height:20px; border-radius:50%; background:var(--bg-2); border:2px solid var(--border);
+    margin:0 auto 8px; transition:all .3s; position:relative;
+  }
+  .tracker-dot.done{background:var(--theme-accent); border-color:var(--theme-accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--theme-accent) 22%, transparent);}
+  .tracker-stage-label{font-size:11.5px; color:var(--muted); line-height:1.3;}
+  .tracker-stage.done .tracker-stage-label{color:var(--text);}
+  .tracker-line{
+    position:absolute; top:9px; left:0; right:0; height:2px; background:var(--border); z-index:1;
+  }
+  .tracker-line-fill{height:2px; background:var(--theme-accent); transition:width .4s;}
+
+  .final-vote-banner{
+    margin-top:16px; padding:14px 16px; border-radius:8px; border:1px dashed var(--theme-accent);
+    background:color-mix(in srgb, var(--theme-accent) 10%, transparent);
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  }
+  .final-vote-text{font-size:13px; color:var(--text); line-height:1.5;}
+  .final-vote-text b{color:var(--theme-accent);}
+  .btn-final-vote{
+    background:var(--theme-accent); color:#101822; border:none; padding:11px 20px; border-radius:8px;
+    font-weight:700; font-size:13.5px; white-space:nowrap;
+  }
+  .btn-final-vote:hover{filter:brightness(1.08);}
+
+  .game-grid{display:grid; grid-template-columns:1fr 400px; gap:20px;}
+  @media (max-width:920px){ .game-grid{grid-template-columns:1fr;} .role-grid{grid-template-columns:repeat(2,1fr);} }
+
+  .meters-panel, .log-panel, .upgrades-panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;
+  }
+  .log-panel-top{
+    margin-bottom:22px; padding:20px 24px; border-color:var(--theme-accent);
+    box-shadow:0 0 0 1px color-mix(in srgb, var(--theme-accent) 18%, transparent) inset;
+  }
+  .log-panel-top .panel-title{font-size:15px; color:var(--text); margin-bottom:12px;}
+  .log-panel-inner{display:flex; gap:16px; align-items:flex-start;}
+  .log-panel-content{flex:1; min-width:0;}
+  .reporter-mascot{flex:0 0 auto; width:64px; padding-top:2px;}
+  @media (max-width:640px){ .reporter-mascot{display:none;} }
+  .panel-title{font-size:13px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:0 0 14px; font-family:'IBM Plex Mono',monospace;}
+
+  .meter-row{margin-bottom:16px;}
+  .meter-row:last-child{margin-bottom:0;}
+  .meter-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;}
+  .meter-head .name{font-size:14px; font-weight:600;}
+  .meter-head .vals{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--muted);}
+  .meter-track{height:12px; background:var(--bg-2); border-radius:6px; overflow:hidden; border:1px solid var(--border); position:relative;}
+  .meter-fill{height:100%; border-radius:6px 0 0 6px; transition:width .5s ease;}
+  .meter-goal-mark{position:absolute; top:-2px; bottom:-2px; width:2px; background:rgba(255,255,255,.5);}
+  .growth-tag{font-size:11px; color:var(--good); font-family:'IBM Plex Mono',monospace; margin-top:3px;}
+
+  .opp-row{margin-top:18px; padding-top:16px; border-top:1px dashed var(--border);}
+
+  .tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+  .tab-btn{
+    background:var(--bg-2); border:1px solid var(--border); color:var(--muted); padding:7px 11px;
+    border-radius:7px; font-size:12px; font-weight:600;
+  }
+  .tab-btn.active{background:var(--panel-alt); color:var(--text); border-color:var(--brass-dim);}
+  .tab-btn .dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px;}
+
+  .track-locked-note{font-size:12.5px; color:var(--muted); background:var(--bg-2); border:1px dashed var(--border); padding:10px 12px; border-radius:8px; margin-bottom:10px;}
+
+  .upgrade-list{display:flex; flex-direction:column; gap:10px; max-height:520px; overflow-y:auto; padding-right:4px;}
+  .upgrade-card{
+    border:1px solid var(--border); background:var(--bg-2); border-radius:9px; padding:12px 13px;
+  }
+  .upgrade-card.owned{border-color:var(--good); background:rgba(95,191,122,.06);}
+  .upgrade-card.locked{opacity:.5;}
+  .uc-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .uc-name{font-size:13.5px; font-weight:600;}
+  .uc-cost{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--brass); white-space:nowrap;}
+  .uc-desc{font-size:12px; color:var(--muted); margin:5px 0 6px; line-height:1.45;}
+  .uc-note{font-size:11px; color:#7FA0C4; margin-bottom:8px; line-height:1.4;}
+  .uc-note b{color:#9FBFDE;}
+  .uc-buy{
+    width:100%; padding:7px 0; border-radius:6px; border:1px solid var(--brass-dim); background:transparent;
+    color:var(--brass); font-size:12.5px; font-weight:600;
+  }
+  .uc-buy:hover:not(:disabled){background:rgba(198,161,91,.12);}
+  .uc-buy:disabled{border-color:var(--border); color:var(--muted); cursor:not-allowed;}
+  .uc-owned-tag{font-size:11.5px; color:var(--good); font-weight:600;}
+  .uc-badge{font-size:10px; font-family:'IBM Plex Mono',monospace; padding:2px 6px; border-radius:5px; border:1px solid var(--border); color:var(--muted); white-space:nowrap;}
+  .uc-badge.risky{color:var(--opposition); border-color:var(--opposition);}
+  .quick-intro{font-size:12.5px; color:var(--muted); margin-bottom:12px; line-height:1.5;}
+
+  .log-panel{margin-top:20px;}
+  .log-list{display:flex; flex-direction:column-reverse; gap:11px; max-height:340px; overflow-y:auto; padding-right:6px;}
+  .log-entry{border-left:3px solid var(--border); padding:4px 0 4px 14px;}
+  .log-entry.event{border-left-color:var(--brass-dim);}
+  .log-entry.purchase{border-left-color:var(--opinion);}
+  .log-entry.latest{border-left-color:var(--brass); background:linear-gradient(90deg, rgba(198,161,91,.10), transparent 60%); border-radius:0 8px 8px 0;}
+  .log-week{font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.06em;}
+  .log-text{font-size:15px; margin:3px 0; line-height:1.45;}
+  .log-note{font-size:12px; color:#7FA0C4;}
+
+  /* ---------- END SCREEN ---------- */
+  .end-card{
+    max-width:640px; margin:60px auto 0; background:var(--panel); border:1px solid var(--border);
+    border-radius:14px; padding:40px 36px; text-align:center;
+  }
+  .end-card.win{border-top:4px solid var(--good);}
+  .end-card.lose{border-top:4px solid var(--opposition);}
+  .end-badge{font-size:13px; text-transform:uppercase; letter-spacing:.14em; font-family:'IBM Plex Mono',monospace; margin-bottom:12px;}
+  .end-badge.win{color:var(--good);}
+  .end-badge.lose{color:var(--opposition);}
+  .end-card h2{font-size:30px; margin:0 0 14px;}
+  .end-card p{color:var(--muted); font-size:15px; line-height:1.6;}
+  .end-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:26px 0;}
+  .end-stat{background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px 6px;}
+  .end-stat .n{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600;}
+  .end-stat .l{font-size:10.5px; color:var(--muted); text-transform:uppercase; margin-top:3px;}
+  .reflection{
+    text-align:left; background:var(--bg-2); border:1px solid var(--border); border-left:3px solid var(--brass);
+    border-radius:8px; padding:14px 16px; margin:22px 0; font-size:13.5px; color:var(--muted); line-height:1.6;
+  }
+  .reflection b{color:var(--text);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ START SCREEN ============ -->
+  <div class="screen active" id="screen-start">
+    <div class="wrap">
+      <div class="masthead">
+        <div class="eyebrow">A Civic Engagement Simulation</div>
+        <h1>Passed!</h1>
+        <p>Grow public support and move a policy idea through the structures of American government — from public opinion, to city hall, to the statehouse, to Congress.</p>
+        <div class="standard-box">
+          <b>Standard:</b> Opportunities for civic engagement within the structures of government are made possible through political and public policy processes.
+        </div>
+      </div>
+
+      <div class="section-label">Step 1 — Choose your type of legislation</div>
+      <div class="role-grid policy-grid" id="policyGrid"></div>
+
+      <div class="name-picker" id="namePicker" style="display:none;">
+        <div class="name-picker-label">Pick a name for your campaign</div>
+        <div class="name-pill-row" id="nameGrid"></div>
+      </div>
+
+      <div class="section-label">Step 2 — Choose your starting position</div>
+      <div class="role-grid" id="roleGrid"></div>
+
+      <div class="start-cta-row">
+        <button class="btn-primary" id="startBtn" disabled>Begin Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GAME SCREEN ============ -->
+  <div class="screen" id="screen-game">
+    <div class="wrap">
+      <div class="game-header">
+        <div class="gh-left">
+          <div class="role-icon" id="ghIcon">📣</div>
+          <div>
+            <p class="gh-title" id="ghTitle">Policy Name</p>
+            <p class="gh-sub" id="ghSub">Playing as Grassroots Movement</p>
+          </div>
+        </div>
+        <div class="gh-right">
+          <div class="stat-pill"><div class="num mono" id="weekNum">1 / 40</div><div class="lbl">Week</div></div>
+          <div class="stat-pill"><div class="num mono" id="ipNum">0</div><div class="lbl">Influence Pts</div></div>
+          <button class="btn-advance" id="advanceBtn">Advance Week →</button>
+          <button class="btn-ghost" id="resetBtn">Restart</button>
+        </div>
+      </div>
+
+      <div class="log-panel log-panel-top">
+        <div class="log-panel-inner">
+          <div class="reporter-mascot" aria-hidden="true">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="40" rx="21" ry="19" fill="#9C8368"/>
+              <polygon points="15,23 21,10 27,23" fill="#9C8368"/>
+              <polygon points="37,23 43,10 49,23" fill="#9C8368"/>
+              <ellipse cx="32" cy="43" rx="12" ry="10" fill="#C9B79A"/>
+              <rect x="12" y="15" width="40" height="8" rx="3" style="fill:var(--theme-accent)"/>
+              <rect x="45" y="16" width="11" height="7" rx="1.5" fill="#F4F1EA"/>
+              <circle cx="27" cy="33" r="7.5" fill="#F4F1EA"/>
+              <circle cx="40" cy="33" r="7.5" fill="#F4F1EA"/>
+              <circle cx="27" cy="34" r="3.4" fill="#201812"/>
+              <circle cx="40" cy="34" r="3.4" fill="#201812"/>
+              <polygon points="31,39 36,39 33.5,45" fill="#E3A23A"/>
+              <ellipse cx="49" cy="45" rx="6" ry="8" fill="#9C8368"/>
+              <rect x="50" y="20" width="4.5" height="15" rx="2.2" fill="#3B3B3B"/>
+              <circle cx="52.2" cy="18" r="5.2" style="fill:var(--theme-accent)"/>
+              <ellipse cx="24" cy="57" rx="4.5" ry="3" fill="#E3A23A"/>
+              <ellipse cx="38" cy="57" rx="4.5" ry="3" fill="#E3A23A"/>
+            </svg>
+          </div>
+          <div class="log-panel-content">
+            <div class="panel-title">📰 Campaign Newsfeed</div>
+            <div class="log-list" id="logList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracker">
+        <div class="tracker-title">The Bill's Journey</div>
+        <div class="tracker-rail" id="trackerRail"></div>
+        <div class="final-vote-banner" id="finalVoteBanner" style="display:none;"></div>
+      </div>
+
+      <div class="game-grid">
+        <div class="col-left">
+          <div class="meters-panel">
+            <div class="panel-title">Support Levels</div>
+            <div id="metersHost"></div>
+            <div class="opp-row">
+              <div class="meter-row" style="margin-bottom:0;">
+                <div class="meter-head">
+                  <span class="name">Organized Opposition</span>
+                  <span class="vals mono" id="oppVals">0 / 100</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill" id="oppFill" style="background:var(--opposition); width:0%;"></div></div>
+                <div class="growth-tag" id="oppGrowthTag" style="color:var(--opposition);">+0 / week</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-right">
+          <div class="upgrades-panel">
+            <div class="panel-title">Take Action</div>
+            <div class="tabs" id="tabsHost"></div>
+            <div id="trackLockedNote"></div>
+            <div class="upgrade-list" id="upgradeList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ END SCREEN ============ -->
+  <div class="screen" id="screen-end">
+    <div class="wrap">
+      <div class="end-card" id="endCard">
+        <div class="end-badge" id="endBadge">RESULT</div>
+        <h2 id="endTitle">Title</h2>
+        <p id="endText">Text</p>
+        <div class="end-stats" id="endStats"></div>
+        <div class="reflection" id="endReflection"></div>
+        <button class="btn-primary" id="playAgainBtn">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================================
+   CONFIG — teachers can tune these numbers to change game length/difficulty
+   ========================================================================= */
+const WEEK_LIMIT = 40;
+const WIN_THRESHOLDS = { opinion:40, local:60, state:60, federal:60 };
+const OPPOSITION_LOSE = 100;
+const BASE_IP_PER_WEEK = 6;
+const EVENT_CHANCE = 0.65;
+const SECOND_EVENT_CHANCE = 0.22;
+
+/* =========================================================================
+   ROLES
+   ========================================================================= */
+const ROLES = [
+  {
+    id:'grassroots', icon:'📣', name:'Grassroots Movement', tag:'Bottom-up',
+    desc:'A group of everyday citizens organizing neighbors around a shared cause.',
+    stats:{opinion:25, local:5, state:0, federal:0}, ip:25, passiveIp:3,
+    costMult:{opinion:0.75, local:1, state:1.25, federal:1.25, coalition:1},
+    oppBase:1.4,
+    strength:'+ Cheap public-opinion organizing',
+    weakness:'– Costly access to state & federal power'
+  },
+  {
+    id:'interest', icon:'💼', name:'Professional Interest Group', tag:'Organized & funded',
+    desc:'A staffed organization with funding, lobbyists, and existing relationships at multiple levels.',
+    stats:{opinion:8, local:12, state:12, federal:5}, ip:55, passiveIp:6,
+    costMult:{opinion:1.25, local:1, state:0.8, federal:0.8, coalition:0.85},
+    oppBase:1.4,
+    strength:'+ Strong funding & lobbying access',
+    weakness:'– Public trust is harder to build'
+  },
+  {
+    id:'local', icon:'🏘️', name:'Local Representative', tag:'City / county government',
+    desc:'An elected official on a city council or county board, close to constituents.',
+    stats:{opinion:12, local:20, state:0, federal:0}, ip:30, passiveIp:3,
+    costMult:{opinion:1, local:0.75, state:1, federal:1.2, coalition:1},
+    oppBase:1.4,
+    strength:'+ Cheap local ordinance-building',
+    weakness:'– Federal access is expensive early on'
+  },
+  {
+    id:'state', icon:'🏛️', name:'State Representative', tag:'State legislature',
+    desc:'A member of a state legislature who can introduce and sponsor state bills.',
+    stats:{opinion:6, local:15, state:30, federal:0}, ip:35, passiveIp:4,
+    costMult:{opinion:1.15, local:1, state:0.8, federal:0.8, coalition:1},
+    oppBase:1.4,
+    strength:'+ Cheap state & federal strategy',
+    weakness:'– Slower public-opinion growth'
+  },
+  {
+    id:'federal', icon:'🏢', name:'Federal Representative', tag:'U.S. Congress',
+    desc:'A member of Congress with national reach but distance from local grassroots energy.',
+    stats:{opinion:5, local:10, state:15, federal:25}, ip:40, passiveIp:4,
+    costMult:{opinion:1.3, local:1.3, state:1, federal:0.7, coalition:1},
+    oppBase:1.8,
+    strength:'+ Cheap federal legislative moves',
+    weakness:'– Disconnected from grassroots opinion; draws early opposition'
+  },
+];
+
+/* =========================================================================
+   POLICY TYPES — what kind of legislation the campaign is pushing. This
+   changes starting stats, starting Influence Points, weekly IP income, and
+   how strong (and fast-growing) the opposition is.
+   ========================================================================= */
+const POLICY_TYPES = [
+  {
+    id:'healthcare', icon:'🩺', name:'Healthcare Reform', accent:'#6FA8DC',
+    blurb:'Expanding or changing how people access and pay for healthcare.',
+    statMod:{opinion:8, local:0, state:0, federal:0},
+    ipMod:0, ipRateMod:0, oppStartMod:12, oppGrowthMod:0.4,
+    tags:[{t:'High public interest', up:true},{t:'Well-funded opposition', up:false}]
+  },
+  {
+    id:'wage', icon:'💵', name:'Minimum Wage Increase', accent:'#7CC576',
+    blurb:'Raising the legal minimum hourly wage for workers.',
+    statMod:{opinion:10, local:5, state:0, federal:0},
+    ipMod:0, ipRateMod:0, oppStartMod:8, oppGrowthMod:0.2,
+    tags:[{t:'Strong grassroots support', up:true},{t:'Business lobby pushback', up:false}]
+  },
+  {
+    id:'tax', icon:'🧾', name:'Tax Legislation', accent:'#D9B44A',
+    blurb:'Changing how individuals or businesses are taxed.',
+    statMod:{opinion:-6, local:0, state:0, federal:0},
+    ipMod:12, ipRateMod:1, oppStartMod:10, oppGrowthMod:0.3,
+    tags:[{t:'Extra starting funding', up:true},{t:'Hard to explain to voters', up:false},{t:'Organized opposition', up:false}]
+  },
+  {
+    id:'housing', icon:'🏗️', name:'Housing & Infrastructure', accent:'#E08A52',
+    blurb:'Funding roads, transit, and affordable housing.',
+    statMod:{opinion:6, local:8, state:0, federal:0},
+    ipMod:0, ipRateMod:1, oppStartMod:2, oppGrowthMod:-0.2,
+    tags:[{t:'Broad, bipartisan appeal', up:true},{t:'Lower opposition', up:true}]
+  },
+  {
+    id:'education', icon:'🎒', name:'Education Funding', accent:'#A594E8',
+    blurb:'Increasing funding and resources for public schools.',
+    statMod:{opinion:14, local:0, state:5, federal:0},
+    ipMod:0, ipRateMod:0, oppStartMod:5, oppGrowthMod:-0.1,
+    tags:[{t:'Very popular with the public', up:true},{t:'Budget concerns from critics', up:false}]
+  },
+  {
+    id:'environment', icon:'🌱', name:'Environmental Protection', accent:'#5FC17C',
+    blurb:'Regulating pollution or promoting clean energy.',
+    statMod:{opinion:9, local:0, state:0, federal:0},
+    ipMod:0, ipRateMod:0, oppStartMod:14, oppGrowthMod:0.4,
+    tags:[{t:'Passionate youth support', up:true},{t:'Well-funded industry opposition', up:false}]
+  },
+];
+
+/* =========================================================================
+   NAME OPTIONS — pre-written, school-appropriate campaign names students
+   choose from per legislation type (no free-text naming).
+   ========================================================================= */
+const NAME_OPTIONS = {
+  healthcare:   ['The Healthy Horizons Act', 'The Care For All Initiative', 'The Wellness For Everyone Bill', 'Project Healthy Tomorrow', 'The CareFirst Act'],
+  wage:         ['The Fair Wage Act', 'The Raise the Bar Initiative', 'The Livable Wage Bill', 'Project Paycheck Boost', 'The Working Families Act'],
+  tax:          ['The Fair Share Act', 'The Tax Overhaul Initiative', 'Project Balanced Books', 'The Simplify & Save Act', "Tomorrow's Budget Bill"],
+  housing:      ['The Roads & Roofs Act', 'Project Build Forward', 'The Home & Highway Initiative', 'The Foundations Act', 'The Better Blocks Bill'],
+  education:    ['The Bright Futures Act', 'Project Classroom Boost', 'The Schools First Initiative', 'The Learn & Lead Act', 'The Chalkboard to Chromebook Bill'],
+  environment:  ['The Clean Horizons Act', 'Project Green Tomorrow', 'The Fresh Air Initiative', 'The Earth First Bill', 'The Sustainable Future Act'],
+};
+
+/* =========================================================================
+   TRACKS
+   ========================================================================= */
+const TRACKS = [
+  {key:'opinion', label:'Public Opinion', color:'var(--opinion)', statKey:'opinion'},
+  {key:'local', label:'Local Government', color:'var(--local)', statKey:'local'},
+  {key:'state', label:'State Government', color:'var(--state)', statKey:'state'},
+  {key:'federal', label:'Federal Government', color:'var(--federal)', statKey:'federal'},
+  {key:'coalition', label:'Coalition & Media', color:'var(--brass)', statKey:null},
+  {key:'quick', label:'Quick Actions', color:'#7FA0C4', statKey:null},
+];
+
+function isTrackUnlocked(s, key){
+  if(key==='opinion' || key==='coalition' || key==='quick') return true;
+  if(key==='local') return s.stats.local>0 || s.stats.opinion>=10;
+  if(key==='state') return s.stats.state>0 || s.stats.local>=25;
+  if(key==='federal') return s.stats.federal>0 || s.stats.state>=25;
+  return true;
+}
+const UNLOCK_HINT = {
+  local:'Unlocks once Public Opinion reaches 10.',
+  state:'Unlocks once Local Government support reaches 25.',
+  federal:'Unlocks once State Government support reaches 25.',
+};
+
+/* =========================================================================
+   UPGRADES
+   ========================================================================= */
+const UPGRADES = [
+  // --- Public Opinion ---
+  {id:'op1', track:'opinion', name:'Door-to-Door Canvassing', cost:12, type:'growth', amount:1,
+    desc:'Volunteers knock on doors to talk with neighbors, one conversation at a time.',
+    note:'Grassroots organizing builds public awareness through direct, personal contact.'},
+  {id:'op2', track:'opinion', requires:'op1', name:'Social Media Campaign', cost:25, type:'growth', amount:2, ipBonus:1,
+    desc:'A coordinated digital push spreads the message quickly and cheaply.',
+    note:'Digital advocacy lets small groups reach large audiences fast.'},
+  {id:'op3', track:'opinion', requires:'op2', name:'Town Hall Meetings', cost:40, type:'growth', amount:3, oppReduction:1,
+    desc:'Open community meetings let people ask questions directly.',
+    note:'Town halls are a traditional forum where officials hear from constituents.'},
+  {id:'op4', track:'opinion', requires:'op3', name:'Viral Petition Drive', cost:55, type:'once', amount:15,
+    desc:'A petition collects thousands of signatures in a single push.',
+    note:'Petitions are a formal way citizens demonstrate the scale of public demand.'},
+  {id:'op5', track:'opinion', requires:'op4', name:'Grassroots Network Established', cost:80, type:'growth', amount:4,
+    desc:'A lasting volunteer network can sustain pressure for years.',
+    note:'Durable organizing infrastructure is what turns a moment into a movement.'},
+
+  // --- Local Government ---
+  {id:'lo1', track:'local', name:'Meet with City Council Members', cost:16, type:'growth', amount:1,
+    desc:'One-on-one meetings introduce the policy to local officials.',
+    note:'Constituent meetings are one of the most common ways citizens influence local policy.'},
+  {id:'lo2', track:'local', requires:'lo1', name:'Draft a Local Ordinance Proposal', cost:35, type:'growth', amount:2,
+    desc:'A formal written proposal gives the council something concrete to consider.',
+    note:'Ordinances are laws passed by a city or county government.'},
+  {id:'lo3', track:'local', requires:'lo2', name:'Public Comment Campaign', cost:50, type:'once', amount:10,
+    desc:'Supporters show up and speak during the public comment period.',
+    note:'Public comment periods are legally protected opportunities for citizen input.'},
+  {id:'lo4', track:'local', requires:'lo3', name:'Earn a City Council Endorsement', cost:70, type:'growth', amount:3,
+    desc:'An official endorsement adds credibility and local legitimacy.',
+    note:'Endorsements from elected officials signal legitimacy to higher levels of government.'},
+  {id:'lo5', track:'local', requires:'lo4', name:'Local Ordinance Passed', cost:100, type:'once', amount:15, bonus:{state:8},
+    desc:'The policy becomes local law — and the win builds momentum statewide.',
+    note:'Success at the local level often creates pressure and precedent for state action.'},
+
+  // --- State Government ---
+  {id:'st1', track:'state', name:'State Legislator Office Visits', cost:24, type:'growth', amount:1,
+    desc:'Meetings with state lawmakers and their staff build early relationships.',
+    note:'Legislative staff manage research and scheduling and are key access points.'},
+  {id:'st2', track:'state', requires:'st1', name:'Testify at a Committee Hearing', cost:50, type:'growth', amount:2,
+    desc:'Formal testimony puts your case into the official legislative record.',
+    note:'Committees review bills in detail before they reach a full chamber vote.'},
+  {id:'st3', track:'state', requires:'st2', name:'Build a Statewide Coalition', cost:70, type:'once', amount:12,
+    desc:'Partner organizations across the state combine resources and reach.',
+    note:'Coalitions multiply influence by pooling funding, staff, and expertise.'},
+  {id:'st4', track:'state', requires:'st3', name:'Recruit Bipartisan Co-Sponsors', cost:95, type:'growth', amount:3, oppReduction:1,
+    desc:'Lawmakers from both parties agree to formally back the bill.',
+    note:'Bipartisan co-sponsorship makes a bill far more likely to survive votes and vetoes.'},
+  {id:'st5', track:'state', requires:'st4', name:'State Bill Signed Into Law', cost:135, type:'once', amount:15, bonus:{federal:8},
+    desc:'The governor signs the bill — and other states, and Congress, take notice.',
+    note:'State-level wins create real precedent that federal lawmakers often point to.'},
+
+  // --- Federal Government ---
+  {id:'fe1', track:'federal', name:'Congressional Staff Briefing', cost:32, type:'growth', amount:1,
+    desc:'Staffers get briefed on the policy and its supporting evidence.',
+    note:'Congressional staff manage most of the day-to-day policy research in DC.'},
+  {id:'fe2', track:'federal', requires:'fe1', name:'National Media Coverage', cost:65, type:'growth', amount:2,
+    desc:'National outlets pick up the story, raising visibility in Washington.',
+    note:'National coverage raises a policy\u2019s profile with federal lawmakers.'},
+  {id:'fe3', track:'federal', requires:'fe2', name:'Deliver Committee Testimony', cost:90, type:'once', amount:10,
+    desc:'Expert and citizen witnesses testify before a congressional committee.',
+    note:'Formal testimony enters expert and public voices into the official record.'},
+  {id:'fe4', track:'federal', requires:'fe3', name:'Whip the Floor Vote', cost:125, type:'growth', amount:3,
+    desc:'Leadership counts and persuades votes ahead of the floor vote.',
+    note:'"Whipping" votes means counting and persuading members before a bill reaches the floor.'},
+  {id:'fe5', track:'federal', requires:'fe4', name:'Bring Bill to a Final Vote', cost:170, type:'once', amount:10,
+    requiresStats:{opinion:35, local:55, state:55},
+    desc:'With support built at every level, the bill finally reaches a floor vote.',
+    note:'Bills must pass both chambers of Congress before reaching the President\u2019s desk.'},
+
+  // --- Coalition & Media ---
+  {id:'co1', track:'coalition', name:'Partner Organizations', cost:20, type:'ip', ipBonus:2,
+    desc:'Aligned organizations agree to share resources and staff time.',
+    note:'Coalitions pool funding, staff, and expertise across organizations.'},
+  {id:'co2', track:'coalition', requires:'co1', name:'Press & Public Relations Team', cost:40, type:'opp', oppReduction:1,
+    desc:'A dedicated PR team helps manage the narrative around the debate.',
+    note:'Skilled communications can shape how a policy debate is publicly framed.'},
+  {id:'co3', track:'coalition', requires:'co2', name:'Fundraising Drive', cost:55, type:'ip', ipBonus:3,
+    desc:'A sustained fundraising push pays for staff, travel, and outreach.',
+    note:'Steady funding is what allows advocacy efforts to operate for the long haul.'},
+  {id:'co4', track:'coalition', requires:'co3', name:'Strategic Communications Plan', cost:75, type:'mixed', oppReduction:2, opinionGrowth:1,
+    desc:'Coordinated messaging keeps supporters, media, and lawmakers aligned.',
+    note:'Coordinated messaging keeps a coalition\u2019s allies speaking with one voice.'},
+  {id:'co5', track:'coalition', requires:'co4', name:'National Coalition Alliance', cost:100, type:'ip', ipBonus:5,
+    desc:'A nationwide alliance of partners becomes a major resource engine.',
+    note:'Large national coalitions can mobilize significant resources very quickly.'},
+];
+
+/* =========================================================================
+   QUICK ACTIONS — small, repeatable purchases (unlike the track upgrades
+   above, these can be bought over and over, cost a little more each time,
+   and cap out after a few uses).
+   ========================================================================= */
+const QUICK_ACTIONS = [
+  { id:'qa_press', name:'Local Press Interview', tag:'boost', track:'opinion', baseCost:10, costGrowth:1.15, cap:6,
+    desc:'Sit down for a quick interview with a local reporter.',
+    note:'Building relationships with local press is a low-cost way to keep public attention on an issue.',
+    run:s=>{ const amt=randInt(2,5); s.stats.opinion=clamp(s.stats.opinion+amt); return `+${amt} Public Opinion`; } },
+  { id:'qa_endorse', name:'Seek a Key Endorsement', tag:'boost', track:'coalition', baseCost:15, costGrowth:1.2, cap:5,
+    desc:'Ask a respected local figure or organization to publicly back the policy.',
+    note:'Endorsements signal to officials and voters that a policy has credible backing.',
+    run:s=>{
+      const keys=['local','state','federal'].filter(k=>isTrackUnlocked(s,k));
+      let key='local', low=999;
+      keys.forEach(k=>{ if(s.stats[k]<low){low=s.stats[k]; key=k;} });
+      const amt=randInt(3,7); s.stats[key]=clamp(s.stats[key]+amt);
+      return `+${amt} ${key.charAt(0).toUpperCase()+key.slice(1)} Support`;
+    } },
+  { id:'qa_ads', name:'Targeted Digital Ad Buy', tag:'boost', track:'opinion', baseCost:18, costGrowth:1.2, cap:5,
+    desc:'Purchase targeted online ads aimed at undecided community members.',
+    note:'Targeted advertising is a common (and expensive) tool in modern political campaigns.',
+    run:s=>{ const amt=randInt(4,8); s.stats.opinion=clamp(s.stats.opinion+amt); return `+${amt} Public Opinion`; } },
+  { id:'qa_oppresearch', name:'Opposition Research Report', tag:'counter', track:'coalition', baseCost:15, costGrowth:1.2, cap:5,
+    desc:'Compile public records on the opposing campaign\u2019s funding and claims.',
+    note:'Opposition research is legal and common — it involves gathering public information, not fabricating claims.',
+    run:s=>{ const amt=randInt(4,8); s.opposition=clamp(s.opposition-amt); return `\u2212${amt} Opposition`; } },
+  { id:'qa_factcheck', name:'Rapid Response Fact-Check', tag:'counter', track:'coalition', baseCost:12, costGrowth:1.15, cap:6,
+    desc:'Quickly publish a correction to a misleading opposition claim.',
+    note:'Rapid response teams try to correct misinformation before it spreads too far.',
+    run:s=>{ const amt=randInt(3,6); s.opposition=clamp(s.opposition-amt); return `\u2212${amt} Opposition`; } },
+  { id:'qa_attackad', name:'Attack Ad Campaign', tag:'counter', track:'coalition', baseCost:22, costGrowth:1.25, cap:4, risky:true,
+    desc:'Run ads directly criticizing the opposition\u2019s claims and funders.',
+    note:'Negative campaigning can weaken an opponent fast, but research shows it can also hurt the sponsor\u2019s own public image.',
+    run:s=>{ const dmg=randInt(7,13); const back=randInt(1,4);
+      s.opposition=clamp(s.opposition-dmg); s.stats.opinion=clamp(s.stats.opinion-back);
+      return `\u2212${dmg} Opposition, \u2212${back} Public Opinion (backlash)`; } },
+];
+
+/* =========================================================================
+   EVENTS
+   ========================================================================= */
+const EVENTS = [
+  // ---- Media & public opinion swings ----
+  { note:'Media framing shapes how the public understands an issue.',
+    run:s=>{ const a=randInt(3,8); s.stats.opinion=clamp(s.stats.opinion+a); return `📰 A local newspaper op-ed gushes about your policy. Someone's grandma clips it and mails it to twelve people. (+${a} Public Opinion)`; } },
+  { note:'Coverage can cut both ways — critical stories reach the same audience as favorable ones.',
+    run:s=>{ const a=randInt(3,9); s.stats.opinion=clamp(s.stats.opinion-a); return `🗞️ A columnist rips the policy apart in 800 spicy words. A strongly-worded reply letter is already being drafted. (\u2212${a} Public Opinion)`; } },
+  { note:'Digital reach can spread a message far beyond its original audience.',
+    run:s=>{ const a=randInt(4,10); const ip=randInt(2,6); s.stats.opinion=clamp(s.stats.opinion+a); s.ip+=ip; return `📱 A supporter's meme about the campaign goes viral overnight. You wake up to 400 notifications and zero sleep. (+${a} Public Opinion, +${ip} Influence Points)`; } },
+
+  // ---- Donations & funding (IP swings) ----
+  { note:'Advocacy campaigns often rely on unpredictable individual donations.',
+    run:s=>{ const a=randInt(10,25); s.ip+=a; return `💰 A mystery donor drops off a large contribution — no note, just cash and good vibes. (+${a} Influence Points)`; } },
+  { note:'Matching challenges are a common fundraising tactic to multiply small donations.',
+    run:s=>{ const a=randInt(12,22); s.ip+=a; return `🤝 A matching-donation challenge doubles a wave of small contributions. Nice. (+${a} Influence Points)`; } },
+  { note:'Grant funding is competitive, and rejections are a normal part of advocacy work.',
+    run:s=>{ const a=randInt(5,15); s.ip=Math.max(0,s.ip-a); return `📄 A grant application gets denied in a two-sentence email that somehow still manages to sting. (\u2212${a} Influence Points)`; } },
+  { note:'Advocacy organizations run on volunteer labor, and burnout is a real operational risk.',
+    run:s=>{ const a=randInt(3,10); s.ip=Math.max(0,s.ip-a); return `😴 Volunteer burnout hits hard this week. Everyone needs a nap and a snack break, stat. (\u2212${a} Influence Points)`; } },
+  { note:'Even well-run campaigns lose time and money to logistics problems.',
+    run:s=>{ const a=randInt(4,12); s.ip=Math.max(0,s.ip-a); return `🔌 The projector dies mid-presentation and takes your momentum down with it. (\u2212${a} Influence Points)`; } },
+  { note:'Online fundraising can outperform expectations when a message resonates.',
+    run:s=>{ const a=randInt(8,20); s.ip+=a; return `🚀 An online fundraiser blows past its goal. Turns out people really do love a countdown timer. (+${a} Influence Points)`; } },
+
+  // ---- Endorsements (can help you or the opposition) ----
+  { note:'Endorsements signal to officials and voters that a policy has credible backing.',
+    run:s=>{ const a=randInt(4,10); s.stats.opinion=clamp(s.stats.opinion+a); return `🎤 A well-known community leader endorses the policy at a press conference — mostly because the coffee there was excellent. (+${a} Public Opinion)`; } },
+  { note:'Endorsements are contested — supporters and opponents both compete for high-profile backers.',
+    run:s=>{ const a=randInt(5,12); s.opposition=clamp(s.opposition+a); return `🙃 A prominent local figure endorses the opposition instead. Betrayal. Absolute betrayal. (+${a} Opposition)`; } },
+  { note:'Interest group and industry endorsements can matter more to legislators than public opinion alone.',
+    requires:s=>isTrackUnlocked(s,'local') || isTrackUnlocked(s,'state'),
+    run:s=>{
+      const keys=['local','state'].filter(k=>isTrackUnlocked(s,k));
+      const key=keys[Math.floor(Math.random()*keys.length)];
+      const a=randInt(4,9); s.stats[key]=clamp(s.stats[key]+a);
+      return `🏢 A trade association throws its support behind the policy, probably after a very long lunch meeting. (+${a} ${key.charAt(0).toUpperCase()+key.slice(1)} Support)`;
+    } },
+
+  // ---- Demonstrations (can help or backfire) ----
+  { note:'Visible public demonstrations of support can shift how officials read the political landscape.',
+    run:s=>{ const a=randInt(5,12); const ip=randInt(2,6); s.stats.opinion=clamp(s.stats.opinion+a); s.ip+=ip; return `📣 A peaceful demonstration draws a huge crowd and even bigger press coverage. Somebody made a genuinely excellent sign. (+${a} Public Opinion, +${ip} Influence Points)`; } },
+  { note:'Protests are a protected form of civic engagement, but disorganized ones can undercut a campaign\u2019s message.',
+    run:s=>{ const a=randInt(4,10); const b=randInt(3,8); s.stats.opinion=clamp(s.stats.opinion-a); s.opposition=clamp(s.opposition+b); return `🎪 A demonstration spirals into chaos when someone shows up with a bullhorn and zero chill. (\u2212${a} Public Opinion, +${b} Opposition)`; } },
+
+  // ---- Government-track relationship building ----
+  { note:'Informal buy-in from officials often precedes formal support.',
+    requires:s=>isTrackUnlocked(s,'local'),
+    run:s=>{ const a=randInt(4,9); s.stats.local=clamp(s.stats.local+a); return `🏛️ A city council member quietly agrees to back the effort, mostly to stop getting emails about it. (+${a} Local Support)`; } },
+  { note:'Early legislative allies can be crucial to a bill\u2019s survival.',
+    requires:s=>isTrackUnlocked(s,'state'),
+    run:s=>{ const a=randInt(4,9); s.stats.state=clamp(s.stats.state+a); return `🏛️ A state senator agrees to informally back the bill, right between votes on far less interesting things. (+${a} State Support)`; } },
+  { note:'National attention can accelerate a policy\u2019s path through Congress.',
+    requires:s=>isTrackUnlocked(s,'federal'),
+    run:s=>{ const a=randInt(5,11); s.stats.federal=clamp(s.stats.federal+a); return `📺 A national news segment features the campaign for a solid ninety seconds. Fame, briefly. (+${a} Federal Support)`; } },
+  { note:'Lobbying happens on every side of a policy debate, not just yours.',
+    run:s=>{ const a=randInt(6,13); s.opposition=clamp(s.opposition+a); return `🥂 Opposition lobbyists take a committee chair out to a very, very nice lunch. (+${a} Opposition)`; } },
+  { note:'Political attention is limited, and events elsewhere can shift the spotlight.',
+    run:s=>{ const a=randInt(4,9); s.opposition=clamp(s.opposition-a); return `🍿 A minor scandal distracts a rival organization for an entire news cycle. Not your problem! (\u2212${a} Opposition)`; } },
+  { note:'Elections can change the composition and priorities of government almost overnight.',
+    run:s=>{
+      const keys=['local','state','federal'].filter(k=>s.stats[k]>0);
+      if(!keys.length) return `🗳️ An election happens. Somehow it barely touches the campaign. Wild.`;
+      const k=keys[Math.floor(Math.random()*keys.length)]; const a=randInt(3,8);
+      s.stats[k]=clamp(s.stats[k]-a);
+      return `🗳️ An election shuffles the legislative deck. Nobody quite remembers why last month's priorities mattered so much. (\u2212${a} ${k.charAt(0).toUpperCase()+k.slice(1)} Support)`;
+    } },
+  { note:'Independent research can lend credibility that pure advocacy cannot.',
+    run:s=>{
+      const keys=['local','state','federal'].filter(k=>isTrackUnlocked(s,k));
+      let lowestKey='local', lowestVal=999;
+      keys.forEach(k=>{ if(s.stats[k]<lowestVal){lowestVal=s.stats[k]; lowestKey=k;} });
+      const a=randInt(4,9); s.stats[lowestKey]=clamp(s.stats[lowestKey]+a);
+      return `🧠 A nonpartisan think tank publishes a 40-page report nobody will fully read but everyone will cite. (+${a} ${lowestKey.charAt(0).toUpperCase()+lowestKey.slice(1)} Support)`;
+    } },
+  { note:'High turnout at public hearings signals real constituent demand.',
+    run:s=>{ const a=randInt(5,10); s.stats.opinion=clamp(s.stats.opinion+a);
+      if(isTrackUnlocked(s,'local')){ const b=randInt(2,6); s.stats.local=clamp(s.stats.local+b); return `🎟️ A public hearing draws record attendance — mostly because free pizza was advertised. (+${a} Public Opinion, +${b} Local Support)`; }
+      return `🎟️ A public hearing draws record attendance — mostly because free pizza was advertised. (+${a} Public Opinion)`; } },
+  { note:'Policy ideas often spread between states before reaching Congress.',
+    requires:s=>isTrackUnlocked(s,'state') && isTrackUnlocked(s,'federal'),
+    run:s=>{ const a=randInt(3,8); const b=randInt(2,6); s.stats.state=clamp(s.stats.state+a); s.stats.federal=clamp(s.stats.federal+b); return `🌎 Momentum builds as other states quietly copy your homework. (+${a} State Support, +${b} Federal Support)`; } },
+
+  // ---- More Influence Point swings (funding, favors, and dumb bad luck) ----
+  { note:'Small in-kind donations add up and free cash up for other priorities.',
+    run:s=>{ const a=randInt(5,12); s.ip+=a; return `🥐 A local bakery donates snacks for volunteers all week. Morale — and blood sugar — soar. (+${a} Influence Points)`; } },
+  { note:'Parking tickets are a classic, unglamorous campaign expense.',
+    run:s=>{ const a=randInt(3,8); s.ip=Math.max(0,s.ip-a); return `🚗 The campaign van gets a parking ticket outside a rally. In its defense, the spot was extremely convenient. (\u2212${a} Influence Points)`; } },
+  { note:'A single viral moment can outperform months of planned fundraising.',
+    run:s=>{ const a=randInt(15,30); s.ip+=a; return `🔥 A fundraising challenge takes off online and goes viral. Somebody's cousin has 40k followers, apparently. (+${a} Influence Points)`; } },
+  { note:'Even small logistics failures cost real time and money.',
+    run:s=>{ const a=randInt(4,10); s.ip=Math.max(0,s.ip-a); return `🖨️ The office printer runs out of ink five minutes before a big mailer deadline. Screaming ensues. (\u2212${a} Influence Points)`; } },
+  { note:'In-kind support like free space is a common form of campaign donation.',
+    run:s=>{ const a=randInt(8,18); s.ip+=a; return `🏢 A local business offers free office space for a month, no strings attached (probably). (+${a} Influence Points)`; } },
+  { note:'Recurring costs like rent and subscriptions quietly eat into any budget.',
+    run:s=>{ const a=randInt(4,9); s.ip=Math.max(0,s.ip-a); return `📦 The campaign\u2019s storage unit rent goes up without warning. Rude. (\u2212${a} Influence Points)`; } },
+  { note:'Alumni networks and past supporters are a reliable source of surprise donations.',
+    run:s=>{ const a=randInt(10,20); s.ip+=a; return `🎓 A former volunteer makes a surprise reunion donation, apparently feeling nostalgic. (+${a} Influence Points)`; } },
+  { note:'Software and tool costs are an unglamorous but real part of running any campaign.',
+    run:s=>{ const a=randInt(3,7); s.ip=Math.max(0,s.ip-a); return `💻 A software subscription quietly renews at double the price. Somebody forgot to read the fine print. (\u2212${a} Influence Points)`; } },
+  { note:'Local civic groups often pool small amounts of funding for causes they believe in.',
+    run:s=>{ const a=randInt(6,14); s.ip+=a; return `🏘️ A neighborhood association chips in funds after an unexpectedly great potluck meeting. (+${a} Influence Points)`; } },
+  { note:'A lost or stolen laptop is a common (and costly) real-world campaign mishap.',
+    run:s=>{ const a=randInt(6,15); s.ip=Math.max(0,s.ip-a); return `💻 A staffer\u2019s laptop gets stolen out of a car. Rookie mistake, expensive lesson. (\u2212${a} Influence Points)`; } },
+
+  // ---- Wacky-but-realistic events that weaken the opposition ----
+  { note:'Public missteps by a movement\u2019s leaders can quickly become an embarrassment for the whole group.',
+    run:s=>{ const a=randInt(6,12); s.opposition=clamp(s.opposition-a); return `🚨 An opposition leader gets a speeding ticket in a school zone and has to apologize on camera. Painful to watch. (\u2212${a} Opposition)`; } },
+  { note:'Permits and paperwork are a real, mundane obstacle for any organized group.',
+    run:s=>{ const a=randInt(4,9); s.opposition=clamp(s.opposition-a); return `📋 The opposition\u2019s rally permit gets stuck in city paperwork for weeks. Bureaucracy: undefeated. (\u2212${a} Opposition)`; } },
+  { note:'Internal disagreements are common in any coalition and can slow it down.',
+    run:s=>{ const a=randInt(6,14); s.opposition=clamp(s.opposition-a); return `🍽️ Internal disagreements split the opposition\u2019s coalition right down the middle at a planning dinner. (\u2212${a} Opposition)`; } },
+  { note:'Fact-checking happens to every side of a debate, not just yours.',
+    run:s=>{ const a=randInt(4,10); s.opposition=clamp(s.opposition-a); return `🎯 A key opposition talking point gets fact-checked live on the news. Awkward silence follows. (\u2212${a} Opposition)`; } },
+  { note:'Even well-funded campaigns can be undone by ordinary bad luck.',
+    run:s=>{ const a=randInt(3,7); s.opposition=clamp(s.opposition-a); return `🌧️ The opposition\u2019s big outdoor press conference gets completely rained out. Nature has opinions too. (\u2212${a} Opposition)`; } },
+  { note:'Funders can change their priorities at any time, for any cause.',
+    run:s=>{ const a=randInt(5,11); s.opposition=clamp(s.opposition-a); return `💸 A major opposition donor decides to fund a community pickleball league instead. Priorities. (\u2212${a} Opposition)`; } },
+  { note:'Small clerical errors happen to every campaign, including the opposition\u2019s.',
+    run:s=>{ const a=randInt(3,8); s.opposition=clamp(s.opposition-a); return `🖨️ A printing error lists the wrong date on the opposition\u2019s flyers. Nobody shows up. (\u2212${a} Opposition)`; } },
+  { note:'Awkward public moments can become a distraction that undercuts a group\u2019s message.',
+    run:s=>{ const a=randInt(3,7); s.opposition=clamp(s.opposition-a); return `🐻 The opposition\u2019s rally mascot costume malfunctions live on TV and instantly becomes a local meme. (\u2212${a} Opposition)`; } },
+  { note:'Any organization can be embarrassed by an unprepared spokesperson.',
+    run:s=>{ const a=randInt(5,10); s.opposition=clamp(s.opposition-a); return `🎙️ An opposition spokesperson gives a rambling, deeply confusing interview. Clips circulate for days. (\u2212${a} Opposition)`; } },
+  { note:'Scheduling conflicts are a routine hazard for any organized political effort.',
+    run:s=>{ const a=randInt(4,8); s.opposition=clamp(s.opposition-a); return `📅 A scheduling mix-up causes the opposition to completely miss a key hearing. Oops. (\u2212${a} Opposition)`; } },
+];
+
+/* =========================================================================
+   STATE / UTIL
+   ========================================================================= */
+function clamp(v,min=0,max=100){ return Math.max(min, Math.min(max, v)); }
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+let game = null;          // active game state
+let selectedRoleId = null;
+let selectedPolicyId = null;
+let selectedCampaignName = null;
+let activeTab = 'opinion';
+
+function getRole(id){ return ROLES.find(r=>r.id===id); }
+function getPolicy(id){ return POLICY_TYPES.find(p=>p.id===id); }
+function getUpgrade(id){ return UPGRADES.find(u=>u.id===id); }
+
+function upgradeCost(u){
+  const role = getRole(game.roleId);
+  const mult = role.costMult[u.track] ?? 1;
+  return Math.round(u.cost * mult);
+}
+
+function growthRate(statKey){
+  let total = 0;
+  UPGRADES.forEach(u=>{
+    if(!game.purchased.has(u.id)) return;
+    if(u.type==='growth' && u.track===statKey) total += u.amount;
+    if(u.id==='co4' && statKey==='opinion') total += u.opinionGrowth;
+  });
+  return total;
+}
+
+function ipRate(){
+  const role = getRole(game.roleId);
+  let total = BASE_IP_PER_WEEK + role.passiveIp + (game.ipRateBonus||0);
+  UPGRADES.forEach(u=>{
+    if(!game.purchased.has(u.id)) return;
+    if(u.ipBonus) total += u.ipBonus;
+  });
+  return total;
+}
+
+function oppositionGrowth(){
+  const role = getRole(game.roleId);
+  let total = role.oppBase + (game.oppGrowthBonus||0);
+  UPGRADES.forEach(u=>{
+    if(!game.purchased.has(u.id)) return;
+    if(u.oppReduction) total -= u.oppReduction;
+  });
+  return Math.max(0.3, total);
+}
+
+/* =========================================================================
+   GAME FLOW
+   ========================================================================= */
+function startGame(){
+  const role = getRole(selectedRoleId);
+  const policy = POLICY_TYPES.find(p=>p.id===selectedPolicyId);
+  document.body.className = 'theme-' + policy.id;
+  const stats = {
+    opinion: clamp(role.stats.opinion + policy.statMod.opinion),
+    local: clamp(role.stats.local + policy.statMod.local),
+    state: clamp(role.stats.state + policy.statMod.state),
+    federal: clamp(role.stats.federal + policy.statMod.federal),
+  };
+  game = {
+    policyName: selectedCampaignName || policy.name,
+    policyId: policy.id,
+    roleId: selectedRoleId,
+    week: 1,
+    ip: Math.max(5, role.ip + policy.ipMod),
+    ipRateBonus: policy.ipRateMod,
+    oppGrowthBonus: policy.oppGrowthMod,
+    stats,
+    opposition: clamp(10 + policy.oppStartMod),
+    purchased: new Set(),
+    quickCounts: {},
+    log: [],
+    over: false,
+    finalVoteAttempts: 0,
+  };
+  pushLog('event', `Campaign for "${game.policyName}" (${policy.name}) begins as a ${role.name}.`, null);
+  activeTab = 'opinion';
+  showScreen('game');
+  renderGame();
+}
+
+function pushLog(kind, text, note){
+  game.log.push({week:game.week, kind, text, note});
+}
+
+function runWeeklyTick(){
+  ['opinion','local','state','federal'].forEach(k=>{
+    game.stats[k] = clamp(game.stats[k] + growthRate(k));
+  });
+  game.opposition = clamp(game.opposition + oppositionGrowth());
+  game.ip += ipRate();
+
+  const rollEvent = ()=>{
+    const pool = EVENTS.filter(e => !e.requires || e.requires(game));
+    const ev = pool[Math.floor(Math.random()*pool.length)];
+    if(ev){
+      const text = ev.run(game);
+      game.stats.opinion=clamp(game.stats.opinion); game.stats.local=clamp(game.stats.local);
+      game.stats.state=clamp(game.stats.state); game.stats.federal=clamp(game.stats.federal);
+      game.opposition=clamp(game.opposition);
+      game.ip = Math.max(0, game.ip);
+      pushLog('event', text, ev.note);
+    }
+  };
+
+  if(Math.random() < EVENT_CHANCE) rollEvent();
+  if(Math.random() < SECOND_EVENT_CHANCE) rollEvent();
+
+  game.week++;
+}
+
+function advanceWeek(){
+  if(game.over) return;
+  runWeeklyTick();
+  checkEnd();
+  renderGame();
+}
+
+function checkEnd(){
+  if(game.opposition>=OPPOSITION_LOSE){ endGame('lose','opposition'); return; }
+  if(game.week>WEEK_LIMIT){ endGame('lose','time'); return; }
+}
+
+/* ---- Final Vote: passing isn't automatic once thresholds are hit — real
+   floor votes are unpredictable, so success is a weighted random roll the
+   player can retry, at the cost of a week and a boost to opposition on
+   a failed attempt. This keeps a single strong playthrough from being a
+   guaranteed, repeatable win. ---- */
+function finalVoteEligible(){
+  const s = game.stats;
+  return s.opinion>=WIN_THRESHOLDS.opinion && s.local>=WIN_THRESHOLDS.local && s.state>=WIN_THRESHOLDS.state;
+}
+
+function computePassChance(){
+  const s = game.stats;
+  const chance = 50
+    + (s.federal - WIN_THRESHOLDS.federal) * 1.1
+    + (s.opinion - WIN_THRESHOLDS.opinion) * 0.35
+    - game.opposition * 0.5;
+  return Math.round(clamp(chance, 8, 92));
+}
+
+function attemptFinalVote(){
+  if(game.over || !finalVoteEligible()) return;
+  const chance = computePassChance();
+  runWeeklyTick();
+
+  const roll = Math.random()*100;
+  game.finalVoteAttempts = (game.finalVoteAttempts||0) + 1;
+  if(roll < chance){
+    pushLog('event', `🎉 The floor vote passes! After ${game.finalVoteAttempts} attempt${game.finalVoteAttempts>1?'s':''}, "${game.policyName}" clears Congress. (${chance}% odds)`, 'A floor vote is the final, often nail-biting step before a bill can become law.');
+    endGame('win','passed');
+    return;
+  } else {
+    const bump = randInt(10,20);
+    game.opposition = clamp(game.opposition + bump);
+    pushLog('event', `😬 The floor vote fails by a narrow margin. Opponents celebrate — for now. (${chance}% odds, +${bump} Opposition)`, 'Close votes fail in real legislatures all the time; sponsors often regroup and try again.');
+  }
+  checkEnd();
+  renderGame();
+}
+
+function purchaseDetailText(u){
+  const track = TRACKS.find(t=>t.key===u.track);
+  if(u.type==='once'){
+    let msg = `+${u.amount} ${track.label}`;
+    if(u.bonus){ for(const k in u.bonus){ msg += `, +${u.bonus[k]} ${k.charAt(0).toUpperCase()+k.slice(1)} Support`; } }
+    return msg;
+  }
+  if(u.type==='growth'){
+    let msg = `+${u.amount} ${track.label} growth/week`;
+    if(u.ipBonus) msg += `, +${u.ipBonus} IP/week`;
+    if(u.oppReduction) msg += `, \u2212${u.oppReduction} Opposition growth/week`;
+    return msg;
+  }
+  if(u.type==='ip') return `+${u.ipBonus} IP/week`;
+  if(u.type==='opp') return `\u2212${u.oppReduction} Opposition growth/week`;
+  if(u.type==='mixed') return `\u2212${u.oppReduction} Opposition growth/week, +${u.opinionGrowth} Public Opinion growth/week`;
+  return '';
+}
+
+function buyUpgrade(id){
+  const u = getUpgrade(id);
+  if(!u || game.purchased.has(id)) return;
+  if(!isTrackUnlocked(game, u.track)) return;
+  if(u.requires && !game.purchased.has(u.requires)) return;
+  if(u.requiresStats){
+    for(const k in u.requiresStats){ if(game.stats[k] < u.requiresStats[k]) return; }
+  }
+  const cost = upgradeCost(u);
+  if(game.ip < cost) return;
+
+  game.ip -= cost;
+  game.purchased.add(id);
+
+  if(u.type==='once'){
+    if(TRACKS.find(t=>t.key===u.track).statKey){
+      const sk = TRACKS.find(t=>t.key===u.track).statKey;
+      game.stats[sk] = clamp(game.stats[sk] + u.amount);
+    }
+    if(u.bonus){
+      for(const k in u.bonus){ game.stats[k] = clamp(game.stats[k] + u.bonus[k]); }
+    }
+  }
+  pushLog('purchase', `\u2705 You launch "${u.name}." (${purchaseDetailText(u)})`, u.note);
+  checkEnd();
+  renderGame();
+}
+
+function quickActionCost(qa){
+  const role = getRole(game.roleId);
+  const count = game.quickCounts[qa.id] || 0;
+  const mult = role.costMult[qa.track] ?? 1;
+  return Math.round(qa.baseCost * Math.pow(qa.costGrowth, count) * mult);
+}
+
+function buyQuickAction(id){
+  const qa = QUICK_ACTIONS.find(q=>q.id===id);
+  if(!qa) return;
+  const count = game.quickCounts[id] || 0;
+  if(count >= qa.cap) return;
+  const cost = quickActionCost(qa);
+  if(game.ip < cost) return;
+
+  game.ip -= cost;
+  game.quickCounts[id] = count + 1;
+  const detail = qa.run(game);
+  pushLog('purchase', `\u2705 You launch "${qa.name}." (${detail})`, qa.note);
+  checkEnd();
+  renderGame();
+}
+
+function endGame(result, reason){
+  game.over = true;
+  game.result = result;
+  game.reason = reason;
+  showScreen('end');
+  renderEnd();
+}
+
+function resetToStart(){
+  game = null;
+  selectedRoleId = null;
+  selectedPolicyId = null;
+  selectedCampaignName = null;
+  activeTab = 'opinion';
+  document.getElementById('startBtn').disabled = true;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('namePicker').style.display = 'none';
+  document.getElementById('nameGrid').innerHTML = '';
+  document.body.className = '';
+  showScreen('start');
+}
+
+/* =========================================================================
+   RENDERING
+   ========================================================================= */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+function checkStartReady(){
+  document.getElementById('startBtn').disabled = !(selectedRoleId && selectedPolicyId && selectedCampaignName);
+}
+
+function renderNamePicker(policyId){
+  const names = NAME_OPTIONS[policyId];
+  selectedCampaignName = names[0];
+  const picker = document.getElementById('namePicker');
+  picker.style.display = 'block';
+  const host = document.getElementById('nameGrid');
+  host.innerHTML = names.map(n=>`<button class="name-pill ${n===selectedCampaignName?'selected':''}" data-name="${n}">${n}</button>`).join('');
+  host.querySelectorAll('.name-pill').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      selectedCampaignName = btn.dataset.name;
+      host.querySelectorAll('.name-pill').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      checkStartReady();
+    });
+  });
+}
+
+function renderPolicyGrid(){
+  const host = document.getElementById('policyGrid');
+  host.innerHTML = POLICY_TYPES.map(p=>`
+    <button class="role-card policy-card" data-policy="${p.id}" style="--policy-accent:${p.accent};" tabindex="0">
+      <div class="role-icon">${p.icon}</div>
+      <h3>${p.name}</h3>
+      <div class="role-desc">${p.blurb}</div>
+      <div class="policy-tags">
+        ${p.tags.map(tg=>`<span class="policy-tag ${tg.up?'up':'down'}">${tg.t}</span>`).join('')}
+      </div>
+    </button>
+  `).join('');
+  host.querySelectorAll('.role-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      selectedPolicyId = card.dataset.policy;
+      host.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      renderNamePicker(selectedPolicyId);
+      document.body.className = 'theme-' + selectedPolicyId;
+      checkStartReady();
+    });
+  });
+}
+
+function renderRoleGrid(){
+  const host = document.getElementById('roleGrid');
+  host.innerHTML = ROLES.map(r=>`
+    <button class="role-card" data-role="${r.id}" tabindex="0">
+      <div class="role-icon">${r.icon}</div>
+      <h3>${r.name}</h3>
+      <div class="role-tag">${r.tag}</div>
+      <div class="role-desc">${r.desc}</div>
+      <div class="role-stats">
+        <span class="role-stat-chip">Opinion ${r.stats.opinion}</span>
+        <span class="role-stat-chip">Local ${r.stats.local}</span>
+        <span class="role-stat-chip">State ${r.stats.state}</span>
+        <span class="role-stat-chip">Federal ${r.stats.federal}</span>
+        <span class="role-stat-chip">${r.ip} IP</span>
+      </div>
+      <div class="role-trait strength">${r.strength}</div>
+      <div class="role-trait weakness">${r.weakness}</div>
+    </button>
+  `).join('');
+  host.querySelectorAll('.role-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      selectedRoleId = card.dataset.role;
+      host.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      checkStartReady();
+    });
+  });
+}
+
+function renderTracker(){
+  const s = game.stats;
+  const stages = [
+    {label:'Public Awareness', done: s.opinion>=WIN_THRESHOLDS.opinion},
+    {label:'Local Approval', done: s.local>=WIN_THRESHOLDS.local},
+    {label:'State Approval', done: s.state>=WIN_THRESHOLDS.state},
+    {label:'Federal Approval', done: s.federal>=WIN_THRESHOLDS.federal},
+    {label:'Signed Into Law', done: !!game.over && game.result==='win'},
+  ];
+  const doneCount = stages.filter(x=>x.done).length;
+  const fillPct = (doneCount/(stages.length-1))*100 * (doneCount>0?1:0);
+  const segPct = Math.min(100, (Math.max(0,doneCount-1))/(stages.length-1)*100);
+
+  const host = document.getElementById('trackerRail');
+  host.innerHTML = `
+    <div class="tracker-line"><div class="tracker-line-fill" style="width:${segPct}%"></div></div>
+    ${stages.map(st=>`
+      <div class="tracker-stage ${st.done?'done':''}">
+        <div class="tracker-dot ${st.done?'done':''}"></div>
+        <div class="tracker-stage-label">${st.label}</div>
+      </div>
+    `).join('')}
+  `;
+
+  const banner = document.getElementById('finalVoteBanner');
+  if(!game.over && finalVoteEligible()){
+    const chance = computePassChance();
+    banner.style.display = 'flex';
+    banner.innerHTML = `
+      <div class="final-vote-text">Local, state, and public support have cleared the bar. Congress can now vote — but floor votes are never a sure thing.<br><b>Estimated odds of passing: ${chance}%</b></div>
+      <button class="btn-final-vote" id="finalVoteBtn">📯 Call the Final Vote</button>
+    `;
+    document.getElementById('finalVoteBtn').addEventListener('click', attemptFinalVote);
+  } else {
+    banner.style.display = 'none';
+    banner.innerHTML = '';
+  }
+}
+
+function renderMeters(){
+  const host = document.getElementById('metersHost');
+  host.innerHTML = TRACKS.filter(t=>t.statKey).map(t=>{
+    const val = game.stats[t.statKey];
+    const goal = WIN_THRESHOLDS[t.statKey];
+    const rate = growthRate(t.statKey);
+    return `
+      <div class="meter-row">
+        <div class="meter-head">
+          <span class="name">${t.label}</span>
+          <span class="vals mono">${Math.round(val)} / 100</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill" style="width:${val}%; background:${t.color};"></div>
+          <div class="meter-goal-mark" style="left:${goal}%;"></div>
+        </div>
+        <div class="growth-tag" style="color:${t.color}">+${rate.toFixed(0)} / week &nbsp;·&nbsp; goal: ${goal}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('oppVals').textContent = `${Math.round(game.opposition)} / 100`;
+  document.getElementById('oppFill').style.width = game.opposition+'%';
+  document.getElementById('oppGrowthTag').textContent = `+${oppositionGrowth().toFixed(1)} / week`;
+}
+
+function renderTabs(){
+  const host = document.getElementById('tabsHost');
+  host.innerHTML = TRACKS.map(t=>{
+    const unlocked = isTrackUnlocked(game, t.key);
+    return `<button class="tab-btn ${activeTab===t.key?'active':''}" data-tab="${t.key}">
+      <span class="dot" style="background:${t.color}"></span>${t.label}${unlocked?'':' 🔒'}
+    </button>`;
+  }).join('');
+  host.querySelectorAll('.tab-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{ activeTab = b.dataset.tab; renderUpgrades(); renderTabs(); });
+  });
+}
+
+function renderUpgrades(){
+  if(activeTab==='quick'){ renderQuickActions(); return; }
+  const lockedNoteHost = document.getElementById('trackLockedNote');
+  const unlocked = isTrackUnlocked(game, activeTab);
+  lockedNoteHost.innerHTML = unlocked ? '' : `<div class="track-locked-note">🔒 ${UNLOCK_HINT[activeTab] || 'Locked.'}</div>`;
+
+  const list = UPGRADES.filter(u=>u.track===activeTab);
+  const host = document.getElementById('upgradeList');
+  host.innerHTML = list.map(u=>{
+    const owned = game.purchased.has(u.id);
+    const prereqOk = !u.requires || game.purchased.has(u.requires);
+    const statsOk = !u.requiresStats || Object.keys(u.requiresStats).every(k=>game.stats[k]>=u.requiresStats[k]);
+    const cost = upgradeCost(u);
+    const affordable = game.ip>=cost;
+    const buyable = unlocked && prereqOk && statsOk && !owned;
+    const locked = !owned && (!unlocked || !prereqOk || !statsOk);
+
+    let lockReason = '';
+    if(!owned && unlocked){
+      if(!prereqOk) lockReason = `Requires: ${getUpgrade(u.requires).name}`;
+      else if(!statsOk) lockReason = `Requires ` + Object.entries(u.requiresStats).map(([k,v])=>`${k} ≥ ${v}`).join(', ');
+    }
+
+    return `
+      <div class="upgrade-card ${owned?'owned':''} ${locked?'locked':''}">
+        <div class="uc-top">
+          <div class="uc-name">${u.name}</div>
+          ${owned ? '<div class="uc-owned-tag">✓ Done</div>' : `<div class="uc-cost">${cost} IP</div>`}
+        </div>
+        <div class="uc-desc">${u.desc}</div>
+        <div class="uc-note"><b>Civics note:</b> ${u.note}</div>
+        ${owned ? '' : `<button class="uc-buy" data-id="${u.id}" ${(!buyable || !affordable)?'disabled':''}>
+          ${!unlocked ? 'Locked' : (!prereqOk || !statsOk) ? (lockReason||'Locked') : (!affordable ? 'Not enough IP' : 'Take this action')}
+        </button>`}
+      </div>
+    `;
+  }).join('');
+
+  host.querySelectorAll('.uc-buy').forEach(b=>{
+    b.addEventListener('click', ()=>buyUpgrade(b.dataset.id));
+  });
+}
+
+function renderQuickActions(){
+  document.getElementById('trackLockedNote').innerHTML = '';
+  const host = document.getElementById('upgradeList');
+  const intro = `<div class="quick-intro">Small, repeatable moves. Each gets a little more expensive the more you use it, and most run out after a handful of uses — real campaigns eventually exhaust the easy wins too.</div>`;
+
+  host.innerHTML = intro + QUICK_ACTIONS.map(qa=>{
+    const count = game.quickCounts[qa.id] || 0;
+    const maxed = count >= qa.cap;
+    const cost = quickActionCost(qa);
+    const affordable = game.ip >= cost;
+    const color = qa.tag==='boost' ? 'var(--opinion)' : 'var(--opposition)';
+    return `
+      <div class="upgrade-card ${maxed?'owned':''}">
+        <div class="uc-top">
+          <div class="uc-name">${qa.name} ${qa.risky?'<span class="uc-badge risky">risky</span>':''}</div>
+          ${maxed ? '<div class="uc-owned-tag">Maxed out</div>' : `<div class="uc-cost">${cost} IP</div>`}
+        </div>
+        <div class="uc-desc">${qa.desc}</div>
+        <div class="uc-note"><b>Civics note:</b> ${qa.note}</div>
+        <div class="uc-badge" style="margin-bottom:8px; display:inline-block; color:${color}; border-color:${color};">${qa.tag==='boost'?'Builds support':'Counters opposition'} · used ${count}/${qa.cap}</div>
+        ${maxed ? '' : `<button class="uc-buy" data-id="${qa.id}" ${!affordable?'disabled':''}>${!affordable?'Not enough IP':'Take this action'}</button>`}
+      </div>
+    `;
+  }).join('');
+
+  host.querySelectorAll('.uc-buy').forEach(b=>{
+    b.addEventListener('click', ()=>buyQuickAction(b.dataset.id));
+  });
+}
+
+function renderLog(){
+  const host = document.getElementById('logList');
+  const entries = game.log.slice(-40);
+  host.innerHTML = entries.map((entry,i)=>`
+    <div class="log-entry ${entry.kind} ${i===entries.length-1 ? 'latest' : ''}">
+      <div class="log-week">Week ${entry.week}</div>
+      <div class="log-text">${entry.text}</div>
+      ${entry.note ? `<div class="log-note">📘 ${entry.note}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderHeader(){
+  const role = getRole(game.roleId);
+  const policy = getPolicy(game.policyId);
+  document.getElementById('ghIcon').textContent = role.icon;
+  document.getElementById('ghTitle').textContent = game.policyName;
+  document.getElementById('ghSub').textContent = `${policy.icon} ${policy.name} · Playing as ${role.name}`;
+  document.getElementById('weekNum').textContent = `${Math.min(game.week,WEEK_LIMIT)} / ${WEEK_LIMIT}`;
+  document.getElementById('ipNum').textContent = Math.round(game.ip);
+}
+
+function renderGame(){
+  renderHeader();
+  renderTracker();
+  renderMeters();
+  renderTabs();
+  renderUpgrades();
+  renderLog();
+  document.getElementById('advanceBtn').disabled = game.over;
+}
+
+function renderEnd(){
+  const s = game.stats;
+  const role = getRole(game.roleId);
+  const card = document.getElementById('endCard');
+  const badge = document.getElementById('endBadge');
+  const title = document.getElementById('endTitle');
+  const text = document.getElementById('endText');
+  const reflection = document.getElementById('endReflection');
+
+  card.className = 'end-card ' + (game.result==='win' ? 'win' : 'lose');
+  badge.className = 'end-badge ' + (game.result==='win' ? 'win' : 'lose');
+
+  if(game.result==='win'){
+    badge.textContent = 'Policy Passed';
+    title.textContent = `"${game.policyName}" is now law.`;
+    const attempts = game.finalVoteAttempts || 1;
+    text.textContent = `Playing as a ${role.name}, you built support across every level of government and won the floor vote after ${attempts} attempt${attempts>1?'s':''}, in week ${game.week-1}. Even with everything in place, the vote itself was never guaranteed.`;
+  } else if(game.reason==='opposition'){
+    badge.textContent = 'Campaign Stalled';
+    title.textContent = 'Organized opposition overwhelmed the campaign.';
+    text.textContent = `Opposition to "${game.policyName}" grew faster than support could counter it. In real policymaking, this is why coalition-building and communications strategy matter as much as the policy idea itself.`;
+  } else {
+    badge.textContent = 'Time Expired';
+    title.textContent = 'The legislative session ended before the bill passed.';
+    text.textContent = `"${game.policyName}" made real progress, but ran out of time before winning a floor vote. Many real bills take multiple sessions — or years, and several failed votes — to become law.`;
+  }
+
+  document.getElementById('endStats').innerHTML = `
+    <div class="end-stat"><div class="n" style="color:var(--opinion)">${Math.round(s.opinion)}</div><div class="l">Public Opinion</div></div>
+    <div class="end-stat"><div class="n" style="color:var(--local)">${Math.round(s.local)}</div><div class="l">Local</div></div>
+    <div class="end-stat"><div class="n" style="color:var(--state)">${Math.round(s.state)}</div><div class="l">State</div></div>
+    <div class="end-stat"><div class="n" style="color:var(--federal)">${Math.round(s.federal)}</div><div class="l">Federal</div></div>
+  `;
+
+  reflection.innerHTML = `<b>Civics connection:</b> This simulation modeled how a policy idea can move through public opinion, local government, state government, and federal government — the layered "structures of government" that make civic engagement possible. As a ${role.name} pushing ${getPolicy(game.policyId).name.toLowerCase()}, which action type (organizing, lobbying, coalition-building, testimony) felt most powerful? Would a different starting role or policy type have needed a different strategy?`;
+}
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+renderPolicyGrid();
+renderRoleGrid();
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('advanceBtn').addEventListener('click', advanceWeek);
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Restart the campaign from the beginning?')) resetToStart();
+});
+document.getElementById('playAgainBtn').addEventListener('click', resetToStart);
+</script>
+</body>
+</html>
