@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Whip Count — A Lobbying Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#210a0f;
+    --navy:#3d1017;
+    --navy-light:#5c1a22;
+    --navy-lighter:#7a2530;
+    --parchment:#f1e8d2;
+    --parchment-dark:#e2d3ac;
+    --brass:#c19a53;
+    --brass-bright:#e6c07a;
+    --capitol-red:#a5453f;
+    --capitol-red-bright:#c65f56;
+    --capitol-blue:#3d5c8c;
+    --capitol-blue-bright:#5a7fb5;
+    --ink:#26201a;
+    --success:#5b8a5e;
+    --warn:#c17f3a;
+    --undecided:#6b6456;
+    --font-display:'Fredoka', 'Nunito', system-ui, sans-serif;
+    --font-body:'Nunito', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(1200px 800px at 15% -10%, #4a141c 0%, transparent 60%),
+      radial-gradient(1200px 900px at 110% 10%, #3a0f14 0%, transparent 55%),
+      var(--navy-deep);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--brass); color:var(--ink);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.42;}
+  a{color:var(--brass-bright);}
+
+  .screen{display:none; min-height:100vh;}
+  .screen.active{display:block;}
+
+  /* ---------- shared chrome ---------- */
+  .seal-rule{
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--brass) 15%, var(--brass-bright) 50%, var(--brass) 85%, transparent);
+    opacity:.75;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--brass-bright);
+    opacity:.9;
+  }
+
+  /* ================= SETUP / INSTRUCTIONS SCREENS ================= */
+  #screen-setup, #screen-instructions{
+    max-width:960px; margin:0 auto; padding:56px 24px 90px;
+  }
+  .masthead{text-align:center; margin-bottom:8px;}
+  .masthead .eyebrow{display:block; margin-bottom:14px;}
+  .masthead h1{
+    font-family:var(--font-display);
+    font-size:clamp(34px, 6vw, 58px);
+    margin:0;
+    font-weight:800;
+    letter-spacing:.01em;
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass) 70%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .masthead p.sub{
+    font-family:var(--font-body);
+    color:#cfc4a3;
+    max-width:600px;
+    margin:14px auto 0;
+    font-size:15.5px;
+    line-height:1.55;
+  }
+  .setup-name{
+    margin:34px auto 0; max-width:520px; text-align:center;
+  }
+  .setup-name label{display:block; font-size:12.5px; color:#cfc4a3; margin-bottom:8px; font-family:var(--font-mono); letter-spacing:.06em;}
+  .setup-name input{
+    width:100%; padding:12px 14px; border-radius:6px; border:1px solid var(--navy-lighter);
+    background:var(--navy); color:var(--parchment); font-size:16px; font-family:var(--font-body);
+    text-align:center;
+  }
+  .setup-name input:focus{outline:2px solid var(--brass); outline-offset:1px;}
+
+  .bill-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:18px; margin-top:38px;
+  }
+  .bill-card{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink);
+    border-radius:10px;
+    padding:22px 20px 20px;
+    border:1px solid #b79f6e;
+    box-shadow:0 10px 26px rgba(0,0,0,.35);
+    position:relative;
+    display:flex; flex-direction:column; gap:10px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .bill-card:hover{transform:translateY(-3px); box-shadow:0 16px 34px rgba(0,0,0,.45);}
+  .bill-card .tag{
+    align-self:flex-start;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em;
+    text-transform:uppercase; padding:3px 8px; border-radius:20px;
+    background:var(--navy); color:var(--brass-bright);
+  }
+  .bill-card h3{font-family:var(--font-display); margin:2px 0 0; font-size:21px; line-height:1.25;}
+  .bill-card .groups{font-size:12.5px; color:#4a4030; font-family:var(--font-mono);}
+  .bill-card .groups b{color:var(--ink);}
+  .bill-card p{font-size:13.5px; line-height:1.5; margin:2px 0 6px; color:#3c3527;}
+  .bill-card .lean-bar{height:8px; border-radius:5px; overflow:hidden; display:flex; border:1px solid #b79f6e;}
+  .bill-card .lean-bar span{height:100%;}
+  .bill-card .lean-label{display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#5a5140;}
+  .bill-card button{
+    margin-top:8px; padding:10px 12px; border:none; border-radius:6px;
+    background:var(--navy); color:var(--brass-bright); font-weight:600; font-size:14px;
+    letter-spacing:.02em;
+  }
+  .bill-card button:hover{background:var(--navy-light);}
+
+  .instructions-card{
+    max-width:760px; margin:36px auto 0;
+    background:rgba(20,30,51,.55); border:1px solid var(--navy-lighter); border-radius:12px;
+    padding:8px 26px 20px; font-size:14px; line-height:1.65; color:#e6dcc0;
+  }
+  .instructions-card h4{margin:18px 0 5px; color:var(--brass-bright); font-size:14.5px; font-family:var(--font-display); letter-spacing:.02em;}
+  .instructions-card p{margin:0;}
+  .instructions-card ul{margin:4px 0 0; padding-left:20px;}
+  .instructions-card li{margin-bottom:4px;}
+  .instructions-continue-bar{display:flex; justify-content:center; margin:34px 0 10px;}
+  .review-instructions-bar{display:flex; justify-content:center; margin-top:30px;}
+  .btn-secondary-link{
+    background:transparent; border:none; color:#cfc4a3; font-family:var(--font-mono);
+    font-size:12.5px; letter-spacing:.04em; text-decoration:underline; padding:6px;
+  }
+  .btn-secondary-link:hover{color:var(--brass-bright);}
+
+  /* ================= GAME SCREEN ================= */
+  #screen-game{padding:18px 18px 40px; max-width:1360px; margin:0 auto;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap;
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:10px;
+    padding:14px 20px; margin-bottom:16px;
+  }
+  .topbar .bill-id{display:flex; flex-direction:column; gap:2px;}
+  .topbar .bill-id .eyebrow{font-size:10px;}
+  .topbar .bill-id h2{font-family:var(--font-display); font-size:20px; margin:0; color:var(--parchment);}
+  .topbar .stats{display:flex; gap:22px; align-items:center; flex-wrap:wrap;}
+  .stat-chip{text-align:center;}
+  .stat-chip .num{font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--brass-bright);}
+  .stat-chip .lbl{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:#a89b76;}
+
+  .gauges{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;
+  }
+  @media (max-width:760px){ .gauges{grid-template-columns:1fr;} }
+  .gauge-card{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:10px; padding:14px 18px 8px;
+    text-align:center; position:relative;
+  }
+  .gauge-card h3{
+    font-family:var(--font-display); margin:0 0 4px; font-size:17px; color:var(--brass-bright);
+  }
+  .gauge-status{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    padding:2px 10px; border-radius:20px; display:inline-block; margin-bottom:2px;
+  }
+  .gauge-status.active{background:rgba(193,154,83,.18); color:var(--brass-bright);}
+  .gauge-status.passed{background:rgba(91,138,94,.25); color:#8fd493;}
+  .gauge-status.blocked{background:rgba(165,69,63,.25); color:#e58e87;}
+  .gauge-row{
+    display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
+  }
+  .gauge-legend-side{
+    display:flex; flex-direction:column; gap:9px; font-family:var(--font-mono); font-size:11px;
+    align-items:flex-start; flex:none; text-align:left;
+  }
+  .gauge-legend-side span{display:flex; align-items:center; gap:6px; white-space:nowrap; color:#cfc4a3;}
+  .gauge-legend-side i{width:10px; height:10px; border-radius:2px; display:inline-block; flex:none;}
+
+  .board-layout{display:grid; grid-template-columns:1fr 240px; gap:16px; align-items:start;}
+  @media (max-width:860px){ .board-layout{grid-template-columns:1fr;} }
+  .board-main{min-width:0;}
+
+  .tactics-key{
+    position:sticky; top:14px;
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border:1px solid #b79f6e; border-radius:9px;
+    padding:14px 15px 16px;
+  }
+  @media (max-width:860px){ .tactics-key{position:static;} }
+  .tactics-key h4{
+    font-family:var(--font-display); margin:0 0 10px; font-size:15px; color:var(--ink);
+    border-bottom:2px solid #b79f6e; padding-bottom:8px;
+  }
+  .tactics-key-item{margin-bottom:11px;}
+  .tactics-key-item:last-child{margin-bottom:0;}
+  .tk-name{font-family:var(--font-body); font-weight:700; font-size:12.5px; color:var(--ink); margin-bottom:2px;}
+  .tk-desc{font-family:var(--font-body); font-size:11.5px; line-height:1.4; color:#5a5140;}
+
+  .tabs{display:flex; gap:8px; margin-bottom:12px;}
+  .tab-btn{
+    flex:1; padding:11px; border-radius:8px; border:1px solid var(--navy-lighter);
+    background:var(--navy); color:#b9ad88; font-family:var(--font-mono); font-size:12.5px;
+    letter-spacing:.06em; text-transform:uppercase; font-weight:600;
+  }
+  .tab-btn.active{background:var(--brass); color:var(--ink); border-color:var(--brass);}
+
+  .bloc-list{display:flex; flex-direction:column; gap:10px;}
+  .bloc-card{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border-radius:9px; border:1px solid #b79f6e;
+    padding:13px 16px 14px; display:flex; flex-direction:column; gap:9px;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);
+  }
+  .bloc-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .bloc-name{display:flex; align-items:center; gap:8px; font-weight:600; font-size:14.5px;}
+  .bloc-name .swatch{width:11px; height:11px; border-radius:3px; flex:none;}
+  .bloc-mood{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    padding:2px 8px; border-radius:20px; border:1px solid currentColor;
+  }
+  .bloc-nums{font-family:var(--font-mono); font-size:12px; color:#4a4030; display:flex; gap:12px;}
+  .bloc-bar{height:10px; border-radius:6px; overflow:hidden; display:flex; border:1px solid #a78f60; background:var(--undecided);}
+  .bloc-bar .seg-you{background:var(--capitol-blue);}
+  .bloc-bar .seg-rival{background:var(--capitol-red);}
+  .bloc-actions{display:flex; gap:7px; flex-wrap:wrap;}
+  .act-btn{
+    padding:7px 10px; border-radius:6px; border:1px solid #967d4d; background:var(--navy);
+    color:var(--parchment); font-size:11.5px; font-weight:600; display:flex; flex-direction:column;
+    align-items:center; line-height:1.25; min-width:82px;
+  }
+  .act-btn small{font-family:var(--font-mono); font-weight:500; font-size:10px; color:var(--brass-bright);}
+  .act-btn:hover:not(:disabled){background:var(--navy-light);}
+  .act-btn.locked{background:#3a3226; color:#8a8168; border-color:#5c5138;}
+
+  .lower-grid{display:grid; grid-template-columns:1.15fr 1fr; gap:16px; margin-top:16px;}
+  @media (max-width:860px){ .lower-grid{grid-template-columns:1fr;} }
+  .panel{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:10px; padding:14px 18px;
+  }
+  .panel h3{font-family:var(--font-display); margin:0 0 10px; font-size:16px; color:var(--brass-bright); display:flex; align-items:center; justify-content:space-between;}
+
+  .newspaper-panel{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border:1px solid #b79f6e;
+  }
+  .paper-masthead{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px;}
+  .paper-name{font-family:var(--font-display); font-weight:700; font-size:22px; letter-spacing:.01em; color:var(--ink);}
+  .paper-date{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em; color:#6b5f45; text-transform:uppercase;}
+  .newspaper-panel .seal-rule{background:linear-gradient(90deg, transparent, #8a744a 15%, #6b5636 50%, #8a744a 85%, transparent); margin:8px 0 10px; opacity:1;}
+  .paper-headlines{max-height:280px; overflow-y:auto; padding-right:4px;}
+  .paper-lead{padding-bottom:10px; margin-bottom:10px; border-bottom:2px solid #b79f6e;}
+  .paper-lead .headline{font-family:var(--font-display); font-weight:600; font-size:17px; line-height:1.3; color:var(--ink);}
+  .paper-lead .dek{font-family:var(--font-body); font-size:12.5px; color:#5a5140; margin-top:4px;}
+  .paper-lead .byline{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:#8a744a; margin-top:5px;}
+  .paper-list{column-count:2; column-gap:18px;}
+  @media (max-width:520px){ .paper-list{column-count:1;} }
+  .paper-item{break-inside:avoid; padding:8px 0; border-bottom:1px dashed #b79f6e;}
+  .paper-item .headline{font-family:var(--font-display); font-weight:600; font-size:13px; line-height:1.3; color:var(--ink);}
+  .paper-item .byline{font-family:var(--font-mono); font-size:9px; letter-spacing:.05em; text-transform:uppercase; color:#8a744a; margin-top:3px;}
+  .paper-empty{font-family:var(--font-body); font-size:13px; color:#6b5f45; font-style:italic; padding:6px 0;}
+
+  /* ---- Herald weekly popup ---- */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(8,3,4,.72);
+    align-items:center; justify-content:center; padding:20px; z-index:999;
+    backdrop-filter:blur(2px);
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    max-width:540px; width:100%; max-height:85vh; overflow-y:auto;
+    border-radius:12px; padding:20px 24px 22px;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+  }
+  .herald-body{max-height:none;}
+  .herald-activity-title{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:#6b5f45; margin:16px 0 8px; padding-top:12px; border-top:1px solid #b79f6e;
+  }
+  .herald-activity-list{display:flex; flex-direction:column; gap:6px;}
+  .herald-activity-item{font-family:var(--font-body); font-size:12.5px; line-height:1.4; color:#4a4030;}
+  .herald-activity-item .tag-you, .herald-activity-item .tag-rival{
+    font-family:var(--font-mono); font-size:9px; letter-spacing:.05em; padding:1px 6px; border-radius:10px;
+    margin-right:6px; display:inline-block;
+  }
+  .herald-activity-item .tag-you{background:rgba(61,92,140,.18); color:var(--capitol-blue);}
+  .herald-activity-item .tag-rival{background:rgba(165,69,63,.18); color:var(--capitol-red);}
+  .herald-continue-btn{width:100%; margin-top:18px;}
+
+  .log-feed{max-height:190px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:6px; padding-right:4px;}
+  .log-entry{font-size:12.5px; line-height:1.45; padding:7px 10px; border-radius:6px; border-left:3px solid var(--brass); background:rgba(255,255,255,.03);}
+  .log-entry.rival{border-left-color:var(--capitol-red-bright);}
+  .log-entry.event{border-left-color:var(--capitol-blue-bright);}
+  .log-entry .rnd{font-family:var(--font-mono); color:#a89b76; margin-right:6px;}
+
+  .end-round-bar{display:flex; justify-content:center; margin-top:18px;}
+  .end-round-btn{
+    padding:15px 40px; border-radius:30px; border:1px solid var(--brass);
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color:var(--ink); font-weight:700; font-size:15px; letter-spacing:.03em;
+    box-shadow:0 8px 22px rgba(193,154,83,.25);
+  }
+  .end-round-btn:hover{filter:brightness(1.06);}
+
+  /* ================= END SCREEN ================= */
+  #screen-end{max-width:760px; margin:0 auto; padding:70px 24px 90px; text-align:center;}
+  #screen-end .verdict-eyebrow{font-family:var(--font-mono); letter-spacing:.2em; color:var(--brass-bright); font-size:12px;}
+  #screen-end h1{font-family:var(--font-display); font-size:clamp(30px,5vw,46px); margin:12px 0 6px;}
+  #screen-end .rank{font-family:var(--font-mono); font-size:14px; color:#cfc4a3; margin-bottom:26px;}
+  .end-chambers{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 28px;}
+  @media (max-width:560px){.end-chambers{grid-template-columns:1fr;}}
+  .end-chamber{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark)); color:var(--ink);
+    border-radius:10px; padding:16px; border:1px solid #b79f6e; text-align:left;
+  }
+  .end-chamber h4{font-family:var(--font-display); margin:0 0 8px; font-size:16px;}
+  .end-chamber .result{font-family:var(--font-mono); font-weight:600; font-size:13px; margin-bottom:8px;}
+  .end-chamber .result.passed{color:var(--success);}
+  .end-chamber .result.blocked, .end-chamber .result.failed{color:var(--capitol-red);}
+  .end-chamber table{width:100%; font-family:var(--font-mono); font-size:12.5px; border-collapse:collapse;}
+  .end-chamber td{padding:2px 0;}
+  .end-chamber td:last-child{text-align:right; font-weight:600;}
+  .civics-note{
+    text-align:left; background:rgba(20,30,51,.6); border:1px solid var(--navy-lighter);
+    border-radius:10px; padding:16px 20px; font-size:13.5px; line-height:1.6; color:#d8cfb4; margin-bottom:26px;
+  }
+  .civics-note b{color:var(--brass-bright);}
+  .end-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .end-actions button{
+    padding:13px 26px; border-radius:26px; border:1px solid var(--brass); font-weight:700; font-size:14px;
+  }
+  .btn-primary{background:linear-gradient(180deg, var(--brass-bright), var(--brass)); color:var(--ink);}
+  .btn-secondary{background:transparent; color:var(--brass-bright);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--navy-lighter); border-radius:8px;}
+
+  .flash{animation:flash-anim .5s ease;}
+  @keyframes flash-anim{ from{ box-shadow:0 0 0 3px var(--brass-bright) inset;} to{box-shadow:0 0 0 0 transparent inset;} }
+
+  @media (prefers-reduced-motion: reduce){
+    .bill-card, .flash{transition:none; animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ INSTRUCTIONS SCREEN (must view before playing) ============ -->
+<section id="screen-instructions" class="screen active">
+  <div class="masthead">
+    <span class="eyebrow">A Civics Simulation</span>
+    <h1>The Whip Count</h1>
+    <p class="sub">You run an interest group with one goal: get your bill through <b>both</b> chambers of Congress before the session ends. Persuasion costs Political Capital — and a rival interest group is spending theirs to stop you.</p>
+  </div>
+
+  <div class="instructions-card">
+    <h4>The goal</h4>
+    <p>Congress needs a majority in the <b>House</b> (218 of 435) and the <b>Senate</b> (51 of 100) to send a bill to become law. Every representative belongs to an ideological bloc that starts <b>undecided</b> — you and a rival interest group both compete to win them over before the session's rounds run out.</p>
+    <h4>Natural allies</h4>
+    <p>Some reps already agree with you (or the rival) before a single meeting happens — a bill that fits an ideology strongly enough locks in automatic day-one support on both sides.</p>
+    <h4>Political Capital (PC)</h4>
+    <p>Each round you receive PC from dues, fundraising, and momentum. Spend it on lobbying tactics — the further a bloc is from your cause, the more it costs to move them.</p>
+    <h4>Tactics</h4>
+    <ul>
+      <li><b>Coffee Meeting</b> — cheap, low-key, modest results.</li>
+      <li><b>Campaign Contribution</b> — costlier, more persuasive.</li>
+      <li><b>Grassroots Rally</b> — doesn't flip votes directly, but makes a bloc more receptive to your next move this round.</li>
+      <li><b>Media Ad Buy</b> — airs nationally, nudging that ideology in <i>both</i> chambers at once.</li>
+      <li><b>Backdoor Deal</b> — unlocked round 3+. Guarantees results almost regardless of ideology, but risks a watchdog story that costs you later. This is how real influence-buying can backfire.</li>
+    </ul>
+    <h4>The Hill Herald</h4>
+    <p>At the start of each week (round), a newspaper pops up with that week's headlines — endorsements, scandals, polls, and ad campaigns that can swing blocs your way or against you. You'll need to read it before you can act.</p>
+    <h4>Winning &amp; losing</h4>
+    <p>A chamber is <b>passed</b> once you reach its majority. It's <b>blocked</b> if the rival locks up enough votes that you can no longer mathematically reach majority. Pass both chambers to sign your bill into law.</p>
+  </div>
+
+  <div class="instructions-continue-bar">
+    <button class="end-round-btn" id="instructionsContinueBtn">I Understand — Choose My Bill →</button>
+  </div>
+</section>
+
+<!-- ============ SETUP SCREEN ============ -->
+<section id="screen-setup" class="screen">
+  <div class="masthead">
+    <span class="eyebrow">A Civics Simulation</span>
+    <h1>The Whip Count</h1>
+    <p class="sub">Choose the legislation your coalition will champion this session.</p>
+  </div>
+
+  <div class="bill-grid" id="billGrid"></div>
+
+  <div class="review-instructions-bar">
+    <button class="btn-secondary-link" id="reviewInstructionsBtn">↺ Review the rules again</button>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="topbar">
+    <div class="bill-id">
+      <span class="eyebrow" id="groupLabel">YOUR COALITION</span>
+      <h2 id="billTitleLabel">—</h2>
+    </div>
+    <div class="stats">
+      <div class="stat-chip"><div class="num" id="statRound">1 / 10</div><div class="lbl">Session Round</div></div>
+      <div class="stat-chip"><div class="num" id="statPC">0</div><div class="lbl">Political Capital</div></div>
+      <div class="stat-chip"><div class="num" id="statRival">Fossil Fuel Jobs Alliance</div><div class="lbl">Rival Group</div></div>
+    </div>
+  </div>
+
+  <div class="gauges">
+    <div class="gauge-card">
+      <h3>House of Representatives</h3>
+      <div class="gauge-status active" id="houseStatus">IN PLAY</div>
+      <div class="gauge-row">
+        <svg id="houseGauge" viewBox="0 0 320 195" style="width:100%; max-width:280px;"></svg>
+        <div class="gauge-legend-side">
+          <span><i style="background:var(--capitol-blue)"></i>You</span>
+          <span><i style="background:var(--undecided)"></i>Undecided</span>
+          <span><i style="background:var(--capitol-red)"></i>Rival</span>
+        </div>
+      </div>
+    </div>
+    <div class="gauge-card">
+      <h3>Senate</h3>
+      <div class="gauge-status active" id="senateStatus">IN PLAY</div>
+      <div class="gauge-row">
+        <svg id="senateGauge" viewBox="0 0 320 195" style="width:100%; max-width:280px;"></svg>
+        <div class="gauge-legend-side">
+          <span><i style="background:var(--capitol-blue)"></i>You</span>
+          <span><i style="background:var(--undecided)"></i>Undecided</span>
+          <span><i style="background:var(--capitol-red)"></i>Rival</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board-layout">
+    <div class="board-main">
+      <div class="tabs">
+        <button class="tab-btn active" data-chamber="house" id="tabHouse">House Blocs</button>
+        <button class="tab-btn" data-chamber="senate" id="tabSenate">Senate Blocs</button>
+      </div>
+
+      <div class="bloc-list" id="blocList"></div>
+    </div>
+
+    <aside class="tactics-key">
+      <h4>Tactics Key</h4>
+      <div class="tactics-key-item">
+        <div class="tk-name">☕ Coffee Meeting</div>
+        <div class="tk-desc">Cheap, low-key, modest results.</div>
+      </div>
+      <div class="tactics-key-item">
+        <div class="tk-name">💵 Campaign Contribution</div>
+        <div class="tk-desc">Costlier, more persuasive.</div>
+      </div>
+      <div class="tactics-key-item">
+        <div class="tk-name">📣 Grassroots Rally</div>
+        <div class="tk-desc">No direct flips — makes a bloc more receptive to your next move this round.</div>
+      </div>
+      <div class="tactics-key-item">
+        <div class="tk-name">📺 Media Ad Buy</div>
+        <div class="tk-desc">Nudges an ideology in both chambers at once.</div>
+      </div>
+      <div class="tactics-key-item">
+        <div class="tk-name">🤝 Backdoor Deal</div>
+        <div class="tk-desc">Unlocks Rd 3+. Near-guaranteed results, but risks a watchdog scandal later.</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="lower-grid">
+    <div class="panel newspaper-panel">
+      <div class="paper-masthead">
+        <span class="paper-name">The Hill Herald</span>
+        <span class="paper-date">Session Dispatch — Round <span id="paperRound">1</span></span>
+      </div>
+      <div class="seal-rule"></div>
+      <div id="paperHeadlines" class="paper-headlines"></div>
+    </div>
+    <div class="panel">
+      <h3>Capitol Wire <span style="font-family:var(--font-mono); font-size:10px; color:#a89b76;">LIVE FEED</span></h3>
+      <div class="log-feed" id="logFeed"></div>
+    </div>
+  </div>
+
+  <div class="end-round-bar">
+    <button class="end-round-btn" id="endRoundBtn">Whip the Vote — End Round →</button>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="verdict-eyebrow" id="endEyebrow">SESSION ADJOURNED</div>
+  <h1 id="endHeadline">—</h1>
+  <div class="rank" id="endRank">—</div>
+
+  <div class="end-chambers">
+    <div class="end-chamber">
+      <h4>House of Representatives</h4>
+      <div class="result" id="endHouseResult">—</div>
+      <table id="endHouseTable"></table>
+    </div>
+    <div class="end-chamber">
+      <h4>Senate</h4>
+      <div class="result" id="endSenateResult">—</div>
+      <table id="endSenateTable"></table>
+    </div>
+  </div>
+
+  <div class="civics-note" id="civicsNote"></div>
+
+  <div class="end-actions">
+    <button class="btn-primary" id="playAgainBtn">Choose a New Bill</button>
+    <button class="btn-secondary" id="replayBtn">Run It Back — Same Bill</button>
+  </div>
+</section>
+
+<!-- ============ HERALD MODAL (weekly, must dismiss to proceed) ============ -->
+<div id="heraldModal" class="modal-overlay">
+  <div class="modal-card newspaper-panel">
+    <div class="paper-masthead">
+      <span class="paper-name">The Hill Herald</span>
+      <span class="paper-date" id="heraldRoundLabel">Week 1 Edition</span>
+    </div>
+    <div class="seal-rule"></div>
+    <div id="heraldBody" class="herald-body"></div>
+    <button class="end-round-btn herald-continue-btn" id="heraldContinueBtn">Continue →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   CONFIG — every tunable number for the simulation lives here. Adjust
+   freely to change difficulty without touching the game logic below.
+========================================================================= */
+const CONFIG = {
+  MAX_ROUNDS: 14,
+  PC_BASE_INCOME: 62,
+  PC_INCOME_VARIANCE: 25,     // random 0..N added each round
+  RIVAL_PC_BASE: 42,
+  RIVAL_PC_VARIANCE: 20,
+  RIVAL_PC_GROWTH_PER_ROUND: 2, // rival gets slightly better funded over time
+  BACKDOOR_UNLOCK_ROUND: 3,
+  BACKDOOR_SCANDAL_CHANCE: 0.25,
+  EVENT_CHANCE: 0.75,
+
+  // Reps whose ideology strongly (or somewhat) aligns with a bill start
+  // already decided on day one — "safe votes" who need no convincing.
+  NATURAL_ALLY_STRONG: 0.20,   // receptiveness >= NATURAL_ALLY_STRONG_THRESHOLD
+  NATURAL_ALLY_LEAN: 0.10,     // receptiveness >= NATURAL_ALLY_LEAN_THRESHOLD
+  NATURAL_ALLY_STRONG_THRESHOLD: 75,
+  NATURAL_ALLY_LEAN_THRESHOLD: 60,
+
+  CHAMBERS: {
+    house: {
+      name: "House of Representatives",
+      majority: 218,
+      total: 435,
+      counts: { prog:55, estD:85, swingD:35, ind:15, modR:45, estR:130, freedom:70 },
+      flip: {
+        coffee:       [7, 14],
+        contribution: [14, 23],
+        media:        [7, 12],
+        backdoor:     [12, 18]
+      },
+      cost: { coffee:15, contribution:30, rally:20, media:40, backdoor:45 }
+    },
+    senate: {
+      name: "Senate",
+      majority: 51,
+      total: 100,
+      counts: { prog:8, estD:20, swingD:8, ind:4, modR:12, estR:28, freedom:20 },
+      flip: {
+        coffee:       [2, 5],
+        contribution: [4, 8],
+        media:        [2, 5],
+        backdoor:     [3, 6]
+      },
+      cost: { coffee:15, contribution:30, rally:20, media:40, backdoor:45 }
+    }
+  },
+
+  IDEOLOGIES: [
+    { id:"prog",    name:"Progressive Left",            color:"#3d5c8c" },
+    { id:"estD",    name:"Establishment Democrats",      color:"#4d72ad" },
+    { id:"swingD",  name:"Swing-District Democrats",     color:"#7594bf" },
+    { id:"ind",     name:"Independents",                 color:"#8a8266" },
+    { id:"modR",    name:"Moderate Republicans",         color:"#bb8266" },
+    { id:"estR",    name:"Establishment Republicans",    color:"#a15750" },
+    { id:"freedom", name:"Freedom Caucus",                color:"#8a3a35" }
+  ],
+
+  BILLS: [
+    {
+      id: "energy",
+      tag: "Environment · Energy",
+      title: "The Clean Energy Investment Act",
+      playerGroup: "Green Future Coalition",
+      rival: "American Energy Jobs Alliance",
+      blurb: "Funds solar, wind, and grid modernization with new federal tax credits.",
+      receptiveness: { prog:90, estD:72, swingD:52, ind:46, modR:30, estR:20, freedom:10 }
+    },
+    {
+      id: "smallbiz",
+      tag: "Economy · Taxes",
+      title: "The Main Street Tax Relief Act",
+      playerGroup: "Main Street Business Alliance",
+      rival: "Fair Tax Coalition",
+      blurb: "Cuts payroll taxes and red tape for businesses under 50 employees.",
+      receptiveness: { prog:15, estD:26, swingD:44, ind:50, modR:75, estR:86, freedom:66 }
+    },
+    {
+      id: "schools",
+      tag: "Education · Communities",
+      title: "The Community Schools Funding Act",
+      playerGroup: "Students First Alliance",
+      rival: "Taxpayer Accountability Project",
+      blurb: "Boosts federal funding for public schools in low-income districts.",
+      receptiveness: { prog:80, estD:70, swingD:60, ind:55, modR:40, estR:30, freedom:20 }
+    },
+    {
+      id: "healthcare",
+      tag: "Healthcare · Economy",
+      title: "The Healthcare Access Expansion Act",
+      playerGroup: "Affordable Care Alliance",
+      rival: "Free Market Health Coalition",
+      blurb: "Expands subsidies and coverage options for uninsured and low-income families.",
+      receptiveness: { prog:88, estD:75, swingD:55, ind:48, modR:28, estR:15, freedom:8 }
+    },
+    {
+      id: "minwage",
+      tag: "Labor · Economy",
+      title: "The Fair Wage Standards Act",
+      playerGroup: "Fair Wage Coalition",
+      rival: "Small Business Defense Fund",
+      blurb: "Raises the federal minimum wage and ties future increases to inflation.",
+      receptiveness: { prog:92, estD:78, swingD:50, ind:44, modR:22, estR:12, freedom:8 }
+    },
+    {
+      id: "immigration",
+      tag: "Immigration · Border Security",
+      title: "The Border Security & Modernization Act",
+      playerGroup: "Secure Borders Coalition",
+      rival: "Immigrant Rights Alliance",
+      blurb: "Funds border technology and tightens enforcement at ports of entry.",
+      receptiveness: { prog:10, estD:20, swingD:40, ind:48, modR:78, estR:88, freedom:70 }
+    },
+    {
+      id: "guns",
+      tag: "Public Safety · Rights",
+      title: "The Second Amendment Protection Act",
+      playerGroup: "American Gun Owners Alliance",
+      rival: "Gun Safety Coalition",
+      blurb: "Blocks new federal restrictions on firearm sales and ownership.",
+      receptiveness: { prog:8, estD:18, swingD:38, ind:45, modR:80, estR:90, freedom:85 }
+    },
+    {
+      id: "justice",
+      tag: "Justice · Public Safety",
+      title: "The Criminal Justice Reform Act",
+      playerGroup: "Justice Reform Alliance",
+      rival: "Law and Order Coalition",
+      blurb: "Reduces mandatory minimum sentences and expands re-entry programs.",
+      receptiveness: { prog:85, estD:65, swingD:58, ind:52, modR:45, estR:30, freedom:40 }
+    },
+    {
+      id: "infrastructure",
+      tag: "Infrastructure · Economy",
+      title: "The National Infrastructure Renewal Act",
+      playerGroup: "Rebuild America Coalition",
+      rival: "Fiscal Responsibility Watchdogs",
+      blurb: "Invests in roads, bridges, water systems, and broadband nationwide.",
+      receptiveness: { prog:65, estD:70, swingD:62, ind:58, modR:55, estR:48, freedom:25 }
+    },
+    {
+      id: "privacy",
+      tag: "Technology · Privacy",
+      title: "The Data Privacy & Tech Accountability Act",
+      playerGroup: "Digital Rights Alliance",
+      rival: "Innovation Freedom Coalition",
+      blurb: "Sets new rules for how companies collect, use, and sell personal data.",
+      receptiveness: { prog:70, estD:65, swingD:55, ind:52, modR:42, estR:35, freedom:30 }
+    }
+  ],
+
+  EVENTS: [
+    { text: "A viral op-ed puts your cause in the national spotlight.", apply: (s)=>{ s.pcBonusNextRound += 20; return "You gain +20 Political Capital next round."; } },
+    { text: "A respected caucus leader publicly endorses your bill.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "you", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} commit to you on the spot.` : "No effect."; } },
+    { text: "Grassroots petitions flood a swing district's offices.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "you", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} switch to your side.` : "No effect."; } },
+    { text: "Investigators publish a critical report on the opposition's biggest donor.", apply: (s)=>{ const b = pickRivalHeldBloc(); if(!b) return "No effect."; const n = reclaimFromRival(s, b.chamber, b.id, swingAmt(b.chamber)); return n>0 ? `${n} ${idName(b.id)} member(s) in the ${chamberLabel(b.chamber)} publicly reconsider — they're undecided again.` : "No effect."; } },
+    { text: "A friendly committee hearing goes your way.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} grows +15 receptive this round.`; } },
+    { text: "The rival group runs a slick national ad campaign.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; const n = rivalFlip(s, b.chamber, b.id, 5); return n>0 ? `${n} more members of ${idName(b.id)} in the ${chamberLabel(b.chamber)} side with ${s.rivalName}.` : "No effect."; } },
+    { text: "The rival airs a sharp attack ad questioning your motives.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "rival", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} publicly side with ${s.rivalName}.` : "No effect."; } },
+    { text: "A national poll shows momentum on your side.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 10); return `Public opinion nudges ${idName(b.id)} in the ${chamberLabel(b.chamber)} your way (+10 receptive).`; } },
+    { text: "Election-season noise distracts everyone on the Hill.", apply: (s)=>{ s.pcPenaltyNextRound += 10; return "Political Capital income is -10 next round."; } },
+    { text: "A bipartisan working group quietly forms.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} opens up (+15 receptive) this round.`; } },
+    { text: "Procedural gridlock slows the Senate to a crawl.", apply: (s)=>{ s.senateCostSurcharge = 5; return "Senate actions cost +5 PC this round."; } },
+    { text: "A local news segment puts a human face on your cause.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 12); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} warms up (+12 receptive).`; } },
+    { text: "A columnist blasts your proposal as reckless overreach.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, -10); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} cools off (-10 receptive) this round.`; } },
+    { text: "A nervous incumbent worries about a primary challenge.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, -8); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} gets skittish (-8 receptive) this round.`; } },
+    { text: "A trusted economist's analysis backs your position.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 12); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} takes notice (+12 receptive).`; } },
+    { text: "Your coalition partners host a fly-in advocacy day.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 10); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} gets an extra push (+10 receptive), no PC spent.`; } },
+    { text: "A surprise celebrity post about the bill goes viral overnight.", apply: (s)=>{ const options = ["house","senate"].flatMap(ch=>CONFIG.IDEOLOGIES.map(i=>({chamber:ch,id:i.id}))); const b = options[randInt(0,options.length-1)]; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} reacts (+15 receptive) — nobody saw that coming.`; } },
+    { text: "A town hall back home turns tense and unpredictable.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, -12); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} pulls back (-12 receptive) this round.`; } },
+    { text: "The rival's spokesperson stumbles badly in a live interview.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 10); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} takes a second look at you (+10 receptive).`; } },
+    { text: "A key staffer leaks favorable internal polling.", apply: (s)=>{ s.pcBonusNextRound += 12; return "The story builds momentum — +12 Political Capital next round."; } }
+  ],
+
+  SCANDAL_EVENT_TEXT: "A watchdog group runs a story questioning your recent backdoor deal.",
+
+  RANKS: [
+    { min: 0,  label: "Back to the Drawing Board" },
+    { min: 1,  label: "Statehouse Intern" },
+    { min: 2,  label: "K Street Regular" },
+    { min: 3,  label: "Capitol Hill Power Broker" },
+    { min: 4,  label: "Legendary Rainmaker" }
+  ]
+};
+
+/* =========================================================================
+   STATE
+========================================================================= */
+let S = null; // active game state
+let activeTab = "house";
+
+function idName(id){ return CONFIG.IDEOLOGIES.find(i=>i.id===id).name; }
+function idColor(id){ return CONFIG.IDEOLOGIES.find(i=>i.id===id).color; }
+function chamberLabel(ch){ return ch === "house" ? "House" : "Senate"; }
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function randInt(min,max){ return Math.floor(min + Math.random()*(max-min+1)); }
+function rand(min,max){ return min + Math.random()*(max-min); }
+
+function newChamberState(chamberKey, bill){
+  const conf = CONFIG.CHAMBERS[chamberKey];
+  const blocs = {};
+  CONFIG.IDEOLOGIES.forEach(ideo=>{
+    const total = conf.counts[ideo.id];
+    const recept = bill.receptiveness[ideo.id];
+    let you = 0, rival = 0;
+    // Natural allies: some reps already agree with the cause before a single
+    // meeting happens — a bill "deal" that fits an ideology hard enough
+    // wins automatic day-one support (and costs you automatic opposition).
+    if(recept >= CONFIG.NATURAL_ALLY_STRONG_THRESHOLD) you = Math.round(total * CONFIG.NATURAL_ALLY_STRONG);
+    else if(recept >= CONFIG.NATURAL_ALLY_LEAN_THRESHOLD) you = Math.round(total * CONFIG.NATURAL_ALLY_LEAN);
+    const rivalRecept = 100 - recept;
+    if(rivalRecept >= CONFIG.NATURAL_ALLY_STRONG_THRESHOLD) rival = Math.round(total * CONFIG.NATURAL_ALLY_STRONG);
+    else if(rivalRecept >= CONFIG.NATURAL_ALLY_LEAN_THRESHOLD) rival = Math.round(total * CONFIG.NATURAL_ALLY_LEAN);
+    blocs[ideo.id] = { total, you, rival, momentum:0 };
+  });
+  return blocs;
+}
+
+function initGame(billId){
+  const bill = CONFIG.BILLS.find(b=>b.id===billId);
+  S = {
+    bill,
+    groupName: bill.playerGroup,
+    rivalName: bill.rival,
+    round: 1,
+    pc: CONFIG.PC_BASE_INCOME,
+    pcBonusNextRound: 0,
+    pcPenaltyNextRound: 0,
+    senateCostSurcharge: 0,
+    backdoorUsedThisSession: false,
+    backdoorFlagRound: -1,
+    house: newChamberState("house", bill),
+    senate: newChamberState("senate", bill),
+    houseStatus: "active",
+    senateStatus: "active",
+    log: [],
+    gameOver: false,
+    awaitingHerald: false
+  };
+  let allyYou = 0, allyRival = 0;
+  ["house","senate"].forEach(ch=> CONFIG.IDEOLOGIES.forEach(i=>{ allyYou += S[ch][i.id].you; allyRival += S[ch][i.id].rival; }));
+  addLog(`Session opens. ${S.groupName} begins lobbying for ${bill.title}.`, "event");
+  addLog(`Natural allies fall in line immediately: ${allyYou} reps back you, ${allyRival} reps side with ${S.rivalName} from day one.`, "news");
+  updateChamberStatuses();
+  renderAll();
+  openHerald(1, "Begin Round 1 →", ()=>{});
+}
+
+/* =========================================================================
+   GAME MATH
+========================================================================= */
+function receptivenessOf(chamber, ideoId){
+  const base = S.bill.receptiveness[ideoId];
+  const momentum = S[chamber][ideoId].momentum;
+  return clamp(base + momentum, 3, 97);
+}
+function rivalReceptivenessOf(ideoId){
+  return clamp(100 - S.bill.receptiveness[ideoId], 3, 97);
+}
+function undecidedOf(chamber, ideoId){
+  const b = S[chamber][ideoId];
+  return b.total - b.you - b.rival;
+}
+
+function moodLabel(pct){
+  if(pct >= 70) return { txt:"Friendly", color:"#3f7a44" };
+  if(pct >= 45) return { txt:"Persuadable", color:"#8a6a1f" };
+  if(pct >= 20) return { txt:"Skeptical", color:"#a5602f" };
+  return { txt:"Hostile", color:"#a5453f" };
+}
+
+function giveMomentum(state, chamber, ideoId, amt){
+  state[chamber][ideoId].momentum = clamp(state[chamber][ideoId].momentum + amt, -40, 40);
+}
+
+function checkChamberStatus(chamber){
+  const conf = CONFIG.CHAMBERS[chamber];
+  let you=0, rival=0;
+  CONFIG.IDEOLOGIES.forEach(i=>{ you += S[chamber][i.id].you; rival += S[chamber][i.id].rival; });
+  const undecided = conf.total - you - rival;
+  if(you >= conf.majority) return "passed";
+  if(you + undecided < conf.majority) return "blocked";
+  return "active";
+}
+
+function chamberTallies(chamber){
+  const conf = CONFIG.CHAMBERS[chamber];
+  let you=0, rival=0;
+  CONFIG.IDEOLOGIES.forEach(i=>{ you += S[chamber][i.id].you; rival += S[chamber][i.id].rival; });
+  return { you, rival, undecided: conf.total - you - rival, total: conf.total, majority: conf.majority };
+}
+
+/* -------- player actions -------- */
+function doAction(actionType, chamber, ideoId){
+  if(S.gameOver) return;
+  const conf = CONFIG.CHAMBERS[chamber];
+  let cost = conf.cost[actionType];
+  if(actionType !== "rally" && chamber === "senate" && S.senateCostSurcharge) cost += S.senateCostSurcharge;
+  if(S.pc < cost) return;
+  if(actionType === "backdoor" && S.round < CONFIG.BACKDOOR_UNLOCK_ROUND) return;
+
+  const undecided = undecidedOf(chamber, ideoId);
+  if(undecided <= 0 && actionType !== "rally"){ return; }
+
+  S.pc -= cost;
+
+  if(actionType === "rally"){
+    giveMomentum(S, chamber, ideoId, 20);
+    addLog(`Round ${S.round}: Grassroots rally energizes constituents in the ${idName(ideoId)} ranks (${chamberLabel(chamber)}). They're more open to hearing you out.`, "self");
+    renderAll();
+    return;
+  }
+
+  const recept = receptivenessOf(chamber, ideoId);
+  let flip = 0;
+  let successText = "";
+
+  if(actionType === "backdoor"){
+    const [lo,hi] = conf.flip.backdoor;
+    flip = Math.min(undecided, randInt(lo,hi));
+    S.backdoorUsedThisSession = true;
+    S.backdoorFlagRound = S.round;
+    successText = `Round ${S.round}: A closed-door deal locks in ${flip} member(s) of ${idName(ideoId)} in the ${chamberLabel(chamber)}. No cameras. No questions — yet.`;
+  } else {
+    const successBonus = actionType === "contribution" ? 8 : (actionType === "media" ? 4 : 18);
+    const successChance = clamp(recept + successBonus, 12, 95);
+    const roll = rand(0,100);
+    if(roll < successChance){
+      const [lo,hi] = conf.flip[actionType];
+      const scaled = rand(lo,hi) * (0.55 + recept/180);
+      flip = Math.min(undecided, Math.max(1, Math.round(scaled)));
+      const verb = actionType === "coffee" ? "A round of coffee meetings pays off with" :
+                   actionType === "contribution" ? "A campaign contribution swings" :
+                   "A national ad buy moves";
+      successText = `Round ${S.round}: ${verb} ${flip} member(s) of ${idName(ideoId)} in the ${chamberLabel(chamber)}.`;
+    } else {
+      flip = 0;
+      successText = `Round ${S.round}: Your outreach to ${idName(ideoId)} in the ${chamberLabel(chamber)} was cordial but noncommittal. No votes moved.`;
+    }
+  }
+
+  if(flip > 0){
+    S[chamber][ideoId].you += flip;
+    addLog(successText, "self");
+  } else {
+    addLog(successText, "self");
+  }
+
+  if(actionType === "media"){
+    // media hits both chambers for the same ideology, same cost (already charged once)
+    const otherChamber = chamber === "house" ? "senate" : "house";
+    const otherConf = CONFIG.CHAMBERS[otherChamber];
+    const otherUndecided = undecidedOf(otherChamber, ideoId);
+    if(otherUndecided > 0){
+      const otherRecept = receptivenessOf(otherChamber, ideoId);
+      const successChance = clamp(otherRecept + 4, 12, 95);
+      if(rand(0,100) < successChance){
+        const [lo,hi] = otherConf.flip.media;
+        const scaled = rand(lo,hi) * (0.55 + otherRecept/180);
+        const otherFlip = Math.min(otherUndecided, Math.max(1, Math.round(scaled)));
+        S[otherChamber][ideoId].you += otherFlip;
+        addLog(`Round ${S.round}: The same ad buy also reaches ${idName(ideoId)} in the ${chamberLabel(otherChamber)} — ${otherFlip} more on board.`, "self");
+      }
+    }
+  }
+
+  updateChamberStatuses();
+  renderAll();
+  maybeEndGame();
+}
+
+/* -------- rival AI -------- */
+function rivalFlip(state, chamber, ideoId, forceMax){
+  const undecided = undecidedOf(chamber, ideoId);
+  if(undecided <= 0) return 0;
+  const conf = CONFIG.CHAMBERS[chamber];
+  const [lo,hi] = conf.flip.contribution;
+  const recept = rivalReceptivenessOf(ideoId);
+  // Rival lobbying can whiff too — same odds shape the player faces on a
+  // Campaign Contribution, so neither side is guaranteed results.
+  const successChance = clamp(recept + 8, 12, 90);
+  if(rand(0,100) >= successChance) return 0;
+  let n = Math.round(rand(lo,hi) * (0.55 + recept/180));
+  if(forceMax) n = Math.min(n, forceMax);
+  n = Math.min(undecided, Math.max(1,n));
+  state[chamber][ideoId].rival += n;
+  return n;
+}
+
+/* -------- direct vote-swing helpers (used by random events) -------- */
+function swingAmt(chamber){ return chamber === "house" ? randInt(5, 10) : randInt(2, 4); }
+function directFlip(state, chamber, ideoId, side, amt){
+  const und = undecidedOf(chamber, ideoId);
+  const n = Math.min(und, amt);
+  if(n > 0) state[chamber][ideoId][side] += n;
+  return n;
+}
+function reclaimFromRival(state, chamber, ideoId, amt){
+  const b = state[chamber][ideoId];
+  const n = Math.min(b.rival, amt);
+  b.rival -= n;
+  return n;
+}
+function pickRivalHeldBloc(){
+  const options = [];
+  ["house","senate"].forEach(chamber=>{
+    CONFIG.IDEOLOGIES.forEach(i=>{ if(S[chamber][i.id].rival > 0) options.push({chamber, id:i.id}); });
+  });
+  if(options.length === 0) return null;
+  return options[randInt(0, options.length-1)];
+}
+
+function runRivalTurn(){
+  let budget = CONFIG.RIVAL_PC_BASE + rand(0, CONFIG.RIVAL_PC_VARIANCE) + (S.round-1)*CONFIG.RIVAL_PC_GROWTH_PER_ROUND;
+  const actionsAvailable = ["house","senate"].flatMap(chamber=>
+    CONFIG.IDEOLOGIES.map(i=>({chamber, id:i.id, recept: rivalReceptivenessOf(i.id), undecided: undecidedOf(chamber,i.id)}))
+  ).filter(a=>a.undecided > 0).sort((a,b)=> b.recept - a.recept);
+
+  let spent = 0;
+  for(const target of actionsAvailable){
+    if(budget < 30) break;
+    const conf = CONFIG.CHAMBERS[target.chamber];
+    const cost = 30;
+    if(budget < cost) continue;
+    budget -= cost; spent += cost;
+    const n = rivalFlip(S, target.chamber, target.id);
+    if(n>0){
+      addLog(`Round ${S.round}: ${S.rivalName} courts ${idName(target.id)} in the ${chamberLabel(target.chamber)} — ${n} more sign on against your bill.`, "rival");
+    }
+    if(spent > 120) break; // keep it from steamrolling every single round
+  }
+}
+
+/* -------- random events -------- */
+function pickBlocByCondition(cond){
+  const options = [];
+  ["house","senate"].forEach(chamber=>{
+    CONFIG.IDEOLOGIES.forEach(i=>{
+      if(undecidedOf(chamber,i.id) > 0 && cond(chamber, i.id)) options.push({chamber, id:i.id});
+    });
+  });
+  if(options.length===0) return null;
+  return options[randInt(0,options.length-1)];
+}
+function pickFriendlyBloc(state){ return pickBlocByCondition((c,id)=> S.bill.receptiveness[id] >= 55); }
+function pickHostileBloc(state){ return pickBlocByCondition((c,id)=> S.bill.receptiveness[id] < 45); }
+function pickModerateBloc(state){ return pickBlocByCondition((c,id)=> id==="ind" || id==="swingD" || id==="modR"); }
+
+function runRandomEvent(){
+  if(S.backdoorUsedThisSession && S.backdoorFlagRound === S.round - 1 && Math.random() < CONFIG.BACKDOOR_SCANDAL_CHANCE){
+    S.pcPenaltyNextRound += 15;
+    addLog(`${CONFIG.SCANDAL_EVENT_TEXT} Damage control costs you 15 PC next round.`, "news");
+    return;
+  }
+  if(Math.random() > CONFIG.EVENT_CHANCE) return;
+  const ev = CONFIG.EVENTS[randInt(0, CONFIG.EVENTS.length-1)];
+  const detail = ev.apply(S);
+  addLog(`${ev.text} ${detail}`, "news");
+}
+
+/* -------- round flow -------- */
+function updateChamberStatuses(){
+  S.houseStatus = checkChamberStatus("house");
+  S.senateStatus = checkChamberStatus("senate");
+}
+
+function maybeEndGame(){
+  if(S.houseStatus !== "active" && S.senateStatus !== "active"){
+    endGame();
+  }
+}
+
+function endRound(){
+  if(S.gameOver) return;
+  const roundJustPlayed = S.round;
+  runRivalTurn();
+  updateChamberStatuses();
+  runRandomEvent();
+  updateChamberStatuses();
+
+  if(S.houseStatus !== "active" && S.senateStatus !== "active"){
+    endGame();
+    return;
+  }
+  if(S.round >= CONFIG.MAX_ROUNDS){
+    endGame();
+    return;
+  }
+
+  renderLog();
+  openHerald(roundJustPlayed, `Begin Round ${roundJustPlayed+1} →`, advanceToNextRound);
+}
+
+function advanceToNextRound(){
+  // decay momentum as the week turns over
+  ["house","senate"].forEach(chamber=>{
+    CONFIG.IDEOLOGIES.forEach(i=>{ S[chamber][i.id].momentum = Math.round(S[chamber][i.id].momentum * 0.4); });
+  });
+  S.senateCostSurcharge = 0;
+
+  S.round += 1;
+  let income = CONFIG.PC_BASE_INCOME + randInt(0, CONFIG.PC_INCOME_VARIANCE) + S.pcBonusNextRound - S.pcPenaltyNextRound;
+  income = Math.max(10, income);
+  S.pcBonusNextRound = 0;
+  S.pcPenaltyNextRound = 0;
+  S.pc += income;
+  addLog(`Round ${S.round} begins. You raise ${income} Political Capital.`, "event");
+  renderAll();
+}
+
+function endGame(){
+  S.gameOver = true;
+  renderEndScreen();
+  showScreen("screen-end");
+}
+
+/* =========================================================================
+   RENDERING
+========================================================================= */
+function addLog(text, kind){
+  S.log.push({text, kind, round:S.round});
+  if(S.log.length > 150) S.log.shift();
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function polarToCartesian(cx,cy,r,angleDeg){
+  const rad = angleDeg * Math.PI/180;
+  return { x: cx + r*Math.cos(rad), y: cy - r*Math.sin(rad) };
+}
+function describeArc(cx,cy,r,startAngle,endAngle){
+  if(Math.abs(startAngle-endAngle) < 0.05) return "";
+  const start = polarToCartesian(cx,cy,r,startAngle);
+  const end = polarToCartesian(cx,cy,r,endAngle);
+  const largeArc = (startAngle-endAngle) > 180 ? 1 : 0;
+  return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+}
+
+function renderGauge(svgEl, chamber){
+  const t = chamberTallies(chamber);
+  const cx=160, cy=150, rOuter=125, rTrack=24;
+  const youFrac = t.you/t.total;
+  const rivalFrac = t.rival/t.total;
+  const majFrac = t.majority/t.total;
+
+  const angYouEnd = 180 - 180*youFrac;
+  const angRivalStart = 180*rivalFrac;
+  const angUndecStart = angYouEnd;
+  const angUndecEnd = angRivalStart;
+
+  const youArc = describeArc(cx,cy,rOuter,180, Math.max(angYouEnd,angRivalStart));
+  const rivalArc = describeArc(cx,cy,rOuter, Math.max(angRivalStart, angYouEnd), 0);
+  const undecArc = (angUndecStart > angUndecEnd) ? describeArc(cx,cy,rOuter, angUndecStart, angUndecEnd) : "";
+
+  const majAngle = 180 - 180*majFrac;
+  const tickInner = polarToCartesian(cx,cy,rOuter-rTrack-6, majAngle);
+  const tickOuter = polarToCartesian(cx,cy,rOuter+8, majAngle);
+
+  svgEl.innerHTML = `
+    <path d="${describeArc(cx,cy,rOuter,180,0)}" stroke="#3a3122" stroke-width="${rTrack}" fill="none" stroke-linecap="butt" opacity="0.5"/>
+    ${undecArc ? `<path d="${undecArc}" stroke="var(--undecided)" stroke-width="${rTrack}" fill="none"/>` : ""}
+    ${youArc ? `<path d="${youArc}" stroke="var(--capitol-blue)" stroke-width="${rTrack}" fill="none"/>` : ""}
+    ${rivalArc ? `<path d="${rivalArc}" stroke="var(--capitol-red)" stroke-width="${rTrack}" fill="none"/>` : ""}
+    <line x1="${tickInner.x.toFixed(2)}" y1="${tickInner.y.toFixed(2)}" x2="${tickOuter.x.toFixed(2)}" y2="${tickOuter.y.toFixed(2)}" stroke="var(--brass-bright)" stroke-width="3"/>
+    <text x="${cx}" y="${cy-38}" text-anchor="middle" font-family="IBM Plex Mono" font-size="30" font-weight="600" fill="#f1e8d2">${t.you}</text>
+    <text x="${cx}" y="${cy-16}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#a89b76" letter-spacing="1">OF ${t.majority} NEEDED</text>
+    <text x="${cx-rOuter+6}" y="${cy+22}" text-anchor="start" font-family="IBM Plex Mono" font-size="11" fill="#8fb0d6">You: ${t.you}</text>
+    <text x="${cx+rOuter-6}" y="${cy+22}" text-anchor="end" font-family="IBM Plex Mono" font-size="11" fill="#d99b93">Rival: ${t.rival}</text>
+    <text x="${cx}" y="${cy+22}" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#c7bd9c">Undec: ${t.undecided}</text>
+  `;
+}
+
+function renderTopbar(){
+  document.getElementById("groupLabel").textContent = S.groupName.toUpperCase();
+  document.getElementById("billTitleLabel").textContent = S.bill.title;
+  document.getElementById("statRound").textContent = `${Math.min(S.round,CONFIG.MAX_ROUNDS)} / ${CONFIG.MAX_ROUNDS}`;
+  document.getElementById("statPC").textContent = S.pc;
+  document.getElementById("statRival").textContent = S.rivalName;
+}
+
+function renderGaugesAndStatus(){
+  renderGauge(document.getElementById("houseGauge"), "house");
+  renderGauge(document.getElementById("senateGauge"), "senate");
+  const hs = document.getElementById("houseStatus");
+  const ss = document.getElementById("senateStatus");
+  hs.className = "gauge-status " + S.houseStatus;
+  hs.textContent = S.houseStatus === "active" ? "IN PLAY" : (S.houseStatus === "passed" ? "PASSED ✓" : "BLOCKED ✕");
+  ss.className = "gauge-status " + S.senateStatus;
+  ss.textContent = S.senateStatus === "active" ? "IN PLAY" : (S.senateStatus === "passed" ? "PASSED ✓" : "BLOCKED ✕");
+}
+
+function renderBlocList(){
+  const container = document.getElementById("blocList");
+  container.innerHTML = "";
+  const conf = CONFIG.CHAMBERS[activeTab];
+  const chamberLocked = S[activeTab === "house" ? "houseStatus" : "senateStatus"];
+
+  CONFIG.IDEOLOGIES.forEach(ideo=>{
+    const b = S[activeTab][ideo.id];
+    const und = undecidedOf(activeTab, ideo.id);
+    const recept = receptivenessOf(activeTab, ideo.id);
+    const mood = moodLabel(recept);
+    const youPct = (b.you/b.total*100);
+    const rivalPct = (b.rival/b.total*100);
+    const surcharge = (activeTab === "senate" && S.senateCostSurcharge) ? S.senateCostSurcharge : 0;
+
+    const backdoorLocked = S.round < CONFIG.BACKDOOR_UNLOCK_ROUND;
+    const disabledAll = chamberLocked !== "active" || S.gameOver || S.awaitingHerald;
+
+    const card = document.createElement("div");
+    card.className = "bloc-card";
+    card.innerHTML = `
+      <div class="bloc-top">
+        <div class="bloc-name"><span class="swatch" style="background:${ideo.color}"></span>${ideo.name}</div>
+        <div class="bloc-mood" style="color:${mood.color}">${mood.txt} · ${recept}%</div>
+      </div>
+      <div class="bloc-nums">
+        <span>Total: ${b.total}</span><span>You: ${b.you}</span><span>Rival: ${b.rival}</span><span>Undecided: ${und}</span>
+      </div>
+      <div class="bloc-bar"><div class="seg-you" style="width:${youPct}%"></div><div class="seg-rival" style="width:${rivalPct}%"></div></div>
+      <div class="bloc-actions">
+        <button class="act-btn" data-act="coffee" data-ch="${activeTab}" data-id="${ideo.id}" ${disabledAll || S.pc < conf.cost.coffee+surcharge || und<=0 ? "disabled":""}>
+          Coffee Meeting<small>${conf.cost.coffee+surcharge} PC</small>
+        </button>
+        <button class="act-btn" data-act="contribution" data-ch="${activeTab}" data-id="${ideo.id}" ${disabledAll || S.pc < conf.cost.contribution+surcharge || und<=0 ? "disabled":""}>
+          Contribution<small>${conf.cost.contribution+surcharge} PC</small>
+        </button>
+        <button class="act-btn" data-act="rally" data-ch="${activeTab}" data-id="${ideo.id}" ${disabledAll || S.pc < conf.cost.rally+surcharge ? "disabled":""}>
+          Grassroots Rally<small>${conf.cost.rally+surcharge} PC</small>
+        </button>
+        <button class="act-btn" data-act="media" data-ch="${activeTab}" data-id="${ideo.id}" ${disabledAll || S.pc < conf.cost.media+surcharge || und<=0 ? "disabled":""}>
+          Media Ad Buy<small>${conf.cost.media+surcharge} PC · both chambers</small>
+        </button>
+        <button class="act-btn ${backdoorLocked?'locked':''}" data-act="backdoor" data-ch="${activeTab}" data-id="${ideo.id}" ${disabledAll || backdoorLocked || S.pc < conf.cost.backdoor+surcharge || und<=0 ? "disabled":""}>
+          Backdoor Deal<small>${backdoorLocked ? "Unlocks Rd "+CONFIG.BACKDOOR_UNLOCK_ROUND : conf.cost.backdoor+surcharge+" PC"}</small>
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll(".act-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const act = btn.getAttribute("data-act");
+      const ch = btn.getAttribute("data-ch");
+      const id = btn.getAttribute("data-id");
+      doAction(act, ch, id);
+    });
+  });
+}
+
+function renderLog(){
+  const feed = document.getElementById("logFeed");
+  feed.innerHTML = "";
+  const recent = S.log.slice(-25).reverse();
+  recent.forEach(entry=>{
+    const div = document.createElement("div");
+    div.className = "log-entry " + (entry.kind === "rival" ? "rival" : (entry.kind === "event" || entry.kind === "news") ? "event" : "");
+    div.innerHTML = `<span class="rnd">R${entry.round}</span>${entry.text}`;
+    feed.appendChild(div);
+  });
+}
+
+function splitHeadline(text){
+  const idx = text.indexOf(". ");
+  if(idx === -1) return { headline: text, dek: "" };
+  return { headline: text.slice(0, idx+1), dek: text.slice(idx+2) };
+}
+
+function renderNewspaper(){
+  document.getElementById("paperRound").textContent = Math.min(S.round, CONFIG.MAX_ROUNDS);
+  const items = S.log.filter(e=>e.kind === "news");
+  const wrap = document.getElementById("paperHeadlines");
+  if(items.length === 0){
+    wrap.innerHTML = `<div class="paper-empty">No dispatches yet — the wire is quiet. Check back after Round 1.</div>`;
+    return;
+  }
+  const ordered = items.slice().reverse();
+  const lead = ordered[0];
+  const rest = ordered.slice(1);
+  const leadParts = splitHeadline(lead.text);
+  let html = `
+    <div class="paper-lead">
+      <div class="headline">${leadParts.headline}</div>
+      ${leadParts.dek ? `<div class="dek">${leadParts.dek}</div>` : ""}
+      <div class="byline">Round ${lead.round} Dispatch</div>
+    </div>
+  `;
+  if(rest.length){
+    html += `<div class="paper-list">`;
+    rest.forEach(item=>{
+      const parts = splitHeadline(item.text);
+      html += `
+        <div class="paper-item">
+          <div class="headline">${parts.headline}</div>
+          <div class="byline">Round ${item.round}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function renderAll(){
+  renderTopbar();
+  renderGaugesAndStatus();
+  renderBlocList();
+  renderLog();
+  renderNewspaper();
+}
+
+let pendingHeraldCallback = null;
+
+function openHerald(roundNum, continueLabel, onContinue){
+  pendingHeraldCallback = onContinue;
+  S.awaitingHerald = true;
+  document.getElementById("endRoundBtn").disabled = true;
+  renderBlocList();
+
+  const entries = S.log.filter(e => e.round === roundNum && e.kind !== "event");
+  const newsEntries = entries.filter(e => e.kind === "news");
+  const activityEntries = entries.filter(e => e.kind !== "news");
+
+  let html = "";
+  if(newsEntries.length){
+    const lead = newsEntries[0];
+    const leadParts = splitHeadline(lead.text);
+    html += `<div class="paper-lead">
+      <div class="headline">${leadParts.headline}</div>
+      ${leadParts.dek ? `<div class="dek">${leadParts.dek}</div>` : ""}
+    </div>`;
+    if(newsEntries.length > 1){
+      html += `<div class="paper-list">`;
+      newsEntries.slice(1).forEach(e=>{
+        const p = splitHeadline(e.text);
+        html += `<div class="paper-item"><div class="headline">${p.headline}</div></div>`;
+      });
+      html += `</div>`;
+    }
+  } else {
+    html += `<div class="paper-empty">A quiet week on Capitol Hill — no major headlines.</div>`;
+  }
+
+  if(activityEntries.length){
+    html += `<div class="herald-activity-title">This Week on the Hill</div><div class="herald-activity-list">`;
+    activityEntries.forEach(e=>{
+      const tag = e.kind === "rival" ? `<span class="tag-rival">RIVAL</span>` : `<span class="tag-you">YOU</span>`;
+      html += `<div class="herald-activity-item">${tag}${e.text}</div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="herald-activity-title">This Week on the Hill</div><div class="paper-empty">No lobbying moves recorded.</div>`;
+  }
+
+  document.getElementById("heraldRoundLabel").textContent = `Week ${roundNum} Edition`;
+  document.getElementById("heraldBody").innerHTML = html;
+  document.getElementById("heraldContinueBtn").textContent = continueLabel;
+  document.getElementById("heraldModal").classList.add("open");
+}
+
+function closeHerald(){
+  document.getElementById("heraldModal").classList.remove("open");
+  S.awaitingHerald = false;
+  document.getElementById("endRoundBtn").disabled = false;
+  const cb = pendingHeraldCallback;
+  pendingHeraldCallback = null;
+  if(cb) cb();
+}
+
+function renderEndScreen(){
+  const houseT = chamberTallies("house");
+  const senateT = chamberTallies("senate");
+  const bothPassed = S.houseStatus === "passed" && S.senateStatus === "passed";
+  const eitherBlocked = S.houseStatus === "blocked" || S.senateStatus === "blocked";
+
+  let headline, eyebrow;
+  if(bothPassed){
+    headline = `${S.bill.title} Is Signed Into Law`;
+    eyebrow = "SESSION ADJOURNED · VICTORY";
+  } else if(S.houseStatus === "passed" || S.senateStatus === "passed"){
+    headline = "The Bill Stalls in Congress";
+    eyebrow = "SESSION ADJOURNED · PARTIAL RESULT";
+  } else {
+    headline = "Back to the Drawing Board";
+    eyebrow = "SESSION ADJOURNED · BILL FAILS";
+  }
+  document.getElementById("endEyebrow").textContent = eyebrow;
+  document.getElementById("endHeadline").textContent = headline;
+
+  const passedCount = (S.houseStatus==="passed"?1:0) + (S.senateStatus==="passed"?1:0);
+  const rank = CONFIG.RANKS[bothPassed ? 4 : passedCount];
+  document.getElementById("endRank").textContent = `Final rank: ${rank.label}`;
+
+  function fillChamber(prefix, status, t){
+    const resEl = document.getElementById(prefix+"Result");
+    resEl.className = "result " + (status === "active" ? "failed" : status);
+    resEl.textContent = status === "passed" ? "PASSED ✓" : status === "blocked" ? "BLOCKED BY OPPOSITION ✕" : "TIME EXPIRED — DID NOT PASS ✕";
+    document.getElementById(prefix+"Table").innerHTML = `
+      <tr><td>Convinced (you)</td><td>${t.you} / ${t.total}</td></tr>
+      <tr><td>Convinced (${S.rivalName})</td><td>${t.rival}</td></tr>
+      <tr><td>Never decided</td><td>${t.undecided}</td></tr>
+      <tr><td>Majority needed</td><td>${t.majority}</td></tr>
+    `;
+  }
+  fillChamber("endHouse", S.houseStatus, houseT);
+  fillChamber("endSenate", S.senateStatus, senateT);
+
+  document.getElementById("civicsNote").innerHTML = `<b>Civics corner:</b> Real interest groups use these exact tools — lobbying meetings, PAC contributions, grassroots organizing, and issue ads — to compete for lawmakers' support. Bills must clear a majority in <b>both</b> the House and Senate before they can be signed into law, which is exactly why rival interest groups so often cancel each other out on Capitol Hill.`;
+}
+
+/* =========================================================================
+   BILL SELECT SCREEN
+========================================================================= */
+function renderBillGrid(){
+  const grid = document.getElementById("billGrid");
+  grid.innerHTML = "";
+  CONFIG.BILLS.forEach(bill=>{
+    const ideoOrder = CONFIG.IDEOLOGIES;
+    const leanBar = ideoOrder.map(i=>{
+      const pct = 100/ideoOrder.length;
+      const r = bill.receptiveness[i.id];
+      const shade = r>=55 ? "var(--success)" : r>=35 ? "var(--warn)" : "var(--capitol-red)";
+      return `<span style="width:${pct}%; background:${shade}"></span>`;
+    }).join("");
+    const card = document.createElement("div");
+    card.className = "bill-card";
+    card.innerHTML = `
+      <span class="tag">${bill.tag}</span>
+      <h3>${bill.title}</h3>
+      <div class="groups">You: <b>${bill.playerGroup}</b> &nbsp;·&nbsp; Rival: <b>${bill.rival}</b></div>
+      <p>${bill.blurb}</p>
+      <div class="lean-bar">${leanBar}</div>
+      <div class="lean-label"><span>Left-leaning support</span><span>Right-leaning support</span></div>
+      <button data-bill="${bill.id}">Champion This Bill →</button>
+    `;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll("button[data-bill]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const billId = btn.getAttribute("data-bill");
+      activeTab = "house";
+      initGame(billId);
+      showScreen("screen-game");
+    });
+  });
+}
+
+/* =========================================================================
+   WIRE UP
+========================================================================= */
+document.getElementById("tabHouse").addEventListener("click", ()=>{
+  activeTab = "house";
+  document.getElementById("tabHouse").classList.add("active");
+  document.getElementById("tabSenate").classList.remove("active");
+  renderBlocList();
+});
+document.getElementById("tabSenate").addEventListener("click", ()=>{
+  activeTab = "senate";
+  document.getElementById("tabSenate").classList.add("active");
+  document.getElementById("tabHouse").classList.remove("active");
+  renderBlocList();
+});
+document.getElementById("endRoundBtn").addEventListener("click", ()=>{
+  const btn = document.getElementById("endRoundBtn");
+  endRound();
+  if(!S.gameOver){
+    btn.parentElement.parentElement.classList.add("flash");
+    setTimeout(()=>document.getElementById("screen-game").classList.remove("flash"), 500);
+  }
+});
+document.getElementById("playAgainBtn").addEventListener("click", ()=>{
+  showScreen("screen-setup");
+});
+document.getElementById("replayBtn").addEventListener("click", ()=>{
+  const billId = S.bill.id;
+  activeTab = "house";
+  initGame(billId);
+  showScreen("screen-game");
+});
+document.getElementById("instructionsContinueBtn").addEventListener("click", ()=>{
+  showScreen("screen-setup");
+});
+document.getElementById("reviewInstructionsBtn").addEventListener("click", ()=>{
+  showScreen("screen-instructions");
+});
+document.getElementById("heraldContinueBtn").addEventListener("click", closeHerald);
+
+renderBillGrid();
+})();
+</script>
+</body>
+</html>
