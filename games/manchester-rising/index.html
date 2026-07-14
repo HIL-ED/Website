@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manchester Rising — Industrial City Builder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --stone: #d4cbb8;
+  --stone-dark: #b8ad98;
+  --vellum: #ede5d0;
+  --ink: #1e1a14;
+  --soot: #2e2820;
+  --iron: #5a5248;
+  --smoke: #8a8070;
+  --ember: #c0540a;
+  --river: #4a7a9b;
+  --river-light: #6a9ab8;
+  --road: #a89878;
+  --road-dark: #8a7a60;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--soot);
+  color: var(--stone);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* ── HEADER ── */
+#hdr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--ink);
+  border-bottom: 1px solid #3a3428;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+#hdr h1 { font-family:'Spectral',serif; font-size:1.05rem; color:var(--vellum); letter-spacing:0.03em; white-space:nowrap; }
+#year-display { font-family:'Spectral',serif; font-size:1.3rem; color:var(--ember); font-weight:600; min-width:52px; }
+#era-badge { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--smoke); border:1px solid #3a3428; padding:2px 8px; border-radius:2px; white-space:nowrap; }
+#timer-bar-wrap { flex:1; height:4px; background:#3a3428; border-radius:2px; overflow:hidden; max-width:200px; }
+#timer-bar { height:100%; background:var(--ember); width:100%; transition:width 1s linear; }
+#pop-display { font-size:0.78rem; color:var(--stone); white-space:nowrap; }
+#pop-display span { color:var(--vellum); font-weight:500; }
+
+/* ── MAIN ── */
+#main { display:flex; flex:1; overflow:hidden; }
+
+/* ── PALETTE ── */
+#palette {
+  width:155px; flex-shrink:0; background:#252018;
+  border-right:1px solid #3a3428;
+  display:flex; flex-direction:column;
+  overflow-y:auto; overflow-x:hidden;
+}
+#palette::-webkit-scrollbar { width:3px; }
+#palette::-webkit-scrollbar-thumb { background:#4a4030; }
+.pal-era-label { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--smoke); padding:7px 10px 3px; border-top:1px solid #3a3428; }
+.pal-era-label:first-child { border-top:none; }
+.build-btn {
+  display:flex; align-items:center; gap:6px; padding:5px 10px;
+  cursor:pointer; border:none; background:transparent; width:100%;
+  text-align:left; color:var(--stone); font-family:'DM Sans',sans-serif;
+  font-size:0.75rem; transition:background 0.15s;
+}
+.build-btn:hover:not(.locked) { background:#3a3428; }
+.build-btn.active { background:#4a3c28; color:var(--vellum); }
+.build-btn.locked { opacity:0.3; cursor:not-allowed; }
+.build-btn .icon { font-size:0.95rem; width:18px; text-align:center; flex-shrink:0; }
+.build-btn .bname { font-size:0.72rem; line-height:1.2; }
+.build-btn .bdesc { font-size:0.6rem; color:var(--smoke); line-height:1.2; }
+.build-btn.active .bdesc { color:var(--stone-dark); }
+#demolish-btn {
+  margin:7px 10px; padding:5px 10px; background:transparent;
+  border:1px solid #5a3020; color:#a06040; font-family:'DM Sans',sans-serif;
+  font-size:0.7rem; cursor:pointer; border-radius:2px; text-align:left;
+  transition:background 0.15s,color 0.15s;
+}
+#demolish-btn:hover { background:#3a1810; color:#d08060; }
+#demolish-btn.active { background:#5a2010; color:#e09070; border-color:#8a4030; }
+
+/* ── GRID ── */
+#grid-wrap {
+  flex:1; overflow:auto; display:flex;
+  align-items:flex-start; justify-content:flex-start;
+  padding:16px; background:#1e1a14;
+}
+#grid-wrap::-webkit-scrollbar { width:6px; height:6px; }
+#grid-wrap::-webkit-scrollbar-thumb { background:#4a4030; border-radius:3px; }
+#city-grid {
+  display:grid;
+  grid-template-columns:repeat(20,32px);
+  grid-template-rows:repeat(20,32px);
+  gap:1px; background:#2e2820;
+  border:1px solid #3a3428; flex-shrink:0;
+}
+.cell {
+  width:32px; height:32px; background:#3a3428; cursor:crosshair;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  font-size:1.05rem; transition:filter 0.1s; overflow:hidden;
+}
+.cell:hover { filter:brightness(1.3); }
+.cell.road-h,.cell.road-v,.cell.road-cross,.cell.road-placed { background:var(--road); }
+.cell.road-cross { background:var(--road-dark); }
+.cell.river { background:var(--river); }
+.cell.river-road { background:var(--river-light); }
+.cell.cholera-risk { box-shadow:inset 0 0 0 2px rgba(120,200,80,0.4); }
+.cell.cholera-active { box-shadow:inset 0 0 0 3px rgba(80,200,40,0.7); animation:chol-pulse 1.5s infinite; }
+@keyframes chol-pulse { 0%,100%{box-shadow:inset 0 0 0 3px rgba(80,200,40,0.7);}50%{box-shadow:inset 0 0 0 3px rgba(80,200,40,0.3);} }
+.cell.fire-active { animation:fire-flicker 0.8s infinite; }
+@keyframes fire-flicker { 0%,100%{filter:brightness(1.4) saturate(2);}50%{filter:brightness(0.9) saturate(1.5);} }
+.cell-label {
+  position:absolute; bottom:1px; left:0; right:0; text-align:center;
+  font-size:0.36rem; color:rgba(255,255,255,0.5); line-height:1;
+  pointer-events:none; font-family:'DM Sans',sans-serif;
+  font-weight:500; letter-spacing:0.02em; text-transform:uppercase;
+}
+
+/* ── PROMPT COLUMN ── */
+#prompt-col {
+  width:240px; flex-shrink:0; background:#1e1a14;
+  border-left:1px solid #3a3428;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#prompt-header {
+  padding:8px 12px 6px;
+  border-bottom:1px solid #3a3428;
+  background:#252018;
+}
+#prompt-era-tag {
+  font-size:0.58rem; text-transform:uppercase; letter-spacing:0.12em;
+  color:var(--ember); margin-bottom:3px;
+}
+#prompt-year-display {
+  font-family:'Spectral',serif; font-size:1.1rem;
+  color:var(--vellum); font-weight:600; margin-bottom:4px;
+}
+#prompt-context {
+  font-family:'Spectral',serif; font-style:italic;
+  font-size:0.75rem; color:var(--stone-dark); line-height:1.45;
+  margin-bottom:6px;
+}
+#prompt-directive {
+  font-size:0.73rem; color:var(--stone); line-height:1.4;
+  padding-top:6px; border-top:1px solid #3a3428;
+  font-weight:500;
+}
+
+/* checklist */
+#checklist-area {
+  flex:1; overflow-y:auto; padding:10px 12px;
+}
+#checklist-area::-webkit-scrollbar { width:3px; }
+#checklist-area::-webkit-scrollbar-thumb { background:#4a4030; }
+#checklist-label {
+  font-size:0.58rem; text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--smoke); margin-bottom:8px;
+}
+.check-item {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 0; border-bottom:1px solid #2e2820;
+  font-size:0.75rem; color:var(--stone-dark);
+}
+.check-item:last-child { border-bottom:none; }
+.check-box {
+  width:14px; height:14px; border:1px solid #5a5040;
+  border-radius:2px; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center;
+  font-size:0.6rem; transition:background 0.2s, border-color 0.2s;
+}
+.check-item.done .check-box { background:var(--ember); border-color:var(--ember); color:white; }
+.check-item.done .check-text { color:var(--smoke); text-decoration:line-through; }
+.check-progress { font-size:0.65rem; color:var(--smoke); margin-left:auto; white-space:nowrap; }
+.check-item.done .check-progress { color:var(--ember); }
+
+#espe-strip {
+  padding:8px 12px 8px;
+  border-top:1px solid #3a3428;
+  background:#252018;
+  flex-shrink:0;
+}
+#espe-strip .espe-title { font-size:0.56rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--smoke); margin-bottom:4px; }
+.espe-item { font-size:0.63rem; color:var(--stone-dark); line-height:1.3; display:flex; gap:5px; align-items:baseline; margin-bottom:2px; }
+.espe-key { font-weight:500; color:var(--ember); font-size:0.6rem; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; min-width:36px; }
+
+/* ── CHRONICLE ── */
+#right-panel {
+  width:185px; flex-shrink:0; background:#252018;
+  border-left:1px solid #3a3428;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+#event-area { padding:9px 10px; border-bottom:1px solid #3a3428; }
+#event-area.has-event { background:#2e1e10; }
+#event-type-tag { font-size:0.56rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--ember); margin-bottom:4px; display:none; }
+#event-title { font-family:'Spectral',serif; font-size:0.82rem; color:var(--vellum); margin-bottom:3px; line-height:1.3; display:none; }
+#event-body { font-size:0.7rem; color:var(--stone-dark); line-height:1.4; font-style:italic; font-family:'Spectral',serif; display:none; }
+#no-event-msg { font-size:0.68rem; color:var(--smoke); font-style:italic; }
+#log-label { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--smoke); padding:7px 10px 3px; border-bottom:1px solid #3a3428; flex-shrink:0; }
+#log { flex:1; overflow-y:auto; padding:5px 10px; display:flex; flex-direction:column; gap:4px; }
+#log::-webkit-scrollbar { width:3px; }
+#log::-webkit-scrollbar-thumb { background:#4a4030; }
+.log-entry { font-size:0.67rem; color:var(--stone-dark); line-height:1.35; border-left:2px solid #4a4030; padding-left:5px; }
+.log-entry.demolish { border-left-color:#8a4030; color:#b08070; }
+.log-entry.event { border-left-color:var(--ember); color:var(--stone); }
+.log-entry.era { border-left-color:#7a9050; color:#a0b880; font-weight:500; }
+.log-entry .log-year { font-size:0.6rem; color:var(--smoke); }
+
+/* ── TRANSITION ── */
+#transition-modal { display:none; position:fixed; inset:0; background:rgba(20,16,10,0.92); z-index:100; align-items:center; justify-content:center; }
+#transition-modal.show { display:flex; }
+#transition-inner { background:var(--ink); border:1px solid #4a3c28; max-width:420px; padding:32px 36px; text-align:center; }
+#transition-inner h2 { font-family:'Spectral',serif; font-size:1.4rem; color:var(--vellum); margin-bottom:8px; }
+#transition-inner .t-year { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--ember); margin-bottom:12px; }
+#transition-inner p { font-family:'Spectral',serif; font-style:italic; font-size:0.85rem; color:var(--stone-dark); line-height:1.6; margin-bottom:20px; }
+#transition-inner .unlocked-list { text-align:left; margin-bottom:20px; }
+#transition-inner .ul-label { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--smoke); margin-bottom:6px; }
+#transition-inner .ul-item { font-size:0.78rem; color:var(--stone); padding:2px 0; display:flex; align-items:center; gap:6px; }
+#transition-inner button { background:var(--ember); color:white; border:none; padding:9px 24px; font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; border-radius:2px; }
+#transition-inner button:hover { background:#a04008; }
+
+/* ── REFLECTION ── */
+#reflection-screen { display:none; position:fixed; inset:0; background:var(--soot); z-index:200; overflow-y:auto; }
+#reflection-inner { max-width:960px; margin:0 auto; padding:32px 24px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+#refl-map-col h2,#refl-q-col h2 { font-family:'Spectral',serif; font-size:1.15rem; color:var(--vellum); margin-bottom:6px; }
+#refl-map-col .sub,#refl-q-col .sub { font-size:0.73rem; color:var(--smoke); margin-bottom:16px; font-style:italic; font-family:'Spectral',serif; }
+#refl-grid-display { display:grid; grid-template-columns:repeat(20,14px); grid-template-rows:repeat(20,14px); gap:0.5px; background:#2e2820; border:1px solid #4a4030; }
+.refl-cell { width:14px; height:14px; background:#3a3428; display:flex; align-items:center; justify-content:center; font-size:0.42rem; overflow:hidden; }
+.refl-cell.road-h,.refl-cell.road-v,.refl-cell.road-cross,.refl-cell.road-placed { background:var(--road); }
+.refl-cell.river,.refl-cell.river-road { background:var(--river); }
+.stats-strip { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+.stat-box { background:#2e2820; border:1px solid #4a4030; padding:8px 10px; border-radius:2px; text-align:center; }
+.stat-box .sv { font-family:'Spectral',serif; font-size:1.2rem; color:var(--vellum); }
+.stat-box .sl { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--smoke); margin-top:2px; }
+.reflect-q { margin-bottom:18px; }
+.reflect-q .ql { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--ember); margin-bottom:4px; }
+.reflect-q .qt { font-size:0.85rem; color:var(--vellum); font-weight:500; margin-bottom:7px; line-height:1.4; }
+.reflect-q textarea { width:100%; background:#2e2820; border:1px solid #4a4030; color:var(--stone); font-family:'DM Sans',sans-serif; font-size:0.78rem; padding:8px 10px; resize:vertical; line-height:1.5; outline:none; border-radius:2px; }
+.reflect-q textarea:focus { border-color:var(--ember); }
+#print-btn { background:var(--ember); color:white; border:none; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; cursor:pointer; border-radius:2px; margin-top:4px; }
+#print-btn:hover { background:#a04008; }
+.legend-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:0.62rem; color:var(--smoke); }
+.legend-swatch { width:10px; height:10px; border-radius:1px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>Manchester Rising</h1>
+  <div id="year-display">1760</div>
+  <div id="era-badge">Pre-Industrial</div>
+  <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+  <div id="pop-display">Population: <span id="pop-num">2,400</span></div>
+</div>
+
+<div id="main">
+
+  <!-- PALETTE -->
+  <div id="palette">
+    <div class="pal-era-label">Always Available</div>
+    <button class="build-btn" data-type="house" onclick="selectTool('house')"><span class="icon">🏠</span><div><div class="bname">House</div><div class="bdesc">Worker dwelling</div></div></button>
+    <button class="build-btn" data-type="church" onclick="selectTool('church')"><span class="icon">⛪</span><div><div class="bname">Church</div><div class="bdesc">Parish centre</div></div></button>
+    <button class="build-btn" data-type="market" onclick="selectTool('market')"><span class="icon">🏪</span><div><div class="bname">Market</div><div class="bdesc">Trade & commerce</div></div></button>
+    <button class="build-btn" data-type="farm" onclick="selectTool('farm')"><span class="icon">🌾</span><div><div class="bname">Farm</div><div class="bdesc">Food supply</div></div></button>
+    <button class="build-btn" data-type="forest" onclick="selectTool('forest')"><span class="icon">🌳</span><div><div class="bname">Forest / Trees</div><div class="bdesc">Green space</div></div></button>
+    <button class="build-btn" data-type="road" onclick="selectTool('road')"><span class="icon">🛤️</span><div><div class="bname">Road</div><div class="bdesc">Extend streets</div></div></button>
+
+    <div class="pal-era-label" id="era2-label" style="opacity:0.35">Era 2 — Unlocks 1780</div>
+    <button class="build-btn locked" data-type="factory" data-era="2" onclick="selectTool('factory')"><span class="icon">🏭</span><div><div class="bname">Factory</div><div class="bdesc">Cotton / steam mill</div></div></button>
+    <button class="build-btn locked" data-type="canal" data-era="2" onclick="selectTool('canal')"><span class="icon">🚤</span><div><div class="bname">Canal</div><div class="bdesc">Goods transport</div></div></button>
+    <button class="build-btn locked" data-type="tenement" data-era="2" onclick="selectTool('tenement')"><span class="icon">🏢</span><div><div class="bname">Tenement</div><div class="bdesc">Dense worker housing</div></div></button>
+    <button class="build-btn locked" data-type="mine" data-era="2" onclick="selectTool('mine')"><span class="icon">⛏️</span><div><div class="bname">Coal Mine</div><div class="bdesc">Fuel for factories</div></div></button>
+    <button class="build-btn locked" data-type="pub" data-era="2" onclick="selectTool('pub')"><span class="icon">🍺</span><div><div class="bname">Pub</div><div class="bdesc">Working class refuge</div></div></button>
+    <button class="build-btn locked" data-type="warehouse" data-era="2" onclick="selectTool('warehouse')"><span class="icon">🏗️</span><div><div class="bname">Warehouse</div><div class="bdesc">Storage & goods</div></div></button>
+
+    <div class="pal-era-label" id="era3-label" style="opacity:0.35">Era 3 — Unlocks 1820</div>
+    <button class="build-btn locked" data-type="railway" data-era="3" onclick="selectTool('railway')"><span class="icon">🚂</span><div><div class="bname">Railway</div><div class="bdesc">Steam locomotive</div></div></button>
+    <button class="build-btn locked" data-type="hospital" data-era="3" onclick="selectTool('hospital')"><span class="icon">🏥</span><div><div class="bname">Hospital</div><div class="bdesc">Public health</div></div></button>
+    <button class="build-btn locked" data-type="graveyard" data-era="3" onclick="selectTool('graveyard')"><span class="icon">⚰️</span><div><div class="bname">Graveyard</div><div class="bdesc">Burial overflow</div></div></button>
+    <button class="build-btn locked" data-type="workhouse" data-era="3" onclick="selectTool('workhouse')"><span class="icon">🔨</span><div><div class="bname">Workhouse</div><div class="bdesc">Poor relief</div></div></button>
+    <button class="build-btn locked" data-type="park" data-era="3" onclick="selectTool('park')"><span class="icon">🌿</span><div><div class="bname">Public Park</div><div class="bdesc">Reform-era green</div></div></button>
+
+    <button id="demolish-btn" onclick="selectTool('demolish')">🪓 Demolish tile</button>
+  </div>
+
+  <!-- GRID -->
+  <div id="grid-wrap"><div id="city-grid"></div></div>
+
+  <!-- PROMPT COLUMN -->
+  <div id="prompt-col">
+    <div id="prompt-header">
+      <div id="prompt-era-tag">Era 1 — Pre-Industrial</div>
+      <div id="prompt-year-display">It is 1760.</div>
+      <div id="prompt-context">You are the mayor of a small English market town on the River Irwell. Two roads cross at the town centre. The land around you is forest and farmland.</div>
+      <div id="prompt-directive">→ Begin building your town near the roads. Think about where families would want to live.</div>
+    </div>
+    <div id="checklist-area">
+      <div id="checklist-label">Build this round:</div>
+      <div id="checklist"></div>
+    </div>
+    <div id="espe-strip">
+      <div class="espe-title">Consider as you build:</div>
+      <div class="espe-item"><span class="espe-key">Econ</span> Who has wealth? Who works?</div>
+      <div class="espe-item"><span class="espe-key">Social</span> Where do classes live?</div>
+      <div class="espe-item"><span class="espe-key">Political</span> Who decides what gets built?</div>
+      <div class="espe-item"><span class="espe-key">Environ</span> What happens to land & water?</div>
+    </div>
+  </div>
+
+  <!-- CHRONICLE -->
+  <div id="right-panel">
+    <div id="event-area">
+      <div id="no-event-msg">No active event.</div>
+      <div id="event-type-tag"></div>
+      <div id="event-title"></div>
+      <div id="event-body"></div>
+    </div>
+    <div id="log-label">City Chronicle</div>
+    <div id="log"></div>
+  </div>
+</div>
+
+<!-- TRANSITION MODAL -->
+<div id="transition-modal">
+  <div id="transition-inner">
+    <div class="t-year" id="t-year"></div>
+    <h2 id="t-title"></h2>
+    <p id="t-body"></p>
+    <div class="unlocked-list"><div class="ul-label">Newly Available</div><div id="t-unlocks"></div></div>
+    <button onclick="dismissTransition()">Continue Building →</button>
+  </div>
+</div>
+
+<!-- REFLECTION -->
+<div id="reflection-screen">
+  <div id="reflection-inner">
+    <div id="refl-map-col">
+      <h2>Your Manchester, 1850</h2>
+      <div class="sub">The city you built across 90 years of industrial change</div>
+      <div id="refl-grid-display"></div>
+      <div class="legend-row" id="refl-legend"></div>
+      <div class="stats-strip">
+        <div class="stat-box"><div class="sv" id="rs-pop"></div><div class="sl">Final Population</div></div>
+        <div class="stat-box"><div class="sv" id="rs-built"></div><div class="sl">Buildings Placed</div></div>
+        <div class="stat-box"><div class="sv" id="rs-demo"></div><div class="sl">Demolished</div></div>
+        <div class="stat-box"><div class="sv" id="rs-events"></div><div class="sl">Events Survived</div></div>
+      </div>
+    </div>
+    <div id="refl-q-col">
+      <h2>Written Reflection</h2>
+      <div class="sub">Look at your completed map as you answer. Reference specific decisions you made.</div>
+      <div id="refl-questions"></div>
+      <button id="print-btn" onclick="window.print()">Print / Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════ CONFIG ═══════════════════
+const GRID = 20;
+const ERA_DURATION = 270;
+const TOTAL_ERAS = 3;
+const PROMPT_INTERVAL = 45;
+const BANNER_DURATION = 30000; // prompt stays until next one
+
+const BUILDINGS = {
+  house:     { icon:'🏠', label:'House',     color:'#c8a878', pop:40,  era:1 },
+  church:    { icon:'⛪', label:'Church',    color:'#a89080', pop:0,   era:1 },
+  market:    { icon:'🏪', label:'Market',    color:'#b8a060', pop:0,   era:1 },
+  farm:      { icon:'🌾', label:'Farm',      color:'#8a9860', pop:0,   era:1 },
+  forest:    { icon:'🌳', label:'Forest',    color:'#4a6a38', pop:0,   era:1 },
+  road:      { icon:'🛤️', label:'Road',      color:'#a89878', pop:0,   era:1 },
+  factory:   { icon:'🏭', label:'Factory',   color:'#5a5050', pop:120, era:2 },
+  canal:     { icon:'🚤', label:'Canal',     color:'#3a6a8a', pop:0,   era:2 },
+  tenement:  { icon:'🏢', label:'Tenement',  color:'#7a6858', pop:200, era:2 },
+  mine:      { icon:'⛏️', label:'Mine',      color:'#3a3430', pop:80,  era:2 },
+  pub:       { icon:'🍺', label:'Pub',       color:'#a06830', pop:0,   era:2 },
+  warehouse: { icon:'🏗️', label:'Warehouse', color:'#6a6058', pop:0,   era:2 },
+  railway:   { icon:'🚂', label:'Railway',   color:'#3a3838', pop:0,   era:3 },
+  hospital:  { icon:'🏥', label:'Hospital',  color:'#c8c0a8', pop:0,   era:3 },
+  graveyard: { icon:'⚰️', label:'Graveyard', color:'#6a7060', pop:0,   era:3 },
+  workhouse: { icon:'🔨', label:'Workhouse', color:'#7a6a58', pop:80,  era:3 },
+  park:      { icon:'🌿', label:'Park',      color:'#6a8a4a', pop:0,   era:3 },
+};
+
+// ═══════════════════ PROMPTS WITH CHECKLISTS ═══════════════════
+// Each prompt has: year, eraTag, context, directive, tasks[]
+// tasks: { type, count, label }
+const ERA_PROMPTS = [
+  // ERA 1 (fires at 0s, 45s, 90s, 135s)
+  [
+    {
+      year: 'It is 1760.',
+      eraTag: 'Era 1 — Pre-Industrial',
+      context: 'You are the mayor of a small English market town on the River Irwell. Two roads cross at the town centre. The land around you is forest and farmland. Most people farm or trade at market.',
+      directive: '→ Begin building your town near the road intersection. Connect new buildings with roads as your town spreads.',
+      tasks: [
+        { type:'house',  count:5, label:'Houses (worker dwellings)' },
+        { type:'church', count:1, label:'Church (parish centre)' },
+        { type:'market', count:1, label:'Market (trade & commerce)' },
+        { type:'road',   count:4, label:'Roads (extend the street network)' },
+      ]
+    },
+    {
+      year: 'It is 1765.',
+      eraTag: 'Era 1 — Pre-Industrial',
+      context: 'Wealthy landlords are buying up surrounding farmland and fencing it off — a process called enclosure. Families who farmed that land for generations are being pushed into town, looking for work.',
+      directive: '→ The town is growing. Add farms on the outskirts and more housing. Use roads to connect outlying buildings back to the centre.',
+      tasks: [
+        { type:'house', count:5,  label:'Houses (incoming families)' },
+        { type:'farm',  count:3,  label:'Farms (on the town outskirts)' },
+        { type:'road',  count:4,  label:'Roads (connect farms to town)' },
+      ]
+    },
+    {
+      year: 'It is 1770.',
+      eraTag: 'Era 1 — Pre-Industrial',
+      context: 'A merchant has proposed building a canal parallel to the river. Canals allow heavy goods — coal, cotton, iron — to move cheaply across the country. Space is already getting tight.',
+      directive: '→ Add a canal along the river. Clear forest tiles if you need space. Notice what disappears when the town expands.',
+      tasks: [
+        { type:'house',  count:5,  label:'Houses (total growing)' },
+        { type:'market', count:1,  label:'Market (second trading post)' },
+        { type:'road',   count:4,  label:'Roads (new streets needed)' },
+      ]
+    },
+    {
+      year: 'It is 1775.',
+      eraTag: 'Era 1 — Pre-Industrial',
+      context: 'The town has a church, homes, a market — but no plan. Nobody is in charge of where buildings go. Growth is happening wherever there is space. The forest is shrinking.',
+      directive: '→ Fill in the gaps. Look at your map — is your town organized or already getting messy? The next era will demand far more space.',
+      tasks: [
+        { type:'house',  count:5,  label:'Houses (total now 20+)' },
+        { type:'farm',   count:2,  label:'Farms (food for growing town)' },
+        { type:'road',   count:5,  label:'Roads (prepare for expansion)' },
+        { type:'forest', count:3,  label:'Forest tiles (plant if space allows)' },
+      ]
+    },
+  ],
+  // ERA 2 (fires at 0s, 45s, 90s, 135s, 180s)
+  [
+    {
+      year: 'It is 1780.',
+      eraTag: 'Era 2 — Industrial Surge',
+      context: 'Steam engines are transforming Manchester. Factory owners — men who call themselves capitalists — now have the technology to build mills powered by steam, not just water. Thousands are arriving from the countryside.',
+      directive: '→ Build your first factories. Connect them to the road network. Workers need housing nearby — where will you put them?',
+      tasks: [
+        { type:'factory',  count:2,  label:'Factories (steam-powered mills)' },
+        { type:'house',    count:5,  label:'Houses (workers need homes)' },
+        { type:'tenement', count:2,  label:'Tenements (dozens of families, one roof)' },
+        { type:'road',     count:4,  label:'Roads (connect factories to town)' },
+      ]
+    },
+    {
+      year: 'It is 1790.',
+      eraTag: 'Era 2 — Industrial Surge',
+      context: 'Hundreds of workers arrive every month. Landlords throw up cheap, cramped tenement blocks overnight. Children as young as eight work in the mills. Factory owners call themselves "self-made men."',
+      directive: '→ The city is growing faster than you can plan. Add more factories and housing — clear forest if you must. Watch what happens near the river.',
+      tasks: [
+        { type:'factory',   count:3,  label:'Factories (more mills needed)' },
+        { type:'tenement',  count:3,  label:'Tenements (overcrowded housing)' },
+        { type:'pub',       count:2,  label:'Pubs (worker gathering places)' },
+        { type:'road',      count:4,  label:'Roads (streets between factories)' },
+      ]
+    },
+    {
+      year: 'It is 1800.',
+      eraTag: 'Era 2 — Industrial Surge',
+      context: 'Coal fuels the steam engines that power the factories. A coal mine on the edge of town can supply fuel — but it needs to be connected to the factories. The river is turning brown from factory waste.',
+      directive: '→ Add a coal mine and connect it to your factories with roads. Add a warehouse for storing goods. The river is becoming dangerous — consider where your housing sits.',
+      tasks: [
+        { type:'mine',      count:1,  label:'Coal mine (fuel for factories)' },
+        { type:'warehouse', count:2,  label:'Warehouses (goods storage)' },
+        { type:'house',     count:5,  label:'Houses (miners need homes)' },
+        { type:'road',      count:5,  label:'Roads (mine to factory routes)' },
+      ]
+    },
+    {
+      year: 'It is 1808.',
+      eraTag: 'Era 2 — Industrial Surge',
+      context: 'Textile workers whose livelihoods are threatened by machines begin smashing power looms — the Luddite uprisings. The army is called in. Meanwhile, factory owners grow richer. The city is deeply divided.',
+      directive: '→ The city is splitting between rich and poor. Add more factories and tenements. Look at your map — where do the wealthy live versus the workers?',
+      tasks: [
+        { type:'factory',  count:3,  label:'Factories (industry expanding)' },
+        { type:'tenement', count:4,  label:'Tenements (workers crammed in)' },
+        { type:'pub',      count:3,  label:'Pubs (workers\' only refuge)' },
+        { type:'road',     count:4,  label:'Roads (new districts forming)' },
+      ]
+    },
+    {
+      year: 'It is 1815.',
+      eraTag: 'Era 2 — Industrial Surge',
+      context: 'Manchester is now one of the largest cities in Britain. It produces more cotton than anywhere on earth — but it has no sewers, no clean water, and no plan. The next era will bring railways and new crises.',
+      directive: '→ Final push before the railway age. Fill your map. You may need to clear forest or demolish old buildings to make room. The city does not wait.',
+      tasks: [
+        { type:'factory',   count:3,  label:'Factories (keep building)' },
+        { type:'tenement',  count:3,  label:'Tenements (more workers arriving)' },
+        { type:'warehouse', count:2,  label:'Warehouses (goods piling up)' },
+        { type:'road',      count:5,  label:'Roads (the city sprawls outward)' },
+      ]
+    },
+  ],
+  // ERA 3 (fires at 0s, 45s, 90s, 135s, 180s)
+  [
+    {
+      year: 'It is 1820.',
+      eraTag: 'Era 3 — Peak Industry',
+      context: 'The Liverpool and Manchester Railway opens. For the first time, people and goods move faster than a horse can run. Land near the railway immediately rises in value. Everything is about to change again.',
+      directive: '→ Lay railway lines through your city connecting factories and mines. Add a railway station. Every factory owner wants to be on the line — what gets displaced to make room?',
+      tasks: [
+        { type:'railway',  count:5,  label:'Railway tiles (connect factories & mines)' },
+        { type:'house',    count:5,  label:'Houses (railway builders need homes)' },
+        { type:'road',     count:4,  label:'Roads (connect station to town)' },
+      ]
+    },
+    {
+      year: 'It is 1827.',
+      eraTag: 'Era 3 — Peak Industry',
+      context: 'Cholera has arrived in Manchester. It spreads through contaminated water — but nobody knows that yet. Doctors blame "bad air" near the river and the slums. Thousands die. The city has no hospital.',
+      directive: '→ Build hospitals now — Manchester has none. Add graveyards for the dead. Look at where your tenements sit near the river. That is where cholera spreads first.',
+      tasks: [
+        { type:'hospital',  count:2,  label:'Hospitals (the city desperately needs them)' },
+        { type:'graveyard', count:1,  label:'Graveyard (burial for the dead)' },
+        { type:'tenement',  count:3,  label:'Tenements (population still climbing)' },
+        { type:'road',      count:4,  label:'Roads (emergency access routes)' },
+      ]
+    },
+    {
+      year: 'It is 1833.',
+      eraTag: 'Era 3 — Peak Industry',
+      context: 'Parliament passes the Factory Act — the first law limiting child labour. Factory owners call it an attack on their property. Meanwhile the Poor Law forces the destitute into workhouses where they labour for food and shelter.',
+      directive: '→ Add workhouses on the edges of the city — away from wealthy areas. Add more housing and a public park if you can find the space. Can you?',
+      tasks: [
+        { type:'workhouse', count:2,  label:'Workhouses (last resort for the poor)' },
+        { type:'hospital',  count:1,  label:'Hospital (public health expanding)' },
+        { type:'house',     count:5,  label:'Houses (population booming)' },
+        { type:'road',      count:3,  label:'Roads (new districts forming)' },
+      ]
+    },
+    {
+      year: 'It is 1839.',
+      eraTag: 'Era 3 — Peak Industry',
+      context: 'Working-class Manchunians march to Parliament demanding the right to vote — the Chartist movement. Their petition carries over a million signatures. Parliament rejects it. Manchester has no elected MPs despite being the largest industrial city in Britain.',
+      directive: '→ Add more railways to expand the network. Build a public park — reformers say workers need green space to stay healthy and peaceful. Where can you fit one?',
+      tasks: [
+        { type:'railway',   count:4,  label:'Railway tiles (network expanding)' },
+        { type:'park',      count:1,  label:'Public park (reformers demand green space)' },
+        { type:'graveyard', count:1,  label:'Graveyard (death rates remain high)' },
+        { type:'road',      count:4,  label:'Roads (city keeps sprawling)' },
+      ]
+    },
+    {
+      year: 'It is 1845.',
+      eraTag: 'Era 3 — Peak Industry',
+      context: 'Friedrich Engels walks Manchester\'s streets and writes that it shows "how little space a human being needs to live." The city you built from a market town in 1760 is now one of the most important — and most dangerous — cities on earth.',
+      directive: '→ Final round. Fill every remaining space. Add whatever your city still desperately needs. Look at what you have built — and what it cost.',
+      tasks: [
+        { type:'hospital',  count:2,  label:'Hospitals (death rate still climbing)' },
+        { type:'tenement',  count:4,  label:'Tenements (workers keep arriving)' },
+        { type:'factory',   count:3,  label:'Factories (industry never stops)' },
+        { type:'railway',   count:4,  label:'Railway tiles (connect everything)' },
+        { type:'road',      count:4,  label:'Roads (fill the gaps)' },
+      ]
+    },
+  ],
+];
+
+const ERAS = [
+  { id:1, name:'Pre-Industrial',  years:'1760–1780', startYear:1760, endYear:1780 },
+  { id:2, name:'Industrial Surge',years:'1780–1820', startYear:1780, endYear:1820 },
+  { id:3, name:'Peak Industry',   years:'1820–1850', startYear:1820, endYear:1850 },
+];
+
+const ERA_TRANSITIONS = [
+  null,
+  {
+    year:'1780', title:'The Machines Arrive',
+    body:'Steam engines begin appearing across Manchester. Factories replace cottage industries. Thousands pour in from the countryside — faster than the city can house them.',
+    unlocks:['factory','canal','tenement','mine','pub','warehouse'],
+  },
+  {
+    year:'1820', title:"The World's Workshop",
+    body:"Manchester produces more cotton than any city on earth. But the cost is visible on its streets — overcrowding, disease, and unrest. Railways are about to transform everything again.",
+    unlocks:['railway','hospital','graveyard','workhouse','park'],
+  },
+];
+
+const EVENTS = [
+  { era:2, type:'chronicle', title:'Workers Pour In',           body:'Thousands of migrants arrive from rural England and Ireland. There is no plan for where they will live. Housing goes wherever space remains.' },
+  { era:2, type:'spatial',   title:'River Contamination',       body:'Factory waste flows into the Irwell daily. Buildings near the river are now at risk. Consider where you place housing relative to the water.', spatial:'river-warn' },
+  { era:2, type:'chronicle', title:'The Luddite Uprisings',     body:'Textile workers smash power looms across the Midlands. They fear the machines will end their livelihoods. Troops are called in.' },
+  { era:2, type:'chronicle', title:'Child Labour in the Mills', body:'A reformer reports children as young as 7 working 14-hour shifts in cotton mills. Parliament debates — factory owners resist. The city keeps producing.' },
+  { era:3, type:'spatial',   title:'Cholera Spreads',           body:'Cholera has broken out near the river. Contaminated water is the cause — though no one understands it yet. River-adjacent housing is now affected.', spatial:'cholera' },
+  { era:3, type:'spatial',   title:'Fire in the Factory District', body:'A fire breaks out in a densely packed industrial block. Crowded streets with no firebreaks allow it to spread quickly.', spatial:'fire' },
+  { era:3, type:'chronicle', title:'The Chartist March',        body:'Working-class Manchunians march on Parliament demanding the vote. Over a million signatures on their petition. Parliament rejects it.' },
+  { era:3, type:'chronicle', title:'The Great Stink',           body:"Manchester's rivers reek from industrial waste and raw sewage. Engineers propose a sewer system — but the cost is enormous. People keep dying." },
+];
+
+const DEMOLISH_TEXTS = {
+  house:'A family\'s home is torn down. Neighbours watch in silence as their street narrows to make way for what comes next.',
+  church:'The old parish church is demolished. Its graveyard is paved over — the dead quietly forgotten as the city rushes forward.',
+  market:'The market square is cleared. Merchants who traded here for generations are displaced. Commerce moves elsewhere.',
+  farm:'The last farmland at the city\'s edge is claimed. The farmer takes a factory job. The fields become foundations.',
+  forest:'Trees that sheltered the town for centuries are felled in an afternoon. Children who played here will find only cobblestones.',
+  road:'The road is torn up to make way for a new building. The street that once connected a neighbourhood is severed.',
+  factory:'An old mill is pulled down — once the pride of the district, now obsolete. A newer, larger one will take its place.',
+  canal:'The canal is drained and filled. Railways have made it redundant. The bargemen move on.',
+  tenement:'An overcrowded tenement is cleared. Its hundreds of residents scatter across the city with nowhere promised to them.',
+  mine:'The exhausted mine shaft is sealed. The men who worked it search for new work in a city that may not have any.',
+  pub:'The pub is shuttered. For many workers it was the only warm room they knew outside their own.',
+  warehouse:'The warehouse is demolished to make room for the new railway cutting through the district.',
+  railway:'A rail line is ripped up — an early investment that proved unprofitable. The money is lost.',
+  hospital:'The infirmary closes. The sick will have to travel farther, or not at all.',
+  graveyard:'The graveyard is built over. Bones are moved hastily or not at all. The ground remembers.',
+  workhouse:'The workhouse is torn down — few mourn it. Its former inmates hope for something better.',
+  park:'The park is built over. What little green space remained in this district is gone.',
+};
+
+// ═══════════════════ STATE ═══════════════════
+let grid = [];
+let selectedTool = null;
+let currentEra = 1;
+let currentYear = 1760;
+let timerInterval = null;
+let eraSecondsLeft = ERA_DURATION;
+let population = 2400;
+let builtCount = 0;
+let demolishedCount = 0;
+let eventsTriggered = 0;
+let firedEventIndices = new Set();
+let gameEnded = false;
+let promptIndex = 0;
+let currentPrompt = null;
+// track built counts per type for current prompt
+let promptCounts = {};
+// carryover debts that roll forward from unmet prompt targets
+let carryoverDebts = {}; // { type: amountStillOwed }
+
+// ═══════════════════ GRID INIT ═══════════════════
+function initGrid() {
+  grid = [];
+  for (let r = 0; r < GRID; r++) {
+    grid[r] = [];
+    for (let c = 0; c < GRID; c++) grid[r][c] = { type:null, baseClass:'empty' };
+  }
+
+  const HROW=9, VCOL=9;
+  for (let c=0;c<GRID;c++) grid[HROW][c].baseClass=(c===VCOL)?'road-cross':'road-h';
+  for (let r=0;r<GRID;r++) if(r!==HROW) grid[r][VCOL].baseClass='road-v';
+  const RROW=13;
+  for (let c=0;c<GRID;c++) grid[RROW][c].baseClass=(c===VCOL)?'river-road':'river';
+
+  // Pre-placed village
+  [{r:8,c:8,type:'house'},{r:8,c:10,type:'house'},{r:10,c:8,type:'house'},
+   {r:10,c:10,type:'house'},{r:7,c:9,type:'house'},{r:8,c:9,type:'church'}].forEach(p=>{
+    grid[p.r][p.c].type=p.type;
+    population+=(BUILDINGS[p.type].pop||0);
+    builtCount++;
+  });
+
+  // Pre-placed forest — upper right, rows 1-6, cols 13-19
+  [{r:1,c:13},{r:1,c:14},{r:1,c:15},{r:1,c:16},{r:1,c:17},{r:1,c:18},{r:1,c:19},
+   {r:2,c:13},{r:2,c:14},{r:2,c:15},{r:2,c:16},{r:2,c:17},{r:2,c:18},{r:2,c:19},
+   {r:3,c:14},{r:3,c:15},{r:3,c:16},{r:3,c:17},{r:3,c:18},{r:3,c:19},
+   {r:4,c:14},{r:4,c:15},{r:4,c:16},{r:4,c:17},{r:4,c:18},
+   {r:5,c:15},{r:5,c:16},{r:5,c:17},{r:5,c:18},
+   {r:6,c:15},{r:6,c:16},{r:6,c:17}].forEach(({r,c})=>{
+    grid[r][c].type='forest'; builtCount++;
+  });
+
+  renderGrid();
+}
+
+function renderGrid() {
+  const el=document.getElementById('city-grid');
+  el.innerHTML='';
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++) {
+    const cell=document.createElement('div');
+    const d=grid[r][c];
+    cell.className='cell '+d.baseClass;
+    if(d.choleraRisk) cell.classList.add('cholera-risk');
+    if(d.choleraActive) cell.classList.add('cholera-active');
+    if(d.fireActive) cell.classList.add('fire-active');
+    if(d.type) {
+      const b=BUILDINGS[d.type];
+      if(d.type==='road') { cell.style.background='#a89878'; }
+      else { cell.style.background=b.color; cell.textContent=b.icon; }
+      const lbl=document.createElement('div');
+      lbl.className='cell-label'; lbl.textContent=b.label; cell.appendChild(lbl);
+    }
+    cell.addEventListener('click',()=>handleCellClick(r,c));
+    el.appendChild(cell);
+  }
+}
+
+function rerenderCell(r,c) {
+  const cells=document.getElementById('city-grid').children;
+  const cell=cells[r*GRID+c];
+  const d=grid[r][c];
+  cell.className='cell '+d.baseClass;
+  if(d.choleraRisk) cell.classList.add('cholera-risk');
+  if(d.choleraActive) cell.classList.add('cholera-active');
+  if(d.fireActive) cell.classList.add('fire-active');
+  cell.textContent=''; cell.style.background='';
+  if(d.type) {
+    const b=BUILDINGS[d.type];
+    if(d.type==='road') { cell.style.background='#a89878'; }
+    else { cell.style.background=b.color; cell.textContent=b.icon; }
+    const lbl=document.createElement('div');
+    lbl.className='cell-label'; lbl.textContent=b.label; cell.appendChild(lbl);
+  }
+}
+
+// ═══════════════════ TOOL & CLICK ═══════════════════
+function selectTool(type) {
+  if(type!=='demolish'&&BUILDINGS[type]&&BUILDINGS[type].era>currentEra) return;
+  selectedTool=(selectedTool===type)?null:type;
+  document.querySelectorAll('.build-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('demolish-btn').classList.remove('active');
+  if(selectedTool) {
+    if(type==='demolish') document.getElementById('demolish-btn').classList.add('active');
+    else { const btn=document.querySelector(`.build-btn[data-type="${type}"]`); if(btn) btn.classList.add('active'); }
+  }
+}
+
+function handleCellClick(r,c) {
+  if(!selectedTool||gameEnded) return;
+  const cell=grid[r][c];
+  const isRoad=cell.baseClass.includes('road');
+  const isRiver=cell.baseClass.includes('river');
+
+  if(selectedTool==='demolish') {
+    if(!cell.type) return;
+    const btype=cell.type;
+    const txt=DEMOLISH_TEXTS[btype]||'The building is torn down.';
+    population=Math.max(0,population-(BUILDINGS[btype].pop||0));
+    cell.type=null; cell.choleraActive=false; cell.fireActive=false;
+    demolishedCount++;
+    rerenderCell(r,c); updatePopDisplay();
+    addLog(`Demolished: ${BUILDINGS[btype].label}. ${txt}`,'demolish');
+    return;
+  }
+
+  // Road placement — can go on empty cells or extend existing road network
+  if(selectedTool==='road') {
+    if(isRiver) { addLog('Cannot build a road on the river.',''); return; }
+    if(cell.type==='road'||isRoad) { addLog('Already a road here.',''); return; }
+    if(cell.type) { addLog('Demolish the existing building first.',''); return; }
+    cell.type='road';
+    builtCount++;
+    updatePromptCount('road');
+    rerenderCell(r,c);
+    addLog(`Built Road at (${String.fromCharCode(65+c)}${r+1})`);
+    return;
+  }
+
+  if(selectedTool==='canal') {
+    if(!isRiver&&!isRoad) { addLog('Canals must follow the river or road.',''); return; }
+  } else {
+    if(isRiver) { addLog('Cannot build on the river.',''); return; }
+    if(isRoad) { addLog('Cannot build on the road.',''); return; }
+  }
+
+  if(cell.type) { addLog('Already occupied. Demolish first.',''); return; }
+
+  const b=BUILDINGS[selectedTool];
+  cell.type=selectedTool;
+  population+=b.pop||0;
+  builtCount++;
+  updatePromptCount(selectedTool);
+  rerenderCell(r,c); updatePopDisplay();
+  addLog(`Built ${b.label} at (${String.fromCharCode(65+c)}${r+1})`);
+}
+
+// ═══════════════════ PROMPT SYSTEM ═══════════════════
+function calculateCarryovers() {
+  // Called before switching to a new prompt — computes unmet targets from current prompt
+  if(!currentPrompt||!currentPrompt.tasks) return;
+  currentPrompt.tasks.forEach(task=>{
+    const built=promptCounts[task.type]||0;
+    const shortfall=task.count-built;
+    if(shortfall>0) {
+      carryoverDebts[task.type]=(carryoverDebts[task.type]||0)+shortfall;
+    }
+  });
+  // Also reduce debts for any carryover types that were built this round beyond the task requirement
+  Object.keys(carryoverDebts).forEach(type=>{
+    if(!currentPrompt.tasks.find(t=>t.type===type)) {
+      // type was a carryover-only item — credit builds against it
+      const built=promptCounts[type]||0;
+      carryoverDebts[type]=Math.max(0,(carryoverDebts[type]||0)-built);
+      if(carryoverDebts[type]===0) delete carryoverDebts[type];
+    }
+  });
+}
+
+function showPrompt(eraIdx, pIdx) {
+  const prompts=ERA_PROMPTS[eraIdx];
+  if(!prompts||pIdx>=prompts.length) return;
+
+  // Calculate carryovers from the prompt we're leaving
+  if(currentPrompt) calculateCarryovers();
+
+  currentPrompt=prompts[pIdx];
+  // Reset counts for new prompt, but include carryover types so they track
+  promptCounts={};
+  if(currentPrompt.tasks) currentPrompt.tasks.forEach(t=>{ promptCounts[t.type]=0; });
+  // Also track carryover types that aren't in this prompt's task list
+  Object.keys(carryoverDebts).forEach(type=>{
+    if(!promptCounts.hasOwnProperty(type)) promptCounts[type]=0;
+  });
+
+  document.getElementById('prompt-era-tag').textContent=currentPrompt.eraTag;
+  document.getElementById('prompt-year-display').textContent=currentPrompt.year;
+  document.getElementById('prompt-context').textContent=currentPrompt.context;
+  document.getElementById('prompt-directive').textContent=currentPrompt.directive;
+  renderChecklist();
+}
+
+function renderChecklist() {
+  const cl=document.getElementById('checklist');
+  cl.innerHTML='';
+  if(!currentPrompt) return;
+
+  // Render this prompt's required tasks
+  const taskTypes=new Set();
+  if(currentPrompt.tasks) {
+    currentPrompt.tasks.forEach(task=>{
+      taskTypes.add(task.type);
+      const built=promptCounts[task.type]||0;
+      // If there's also a carryover for this type, add it to the required count
+      const debt=carryoverDebts[task.type]||0;
+      const totalRequired=task.count+debt;
+      const done=built>=totalRequired;
+      const item=document.createElement('div');
+      item.className='check-item'+(done?' done':'');
+      let labelText=`${BUILDINGS[task.type]?.icon||''} ${task.label}`;
+      if(debt>0) labelText+=` <span style="color:var(--ember);font-size:0.6rem">(+${debt} carried over)</span>`;
+      item.innerHTML=`
+        <div class="check-box">${done?'✓':''}</div>
+        <span class="check-text">${labelText}</span>
+        <span class="check-progress">${built}/${totalRequired}</span>
+      `;
+      cl.appendChild(item);
+    });
+  }
+
+  // Render carryover-only types (debts for things not in this prompt's task list)
+  Object.keys(carryoverDebts).forEach(type=>{
+    if(taskTypes.has(type)) return; // already rendered above
+    if(!BUILDINGS[type]) return;
+    const debt=carryoverDebts[type];
+    if(debt<=0) return;
+    const built=promptCounts[type]||0;
+    const done=built>=debt;
+    const item=document.createElement('div');
+    item.className='check-item'+(done?' done':'');
+    item.style.borderLeft='2px solid #8a4030';
+    item.innerHTML=`
+      <div class="check-box" style="border-color:#8a4030">${done?'✓':''}</div>
+      <span class="check-text" style="color:var(--stone-dark)">${BUILDINGS[type].icon} ${BUILDINGS[type].label} <span style="color:var(--ember);font-size:0.6rem">(carried over)</span></span>
+      <span class="check-progress">${built}/${debt}</span>
+    `;
+    cl.appendChild(item);
+  });
+}
+
+function updatePromptCount(type) {
+  if(!currentPrompt) return;
+  if(!promptCounts.hasOwnProperty(type)) return;
+  promptCounts[type]=(promptCounts[type]||0)+1;
+  // If this type has a carryover debt and is not in the current task list, reduce the debt
+  if(carryoverDebts[type] && !currentPrompt.tasks?.find(t=>t.type===type)) {
+    carryoverDebts[type]=Math.max(0,carryoverDebts[type]-1);
+    if(carryoverDebts[type]===0) delete carryoverDebts[type];
+  }
+  renderChecklist();
+}
+
+// ═══════════════════ POP ═══════════════════
+function updatePopDisplay() {
+  document.getElementById('pop-num').textContent=population.toLocaleString();
+}
+
+// ═══════════════════ LOG ═══════════════════
+function addLog(msg,cls='') {
+  const log=document.getElementById('log');
+  const entry=document.createElement('div');
+  entry.className='log-entry '+cls;
+  entry.innerHTML=`<div class="log-year">${currentYear}</div>${msg}`;
+  log.insertBefore(entry,log.firstChild);
+}
+
+// ═══════════════════ TIMER ═══════════════════
+function startTimer() {
+  eraSecondsLeft=ERA_DURATION;
+  promptIndex=0;
+  updateTimerBar();
+  // currentPrompt is null at game start; on era transitions it holds the last prompt
+  // showPrompt will call calculateCarryovers if currentPrompt exists, but we already
+  // called it in advanceEra(), so temporarily null it to avoid double-counting
+  currentPrompt=null;
+  showPrompt(currentEra-1,0);
+  promptIndex=1;
+  timerInterval=setInterval(tickTimer,1000);
+}
+
+function tickTimer() {
+  eraSecondsLeft--;
+  const era=ERAS[currentEra-1];
+  const yearRange=era.endYear-era.startYear;
+  currentYear=Math.round(era.startYear+(yearRange*(1-eraSecondsLeft/ERA_DURATION)));
+  document.getElementById('year-display').textContent=currentYear;
+  updateTimerBar();
+  checkEvents();
+
+  const elapsed=ERA_DURATION-eraSecondsLeft;
+  if(elapsed>0&&elapsed%PROMPT_INTERVAL===0) {
+    const prompts=ERA_PROMPTS[currentEra-1];
+    if(promptIndex<prompts.length) { showPrompt(currentEra-1,promptIndex); promptIndex++; }
+  }
+
+  if(eraSecondsLeft<=0) { clearInterval(timerInterval); advanceEra(); }
+}
+
+function updateTimerBar() {
+  document.getElementById('timer-bar').style.width=(eraSecondsLeft/ERA_DURATION*100)+'%';
+}
+
+// ═══════════════════ ERA ═══════════════════
+function advanceEra() {
+  // Carry over any unmet targets from the last prompt of this era
+  if(currentPrompt) calculateCarryovers();
+  if(currentEra>=TOTAL_ERAS) { endGame(); return; }
+  currentEra++;
+  const transition=ERA_TRANSITIONS[currentEra-1];
+  const era=ERAS[currentEra-1];
+  unlockEraBuildings(currentEra);
+  document.getElementById('era-badge').textContent=era.name;
+  if(transition) {
+    document.getElementById('t-year').textContent=transition.year;
+    document.getElementById('t-title').textContent=transition.title;
+    document.getElementById('t-body').textContent=transition.body;
+    document.getElementById('t-unlocks').innerHTML=transition.unlocks.map(u=>
+      `<div class="ul-item"><span>${BUILDINGS[u].icon}</span> ${BUILDINGS[u].label}</div>`).join('');
+    document.getElementById('transition-modal').classList.add('show');
+    addLog(`— ${transition.title} —`,'era');
+  }
+}
+
+function dismissTransition() {
+  document.getElementById('transition-modal').classList.remove('show');
+  startTimer();
+}
+
+function unlockEraBuildings(era) {
+  document.querySelectorAll('.build-btn[data-era]').forEach(btn=>{
+    if(parseInt(btn.dataset.era)<=era) btn.classList.remove('locked');
+  });
+  if(era>=2) document.getElementById('era2-label').style.opacity='1';
+  if(era>=3) document.getElementById('era3-label').style.opacity='1';
+}
+
+// ═══════════════════ EVENTS ═══════════════════
+function checkEvents() {
+  const progress=1-(eraSecondsLeft/ERA_DURATION);
+  const e2t=[0.3,0.55,0.72,0.88];
+  const e3t=[0.2,0.42,0.62,0.78];
+  EVENTS.forEach((evt,idx)=>{
+    if(firedEventIndices.has(idx)) return;
+    if(evt.era!==currentEra) return;
+    const eraEvents=EVENTS.filter(e=>e.era===evt.era);
+    const eraIdx=eraEvents.indexOf(evt);
+    const triggers=evt.era===2?e2t:e3t;
+    if(progress>=(triggers[eraIdx]??0.9)) fireEvent(idx);
+  });
+}
+
+function fireEvent(idx) {
+  if(firedEventIndices.has(idx)) return;
+  firedEventIndices.add(idx); eventsTriggered++;
+  const evt=EVENTS[idx];
+  document.getElementById('no-event-msg').style.display='none';
+  document.getElementById('event-area').classList.add('has-event');
+  ['event-type-tag','event-title','event-body'].forEach(id=>document.getElementById(id).style.display='block');
+  document.getElementById('event-type-tag').textContent=evt.type==='spatial'?'⚡ Spatial Event':'📜 Chronicle';
+  document.getElementById('event-title').textContent=evt.title;
+  document.getElementById('event-body').textContent=evt.body;
+  addLog(`EVENT: ${evt.title}`,'event');
+  if(evt.spatial==='cholera') triggerCholera();
+  if(evt.spatial==='fire') triggerFire();
+  if(evt.spatial==='river-warn') triggerRiverWarn();
+  setTimeout(()=>{
+    document.getElementById('no-event-msg').style.display='block';
+    document.getElementById('event-area').classList.remove('has-event');
+    ['event-type-tag','event-title','event-body'].forEach(id=>document.getElementById(id).style.display='none');
+  },25000);
+}
+
+function triggerRiverWarn() {
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++) {
+    if(grid[r][c].baseClass.includes('river')) {
+      [-1,0,1].forEach(dr=>{const nr=r+dr;if(nr>=0&&nr<GRID){grid[nr][c].choleraRisk=true;rerenderCell(nr,c);}});
+    }
+  }
+}
+
+function triggerCholera() {
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++) {
+    if(grid[r][c].baseClass.includes('river')) {
+      [-1,0,1].forEach(dr=>[-1,0,1].forEach(dc=>{
+        const nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<GRID&&nc>=0&&nc<GRID){
+          const t=grid[nr][nc].type;
+          if(t==='house'||t==='tenement'){
+            grid[nr][nc].choleraActive=true;
+            population=Math.max(0,population-Math.floor((BUILDINGS[t].pop||0)*0.15));
+            rerenderCell(nr,nc);
+          }
+        }
+      }));
+    }
+  }
+  updatePopDisplay();
+  setTimeout(()=>{for(let r=0;r<GRID;r++)for(let c=0;c<GRID;c++){if(grid[r][c].choleraActive){grid[r][c].choleraActive=false;rerenderCell(r,c);}}},18000);
+}
+
+function triggerFire() {
+  let targets=[];
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++){if(grid[r][c].type==='factory'||grid[r][c].type==='tenement')targets.push({r,c});}
+  if(!targets.length) return;
+  const seed=targets[Math.floor(Math.random()*targets.length)];
+  const zone=[];
+  for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+    const nr=seed.r+dr,nc=seed.c+dc;
+    if(nr>=0&&nr<GRID&&nc>=0&&nc<GRID&&grid[nr][nc].type) zone.push({r:nr,c:nc});
+  }
+  zone.forEach(({r,c})=>{
+    grid[r][c].fireActive=true; rerenderCell(r,c);
+    population=Math.max(0,population-Math.floor((BUILDINGS[grid[r][c].type]?.pop||0)*0.1));
+  });
+  updatePopDisplay();
+  setTimeout(()=>{zone.forEach(({r,c})=>{grid[r][c].fireActive=false;rerenderCell(r,c);});},15000);
+}
+
+// ═══════════════════ END GAME ═══════════════════
+function endGame() {
+  gameEnded=true; clearInterval(timerInterval);
+  const refl=document.getElementById('refl-grid-display');
+  refl.innerHTML='';
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++){
+    const cell=document.createElement('div');
+    cell.className='refl-cell '+grid[r][c].baseClass;
+    if(grid[r][c].type){
+      const b=BUILDINGS[grid[r][c].type];
+      if(grid[r][c].type==='road') cell.style.background='#a89878';
+      else{cell.style.background=b.color; cell.textContent=b.icon;}
+    }
+    refl.appendChild(cell);
+  }
+  const used=new Set();
+  for(let r=0;r<GRID;r++) for(let c=0;c<GRID;c++) if(grid[r][c].type) used.add(grid[r][c].type);
+  const legend=document.getElementById('refl-legend');
+  legend.innerHTML='';
+  used.forEach(t=>{
+    const b=BUILDINGS[t];
+    legend.innerHTML+=`<div class="legend-item"><div class="legend-swatch" style="background:${t==='road'?'#a89878':b.color}"></div>${b.label}</div>`;
+  });
+  document.getElementById('rs-pop').textContent=population.toLocaleString();
+  document.getElementById('rs-built').textContent=builtCount;
+  document.getElementById('rs-demo').textContent=demolishedCount;
+  document.getElementById('rs-events').textContent=eventsTriggered;
+
+  const questions=[
+    {type:'Observation', q:'Look at your completed map. Describe what you see — where did most buildings end up? Do you notice any patterns in how the city grew?'},
+    {type:'Observation', q:'How did it feel different to build in Era 1 versus Era 3? What changed about the pace and pressure of your decision-making as the years advanced?'},
+    {type:'Analysis', q:'As mayor of Manchester, name and explain at least THREE serious problems your city now faces. For each one, point to a specific decision you made — or didn\'t make — that contributed to it.'},
+    {type:'Analysis', q:'You may have had to demolish older buildings, clear forest, or remove farms to make room for industrial growth. Who benefited from those decisions? Who paid the cost? Use your map as evidence.'},
+    {type:'Analysis', q:'A historian once said industrialization was "progress for some and disaster for others." Based on the city you built, do you agree? What would you have done differently — and what would have made that difficult?'},
+  ];
+  const qc=document.getElementById('refl-questions');
+  qc.innerHTML='';
+  questions.forEach(q=>{
+    qc.innerHTML+=`<div class="reflect-q"><div class="ql">${q.type}</div><div class="qt">${q.q}</div><textarea rows="4" placeholder="Write your answer here..."></textarea></div>`;
+  });
+  document.getElementById('reflection-screen').style.display='block';
+}
+
+// ═══════════════════ START ═══════════════════
+initGrid();
+updatePopDisplay();
+startTimer();
+</script>
+</body>
+</html>
