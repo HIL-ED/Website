@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanities Immersed Learning — Games</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: #FFFFFF; color: #22344F;
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  .wrap { max-width: 640px; width: 100%; text-align: center; }
+  h1 { color: #002961; font-size: 1.8rem; margin-bottom: 6px; }
+  .tagline { color: #696969; margin-bottom: 40px; font-size: .95rem; }
+  .game-list { text-align: left; }
+  .game {
+    display: block; text-decoration: none; color: inherit;
+    border: 1px solid #E7DCC8; border-radius: 10px;
+    padding: 20px 22px; margin-bottom: 14px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .game:hover { border-color: #CC6B30; transform: translateY(-2px); }
+  .game h2 { font-size: 1.1rem; margin: 0 0 6px; color: #002961; }
+  .game p { margin: 0; color: #696969; font-size: .9rem; }
+  .tag {
+    display: inline-block; font-size: .68rem; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase;
+    background: #EAF3F2; color: #5C8B87;
+    padding: 3px 9px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .soon { opacity: .55; }
+  .soon .game:hover { border-color: #E7DCC8; transform: none; }
+  footer { margin-top: 40px; font-size: .8rem; color: #969696; }
+  footer a { color: #9E4021; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Humanities Immersed Learning</h1>
+  <p class="tagline">Exploring the World from Your Classroom</p>
+
+  <div class="game-list">
+    <a class="game" href="founders-quest/">
+      <span class="tag">Free · Ready to play</span>
+      <h2>Founders Quest: Pixel Republic →</h2>
+      <p>An 8-bit platformer covering the Declaration of Independence, the Articles of Confederation, and the Constitution.</p>
+    </a>
+
+    <div class="soon">
+      <div class="game">
+        <span class="tag">Coming soon</span>
+        <h2>More games</h2>
+        <p>Additional titles will be added here as they're ready.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Humanities Immersed Learning
+  </footer>
+</div>
+</body>
+</html>
