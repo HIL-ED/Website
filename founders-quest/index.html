@@ -575,14 +575,14 @@ function pickQuestion(doc){
   if(answeredCount>=5) tier=2;
   if(answeredCount>=10) tier=3;
   const pool = QBANK[doc];
-  // find unused at target tier, else any unused, else any
-  let cands = pool.filter((q,i)=>q.t===tier && !usedQ.has(doc+i));
-  if(!cands.length) cands = pool.filter((q,i)=>!usedQ.has(doc+i));
-  if(!cands.length){ usedQ.clear(); cands = pool.slice(); }
-  const q = cands[Math.floor(Math.random()*cands.length)];
-  const idx = pool.indexOf(q);
-  usedQ.add(doc+idx);
-  return q;
+  const key = (i)=> doc+'#'+i;   // unambiguous separator so '...#1' != '...#12'
+  // candidate indices: unused at target tier, else any unused, else reset
+  let idxs = pool.map((q,i)=>i).filter(i=>pool[i].t===tier && !usedQ.has(key(i)));
+  if(!idxs.length) idxs = pool.map((q,i)=>i).filter(i=>!usedQ.has(key(i)));
+  if(!idxs.length){ usedQ.clear(); idxs = pool.map((q,i)=>i); }
+  const idx = idxs[Math.floor(Math.random()*idxs.length)];
+  usedQ.add(key(idx));
+  return pool[idx];
 }
 function answerQuestion(idx){
   const b=questionData.block, q=questionData.q;
@@ -629,61 +629,88 @@ function drawFounder(sx,sy,cd,face,walkFrame,flash){
   ctx.scale(SPRITE_SCALE,SPRITE_SCALE);
   ctx.translate(-13,-34);
   if(face<0){ ctx.translate(26,0); ctx.scale(-1,1); }
-  const skin='#e8b98f', wig='#f3f0e6', coat=cd.coat, acc=cd.accent, boot='#2a2320', breech='#d9cdae';
+  const skin='#e8b98f', skinSh='#cf9d73', wig='#f3f0e6', wigSh='#d3cfc0', coat=cd.coat, coatSh=shade(coat,-18), acc=cd.accent, boot='#2a2320', breech='#d9cdae', ol='#20160e';
   if(flash){ ctx.globalAlpha=0.5; }
   // boots / legs (walk anim) — 4-phase gait: neutral, forward, neutral, back
   const phase = walkFrame % 4;
   const swing = (phase===1) ? 3 : (phase===3) ? -3 : 0;
+  // outline pass — slightly-larger dark backings behind each mass (clean 1px edge)
+  px(5,2,15,13,ol);                                 // head/wig
+  px(2,13,22,14,ol);                                // coat + arms
+  px(3+swing,23,9,12,ol); px(14-swing,23,9,12,ol);  // legs
+  // legs
   px(4+swing,30,7,4,boot); px(15-swing,30,7,4,boot);
   px(5+Math.round(swing*0.6),24,6,6,breech); px(15-Math.round(swing*0.6),24,6,6,breech);
-  // coat body
+  // coat body with shaded right side
   px(4,14,18,12,coat);
-  px(3,15,2,9,coat); px(21,15,2,9,coat);
+  px(14,14,8,12,coatSh);
+  px(3,15,2,9,coat); px(21,15,2,9,coatSh);
   // cravat
-  px(11,13,4,6,'#f3f0e6');
+  px(11,13,4,6,'#f7f4ea');
   // accent trim (buttons)
-  px(12,15,2,2,acc); px(12,19,2,2,acc);
+  px(12,15,2,2,acc); px(12,19,2,2,acc); px(12,23,2,2,acc);
   // arms
-  px(1,15,3,8,coat); px(22,15,3,8,coat);
+  px(1,15,3,8,coat); px(22,15,3,8,coatSh);
   // head
   px(8,4,10,10,skin);
-  // wig/hair sides
-  px(6,5,3,9,wig); px(17,5,3,9,wig);
-  px(7,3,12,3,wig);
-  // eye
-  px(14,7,2,2,'#2a2320');
+  px(15,6,3,8,skinSh);        // cheek shadow
+  // wig/hair sides + tricorn-ish crown
+  px(6,5,3,9,wig); px(17,5,3,9,wigSh);
+  px(6,2,13,3,wig); px(6,2,13,1,'#ffffff');
+  // eye + brow
+  px(14,7,2,2,'#241a10'); px(13,6,3,1,skinSh);
   ctx.restore();
 }
 
 function drawRedcoat(sx,sy,frame){
   const SCALE=2;
-  const coat='#b53a2c', face='#e8b98f', hat='#171717', pants='#2b2b2b';
+  const coat='#b53a2c', coatSh='#8f2a1f', face='#e8b98f', hat='#171717', pants='#2b2b2b', ol='#160b08';
   ctx.save();
   ctx.translate(sx,sy);
   ctx.translate(14,31); ctx.scale(SCALE,SCALE); ctx.translate(-14,-31);
-  px(8,2,12,5,hat);       // shako hat
-  px(9,-2,10,4,hat);
-  px(9,7,9,7,face);        // face
-  px(6,13,16,12,coat);     // coat
-  px(11,15,2,8,'#f2c14e'); // buttons
   const phase=frame%4, swing=(phase===1)?3:(phase===3)?-3:0;
+  // outline backings
+  px(7,-3,14,11,ol);        // hat/head
+  px(5,12,18,14,ol);        // coat
+  px(6+swing,24,7,8,ol); px(15-swing,24,7,8,ol); // legs
+  // body
+  px(8,2,12,5,hat);         // shako hat
+  px(9,-2,10,4,hat);
+  px(10,-2,8,2,'#3a3a3a');  // hat highlight
+  px(9,7,9,7,face);         // face
+  px(16,8,2,5,'#cf9d73');   // cheek shadow
+  px(11,9,2,2,'#241a10');   // eye
+  px(6,13,16,12,coat);      // coat
+  px(15,13,7,12,coatSh);    // coat shadow side
+  px(11,15,2,8,'#f2c14e');  // buttons/sash
   px(7+swing,25,5,6,pants); px(16-swing,25,5,6,pants);
   ctx.restore();
 }
 function drawTyrant(sx,sy,frame){
   const SCALE=2;
-  const robe='#5b2a86', face='#d8c0a0', crown='#f2c14e';
+  const robe='#5b2a86', robeSh='#421e63', robeHi='#7a44a8', face='#d8c0a0', crown='#f2c14e', ol='#160b1e';
   ctx.save();
   ctx.translate(sx,sy);
   ctx.translate(16,46); ctx.scale(SCALE,SCALE); ctx.translate(-16,-46);
+  const phase=frame%4, swing=(phase===1)?3:(phase===3)?-3:0;
+  // outline backings
+  px(8,-1,16,12,ol);        // head
+  px(3,9,26,32,ol);         // robe
+  px(6+swing,39,8,8,ol); px(18-swing,39,8,8,ol); // feet
   // crown
   px(8,-4,16,4,crown); px(8,-8,3,4,crown); px(14,-8,3,4,crown); px(20,-8,3,4,crown);
-  px(9,0,14,10,face);      // face
-  px(12,4,2,2,'#3a1e1e'); px(18,4,2,2,'#3a1e1e');
-  px(4,10,24,30,robe);     // robe
-  px(14,12,4,24,'#7a44a8');
-  const phase=frame%4, swing=(phase===1)?3:(phase===3)?-3:0;
-  px(7+swing,40,6,6,'#2b2b2b'); px(19-swing,40,6,6,'#2b2b2b');
+  px(14,-6,2,2,'#c0392b');  // crown jewel
+  // face
+  px(9,0,14,10,face);
+  px(19,2,4,8,'#b89e7e');   // face shadow side
+  px(12,4,2,2,'#2a1414'); px(18,4,2,2,'#2a1414'); // eyes (scowl)
+  px(12,3,3,1,'#8a6a4a'); px(17,3,3,1,'#8a6a4a'); // brows
+  // robe
+  px(4,10,24,30,robe);
+  px(20,10,8,30,robeSh);    // shadow side
+  px(14,12,4,24,robeHi);    // center trim
+  px(8,14,2,20,robeHi);
+  px(7+swing,40,6,6,'#241018'); px(18-swing,40,6,6,'#241018'); // feet
   ctx.restore();
 }
 function drawBlock(b){
@@ -723,6 +750,111 @@ function drawBlock(b){
 }
 
 // ---------- RENDER ----------
+// Parallax colonial-Philadelphia skyline. scroll = already-parallaxed camera offset,
+// baseY = building baseline (buildings extend from here up; kept near the ground so the
+// city sits right behind the characters with no empty filler band), col = building fill.
+function drawColonialSkyline(scroll, baseY, col, landmark){
+  const TILE = 620;                       // width of one repeating streetscape
+  const roofL = shade(col, 16), win = shade(col, -26), trim = shade(col, 26), litWin = shade(col,-40);
+  const startTile = Math.floor(scroll / TILE) - 1;
+  for(let ti=startTile; ti<startTile + Math.ceil(W/TILE)+2; ti++){
+    const ox = ti*TILE - scroll;          // left edge of this tile on screen
+    if(ox > W || ox+TILE < 0) continue;
+
+    // helper: a rowhouse with a peaked roof, day-lit window panes, a chimney
+    const house=(x,w,h,peak)=>{
+      const top=baseY-h;
+      px(x, top, w, h, col);
+      px(x, top, w, 3, trim);                       // eave line
+      px(x, top, 2, h, shade(col,10));              // sunlit left edge
+      px(x+w-2, top, 2, h, shade(col,-14));         // shaded right edge
+      if(peak){ // gabled roof
+        ctx.fillStyle=roofL;
+        ctx.beginPath(); ctx.moveTo(x-2,top); ctx.lineTo(x+w/2,top-14); ctx.lineTo(x+w+2,top); ctx.closePath(); ctx.fill();
+      } else { px(x-1, top-5, w+2, 5, roofL); }      // flat parapet
+      px(x+w-6, top-10, 4, 12, shade(col,-18));      // chimney
+      // day window panes (dark glass with a light sill)
+      for(let wy=top+8; wy<baseY-8; wy+=16){
+        for(let wx=x+5; wx<x+w-6; wx+=13){ px(wx,wy,5,7,win); px(wx,wy+7,5,1,trim); }
+      }
+    };
+    // a church with a tall steeple
+    const church=(x)=>{
+      const h=110, top=baseY-h;
+      px(x, top, 34, h, col); px(x,top,34,3,trim);
+      px(x,top,2,h,shade(col,10)); px(x+32,top,2,h,shade(col,-14));
+      // steeple
+      px(x+12, top-30, 10, 30, col);
+      px(x+13, top-44, 8, 14, roofL);
+      ctx.fillStyle=roofL; ctx.beginPath(); ctx.moveTo(x+11,top-44); ctx.lineTo(x+17,top-62); ctx.lineTo(x+23,top-44); ctx.closePath(); ctx.fill();
+      px(x+16, top-70, 2, 10, trim);                 // spire finial
+      for(let wy=top+12; wy<baseY-12; wy+=20){ px(x+8,wy,6,9,win); px(x+20,wy,6,9,win); }
+    };
+
+    // lay out one streetscape across the tile (taller now, reaching down near the street)
+    house(ox+10, 70, 118, true);
+    house(ox+90, 54, 150, false);
+    church(ox+160);
+    house(ox+210, 80, 128, true);
+    house(ox+300, 60, 160, false);
+
+    if(landmark){
+      // ---- Independence Hall (centerpiece) ----
+      const bx=ox+380, bH=176, bTop=baseY-bH;
+      px(bx, bTop, 150, bH, col);                     // long brick body
+      px(bx, bTop, 150, 4, trim);
+      px(bx,bTop,2,bH,shade(col,10)); px(bx+148,bTop,2,bH,shade(col,-14));
+      // rows of windows
+      for(let wy=bTop+14; wy<baseY-16; wy+=26){
+        for(let wx=bx+12; wx<bx+140; wx+=20){ px(wx,wy,8,12,win); px(wx,wy+12,8,1,trim); }
+      }
+      // central clock tower
+      const tx=bx+62, tw=26;
+      px(tx, bTop-34, tw, 34, col); px(tx,bTop-34,tw,3,trim);
+      px(tx+8, bTop-24, 10, 10, '#f7ecd0'); px(tx+11,bTop-21,4,4,'#3a2f1a'); // clock face + hands
+      // white steeple stages
+      px(tx+3, bTop-58, tw-6, 24, roofL);
+      px(tx+6, bTop-76, tw-12, 18, roofL);
+      ctx.fillStyle=roofL;
+      ctx.beginPath(); ctx.moveTo(tx+4,bTop-76); ctx.lineTo(tx+tw/2,bTop-104); ctx.lineTo(tx+tw-4,bTop-76); ctx.closePath(); ctx.fill();
+      px(tx+tw/2-1, bTop-116, 2, 12, trim);           // spire
+    } else {
+      house(ox+380, 90, 140, true);
+      church(ox+490);
+      house(ox+540, 60, 120, false);
+    }
+  }
+}
+
+// lighten/darken a #rrggbb hex by amount (-100..100)
+function shade(hex, amt){
+  const n=parseInt(hex.slice(1),16);
+  let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  const f=amt/100*255;
+  r=Math.max(0,Math.min(255,r+f)); g=Math.max(0,Math.min(255,g+f)); b=Math.max(0,Math.min(255,b+f));
+  return '#'+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1);
+}
+// textured dirt+grass ground block (used for flat ground and raised steps)
+function drawGround(x, y, w, h){
+  px(x,y,w,h,'#3e2f1c');                         // dirt base
+  // dirt speckle texture (deterministic by world column so it doesn't shimmer)
+  ctx.fillStyle='rgba(0,0,0,.14)';
+  const worldX=Math.round(x+camX);
+  for(let ix=0; ix<w; ix+=8){
+    const wx=worldX+ix; const jitter=((wx*13)%17);
+    ctx.fillRect(x+ix+ (jitter%4), y+18+ (jitter%3)*6, 3, 3);
+    ctx.fillRect(x+ix+2+ (jitter%5), y+40+ (jitter%4)*7, 2, 2);
+  }
+  ctx.fillStyle='rgba(255,255,255,.05)';
+  for(let ix=0; ix<w; ix+=14){ ctx.fillRect(x+ix, y+22+((worldX+ix)*7%20), 2, 2); }
+  // grass cap with a highlighted crest and blade edge
+  px(x,y,w,10,'#5c7a3a');
+  px(x,y,w,3,'#749450');                          // lighter crest
+  px(x,y+10,w,4,'#3f5628');
+  // little grass blades along the top edge
+  for(let ix=2; ix<w; ix+=12){ px(x+ix,y-2,2,2,'#6f9147'); px(x+ix+5,y-3,2,3,'#7ba050'); }
+}
+
 function render(){
   ctx.clearRect(0,0,W,H);
   if(state==='title'){ drawTitle(); return; }
@@ -737,22 +869,30 @@ function render(){
 }
 
 function drawWorld(){
-  // sky
+  // daytime sky
   const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,level.sky); g.addColorStop(1,'#0a1220');
+  g.addColorStop(0,'#8fc4e8'); g.addColorStop(0.5,'#bfe0f0'); g.addColorStop(1,'#eaf4e0');
   ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-  // stars/parallax dots
-  ctx.fillStyle='rgba(255,255,255,.25)';
-  for(let i=0;i<40;i++){ const sx=((i*137 - camX*0.2)%W+W)%W; ctx.fillRect(sx, (i*53)%220, 2,2); }
-  // hills
-  ctx.fillStyle=level.hills;
-  for(let i=-1;i<8;i++){
-    const bx = i*280 - (camX*0.4)%280;
-    ctx.beginPath(); ctx.moveTo(bx,H); ctx.lineTo(bx+140,300); ctx.lineTo(bx+280,H); ctx.closePath(); ctx.fill();
+  // soft sun glow
+  const sunx=W*0.78, suny=90;
+  const sg=ctx.createRadialGradient(sunx,suny,10,sunx,suny,150);
+  sg.addColorStop(0,'rgba(255,250,220,.9)'); sg.addColorStop(1,'rgba(255,250,220,0)');
+  ctx.fillStyle=sg; ctx.fillRect(sunx-160,suny-160,320,320);
+  ctx.fillStyle='#fff7dc'; ctx.beginPath(); ctx.arc(sunx,suny,26,0,7); ctx.fill();
+  // drifting clouds (white, daytime)
+  ctx.fillStyle='rgba(255,255,255,.72)';
+  for(let i=0;i<6;i++){
+    const cw=90+ (i%3)*26;
+    const cx=((i*260 - camX*0.18)%(W+260)+(W+260))%(W+260) - 130;
+    const cy=40 + (i*37)%150;
+    ctx.fillRect(cx,cy,cw,14); ctx.fillRect(cx+14,cy-8,cw-30,10); ctx.fillRect(cx+24,cy+14,cw-48,8);
   }
+  // colonial Philadelphia skyline — far row (hazy blue-grey, slow parallax, sits high)
+  drawColonialSkyline(camX*0.22, level.groundY-70, '#7f95ad', false);
+  // colonial Philadelphia skyline — near row (warm brick, extends down right behind the characters)
+  drawColonialSkyline(camX*0.42, level.groundY-6, '#9a5a3c', true);
   // ground with gaps
   const gy=level.groundY;
-  ctx.fillStyle='#3e2f1c';
   let cursor=0;
   const segs=[];
   const sorted=[...level.gaps].sort((a,b)=>a[0]-b[0]);
@@ -761,24 +901,25 @@ function drawWorld(){
   for(const s of segs){
     const x0=s[0]-camX, w=s[1]-s[0];
     if(x0+w<0||x0>W) continue;
-    px(x0,gy,w,H-gy,'#3e2f1c');
-    px(x0,gy,w,10,'#5c7a3a');          // grass top
-    px(x0,gy+10,w,4,'#4a6330');
+    drawGround(x0, gy, w, H-gy);
   }
   // raised ground steps (Mario-style terrain)
   if(level.steps){
     for(const st of level.steps){
       const x0=st.x0-camX, w=st.x1-st.x0;
       if(x0+w<0||x0>W) continue;
-      px(x0,st.y,w,gy-st.y+80,'#3e2f1c');   // dirt column down to (and past) base ground
-      px(x0,st.y,w,10,'#5c7a3a');           // grass top
-      px(x0,st.y+10,w,4,'#4a6330');
+      drawGround(x0, st.y, w, gy-st.y+80);
     }
   }
-  // platforms
+  // platforms (grass-topped ledges with outline + shaded underside)
   for(const pl of level.platforms){
     const x=pl.x-camX; if(x+pl.w<0||x>W) continue;
-    px(x,pl.y,pl.w,pl.h,'#8a5a2c'); px(x,pl.y,pl.w,5,'#b07a3e'); px(x,pl.y+pl.h-4,pl.w,4,'#5c3a1c');
+    px(x-1,pl.y-1,pl.w+2,pl.h+2,'#241a10');      // dark outline
+    px(x,pl.y,pl.w,pl.h,'#8a5a2c');              // dirt
+    px(x,pl.y,pl.w,4,'#6f9147');                 // grass top
+    px(x,pl.y+4,pl.w,2,'#5c7a3a');
+    px(x,pl.y+pl.h-4,pl.w,4,'#5c3a1c');          // shaded underside
+    for(let ix=3; ix<pl.w; ix+=10){ px(x+ix,pl.y-2,2,2,'#7ba050'); } // tufts
   }
   // moving platforms (metal-runner look to read as mechanical)
   for(const m of level.movers){
