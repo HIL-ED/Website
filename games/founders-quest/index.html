@@ -179,11 +179,11 @@ const LEVELS = [
     name:"BREAK FROM BRITAIN", doc:"declaration", width:4700, groundY:460, sky:'#243b6b', hills:'#1a2a4d',
     gaps:[[500,640],[1000,1240],[1760,1900],[2600,2740],[3200,3440],[3760,3900],[4360,4500]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:540,y:380,w:70,h:20},{x:1790,y:400,w:70,h:20},{x:2820,y:340,w:60,h:18},{x:3790,y:370,w:70,h:20},{x:4390,y:395,w:70,h:20} ],
-    steps:[ {x0:660,x1:800,y:415},{x0:1960,x1:2090,y:405},{x0:2760,x1:2860,y:420},{x0:2860,x1:2970,y:388},{x0:3920,x1:4040,y:405} ],
-    movers:[ {x:1770,y:405,w:80,h:16,axis:'x',range:70,spd:0.035} ],
+    steps:[ {x0:660,x1:800,y:415},{x0:850,x1:950,y:430},{x0:1960,x1:2090,y:405},{x0:2760,x1:2860,y:420},{x0:2860,x1:2970,y:388},{x0:3920,x1:4040,y:405} ],
+    movers:[ {x:1770,y:405,w:80,h:16,axis:'x',range:70,spd:0.035}, {x:1050,y:415,w:80,h:16,axis:'x',range:110,spd:0.03}, {x:3260,y:410,w:80,h:16,axis:'x',range:100,spd:0.028} ],
     spikes:[ {x:1300,y:446,w:30,h:14},{x:1670,y:446,w:30,h:14} ],
     fallers:[ {x:2200,y:330,w:34,h:34} ],
-    blocks:[ gate(300,'coin'), coin(700,300), gate(860,'spring'), coin(1420,300), gate(1500,'coin'), gate(2120,'coin'), coin(2440,300), gate(3060,'coin'), gate(3560,'coin'), coin(4050,300) ],
+    blocks:[ gate(300,'coin'), coin(700,300), gate(860,'spring'), coin(1420,300), gate(1500,'coin'), gate(2120,'coin'), coin(2440,300), gate(3060,'coin'), gate(3560,'coin'), coin(4050,300), coin(555,280), coin(2830,260) ],
     enemies:[
       {type:'redcoat',x:1480,y:0,min:1400,max:1650},
       {type:'redcoat',x:2340,y:0,min:2280,max:2560},
@@ -196,11 +196,11 @@ const LEVELS = [
     name:"A FRAIL UNION", doc:"articles", width:4800, groundY:460, sky:'#3a2a4d', hills:'#241a35',
     gaps:[[560,700],[1100,1340],[1900,2020],[2700,2840],[3520,3760],[4260,4400]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:590,y:378,w:70,h:20},{x:1930,y:405,w:70,h:20},{x:2760,y:390,w:60,h:18},{x:3850,y:350,w:60,h:18},{x:4290,y:365,w:70,h:20} ],
-    steps:[ {x0:2400,x1:2480,y:410},{x0:2860,x1:2960,y:420},{x0:2960,x1:3060,y:388},{x0:4420,x1:4560,y:410} ],
-    movers:[ {x:1910,y:405,w:80,h:16,axis:'x',range:70,spd:0.035} ],
+    steps:[ {x0:830,x1:930,y:420},{x0:2400,x1:2480,y:410},{x0:2580,x1:2665,y:425},{x0:2860,x1:2960,y:420},{x0:2960,x1:3060,y:388},{x0:4185,x1:4245,y:435},{x0:4420,x1:4560,y:410} ],
+    movers:[ {x:1910,y:405,w:80,h:16,axis:'x',range:70,spd:0.035}, {x:1160,y:415,w:80,h:16,axis:'x',range:100,spd:0.03}, {x:3580,y:410,w:80,h:16,axis:'x',range:100,spd:0.028} ],
     spikes:[ {x:2030,y:446,w:30,h:14},{x:3900,y:446,w:30,h:14} ],
     fallers:[ {x:3800,y:330,w:34,h:34} ],
-    blocks:[ gate(300,'coin'), coin(760,300), gate(960,'spring'), coin(1470,300), gate(1650,'star'), coin(1800,300), gate(2500,'coin'), coin(2950,300), gate(3150,'star'), coin(3900,300) ],
+    blocks:[ gate(300,'coin'), coin(760,300), gate(960,'spring'), coin(1470,300), gate(1650,'star'), coin(1800,300), gate(2500,'coin'), coin(2950,300), gate(3150,'star'), coin(3900,300), coin(605,298), coin(2775,290) ],
     enemies:[
       {type:'redcoat',x:1500,y:0,min:1400,max:1600},
       {type:'tyrant', x:1790,y:0,min:1720,max:1870},
@@ -214,11 +214,11 @@ const LEVELS = [
     name:"A MORE PERFECT UNION", doc:"constitution", width:5200, groundY:460, sky:'#14324a', hills:'#0d2233',
     gaps:[[520,660],[1080,1320],[1800,1920],[2400,2640],[3050,3190],[3700,3940],[4450,4590]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:550,y:375,w:70,h:20},{x:1830,y:400,w:70,h:20},{x:3070,y:360,w:70,h:20},{x:3100,y:395,w:60,h:18},{x:4470,y:390,w:70,h:20} ],
-    steps:[ {x0:940,x1:1050,y:418},{x0:1930,x1:1995,y:415},{x0:3210,x1:3320,y:415} ],
-    movers:[ {x:1810,y:405,w:80,h:16,axis:'x',range:70,spd:0.035} ],
+    steps:[ {x0:940,x1:1050,y:418},{x0:1410,x1:1560,y:420},{x0:1930,x1:1995,y:415},{x0:2060,x1:2180,y:420},{x0:2270,x1:2365,y:430},{x0:2955,x1:3020,y:432},{x0:3210,x1:3320,y:415},{x0:4030,x1:4130,y:425},{x0:4820,x1:4960,y:420} ],
+    movers:[ {x:1810,y:405,w:80,h:16,axis:'x',range:70,spd:0.035}, {x:1130,y:415,w:80,h:16,axis:'x',range:110,spd:0.028}, {x:2460,y:410,w:80,h:16,axis:'x',range:100,spd:0.026} ],
     spikes:[ {x:2080,y:446,w:30,h:14},{x:3980,y:446,w:30,h:14} ],
     fallers:[ {x:2680,y:330,w:34,h:34} ],
-    blocks:[ coin(750,300), gate(880,'spring'), coin(1430,300), gate(1600,'star'), coin(2000,300), gate(2200,'star'), coin(2900,300), gate(3350,'coin'), gate(4150,'star'), coin(4700,300) ],
+    blocks:[ coin(750,300), gate(880,'spring'), coin(1430,300), gate(1600,'star'), coin(2000,300), gate(2200,'star'), coin(2900,300), gate(3350,'coin'), gate(4150,'star'), coin(4700,300), coin(565,275), coin(3085,260) ],
     enemies:[
       {type:'redcoat',x:720,y:0,min:670,max:850},
       {type:'tyrant', x:1740,y:0,min:1680,max:1790},
@@ -974,7 +974,7 @@ function shade(hex, amt){
   r=Math.max(0,Math.min(255,r+f)); g=Math.max(0,Math.min(255,g+f)); b=Math.max(0,Math.min(255,b+f));
   return '#'+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1);
 }
-// textured dirt+grass ground block (used for flat ground and raised steps)
+// textured dirt+grass ground block (used for flat ground and raised steps/hills)
 function drawGround(x, y, w, h){
   px(x,y,w,h,'#3e2f1c');                         // dirt base
   // dirt speckle texture (deterministic by world column so it doesn't shimmer)
@@ -1053,7 +1053,7 @@ function drawWorld(){
     if(x0+w<0||x0>W) continue;
     drawGround(x0, gy, w, H-gy);
   }
-  // raised ground steps (Mario-style terrain)
+  // raised ground steps (Mario-style rolling terrain — hills, staircases, dips)
   if(level.steps){
     for(const st of level.steps){
       const x0=st.x0-camX, w=st.x1-st.x0;
