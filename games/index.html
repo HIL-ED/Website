@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Humanities Immersed Learning: Games</title>
+<meta name="description" content="Six free, standards-aligned history and civics games for the classroom: platformers, policy simulations, city builders, and primary-source newspapers. No install, runs on Chromebooks.">
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Games: Humanities Immersed Learning">
+<meta property="og:description" content="Six free, standards-aligned history and civics games for the classroom: platformers, policy simulations, city builders, and primary-source newspapers. No install, runs on Chromebooks.">
+<meta property="og:image" content="../images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
@@ -53,14 +59,30 @@
     margin-left: auto; margin-right: auto;
   }
 
+  .section-head { padding: 28px 48px 0; text-align: center; }
+  .section-head h2 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 22px; margin: 0 0 8px; color: #16305c;
+  }
+  .section-head p { font-size: 14px; opacity: .8; margin: 0 auto; max-width: 68ch; }
+  .campaigns-head { padding-top: 8px; }
+  .campaigns-head h2 { color: #9f3f20; }
+
   .grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px; padding: 32px 48px 48px;
+    gap: 20px; padding: 24px 48px 40px;
   }
+  .grid.campaigns { padding-bottom: 48px; }
+  .game.campaign { background: #16305c; color: #fff2eb; }
+  .game.campaign h2 { color: #fff2eb; }
+  .game.campaign p { color: #fff2eb; opacity: .85; }
+  .game.campaign .tag { background: rgba(255,242,235,0.14); color: #9ed7d0; }
+  .game.campaign .cta { color: #f2c14e; text-decoration: none; }
+  .game.campaign .cta:hover { color: #fff2eb; }
   .game {
-    display: flex; flex-direction: column; gap: 10px;
+    display: flex; flex-direction: column;
     text-decoration: none; color: inherit;
-    background: #ebddc5; border-radius: 24px; padding: 24px;
+    background: #ebddc5; border-radius: 24px; overflow: hidden;
     box-shadow: 0 3px 10px rgba(46,43,37,0.16);
     transition: transform .15s ease, box-shadow .15s ease;
   }
@@ -68,6 +90,9 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 18px rgba(46,43,37,0.22);
   }
+  .game .shot { aspect-ratio: 16/10; overflow: hidden; }
+  .game .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .game .body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .tag {
     display: inline-block; align-self: flex-start;
     font-size: 10px; font-weight: 700; letter-spacing: .04em;
@@ -119,57 +144,116 @@
 
   <div class="intro">
     <h1>Popular With Classrooms</h1>
-    <p>Standards-aligned, teacher-tested, genuinely fun. Pick a title below and start playing.</p>
+    <p>Standards-aligned, teacher-tested, genuinely fun. Play a digital game right now, or bring a full campaign into your classroom. <a href="../blog/how-much-time-does-ene-take/">What's the difference? →</a></p>
+  </div>
+
+  <div class="section-head">
+    <h2>Short-Form Digital Games</h2>
+    <p>Playable right now, free, in any browser: a single class period is all you need.</p>
   </div>
 
   <div class="grid">
     <a class="game" href="founders-quest/" style="background:#dce8f0;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>Founders Quest: Pixel Republic</h2>
-      <p>An 8-bit platformer where you play as Jefferson, Madison, or Hamilton, each with a different perk, racing through levels themed around the Declaration of Independence, the Articles of Confederation, and the Constitution.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/founders-quest.png" alt="Founders Quest: Pixel Republic gameplay, an 8-bit platformer level" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>Founders Quest: Pixel Republic</h2>
+        <p>An 8-bit platformer where you play as Jefferson, Madison, or Hamilton, each with a different perk, racing through levels themed around the Declaration of Independence, the Articles of Confederation, and the Constitution.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <a class="game" href="medieval-fate/" style="background:#e5ddf0;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>Medieval Fate</h2>
-      <p>Draw a random role in medieval society, serf, clergy, or noble, and see how far your choices carry you through a rigid, class-stratified world.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/medieval-fate.png" alt="Medieval Fate, a character sheet for a monk in medieval society" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>Medieval Fate</h2>
+        <p>Draw a random role in medieval society, serf, clergy, or noble, and see how far your choices carry you through a rigid, class-stratified world.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <a class="game" href="passed/" style="background:#f5e6c8;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>Passed</h2>
-      <p>Grow public support and move a policy idea through the layered structures of American government: from public opinion, to city hall, to the statehouse, to Congress.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/passed.png" alt="Passed gameplay, a policy campaign dashboard with support levels" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>Passed</h2>
+        <p>Grow public support and move a policy idea through the layered structures of American government: from public opinion, to city hall, to the statehouse, to Congress.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <a class="game" href="manchester-rising/" style="background:#e8f6f4;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>Manchester Rising</h2>
-      <p>Build and manage a 19th-century city as it transforms from a pre-industrial market town into a factory powerhouse, and weigh its growth against its human cost.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/manchester-rising.png" alt="Manchester Rising, a tile-based industrial city builder map" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>Manchester Rising</h2>
+        <p>Build and manage a 19th-century city as it transforms from a pre-industrial market town into a factory powerhouse, and weigh its growth against its human cost.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <a class="game" href="the-progressive-gazette/" style="background:#ebddc5;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>The Progressive Gazette</h2>
-      <p>Run the presses on real Progressive-Era debates like child labor, displaying three perspectives at once, pro, anti, and neutral, each from a different American city.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/the-progressive-gazette.png" alt="The Progressive Gazette, three newspaper perspectives on child labor" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>The Progressive Gazette</h2>
+        <p>Run the presses on real Progressive-Era debates like child labor, displaying three perspectives at once, pro, anti, and neutral, each from a different American city.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <a class="game" href="whip-count/" style="background:#f3ddd8;">
-      <span class="tag">Free · Ready to play</span>
-      <h2>Whip Count</h2>
-      <p>Run an interest group racing a rival lobbyist to win a majority in both chambers of Congress: spend your Political Capital wisely as weekly headlines swing votes for or against you.</p>
-      <span class="cta">Play →</span>
+      <div class="shot"><img src="../images/games/whip-count.png" alt="Whip Count, House and Senate vote-count gauges" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Free · Ready to play</span>
+        <h2>Whip Count</h2>
+        <p>Run an interest group racing a rival lobbyist to win a majority in both chambers of Congress: spend your Political Capital wisely as weekly headlines swing votes for or against you.</p>
+        <span class="cta">Play →</span>
+      </div>
     </a>
 
     <div class="soon">
       <div class="game">
-        <span class="tag">Coming soon</span>
-        <h2>More games</h2>
-        <p>Additional titles will be added here as they're ready.</p>
+        <div class="body">
+          <span class="tag">Coming soon</span>
+          <h2>More games</h2>
+          <p>Additional titles will be added here as they're ready.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head campaigns-head" id="campaigns">
+    <h2>Long-Form Campaigns</h2>
+    <p>Our specialty: unit- and semester-long narratives you run in your own classroom, where students return to the same roles and consequences as the story compounds. Running campaigns like these, we've seen average absences drop from 6.3 to 4.1 per day.</p>
+  </div>
+
+  <div class="grid campaigns">
+    <div class="game campaign">
+      <div class="body">
+        <span class="tag">Classroom campaign · Semester</span>
+        <h2>The Nations Game</h2>
+        <p>Students lead rival fictional countries through decades of diplomacy: treaties signed and broken, wars, coalitions, refugee crises, and consequences that compound for months. Our students rediscovered the Treaty of Versailles on their own from inside this one.</p>
+        <a class="cta" href="../contact/">Ask about running this →</a>
+      </div>
+    </div>
+
+    <div class="game campaign">
+      <div class="body">
+        <span class="tag">Classroom campaign · Full year</span>
+        <h2>The Business Simulation</h2>
+        <p>Students build and run businesses across an economics course, applying every principle they learn (supply, demand, labor, investment) to enterprises they own and defend all year long.</p>
+        <a class="cta" href="../contact/">Ask about running this →</a>
+      </div>
+    </div>
+
+    <div class="game campaign">
+      <div class="body">
+        <span class="tag">Classroom campaign · Unit</span>
+        <h2>The Industrialization Journey</h2>
+        <p>A decision-tree narrative through the Industrial Revolution: each student starts as a farmer or small-business owner and navigates five years of choices (unions, steam power, safety standards) that decide how their family fares as the world industrializes.</p>
+        <a class="cta" href="../contact/">Ask about running this →</a>
       </div>
     </div>
   </div>
@@ -178,6 +262,7 @@
     <div>© 2026 Humanities Immersed Learning LLC</div>
     <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
       <a href="../">Back to Home</a>
+      <a href="../about/">About</a>
       <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
     </div>

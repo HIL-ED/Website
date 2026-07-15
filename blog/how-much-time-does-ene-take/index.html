@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanities Immersed Learning: How Much Class Time Does a Narrative Game Really Take?</title>
+<meta name="description" content="Short-form, medium-form, and long-form narratives: how teachers run story-driven learning in anything from twenty minutes to a full semester, without changing their curriculum.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Much Class Time Does a Narrative Game Really Take?">
+<meta property="og:description" content="Short-form, medium-form, and long-form narratives: story-driven learning in anything from twenty minutes to a full semester, without changing your curriculum.">
+<meta property="og:image" content="../../images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: #e4d8c2; color: #201e1d;
+    font-family: 'Figtree', system-ui, sans-serif;
+    display: flex; justify-content: center;
+    padding: 48px 20px;
+  }
+  a { color: #cc6b31; }
+  a:hover { color: #9f3f20; }
+
+  .page {
+    width: 100%; max-width: 760px;
+    background: #f5ead8; border-radius: 28px; overflow: hidden;
+    box-shadow: 0 12px 32px rgba(46,43,37,0.22);
+  }
+
+  .nav {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 48px; background: #f9f4ed;
+    border-bottom: 1px solid rgba(32,30,29,0.08);
+  }
+  .nav .brand {
+    margin-right: auto; text-decoration: none;
+    font-family: 'Caprasimo', serif; font-size: 20px; color: #16305c;
+  }
+  .nav a.navlink { text-decoration: none; color: #201e1d; font-size: 14px; font-weight: 600; }
+  .nav a.navlink:hover { color: #9f3f20; }
+
+  article { padding: 44px 48px 48px; }
+  .back { display: inline-block; margin-bottom: 20px; font-size: 13px; font-weight: 600; }
+  .date { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #645c50; font-weight: 700; margin-bottom: 10px; }
+  h1 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 30px; line-height: 1.2; margin: 0 0 20px; color: #201e1d;
+  }
+  h2 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 20px; margin: 32px 0 12px; color: #16305c;
+  }
+  p { font-size: 16px; line-height: 1.75; margin: 0 0 18px; opacity: .9; }
+
+  .spectrum { display: flex; flex-direction: column; gap: 14px; margin: 24px 0; }
+  .form-card {
+    border-radius: 18px; padding: 20px 24px;
+    display: grid; grid-template-columns: auto 1fr; gap: 6px 20px; align-items: baseline;
+  }
+  .form-card .length {
+    font-family: 'Caprasimo', serif; font-size: 15px; white-space: nowrap;
+  }
+  .form-card .span { grid-column: 1; font-size: 12px; font-weight: 700; opacity: .7; }
+  .form-card .what { grid-column: 2; grid-row: 1 / span 2; font-size: 14px; line-height: 1.6; opacity: .85; }
+  .form-card.short { background: #e8f6f4; }
+  .form-card.medium { background: #ffe1d0; }
+  .form-card.long {
+    background: #16305c; color: #fff2eb;
+    box-shadow: 0 6px 16px rgba(22,48,92,0.3);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .form-card.long .what { opacity: .92; margin-top: 6px; }
+  .form-card.long .badge {
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: #9ed7d0; margin-bottom: 4px;
+  }
+
+  .callout {
+    background: #ffe1d0; border-left: 3px solid #cc6b31; border-radius: 4px 16px 16px 4px;
+    padding: 18px 22px; margin: 24px 0; font-size: 15px; font-style: italic;
+  }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .stat { background: #ebddc5; border-radius: 16px; padding: 18px 20px; text-align: center; }
+  .stat .num { font-family: 'Caprasimo', serif; font-size: 26px; color: #16305c; }
+  .stat .label { font-size: 13px; opacity: .75; line-height: 1.5; margin-top: 4px; }
+  .cta-row { margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(32,30,29,0.1); }
+
+  footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 48px; background: #f9f4ed;
+    border-top: 1px solid rgba(32,30,29,0.08);
+    font-size: 13px; opacity: .7;
+  }
+  footer a { text-decoration: none; }
+
+  @media (max-width: 700px) {
+    .nav { flex-wrap: wrap; padding: 16px 24px; }
+    article { padding: 32px 24px; }
+    .stats { grid-template-columns: 1fr; }
+    .form-card { grid-template-columns: 1fr; }
+    .form-card .what { grid-column: 1; grid-row: auto; }
+    .form-card.long .badge { grid-column: 1; }
+    footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="nav">
+    <a class="brand" href="../../">Humanities Immersed Learning</a>
+    <a class="navlink" href="../../">Home</a>
+    <a class="navlink" href="../../games/">Games</a>
+    <a class="navlink" href="../../teachers/">Teachers</a>
+  </div>
+
+  <article>
+    <a class="back" href="../">← Back to Blog</a>
+    <div class="date">ENE in the Classroom</div>
+    <h1>How Much Class Time Does a Narrative Game Really Take?</h1>
+
+    <p>The most common worry we hear from teachers about narrative-based learning is time. The curriculum is already full. The assessments are already scheduled. Adding something new throws everything off.</p>
+
+    <p>Here's the thing we always say back: Experiential Narrative Education is not adding new content to your class. It requires no shift in curriculum. It's a shift in mindset: taking the teaching you already do and framing it through narrative and experience. And it scales to whatever time you actually have.</p>
+
+    <h2>The Three Lengths of a Narrative</h2>
+    <p>When we plan a narrative experience, we think of it in one of three forms:</p>
+
+    <div class="spectrum">
+      <div class="form-card short">
+        <div class="length">Short-Form</div>
+        <div class="span">1 to 3 class periods</div>
+        <div class="what">A self-contained experience, playable in a single sitting. Twenty minutes of students hunting hidden communists during a Red Scare activity can anchor an entire unit's discussion.</div>
+      </div>
+      <div class="form-card medium">
+        <div class="length">Medium-Form</div>
+        <div class="span">1 to 2 weeks</div>
+        <div class="what">A narrative that unfolds across lessons, like a plague simulator where a disease slowly spreads day by day, showing the devastating reach of the Black Death across Europe and Asia.</div>
+      </div>
+      <div class="form-card long">
+        <div class="badge">Where the deepest learning lives</div>
+        <div class="length">Long-Form</div>
+        <div class="span">A full unit or semester</div>
+        <div class="what">A campaign students return to again and again as the story compounds: nations rising and falling, businesses built on economics principles across a year, treaties signed and broken. The narrative stays contiguous even if you only touch it a few minutes every few days, and it's what students still talk about years later.</div>
+      </div>
+    </div>
+
+    <p>The surprising part is how little clock time even the memorable ones take. In one of our classrooms, students still talk about acting out a revolution and watching the slow decay of a medieval village during the plague. The revolution took thirty minutes. The village took two to four minutes a day over three weeks. Not long in terms of minutes, but lasting in memory, because the content got connected to narrative and emotion.</p>
+
+    <div class="callout">"The feeling of triumphing over corruption, or mourning a loss, is much stronger than only teaching about Caesar and the Bubonic Plague."</div>
+
+    <h2>What Long-Form Looks Like in Practice</h2>
+    <p>Long-form is where the richest moments we've witnessed come from. Students playing leaders of fictional countries emerging from a long conflict imposed harsh terms on the losers: reparations, military restrictions, occupied territory. The losing side seethed, started violating the treaty, and quietly built a coalition for revenge. In the debrief, students connected what they had just lived to the Treaty of Versailles on their own, without being told.</p>
+
+    <p>We've watched a student dictator overplay his power until his own supporters staged a coup. We've watched a country use nuclear weapons and get frozen out by every other nation at the table. These are failures, and that's the point. A long-form narrative gives students a place to fail safely, take creative risks, and feel the consequences without any of it touching their grade.</p>
+
+    <h2>Does It Actually Move the Numbers?</h2>
+    <p>Engagement stories are nice, but here's what we've measured in our own classrooms:</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num">6.3 → 4.1</div>
+        <div class="label">Average absences per day, before vs. during a running simulation</div>
+      </div>
+      <div class="stat">
+        <div class="num">82.1 → 87.4</div>
+        <div class="label">State test scores after integrating ENE experiences</div>
+      </div>
+    </div>
+
+    <p>A narrative that students don't want to miss is an attendance strategy. When the story only moves forward in class, when your country's fate gets decided whether you're in the room or not, showing up starts to matter in a way a worksheet never will.</p>
+
+    <h2>Start Small, Then Go Long</h2>
+    <p>Our games are built to slot into any of these three forms. Play one round of a policy simulation as a single-period activity, or run it as a full legislative campaign across a unit. If you're new to narrative-based teaching, start short: one class period, one story, one debrief. Once you and your students have felt what it does, the long-form campaign is where you'll want to live.</p>
+
+    <div class="cta-row">
+      <a href="../../games/">Browse the games →</a> &nbsp;·&nbsp; <a href="../../teachers/#sample">Request a free classroom sample →</a>
+    </div>
+  </article>
+
+  <footer>
+    <div>© 2026 Humanities Immersed Learning LLC</div>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+      <a href="../../">Back to Home</a>
+      <a href="../../about/">About</a>
+      <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

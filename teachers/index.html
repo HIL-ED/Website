@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Humanities Immersed Learning: For Teachers</title>
+<meta name="description" content="Standards-aligned classroom games with printable lesson guides, discussion sheets, and debrief materials. Request a free sample unit for your grade and subject.">
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="For Teachers: Humanities Immersed Learning">
+<meta property="og:description" content="Standards-aligned classroom games with printable lesson guides, discussion sheets, and debrief materials. Request a free sample unit for your grade and subject.">
+<meta property="og:image" content="../images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
@@ -67,6 +73,38 @@
     margin: 0 0 6px; color: #16305c;
   }
   .benefits .item p { margin: 0; font-size: 14px; opacity: .8; line-height: 1.6; }
+
+  .section-title {
+    font-family: 'Caprasimo', serif; font-weight: 400; font-size: 22px;
+    margin: 0 0 12px; text-align: center; color: #16305c;
+  }
+  .method-lead { font-size: 15px; line-height: 1.7; opacity: .85; max-width: 76ch; margin: 0 auto 20px; text-align: center; }
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .pillar { background: #e8f6f4; border-radius: 16px; padding: 18px 20px; }
+  .pillar h3 { font-family: 'Caprasimo', serif; font-weight: 400; font-size: 15px; margin: 0 0 6px; color: #16305c; }
+  .pillar p { margin: 0; font-size: 13px; opacity: .8; line-height: 1.6; }
+
+  .example { background: #f9f4ed; border-radius: 24px; margin: 0 48px; padding: 32px 40px; }
+  .steps { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
+  .step { display: flex; gap: 18px; align-items: flex-start; }
+  .step-num {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    background: #cc6b31; color: #fff2eb; font-family: 'Caprasimo', serif;
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+  }
+  .step h3 { font-family: 'Caprasimo', serif; font-weight: 400; font-size: 16px; margin: 4px 0 6px; }
+  .step p { margin: 0; font-size: 14px; line-height: 1.65; opacity: .85; }
+
+  .offering-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .offering { border-radius: 20px; padding: 28px; }
+  .offering .eyebrow { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+  .offering h3 { font-family: 'Caprasimo', serif; font-weight: 400; font-size: 18px; margin: 0 0 10px; }
+  .offering p { margin: 0 0 12px; font-size: 14px; line-height: 1.65; opacity: .85; }
+  .offering a { font-size: 14px; font-weight: 600; }
+  .offering.short { background: #dce8f0; }
+  .offering.long { background: #16305c; color: #fff2eb; }
+  .offering.long a { color: #f2c14e; }
+  .offering.long a:hover { color: #fff2eb; }
 
   .tpt-cta {
     margin: 0 48px; padding: 36px 40px; border-radius: 24px;
@@ -135,6 +173,9 @@
     .intro { padding: 32px 24px 8px; }
     section { padding: 24px 24px; }
     .benefits { grid-template-columns: 1fr; padding: 24px; }
+    .pillars { grid-template-columns: 1fr 1fr; }
+    .example { margin: 0 24px; padding: 24px; }
+    .offering-grid { grid-template-columns: 1fr; }
     .tpt-cta { margin: 0 24px; flex-direction: column; text-align: center; }
     .testimonial-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
@@ -155,7 +196,7 @@
   <div class="intro">
     <div class="eyebrow">For Teachers</div>
     <h1>Everything you need, nothing you don't.</h1>
-    <p>Standards-aligned games and printable resources built by teachers, for the classroom -- no install, no fluff, no worksheets in disguise.</p>
+    <p>Standards-aligned games and printable resources built by teachers, for the classroom: no install, no fluff, no worksheets in disguise.</p>
   </div>
 
   <section>
@@ -166,7 +207,7 @@
       </div>
       <div class="item">
         <h3>Zero Install</h3>
-        <p>Runs in any browser, including Chromebooks -- no software, accounts, or downloads required.</p>
+        <p>Runs in any browser, including Chromebooks: no software, accounts, or downloads required.</p>
       </div>
       <div class="item">
         <h3>Debrief-Ready</h3>
@@ -175,10 +216,68 @@
     </div>
   </section>
 
+  <section class="method">
+    <h2 class="section-title">Our Methodology: Experiential Narrative Education</h2>
+    <p class="method-lead">Every game we build applies <strong>Experiential Narrative Education (ENE)</strong>, a framework where teachers and students co-create a narrative that frames learning as an active, story-driven experience. Students engage with real academic content through roleplay, choice, challenge, and consequence, and a deliberate debrief turns the experience into something they can name, connect to the curriculum, and remember. ENE adds no new content to your class and requires no shift in curriculum; it reframes the teaching you already do. <a href="../blog/what-is-experiential-narrative-education/">Read the full framework →</a></p>
+    <div class="pillars">
+      <div class="pillar"><h3>Student Ownership</h3><p>Students make real decisions inside the narrative instead of observing it.</p></div>
+      <div class="pillar"><h3>Narrative Framing</h3><p>Content is wrapped in a story: a role, a setting, a stake.</p></div>
+      <div class="pillar"><h3>Interactive Structure</h3><p>Rules, roles, and consequences keep the story moving.</p></div>
+      <div class="pillar"><h3>Reflective Assessment</h3><p>A structured debrief connects the experience back to the standard.</p></div>
+    </div>
+  </section>
+
+  <section class="example">
+    <h2 class="section-title">What It Looks Like: One Class Period with <em>Passed</em></h2>
+    <p class="method-lead">Here's how a single 50-minute civics period runs with our policy simulation <a href="../games/passed/"><em>Passed</em></a>, which targets the standard "opportunities for civic engagement within the structures of government are made possible through political and public policy processes."</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Set up · 10 minutes</h3>
+          <p>Students open the game in their browser, no login required, and each choose a policy (healthcare, minimum wage, education funding…) and a starting position, from grassroots organizer to member of Congress. Each choice comes with trade-offs they'll have to own.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Play · 25 minutes</h3>
+          <p>Students grow public support and push their bill from public opinion to city hall, the statehouse, and Congress, spending influence points on canvassing, lobbying, coalition-building, and testimony while organized opposition pushes back.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>Debrief · 15 minutes</h3>
+          <p>Using the printable discussion sheet, students compare runs: Which action type felt most powerful? Would a different starting role have needed a different strategy? What real-world systems did your campaign resemble? The reflection is the assessment: that's where the learning gets named.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="offerings">
+    <h2 class="section-title">Two Ways to Bring It to Your Classroom</h2>
+    <div class="offering-grid">
+      <div class="offering short">
+        <div class="eyebrow" style="color:#16305c;">Play Today</div>
+        <h3>Short-Form Digital Games</h3>
+        <p>Six free browser games (platformers, policy simulations, city builders, and primary-source newspapers) each playable in a single class period on any Chromebook.</p>
+        <a href="../games/">Browse the games →</a>
+      </div>
+      <div class="offering long">
+        <div class="eyebrow" style="color:#f2c14e;">Our Specialty</div>
+        <h3>Long-Form Campaigns</h3>
+        <p>Unit- and semester-long classroom narratives, <strong>The Nations Game</strong>, <strong>The Business Simulation</strong>, and <strong>The Industrialization Journey</strong>, where students return to the same roles and consequences as the story compounds. Running campaigns like these, we've seen average absences drop from 6.3 to 4.1 per day.</p>
+        <a href="../games/#campaigns">Explore the campaigns →</a>
+      </div>
+    </div>
+  </section>
+
   <div class="tpt-cta">
     <div>
       <div class="eyebrow">On Teachers Pay Teachers</div>
       <h2>Printable lesson guides &amp; activities to go with every game.</h2>
+      <p style="font-size:14px; opacity:.9; margin:8px 0 0; color:#fff2eb; max-width:52ch;">Discussion sheets, primary source sets, and standards-aligned unit plans built to pair with our games, like the <em>Passed</em> debrief sheet from the lesson above. Browse and download instantly.</p>
     </div>
     <a class="btn" href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">Shop Our TPT Store →</a>
   </div>
@@ -230,6 +329,7 @@
     <div>© 2026 Humanities Immersed Learning LLC</div>
     <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
       <a href="../">Back to Home</a>
+      <a href="../about/">About</a>
       <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
     </div>
