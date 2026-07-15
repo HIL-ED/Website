@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whose Japan? A Meiji Restoration Story</title>
+<meta name="description" content="A branching narrative through the Meiji Restoration (1853-1889). Choose a role, live through the choices real Japanese people faced, and examine primary sources along the way.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+:root {
+  --paper: #f3ead9;
+  --paper-dark: #e8dcc4;
+  --card: #faf3e6;
+  --ink: #241f18;
+  --ink-soft: #5a5142;
+  --indigo: #1d3050;
+  --indigo-light: #2c4770;
+  --vermillion: #ae3b2a;
+  --vermillion-dark: #8a2e21;
+  --gold: #b9902f;
+  --line: rgba(36,31,24,0.14);
+}
+html,body { margin:0; padding:0; background:var(--paper); color:var(--ink); font-family:'Noto Sans', sans-serif; }
+body { min-height:100vh; }
+h1,h2,h3,.serif { font-family:'Shippori Mincho', serif; font-weight:700; }
+a { color: var(--vermillion); }
+button { font-family:inherit; cursor:pointer; }
+.hidden { display:none !important; }
+.wrap { max-width: 880px; margin:0 auto; padding: 36px 22px 80px; }
+.center { text-align:center; }
+
+/* ── TITLE ── */
+#screen-title .kicker { font-size:0.75rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--vermillion); margin-bottom:10px; }
+#screen-title h1 { font-size:2.3rem; line-height:1.25; margin:0 0 6px; color:var(--indigo); }
+#screen-title .sub { font-size:1rem; color:var(--ink-soft); font-style:italic; margin-bottom:28px; }
+.lede { max-width:640px; margin:0 auto 30px; font-size:1rem; line-height:1.75; color:var(--ink); }
+.lede p { margin:0 0 14px; }
+.rule { width:64px; height:3px; background:var(--gold); margin:22px auto; border:none; }
+.btn-primary {
+  background:var(--vermillion); color:#fdf6ea; border:none; padding:14px 34px;
+  font-size:1rem; font-weight:600; border-radius:3px; letter-spacing:0.02em;
+  box-shadow:0 3px 0 var(--vermillion-dark);
+}
+.btn-primary:hover { background:var(--vermillion-dark); }
+.btn-secondary {
+  background:transparent; color:var(--indigo); border:1.5px solid var(--indigo);
+  padding:10px 22px; font-size:0.88rem; font-weight:600; border-radius:3px;
+}
+.btn-secondary:hover { background:var(--indigo); color:#fdf6ea; }
+
+/* ── ROLE SELECT ── */
+#screen-role h2 { text-align:center; color:var(--indigo); font-size:1.7rem; margin-bottom:6px; }
+#screen-role .sub { text-align:center; color:var(--ink-soft); font-style:italic; margin-bottom:28px; }
+.role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
+.role-card {
+  background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:22px 22px 20px; display:flex; flex-direction:column; gap:8px;
+  border-top:4px solid var(--indigo); transition:transform .15s ease, box-shadow .15s ease;
+}
+.role-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(36,31,24,0.14); }
+.role-card h3 { font-size:1.15rem; color:var(--indigo); margin:0; }
+.role-card .rnote { font-size:0.8rem; color:var(--vermillion); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+.role-card p { font-size:0.9rem; line-height:1.55; color:var(--ink); margin:0; flex:1; }
+.role-card button { margin-top:8px; align-self:flex-start; background:var(--indigo); color:#fdf6ea; border:none; padding:9px 18px; border-radius:3px; font-size:0.85rem; font-weight:600; }
+.role-card button:hover { background:var(--indigo-light); }
+
+/* ── STORY ── */
+#screen-story .era-track { display:flex; justify-content:center; gap:10px; margin-bottom:22px; }
+.era-dot { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; padding:5px 12px; border-radius:999px; background:var(--paper-dark); color:var(--ink-soft); border:1px solid var(--line); }
+.era-dot.active { background:var(--indigo); color:#fdf6ea; border-color:var(--indigo); }
+.era-dot.done { background:var(--gold); color:#241f18; border-color:var(--gold); }
+
+.story-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px; }
+.story-year { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--vermillion); font-weight:700; margin-bottom:8px; }
+.story-text { font-size:1.04rem; line-height:1.8; color:var(--ink); white-space:pre-line; }
+.story-text p { margin:0 0 14px; }
+
+.archive-btn {
+  display:inline-flex; align-items:center; gap:7px; margin-top:16px;
+  background:var(--paper-dark); border:1px solid var(--gold); color:var(--indigo);
+  padding:9px 16px; border-radius:5px; font-size:0.85rem; font-weight:600;
+}
+.archive-btn:hover { background:var(--gold); color:#fff; }
+
+.choices { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
+.choice-btn {
+  text-align:left; background:#fff; border:1.5px solid var(--indigo); color:var(--indigo);
+  padding:14px 18px; border-radius:7px; font-size:0.95rem; line-height:1.45; font-weight:500;
+}
+.choice-btn:hover { background:var(--indigo); color:#fdf6ea; }
+
+.consequence { margin-top:22px; padding:18px 20px; background:#fbf1de; border-left:4px solid var(--vermillion); border-radius:0 6px 6px 0; }
+.consequence .cq-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--vermillion); font-weight:700; margin-bottom:6px; }
+.consequence p { margin:0; font-size:0.96rem; line-height:1.65; font-style:italic; }
+#continue-wrap { margin-top:20px; text-align:right; }
+
+/* journey log */
+#journey { max-width:880px; margin:18px auto 0; }
+#journey summary { cursor:pointer; font-size:0.82rem; color:var(--ink-soft); font-weight:600; padding:6px 4px; }
+#journey-list { font-size:0.85rem; line-height:1.6; color:var(--ink-soft); padding:6px 4px 0 18px; }
+#journey-list li { margin-bottom:4px; }
+#journey-list .jy { color:var(--vermillion); font-weight:700; margin-right:6px; }
+
+/* ── ARCHIVE MODAL ── */
+#archive-overlay { position:fixed; inset:0; background:rgba(20,16,10,0.65); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+#archive-overlay.hidden { display:none; }
+#archive-modal { background:var(--paper); border-radius:10px; max-width:640px; width:100%; max-height:82vh; overflow-y:auto; padding:26px 28px; box-shadow:0 20px 50px rgba(0,0,0,0.35); }
+#archive-modal h3 { color:var(--indigo); margin:0 0 4px; font-size:1.25rem; }
+#archive-modal .arch-close { float:right; background:none; border:none; font-size:1.3rem; color:var(--ink-soft); line-height:1; }
+.source-block { border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-top:16px; background:var(--card); }
+.source-block .stype { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; padding:2px 9px; border-radius:999px; display:inline-block; margin-bottom:8px; }
+.stype.primary { background:#dcecd8; color:#2c5a26; }
+.stype.context { background:#e0e8f2; color:var(--indigo); }
+.source-block h4 { margin:0 0 2px; font-size:1rem; color:var(--ink); }
+.source-block .syear { font-size:0.75rem; color:var(--ink-soft); margin-bottom:10px; }
+.source-block .stext { font-size:0.92rem; line-height:1.6; font-style:italic; color:var(--ink); border-left:3px solid var(--gold); padding-left:12px; margin-bottom:10px; }
+.source-block .snote { font-size:0.85rem; line-height:1.55; color:var(--ink-soft); margin-bottom:8px; }
+.source-block .scite { font-size:0.72rem; color:var(--ink-soft); opacity:0.8; }
+
+/* ── REFLECTION ── */
+#screen-reflection .refl-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px; }
+#screen-reflection h2 { color:var(--indigo); margin:0 0 4px; font-size:1.4rem; }
+#screen-reflection .refl-sub { color:var(--ink-soft); font-style:italic; margin-bottom:18px; font-size:0.92rem; }
+#refl-recap { background:var(--paper-dark); border-radius:8px; padding:12px 16px; margin-bottom:22px; font-size:0.85rem; }
+#refl-recap .rr-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:6px; font-weight:700; }
+#refl-recap ul { margin:0; padding-left:18px; line-height:1.6; }
+.refl-q { margin-bottom:18px; }
+.refl-q label { display:block; font-size:0.94rem; font-weight:600; color:var(--ink); margin-bottom:7px; line-height:1.5; }
+.refl-q textarea { width:100%; min-height:70px; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-family:inherit; font-size:0.9rem; line-height:1.55; resize:vertical; background:#fff; }
+.refl-q textarea:focus { outline:2px solid var(--gold); border-color:var(--gold); }
+
+/* ── EPILOGUE / FINAL ── */
+#screen-epilogue .epi-card { background:var(--indigo); color:#fdf6ea; border-radius:12px; padding:32px 34px; margin-bottom:26px; }
+#screen-epilogue .epi-card .kicker { color:#e8c774; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:8px; }
+#screen-epilogue .epi-card h2 { font-size:1.5rem; margin:0 0 12px; color:#fdf6ea; }
+#screen-epilogue .epi-card p { font-size:1rem; line-height:1.75; margin:0; }
+#final-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; justify-content:center; }
+
+footer.site { text-align:center; padding:26px 20px; font-size:0.78rem; color:var(--ink-soft); }
+footer.site a { color:var(--ink-soft); }
+
+@media (max-width:600px) {
+  .wrap { padding:24px 16px 60px; }
+  .story-card, #screen-reflection .refl-card { padding:22px 18px; }
+  #screen-title h1 { font-size:1.7rem; }
+}
+
+/* ── PRINT ── */
+#print-summary { display:none; }
+@media print {
+  body * { visibility:hidden; }
+  #print-summary, #print-summary * { visibility:visible; }
+  #print-summary { display:block; position:absolute; top:0; left:0; width:100%; padding:0 24px; color:#000; }
+  #print-summary h1 { font-family:serif; }
+  #print-summary .p-section { margin-bottom:20px; page-break-inside:avoid; }
+  #print-summary .p-q { font-weight:700; margin-top:10px; }
+  #print-summary .p-a { margin:4px 0 0; white-space:pre-wrap; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- TITLE -->
+  <section id="screen-title">
+    <div class="center">
+      <div class="kicker">A Branching History · 1853&ndash;1889</div>
+      <h1>Whose Japan?<br>A Meiji Restoration Story</h1>
+      <div class="sub">You will not play a game. You will live a choice, again and again, and see where it leads.</div>
+    </div>
+    <div class="lede">
+      <p>In 1853, four foreign warships anchor off the coast of a country that has spent over two hundred years deliberately closed to the outside world. By 1889, that country has a written constitution, a national army built from conscripts instead of hereditary warriors, railways, telegraph lines, and factories &mdash; and a great many people who paid a steep price for all of it.</p>
+      <p>This is a story about that transformation, told from the ground up. You will choose who you are: a low-ranking samurai, a merchant's heir, a tenant farmer's child, or the daughter of a samurai household. You will make real decisions at real turning points, examine primary sources from the archive along the way, and pause periodically to reflect on what you're seeing. There is no score. There is no single correct path. There is only the question every person alive in Japan during these thirty-six years had to answer for themselves: when everything is changing, what do you hold onto, and what do you let go?</p>
+    </div>
+    <div class="center"><button class="btn-primary" onclick="goToRoleSelect()">Choose Your Path &rarr;</button></div>
+  </section>
+
+  <!-- ROLE SELECT -->
+  <section id="screen-role" class="hidden">
+    <h2>Whose eyes will you see this story through?</h2>
+    <div class="sub">Each path lives through the same thirty-six years of history, but experiences them very differently.</div>
+    <div class="role-grid" id="role-grid"></div>
+  </section>
+
+  <!-- STORY -->
+  <section id="screen-story" class="hidden">
+    <div class="era-track" id="era-track"></div>
+    <div class="story-card">
+      <div class="story-year" id="story-year"></div>
+      <div class="story-text" id="story-text"></div>
+      <div id="archive-btn-wrap"></div>
+      <div class="choices" id="story-choices"></div>
+      <div id="consequence-wrap"></div>
+    </div>
+    <details id="journey">
+      <summary>Your journey so far &#9662;</summary>
+      <ul id="journey-list"></ul>
+    </details>
+  </section>
+
+  <!-- REFLECTION -->
+  <section id="screen-reflection" class="hidden">
+    <div class="refl-card">
+      <h2 id="refl-title"></h2>
+      <div class="refl-sub" id="refl-sub"></div>
+      <div id="refl-recap"></div>
+      <div id="refl-questions"></div>
+      <div class="center"><button class="btn-primary" onclick="continueFromReflection()">Continue the Story &rarr;</button></div>
+    </div>
+  </section>
+
+  <!-- EPILOGUE + FINAL REFLECTION -->
+  <section id="screen-epilogue" class="hidden">
+    <div class="epi-card">
+      <div class="kicker" id="epi-kicker"></div>
+      <h2 id="epi-title"></h2>
+      <p id="epi-text"></p>
+    </div>
+    <div class="refl-card" style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px;">
+      <h2 style="color:var(--indigo); font-size:1.3rem; margin:0 0 4px;">Final Reflection</h2>
+      <div class="refl-sub">Take a step back from your character and think as a historian.</div>
+      <div id="final-questions"></div>
+    </div>
+    <div id="final-actions">
+      <button class="btn-primary" onclick="printJourney()">Print My Journey &amp; Reflections</button>
+      <button class="btn-secondary" onclick="restartGame()">Start Over as a Different Role</button>
+    </div>
+  </section>
+
+</div>
+
+<footer class="site">Humanities Immersed Learning &middot; <a href="../">Back to Games</a></footer>
+
+<!-- ARCHIVE MODAL -->
+<div id="archive-overlay" class="hidden">
+  <div id="archive-modal">
+    <button class="arch-close" onclick="closeArchive()">&times;</button>
+    <h3>The Archive</h3>
+    <div class="refl-sub" style="margin-top:0;">Primary sources are direct quotations. Historical context entries are accurate summaries, not verbatim quotes &mdash; read the citation to see the difference.</div>
+    <div id="archive-sources"></div>
+  </div>
+</div>
+
+<div id="print-summary"></div>
+
+<script>
+// ══════════════════════════ DATA: ROLES ══════════════════════════
+const ROLES = {
+  samurai: {
+    label: "The Samurai's Retainer",
+    note: "Chōshū Domain, western Japan",
+    blurb: "Third son of a low-ranking samurai family. You have training, a small stipend, and a class identity that is about to be dismantled by the very government you may help build."
+  },
+  merchant: {
+    label: "The Merchant's Heir",
+    note: "A trading house near Yokohama",
+    blurb: "Heir to three generations of trade in rice, cloth, and shipping. Treaty ports mean opportunity and danger in equal measure &mdash; and hard choices about what kind of profit is worth making."
+  },
+  farmer: {
+    label: "The Tenant Farmer's Child",
+    note: "A mountain valley, rural Japan",
+    blurb: "Eldest child of a family that rents its land. You have no political voice and little cushion against bad harvests, new taxes, or a nation reinventing itself on your back."
+  },
+  woman: {
+    label: "The Samurai Household's Daughter",
+    note: "A castle town, central Japan",
+    blurb: "Raised for a proper marriage in a family whose status is about to lose all its old meaning. New paths &mdash; education, teaching, even travel &mdash; are opening, narrowly, for women like you."
+  }
+};
+
+// ══════════════════════════ DATA: ARCHIVE SOURCES ══════════════════════════
+const SOURCES = {
+  perry_letter: { type:'primary', title:"President Fillmore's Letter to the Emperor of Japan", year:'1852',
+    text:`"Great and Good Friend: I send you this public letter by Commodore Matthew C. Perry... I have directed Commodore Perry to assure your imperial majesty that I entertain the kindest feelings towards your majesty's person and government, and that I have no other object in sending him to Japan but to propose that the United States and Japan should live in friendship and have commercial intercourse with each other."`,
+    note:"Perry returned in 1854 with an even larger fleet to receive Japan's answer. The letter is polite, but it arrived escorted by warships &mdash; diplomacy backed by pressure.",
+    cite:"Narrative of the Expedition of an American Squadron to China and Japan (1856); excerpted via Visualizing Cultures, MIT." },
+  kawaraban_ships: { type:'context', title:"A Kawaraban of the 'Black Ships'", year:'1853',
+    text:"Within days of Perry's fleet anchoring at Uraga, unlicensed woodblock-printed news sheets called kawaraban circulated through Edo, hand-copied and sold on street corners. They showed crude, frightening images of the smoke-belching steamships (kurofune, “black ships”) towering over Japanese fishing boats, with rumors, often wildly exaggerated, about the guns and men aboard.",
+    note:"Kawaraban were technically illegal &mdash; the shogunate restricted printed news &mdash; but panic made them impossible to suppress, an early sign the government was losing control of information as well as territory.",
+    cite:"Historical background drawn from period accounts of the 1853 Perry expedition; kawaraban survive in Japanese archive and museum collections." },
+  treaty_kanagawa: { type:'context', title:"The Treaty of Kanagawa", year:'1854',
+    text:"Signed after Perry returned with seven warships, the treaty opened two minor ports (Shimoda and Hakodate) to American ships for supplies and required Japan to protect shipwrecked American sailors. It did not yet open Japan to full trade; that came four years later.",
+    note:"Small as its terms look, the treaty broke a policy over two centuries old and proved the shogunate could be pressured into concessions &mdash; emboldening Western powers and Japan's own domestic critics alike.",
+    cite:"Summarized from the 1854 Treaty of Kanagawa." },
+  harris_treaty: { type:'context', title:"The Harris Treaty (Treaty of Amity and Commerce)", year:'1858',
+    text:"Negotiated by U.S. Consul Townsend Harris, this treaty opened several Japanese ports to full foreign trade and residence, fixed low import tariffs Japan could not change without foreign consent, and gave foreign nationals extraterritoriality &mdash; the right to be tried under their own country's laws, even on Japanese soil.",
+    note:"Known in Japan as one of the “unequal treaties.” Fixed tariffs hurt Japanese producers who couldn't compete with cheap imports, and extraterritoriality was a humiliation Japan spent the next forty years trying to undo.",
+    cite:"Summarized from the 1858 Treaty of Amity and Commerce between the United States and Japan." },
+  charter_oath: { type:'primary', title:"The Charter Oath (Gokajō no Goseimon)", year:'1868',
+    text:`"By this oath we set up as our aim the establishment of the national weal on a broad basis and the framing of a constitution and laws.<br><br>1. Deliberative assemblies shall be widely established and all matters decided by public discussion.<br>2. All classes, high and low, shall unite in vigorously carrying out the administration of affairs of state.<br>3. The common people, no less than the civil and military officials, shall each be allowed to pursue his own calling so that there may be no discontent.<br>4. Evil customs of the past shall be broken off and everything based upon the just laws of Nature.<br>5. Knowledge shall be sought throughout the world so as to strengthen the foundations of imperial rule."`,
+    note:"Announced by the fifteen-year-old Emperor Meiji just weeks after the shogun's fall, the Oath promised broad, almost democratic-sounding change. Historians still debate how sincerely its authors meant these words versus how useful they were for uniting a fractured country.",
+    cite:"Commonly published English translation, reproduced widely, including by Columbia University's Asia for Educators and the National Diet Library." },
+  land_tax: { type:'context', title:"The Land Tax Reform", year:'1873',
+    text:"The government replaced the old system of taxing a share of each harvest with a fixed cash tax, set at 3% of a plot's assessed value, owed every year regardless of whether the harvest was good or bad. Farmers received formal certificates of land ownership for the first time &mdash; but now owed real money, not rice, on a fixed schedule.",
+    note:"The reform gave the state stable income to fund modernization, but shifted risk onto farming families: a bad harvest no longer meant a smaller tax bill, only a debt.",
+    cite:"Summarized from the 1873 Land Tax Reform Law (Chisso Kaisei)." },
+  conscription_blood_tax: { type:'context', title:"The Conscription Ordinance ('Blood Tax')", year:'1873',
+    text:"The new law required men to register for military service at age twenty, regardless of class, serving three years on active duty and years more in reserve. The term for the tax that funded it, translated from a French phrase for military service, became ketsu-eki &mdash; “blood tax.” Many rural Japanese took the name literally, fearing the government meant to drain their actual blood, and riots broke out in several regions.",
+    note:"The law ended the samurai's ancient monopoly on soldiering, a direct blow to their identity &mdash; but exemptions for household heirs, students, and men who could pay a fee meant that, in practice, the poorest families supplied the most soldiers.",
+    cite:"Summarized from the 1873 Conscription Ordinance (Chōheirei) and contemporary accounts of the 1873 blood tax riots." },
+  tomioka_silk: { type:'context', title:"The Tomioka Silk Mill", year:'1872',
+    text:"Built by the government with French machinery under French director Paul Brunat, Tomioka was Japan's first modern silk-reeling factory. It recruited young women, from samurai and farming families alike, to learn machine reeling under a strict schedule and dormitory system, then carry those skills to mills across the country.",
+    note:"Silk became Japan's largest export for decades. Factory wages gave some young women independent income and mobility their mothers never had, while also asking them, often as teenagers, to leave home and adapt to a wholly new rhythm of life.",
+    cite:"Historical background on the Tomioka Silk Mill, a UNESCO World Heritage Site since 2014." },
+  iwakura_mission: { type:'context', title:"The Iwakura Mission", year:'1871–73',
+    text:"A delegation of roughly 100 Meiji officials, led by Iwakura Tomomi, spent nearly two years touring the United States and Europe to study Western government, industry, and education. Alongside them traveled five young girls sent to study abroad, including six-year-old Tsuda Umeko, who returned a decade later fluent in English and eventually founded one of Japan's first colleges for women.",
+    note:"The mission's leaders came home convinced Japan needed to modernize its institutions, not just its weapons &mdash; and Tsuda's story became a widely cited example of new paths for women, even though such chances remained rare.",
+    cite:"Historical background on the 1871–73 Iwakura Mission." },
+  itagaki_petition: { type:'primary', title:"Memorial on the Establishment of a Representative Assembly", year:'1874',
+    text:"Submitted by Itagaki Taisuke and eight associates, the memorial accused the new government of concentrating power in a small clique of officials from Satsuma and Chōshū, argued Japan needed an elected assembly to check that power, and listed rights &mdash; including freedom of speech and public assembly &mdash; as necessary for citizens to hold their government accountable.",
+    note:"Published in the press, the petition set off a nationwide debate over representative government and helped launch the Freedom and People's Rights Movement, which pressured the government for over a decade before the 1889 Constitution finally created a national Diet.",
+    cite:"Summarized from the 1874 Minsen Giin Setsuritsu Kenpakusho." },
+  fukuzawa_quote: { type:'primary', title:"Fukuzawa Yukichi, An Encouragement of Learning", year:'1872',
+    text:`"Heaven never created a man above another nor a man below another."`,
+    note:"Fukuzawa, one of the era's most influential writers and founder of Keiō University, didn't mean people were already equal &mdash; he argued the real differences between rich and poor came from education, and that practical learning (jitsugaku) was the path to genuine equality and a strong Japan.",
+    cite:"Gakumon no Susume (1872–76); widely noted as echoing the American Declaration of Independence." },
+  matsukata_chichibu: { type:'context', title:"The Matsukata Deflation & the Chichibu Incident", year:'1881–1885',
+    text:"Finance Minister Matsukata Masayoshi's strict deflationary policies (cutting spending, pulling paper currency from circulation) aimed to stabilize the economy after years of inflation. Rice and silk prices collapsed, and heavily indebted farmers across Japan lost land to moneylenders and merchants. In November 1884, thousands of indebted farmers in the Chichibu district took up arms, seized government offices, and demanded debt relief before the army crushed the uprising within days; several leaders were later executed.",
+    note:"Matsukata's policy is often credited with stabilizing Japan's currency for industrialization &mdash; a success historians note was paid for, in large part, by rural families with the least cushion to absorb the shock.",
+    cite:"Historical background on the 1881–85 Matsukata Deflation and the November 1884 Chichibu Incident." },
+  meiji_constitution: { type:'primary', title:"The Constitution of the Empire of Japan (Articles 1, 3, 4)", year:'1889',
+    text:`Article 1: "The Empire of Japan shall be reigned over and governed by a line of Emperors unbroken for ages eternal."<br>Article 3: "The Emperor is sacred and inviolable."<br>Article 4: "The Emperor is the head of the Empire, combining in Himself the rights of sovereignty, and exercises them according to the provisions of the present Constitution."`,
+    note:"The Constitution did create Japan's first national legislature, the Imperial Diet &mdash; a real change from 1868. But sovereignty remained explicitly with the Emperor, and the vote for the new lower house was initially limited to a small percentage of wealthy male taxpayers. Compare this language to the Charter Oath's promise, twenty-one years earlier, that “all matters” would be “decided by public discussion.”",
+    cite:"Constitution of the Empire of Japan, promulgated February 11, 1889." },
+  mori_arinori_note: { type:'context', title:"The Morning of Constitution Day", year:'1889',
+    text:"On the very morning the Meiji Constitution was promulgated, February 11, 1889, Mori Arinori &mdash; the reform-minded Education Minister who had championed Western-style schooling and modern ideas about women's education &mdash; was stabbed and killed outside his home by a nationalist who believed Mori had disrespected Ise Shrine, one of Shinto's most sacred sites.",
+    note:"The assassination was a jarring reminder that Japan's opening to the world had never been uncontested &mdash; for every reformer pushing change, others feared the country was losing something essential in the process.",
+    cite:"Historical background on the assassination of Mori Arinori, February 11, 1889." }
+};
+
+// ══════════════════════════ DATA: STORY NODES ══════════════════════════
+// Each role has 9 nodes (3 per era). choices: {label, delta, result, flag?}
+const STORY = {
+
+samurai: [
+{ year:'1853 · Era One', text:`You are the third son of a low-ranking samurai family in the domain of Chōshū, at the western edge of Japan. Your family's stipend is small, your prospects smaller &mdash; until word reaches your castle town that four strange foreign warships, belching black smoke and carrying more cannon than the entire shogun's coastal fleet, have anchored at Uraga, near Edo itself. Commodore Perry has come, they say, to deliver a letter from the American president. Your domain lord calls for volunteers to study the foreigners' weapons and tactics, so Japan is never caught this unprepared again.`,
+  sources:['perry_letter','kawaraban_ships'],
+  choices:[
+    {label:"Volunteer to study Western gunnery and military science under your domain's reform-minded teachers.", delta:1, result:"You spend your days poring over translated Dutch manuals and drilling with a matchlock crew practicing European-style formations. Some elders mutter that you're wasting time on 'barbarian' methods; your teachers insist Japan has no choice."},
+    {label:"Stay with the traditional coastal guard, trusting the shogun's officials to handle this crisis.", delta:-1, result:"You keep your post along the shore, watching the horizon with your ancestors' weapons and your ancestors' patience. Word comes that the shogunate has merely agreed to accept the American letter and decide later &mdash; an answer that satisfies no one."}
+  ]},
+{ year:'1863–1864', text:`A decade of humiliating concessions later, young radicals across Chōshū have adopted a fierce slogan: sonnō jōi &mdash; “Revere the Emperor, expel the barbarians.” In 1863, Chōshū's shore batteries open fire on foreign merchant ships passing through the Shimonoseki Strait. The retaliation is swift and devastating: American, French, Dutch, and British warships bombard Chōshū's forts to rubble. Humiliated but unbowed, a handful of young Chōshū samurai arrange to be smuggled abroad, defying the shogunate's ban on foreign travel, to study in Britain and learn what makes the West so powerful.`,
+  sources:['treaty_kanagawa'],
+  choices:[
+    {label:"Join the secret mission abroad — if Japan must learn from the West to survive, you intend to see it yourself.", delta:2, result:"Hidden in a British merchant ship's hold, you leave Japan under threat of execution if caught. London overwhelms you: its factories, its ironclads, its sheer size. You return two years later utterly changed, convinced Japan must transform completely."},
+    {label:"Take up arms when the shogun's punitive army marches on Chōshū to punish the domain's defiance.", delta:-1, result:"Twice the shogunate raises armies against your home domain. Your comrades fight fiercely and, against expectations, hold their ground &mdash; but you've seen how close disaster came, and how divided Japan itself has become."},
+    {label:"Counsel restraint, warning your lord that provoking foreign navies invites only more disaster.", delta:0, result:"Your caution is politely ignored. Chōshū's radicals carry the day, and the bombardment happens regardless of your warning &mdash; though your reputation for careful judgment quietly grows among the domain's older officials."}
+  ]},
+{ year:'1868', text:`By January 1868, Chōshū and its rival-turned-ally Satsuma have formed a secret alliance against the shogunate. Imperial forces march on Edo. The last shogun, Tokugawa Yoshinobu, surrenders his authority rather than see the country descend into full civil war, though scattered loyalists keep fighting into 1869. In a castle town far from the front, you learn a fifteen-year-old boy &mdash; Emperor Meiji &mdash; now sits, at least in name, at the head of a new government built substantially by men from your own domain.`,
+  choices:[
+    {label:"Fight in the Boshin War for the new Imperial army against the shogunate's last loyalists.", delta:1, result:"You march north with the Imperial forces. The fighting is brutal in places, but by 1869 the shogunate's last holdouts surrender. You return home a veteran of the war that made the 'restoration' real."},
+    {label:"Use your knowledge of Western drill to help organize your domain's new soldiers, away from the front lines.", delta:1, result:"You spend the war training conscript-style units in European formations rather than fighting yourself — quieter work, but work the new government will need for years to come."},
+    {label:"Refuse to fight neighbors over politics in Edo, and focus on protecting your own family through the chaos.", delta:0, result:"You sit out the war entirely. Your family is safe, but old comrades who fought will later hold posts and honors that never come your way."}
+  ]},
+{ year:'1871', text:`In 1871 the government abolishes the domains outright, replacing them with centrally-administered prefectures. Your own lord, like every daimyo in Japan, surrenders his hereditary authority to the throne. Samurai stipends, already reduced, are marked for full conversion into one-time government bonds worth a fraction of the old rice payments. The identity your family has held for two hundred years is being dissolved by decree, all at once.`,
+  choices:[
+    {label:"Accept a post in the new government's rapidly growing bureaucracy — put your training to use in a new form.", delta:1, result:"Your record from the Boshin War and your fluency with Western methods earn you a junior post in the new prefectural administration. The pay is modest, the paperwork endless, but it is a future."},
+    {label:"Refuse a government post out of loyalty to the old order, and struggle to find your footing in the world replacing it.", delta:-1, result:"You decline what feels like an insult to everything your family stood for. Money grows tight. Old comrades who took government posts now outrank you in everything but pride."}
+  ]},
+{ year:'1873', text:`The Conscription Ordinance of 1873 ends, once and for all, the samurai's ancient monopoly on bearing arms for the state. Any man, farmer's son or samurai's, can now be drafted into the new national army. Villagers nickname the new law the 'blood tax.' For your own family, the change lands differently: soldiering was never just a job, it was who you were.`,
+  sources:['conscription_blood_tax'],
+  choices:[
+    {label:"Welcome the new conscript army as a necessary, even admirable, step toward a strong, modern Japan.", delta:1, result:"You tell your children the old distinctions mattered less than the nation's survival. Not everyone in your family agrees, but you hold to it."},
+    {label:"Feel the sting of losing what made your family's name mean something for centuries, and grumble with old comrades.", delta:-1, result:"You and men who once called themselves your equals now meet quietly to complain over cups of sake about a world that no longer needs men like you."}
+  ]},
+{ year:'1877', text:`Saigō Takamori — the same general who helped bring down the shogunate less than a decade ago — leads tens of thousands of disaffected former samurai into open rebellion against the very government he helped create, furious at policies that stripped samurai of status, income, and purpose. The imperial army sent to crush the rebellion is made up overwhelmingly of conscripted commoners, not samurai. You must decide, after everything, where your loyalty finally lies.`,
+  choices:[
+    {label:"Serve the modern government you helped build, even if it means fighting former samurai who look a great deal like you once did.", delta:1, result:"You serve in the campaign that ends at Shiroyama, where Saigō's last men make their stand. The rebellion is crushed within months. You feel little triumph in it."},
+    {label:"Sympathize quietly with Saigō's rebels, but stay out of the fighting on either side.", delta:0, result:"You send no soldiers and take no side, watching from a distance as a war unfolds between two versions of the country you might have become."},
+    {label:"Slip away to join Saigō's doomed stand, choosing the old samurai spirit over the new order you helped bring about.", delta:-2, flag:'samurai_rebel', result:"You march with Saigō into the hills above Kagoshima. The rebellion is crushed at Shiroyama in September 1877; Saigō dies rather than surrender, and you are fortunate simply to survive as a marked man in the new Japan."}
+  ]},
+{ year:'Early 1880s', text:`Itagaki Taisuke, once a leading figure in the government's early years, now leads a growing movement demanding an elected national assembly and a written constitution. His 1874 memorial accused the government of being run by a small clique from Satsuma and Chōshū — an accusation that, from where you sit, is not entirely wrong.`,
+  sources:['itagaki_petition','fukuzawa_quote'],
+  choices:[
+    {label:"Support Itagaki's calls for an elected assembly and a real constitution.", delta:1, result:"You quietly favor the movement's aims, even if your position keeps you from marching in its rallies. Change, you've decided, should not stop with the men who happened to win in 1868."},
+    {label:"Distrust the movement as reckless, and support the government's crackdowns on newspapers and public meetings.", delta:-1, result:"You've seen enough upheaval for one lifetime. Order, even imperfect order, seems worth more than the risk of tearing the new state apart before it can stand on its own."}
+  ]},
+{ year:'Mid-1880s', text:`Finance Minister Matsukata's harsh deflationary policies stabilize the currency, but crush rice and silk prices along the way. In villages you once trained soldiers from, families are losing land to debt. Your position, wherever it has landed you, gives you some small ability to act — or to look away.`,
+  sources:['matsukata_chichibu'],
+  choices:[
+    {label:"Use whatever position you hold to try to soften the policy's harshest effects on rural families you once served alongside.", delta:1, result:"You intercede where you can — a delayed tax collection here, a word to a magistrate there. It is not much, but it is not nothing either."},
+    {label:"Carry out the policy exactly as ordered, trusting the ministry's economists understand the larger picture better than you do.", delta:0, result:"You follow your orders without complaint. The currency stabilizes. You try not to think too hard about the families it stabilizes at the expense of."}
+  ]},
+{ year:'Mid-1880s', text:`Word reaches you that Itō Hirobumi — once one of the young Chōshū men smuggled to Britain alongside you — has traveled to Prussia and settled on a German-style model for Japan's coming constitution: a document granted by the Emperor's grace, with a Diet that advises but does not truly rule. Not everyone agrees this goes far enough.`,
+  choices:[
+    {label:"Trust Itō's judgment — a strong, stable state matters more right now than a fully democratic one.", delta:1, result:"You've seen enough chaos in your lifetime to value order over ideals that might not survive contact with reality."},
+    {label:"Wish quietly that Japan had chosen a bolder, more democratic path, even after everything you've seen.", delta:0, result:"You keep the thought to yourself. Men who say such things too loudly still find themselves watched by the police."}
+  ]}
+],
+
+merchant: [
+{ year:'1853–1854 · Era One', text:`Your family has run a trading house for three generations, dealing in rice, cotton, and coastal shipping contracts from a harbor town not far from Edo. When Perry's fleet anchors nearby in 1853, and again in 1854 to receive Japan's answer, the whole town buzzes with rumor: foreign ships, foreign guns, and — whispered more quietly — foreign money. The shogunate's eventual treaty opens two minor ports to foreign ships for supplies. It is not trade, not yet. But everyone in your family's business can see which way the wind is turning.`,
+  sources:['perry_letter','treaty_kanagawa'],
+  choices:[
+    {label:"Begin quietly positioning the family business to serve whatever foreign trade eventually comes.", delta:1, result:"You start learning what you can of shipping routes, currencies, and the handful of Dutch words anyone in Japan still remembers from the old Nagasaki trade. Your father is skeptical but doesn't stop you."},
+    {label:"Stick to safe, traditional domestic markets — foreigners have brought nothing but trouble to Japan before.", delta:-1, result:"You keep the business exactly as your grandfather ran it. It is safe. It is also, you can't help noticing, exactly what every other trading house nearby is doing too."}
+  ]},
+{ year:'1859–1860s', text:`In 1859, full trade begins at Yokohama under the Harris Treaty. Fortunes are made overnight — and lost. Foreign traders discover Japan's gold-silver exchange rate wildly undervalues gold, and ships leave loaded with Japanese gold coin bought for a fraction of its real worth. The resulting inflation hits ordinary people hard: rice and cloth prices climb faster than wages, and resentment toward 'the foreigners' curdles into something more dangerous.`,
+  sources:['harris_treaty'],
+  choices:[
+    {label:"Use your knowledge of the exchange rate imbalance to profit alongside the foreign traders, while it lasts.", delta:-1, result:"You make real money in a short window before the shogunate corrects the exchange rate. It is legal. It is also, you know, exactly the kind of dealing your neighbors are starting to riot over."},
+    {label:"Extend fair credit and steady prices to struggling neighbors and regular customers, even as prices spike around you.", delta:1, result:"You take a smaller profit than you could. Neighbors remember it, though — and remembered goodwill has its own kind of value when the political winds shift again."}
+  ]},
+{ year:'1868', text:`The Boshin War disrupts shipping and trade routes across the country as imperial and shogunate forces contest the roads and harbors. Foreign merchants at Yokohama, technically neutral, watch the fighting from a careful distance and keep trading anyway. Your family's warehouses hold goods that either side might pay well to move.`,
+  choices:[
+    {label:"Gamble on wartime supply contracts, selling to whichever side offers the best price for transport and goods.", delta:-1, result:"You take the risk and the profit, moving goods for both sides at different points in the war. It works. You try not to think too hard about what, exactly, some of those goods were for."},
+    {label:"Play it safe, holding your capital and waiting out the war rather than risking entanglement with either side.", delta:0, result:"You sit out the speculation. Others in Yokohama make and lose fortunes on wartime contracts; your family's position stays modest but steady."}
+  ]},
+{ year:'1871–1872', text:`With the domains abolished and samurai stipends being converted to bonds worth a fraction of their old value, many once-proud samurai families are quietly selling land, swords, and heirlooms to raise cash. A trading house with capital on hand can acquire property and connections at prices unthinkable five years ago.`,
+  choices:[
+    {label:"Buy up former samurai land and assets while prices are low, converting them to new commercial ventures.", delta:-1, result:"You expand the family's holdings considerably. Some of what you buy comes from families you've known for years, now humbled. It is, strictly speaking, only business."},
+    {label:"Refuse these particular deals, uneasy about profiting so directly from another family's fall from status.", delta:1, result:"You pass on the opportunity. A rival trading house buys what you wouldn't, and grows larger for it. You tell yourself you'll sleep better regardless."}
+  ]},
+{ year:'1872–1873', text:`Shibusawa Eiichi, a former samurai turned reformer who studied European finance on the Iwakura Mission, is pushing a wave of new institutions: national banks, joint-stock companies, and Western accounting, arguing Japan's traditional family-run trading houses cannot compete with organized Western capital on the world stage.`,
+  sources:['iwakura_mission'],
+  choices:[
+    {label:"Convert the family business into a modern joint-stock company, raising capital from outside investors for the first time.", delta:1, result:"It is an uncomfortable adjustment, answering to shareholders instead of only family, but the capital lets you expand faster than a traditional house ever could alone."},
+    {label:"Keep the old family-run structure, distrustful of handing any control of the business to outsiders.", delta:0, result:"You keep full control of a smaller enterprise. It suits you, even as some larger competitors, restructured along Shibusawa's lines, begin to outgrow you."}
+  ]},
+{ year:'1877', text:`The government's war against Saigō Takamori's rebels requires enormous quantities of supplies, moved fast: rice, uniforms, transport ships. A merchant house with the right connections can win contracts worth more than years of ordinary trade.`,
+  choices:[
+    {label:"Pursue and win a lucrative government supply contract to help crush the rebellion.", delta:-1, result:"The contract is enormously profitable. It also makes you, in a very literal sense, a supplier to a war against fellow Japanese, a fact some of your older relatives find hard to reconcile."},
+    {label:"Decline to pursue war contracts, uneasy about profiting from a conflict between Japanese, whichever side is 'right.'", delta:1, result:"You let a competitor win the contract instead. Your business grows more slowly this year, but you can look your father in the eye about how you grew it."}
+  ]},
+{ year:'Early 1880s', text:`Itagaki Taisuke's movement for an elected national assembly is gaining real support, including among merchants who point out that men who pay the most in new taxes still have no voice at all in how the government spends it.`,
+  sources:['itagaki_petition'],
+  choices:[
+    {label:"Quietly support calls for a National Diet, hoping merchants like you might finally gain a real political voice.", delta:1, result:"You contribute, carefully, to a local chapter of the movement's activities, aware that the government's crackdowns on political meetings make open support risky for a business."},
+    {label:"Stay out of politics entirely — a trading house survives by staying useful to whoever holds power, not by picking sides.", delta:-1, result:"You keep the business studiously apolitical. It is a safe strategy. It is also, some younger relatives point out, a strategy that leaves you with no say in your own future."}
+  ]},
+{ year:'1881–1885', text:`The Matsukata Deflation crushes rice and silk prices nationwide. Farming families who owe money to trading houses like yours, often for seed, tools, or advances against future harvests, increasingly cannot pay. Their land is legally yours to claim.`,
+  sources:['matsukata_chichibu'],
+  choices:[
+    {label:"Foreclose on the debts and take the land — hard business, but business nonetheless, and your competitors are doing the same.", delta:-2, result:"The family's landholdings grow substantially. So does the number of families in the region who now regard your name with something less than warmth."},
+    {label:"Forgive or restructure some of the debts owed by families you know personally, even at real cost to your own ledgers.", delta:2, result:"You take a real financial hit doing this. You also keep relationships, and a reputation, that some of your more ruthless competitors will eventually come to envy."}
+  ]},
+{ year:'Mid-1880s', text:`As the government finalizes new commercial and banking laws to accompany the coming constitution, it becomes clear the biggest winners will be a handful of massive conglomerates, zaibatsu like Mitsubishi and Mitsui, favored with government contracts and connections your family's trading house has never had.`,
+  choices:[
+    {label:"Seek a partnership or alliance with one of the rising zaibatsu, even if it means becoming the junior partner.", delta:1, result:"You strike a working relationship with a larger house, trading some independence for access to capital and contracts your family could never win alone."},
+    {label:"Keep the business fully independent, betting that smaller, more agile firms can still find a place in the new economy.", delta:-1, result:"You stay your own master, for better or worse, watching the zaibatsu grow larger every year while your own house grows only slowly."}
+  ]}
+],
+
+farmer: [
+{ year:'1853–1854 · Era One', text:`Your family works a small plot of rented land in a mountain valley, days' travel from the coast — far enough that the 'black ships' feel like rumor until your domain lord, alarmed by Perry's arrival, orders new emergency taxes across every village to pay for coastal fortifications and cannon your valley will likely never even see.`,
+  choices:[
+    {label:"Join neighbors petitioning the domain office for tax relief, arguing the emergency tax falls hardest on those who can least afford it.", delta:1, result:"The petition is heard, grudgingly, and a small adjustment is made for the poorest households. It is not much, but your neighbors remember that you were willing to ask."},
+    {label:"Pay the new tax without protest, keeping your family's head down and hoping to avoid any official's notice.", delta:-1, result:"You pay what's demanded, same as most of the valley. Officials never learn your family's name, which, in uncertain times, may be exactly the safest thing to be."}
+  ]},
+{ year:'1860s', text:`Treaty port trade sends rice and cloth prices climbing faster than any wage in the countryside can keep up with. In a nearby market town, a crowd of hungry villagers breaks into a rice merchant's warehouse, one of dozens of such 'smashings' (uchikowashi) breaking out across Japan in these years.`,
+  choices:[
+    {label:"Join the crowd demanding fair prices, even knowing the risk of arrest or worse if the domain's men arrive.", delta:1, result:"You take rice home that night, along with a healthy fear of the domain's response. No punishment comes this time; the merchant, humiliated, quietly lowers his prices rather than draw more attention."},
+    {label:"Stay out of the riot, afraid of the consequences, and endure the hunger and higher prices as quietly as you can.", delta:-1, result:"You watch from the edge of the crowd and go home empty-handed. Your family manages, barely, on a thinner harvest than usual and a winter with less to spare."}
+  ]},
+{ year:'1868', text:`Armies moving through the region during the Boshin War, imperial and shogunate alike, requisition food, carts, and labor from villages along their path with little regard for who can or cannot spare it. Word reaches your valley that a column is a day's march away and will expect your village to provide porters and supplies.`,
+  choices:[
+    {label:"Try to hide some of the family's stores and a few valuables before the soldiers arrive.", delta:1, result:"You manage to keep back enough rice to see the family through the winter, at real risk of punishment if discovered. The soldiers pass through, take what's visible, and move on."},
+    {label:"Give openly whatever the passing army demands and hope good behavior earns your family some measure of safety.", delta:-1, result:"You hand over what's asked without resistance. The soldiers move on without incident, though the family's stores are thinner than you'd like heading into the cold months."}
+  ]},
+{ year:'1873', text:`The new land tax reform replaces the old harvest-share tax with a fixed cash tax, 3% of your land's assessed value, due every year regardless of the harvest. For the first time, your family receives a formal certificate proving the land is truly yours — but a bad year now means real debt, not just a lighter tax bill.`,
+  sources:['land_tax'],
+  choices:[
+    {label:"Register the land and pay the new tax, trusting the family's harvests will hold steady enough to manage it.", delta:1, result:"You take the certificate and the risk that comes with it. Most years, the harvest covers the tax with something to spare. Some years, it does not, and you learn quickly what debt to a moneylender feels like."},
+    {label:"Consider selling a small plot now, while land prices are still reasonable, to build a cash reserve against a bad year.", delta:-1, result:"You sell off part of the family's land for security. It is a smaller farm now, but a safer one, at least for the moment."}
+  ]},
+{ year:'1873', text:`The Conscription Ordinance calls for men of every class to register for military service at twenty. Wealthier families can sometimes arrange an exemption, paying a substitute fee or claiming a son is the family's sole heir. Your family, like most tenant farmers, has no such cushion.`,
+  sources:['conscription_blood_tax'],
+  choices:[
+    {label:"Report for military conscription as the new law requires, whatever the family loses by it.", delta:1, result:"Three years pass with one fewer set of hands working the family's plot. The pay is meager, but there is a strange pride in serving, and returning, as something other than a peasant with no standing at all."},
+    {label:"Scrape together what you can to arrange one of the legal exemptions, keeping every hand on the land where the family needs it most.", delta:-1, result:"The exemption costs the family dearly in savings, but keeps the farm fully staffed through the years that follow. Wealthier neighbors do the same without a second thought; for your family, it is a real sacrifice."}
+  ]},
+{ year:'1872–1877', text:`The government's new silk mill at Tomioka is recruiting young women, samurai's daughters and farmers' alike, to learn machine reeling under contract, with wages and a dormitory provided. It is real cash income for a family that has rarely seen much of it — and it means someone the family relies on leaving home for the first time.`,
+  sources:['tomioka_silk'],
+  choices:[
+    {label:"Send a daughter (or, if you are that daughter, volunteer yourself) to Tomioka for the wages and training it offers.", delta:1, result:"Letters come home describing strict schedules, close dormitories, and a strange new kind of independence. The wages help the family through several difficult seasons."},
+    {label:"Keep every family member working the land, wary of sending anyone away to an unfamiliar factory system.", delta:-1, result:"The family stays whole and close to home. The extra income never materializes, and the farm's fortunes remain tied, as always, to the harvest alone."}
+  ]},
+{ year:'Early 1880s', text:`Word of Itagaki's movement for an elected assembly reaches even your valley, carried by a traveling teacher who reads aloud from a newspaper: talk of rights, representation, and a voice in how taxes are spent. Some in the village are electrified. Others say Tokyo has never once cared what your valley thinks, and a piece of paper won't change that.`,
+  sources:['itagaki_petition'],
+  choices:[
+    {label:"Add your name to a village petition supporting a national assembly and lower rural taxes.", delta:1, result:"Your name joins dozens of others on a petition that eventually reaches, and is largely ignored by, officials in the prefectural capital. Still, something has shifted in how the village talks about its own voice."},
+    {label:"Doubt that politics decided in Tokyo will ever meaningfully help a family like yours, and keep your distance from the whole affair.", delta:-1, result:"You stay out of it, unconvinced that men in the capital will ever spend much thought on villages like your own, whatever assemblies they create."}
+  ]},
+{ year:'1881–1885', text:`Rice prices collapse under the Matsukata Deflation. Debts that once seemed manageable now threaten to cost families their land outright. In November 1884, in the nearby Chichibu district, thousands of indebted farmers rise up, seize government offices, and demand debt relief, before the army arrives to crush the uprising within days.`,
+  sources:['matsukata_chichibu'],
+  choices:[
+    {label:"Join a debtors' movement in your own district modeled on Chichibu, demanding relief before your family loses everything.", delta:2, flag:'chichibu_uprising', result:"You join neighbors marching on the local magistrate's office. Word comes within days that Chichibu's rebellion has been crushed by the army, its leaders arrested; your own district's protest is broken up before it grows nearly so large, but not before several of your neighbors are arrested."},
+    {label:"Negotiate individually and quietly with the moneylender, keeping your head down rather than risk the fate Chichibu's rebels met.", delta:-1, result:"You manage a private arrangement to delay part of the debt. It costs the family dearly in interest over the following years, but no one comes looking for you afterward."}
+  ]},
+{ year:'Mid-1880s', text:`The worst of the deflation has passed, but its scars remain: emptied villages, land consolidated into fewer hands, and a steady trickle of young people leaving for the growing cities and their factories, mills, and workshops.`,
+  choices:[
+    {label:"Send a family member to seek work in the growing city, hoping for a wage income to steady the family through hard years.", delta:1, result:"A son or daughter leaves for the city. Letters back describe crowded dormitories and long shifts, but also money sent home that the land alone could never have provided."},
+    {label:"Keep the whole family working the land, trusting that the soil, at least, has never lied to you.", delta:-1, result:"You stay. Some years are lean and some are less lean, but the family's fate remains tied, as it always has, to the harvest."}
+  ]}
+],
+
+woman: [
+{ year:'1853 · Era One', text:`You are the daughter of a samurai family in a castle town, raised on the expectation that your future lies in a well-arranged marriage, not in politics or the wider world. When news arrives of Perry's black ships anchored near Edo, your father and older brothers spend evenings poring over reports and maps, voices low and urgent, in rooms you are not usually invited into.`,
+  sources:['perry_letter','kawaraban_ships'],
+  choices:[
+    {label:"Ask your father directly to let you read the reports and understand what is happening, rather than hear it secondhand.", delta:1, result:"He hesitates, then agrees, more out of surprise than conviction. You begin to follow the crisis in something closer to real detail than most women of your household ever have."},
+    {label:"Accept that such matters are not a woman's concern, for now, and wait for news the way you always have.", delta:-1, result:"You wait, as expected, for whatever news filters down through the household. It is frustrating in a way you can't quite name, though you'd struggle to explain why to anyone who asked."}
+  ]},
+{ year:'1860s', text:`As the political crisis deepens through the 1860s, the men of your household are increasingly absent, called away for domain business, military drilling, or political meetings that grow more dangerous by the year. Someone has to manage the household's practical affairs while they're gone.`,
+  choices:[
+    {label:"Take charge of running the household's daily affairs and finances while the men are away, learning skills no one expected you'd need.", delta:1, result:"You manage accounts, servants, and difficult decisions that would once have been considered entirely beyond a woman's role. You are good at it, a fact that surprises exactly no one who has actually watched you do it."},
+    {label:"Retreat into the traditional domestic duties expected of you, and wait anxiously for news of your father and brothers.", delta:-1, result:"You keep to the roles you were raised for, managing worry more than affairs. It is what is expected, and there is a kind of quiet dignity in it too."}
+  ]},
+{ year:'1868', text:`The Boshin War brings real danger close to home: soldiers moving through the region, wounded men needing care, households uncertain which side, if either, will treat them as friend or enemy when the fighting passes.`,
+  choices:[
+    {label:"Help shelter and care for wounded fighters who come through, whichever side they fought for.", delta:1, result:"You tend to frightened, injured young men who a year ago would have been strangers or even enemies to your family. Some of what you learn about wounds and fevers, you will carry for the rest of your life."},
+    {label:"Focus entirely on protecting your immediate family and household, and keep your distance from the wider danger and disorder.", delta:-1, result:"Your family stays safe and largely uninvolved. You hear, secondhand, about neighbors who took greater risks, for better and for worse."}
+  ]},
+{ year:'1871', text:`News reaches your household of the Iwakura Mission, dozens of officials touring America and Europe to study Western institutions, and, remarkably, five young girls sent along to study abroad for years, including a six-year-old named Tsuda Umeko. Your family, with its stipend recently converted to a shrinking government bond, is weighing what its daughters' futures should now look like.`,
+  sources:['iwakura_mission'],
+  choices:[
+    {label:"Petition your family to let you pursue new educational opportunities opening up for girls, rather than an early arranged marriage.", delta:1, result:"Your family agrees, with some reluctance and real financial strain, to delay any marriage arrangements and let you pursue schooling instead. It is not the path most of your relatives expected for you."},
+    {label:"Accept your family's existing plan for an arranged marriage, seeing it as the more secure and dutiful path in uncertain times.", delta:-1, result:"You accept the match your family has arranged. It is, by every practical measure, a sound decision, and you tell yourself that other kinds of ambition can wait for a daughter of your own, someday."}
+  ]},
+{ year:'1875', text:`In 1875, the government opens the Tokyo Women's Normal School, training Japan's first generation of professional women schoolteachers, an entirely new kind of respectable career for a woman of your background.`,
+  choices:[
+    {label:"Enroll and train to become one of Japan's first professional women teachers.", delta:1, result:"You leave home for formal schooling most women of your mother's generation never had access to at all. It is demanding, occasionally lonely, and unmistakably yours."},
+    {label:"Set the idea aside in favor of finding a stable marriage to secure your family's future during still-uncertain times.", delta:-1, result:"You choose the more conventional path. It brings its own security and its own satisfactions, even as you sometimes wonder, quietly, about the school and the life you didn't choose."}
+  ]},
+{ year:'1877', text:`A brother or cousin, conscripted into the new national army, is called up to help put down Saigō Takamori's rebellion in the south. The household waits for news the way households have waited through every conflict of your lifetime, only this time the enemy is not foreign.`,
+  choices:[
+    {label:"Write to your relative regularly and take an active hand in managing the household's affairs while he's away.", delta:1, result:"Your letters, practical and steady, are, he tells you afterward, some of the only things that kept him grounded through a brutal campaign. You run the household capably in his absence."},
+    {label:"Focus on prayer and quiet hope for his safe return, leaving the household's larger decisions to older relatives.", delta:-1, result:"You wait, as generations of women in your family have waited before you, hoping quietly. He returns, eventually, changed by what he saw."}
+  ]},
+{ year:'Early 1880s', text:`The Freedom and People's Rights Movement is not only a men's affair: women like the speaker and writer Kishida Toshiko travel the country giving public lectures arguing that women, too, deserve education and a political voice, drawing large crowds and, occasionally, arrest by police uneasy about a woman speaking so publicly.`,
+  sources:['itagaki_petition'],
+  choices:[
+    {label:"Attend a public lecture yourself and quietly support the movement's broader push for rights, including for women.", delta:1, result:"You attend, careful about who sees you there. Kishida's arguments stay with you for years afterward, whether or not you ever speak of them publicly."},
+    {label:"Keep your distance from a movement that seems too dangerous and too public for a woman in your position to be associated with.", delta:-1, result:"You follow the news of the movement only privately, unwilling to risk your family's reputation or safety by any public association with it."}
+  ]},
+{ year:'1881–1885', text:`As the Matsukata Deflation devastates rural families, you hear increasingly of young girls from struggling farm households sent, sometimes quite young, into factory contracts or worse, to help their families survive debts they cannot otherwise pay.`,
+  sources:['matsukata_chichibu'],
+  choices:[
+    {label:"Use whatever position or education you have to help connect girls in this situation with safer schooling or factory apprenticeships.", delta:1, result:"You can't fix the deflation or the debts behind it, but you manage, in a handful of specific cases, to steer a girl toward a school or a mill contract with real oversight rather than the worst of the alternatives."},
+    {label:"Feel largely helpless in the face of a crisis this large, and focus your energy on your own family's stability instead.", delta:-1, result:"You watch the hardship spread around you without any clear way to act on it, telling yourself, not entirely convincingly, that there was little more you could have done."}
+  ]},
+{ year:'Mid-1880s', text:`By the mid-1880s, the government has settled on an official vision for women's education: ryōsai kenbo, “good wife, wise mother” — training girls to be better household managers and mothers of future citizens and soldiers, rather than independent professionals or scholars in their own right.`,
+  choices:[
+    {label:"Push against the narrower vision, arguing (quietly, where you can) that women's education should aim higher than motherhood alone.", delta:1, result:"You raise the argument where it's safe to, among trusted friends and, once, to a sympathetic official. It changes little immediately, but the argument itself feels important to have made."},
+    {label:"Accept the state's vision as a real, if limited, step forward — being educated at all is more than your grandmother ever had.", delta:0, result:"You take what progress is offered without demanding more, telling yourself that incremental change is still change."}
+  ]}
+]
+};
+
+// ══════════════════════════ DATA: ERA CLOSINGS (after node index 2, before reflection) ══════════════════════════
+const ERA1_CLOSING = {
+  samurai: "Weeks after the shogun's fall, the boy-emperor's new advisors — several of them men you trained alongside — announce a proclamation to the nation: the Charter Oath. Read it now, and ask yourself which of its five promises your own service over the last fifteen years was fighting for.",
+  merchant: "In the trading houses near Yokohama, the news arrives amid ledgers and gossip: the new imperial government has issued a Charter Oath, promising that 'the common people... shall each be allowed to pursue their own calling.' Whether that includes men like you remains to be seen.",
+  farmer: "The proclamation is read aloud in the village square by an official few of you have ever seen before. It promises that 'all classes, high and low' will be united, and that commoners will be free to pursue their own calling. Your neighbors trade skeptical glances.",
+  woman: "Your father reads the proclamation aloud to the household — the Charter Oath, issued in the young Emperor's name. Its fourth promise catches your attention: 'evil customs of the past shall be broken off.' You wonder, quietly, which customs it might mean."
+};
+const ERA3_CLOSING = {
+  samurai: "On February 11, 1889, the Meiji Constitution is promulgated in a lavish ceremony you watch from a respectful distance. Whatever road brought you here, one fact is undeniable: the boy-emperor you once served now reigns over a nation utterly unrecognizable from the one you were born into.",
+  merchant: "Banks close for the day; flags fly across the treaty ports and the capital. Newspapers print the new Constitution's text for anyone who can read it. You study its guarantees, and its silences, with the same eye you'd bring to any contract.",
+  farmer: "Word of the new Constitution reaches your village days later, secondhand, through a returning cart-driver. A national assembly, they say, where certain men may now cast votes. You are almost certainly not one of them, but your children, perhaps, might live differently.",
+  woman: "The Constitution is promulgated with great ceremony — and on that same morning, you learn, Mori Arinori, the reform-minded minister who pushed hardest for women's education, is struck down by an assassin's blade outside his own home."
+};
+
+// ══════════════════════════ DATA: REFLECTIONS ══════════════════════════
+const REFLECTIONS = [
+  { title:"Reflection: The Old Order Falls", sub:"1853–1868 · Pause and think before the story continues.",
+    q:[
+      "The Charter Oath (1868) promises that 'all classes, high and low, shall unite' and that commoners 'shall each be allowed to pursue his own calling.' Based on what your character just lived through, who do you think stood to gain the most from these promises? Who might have been skeptical?",
+      "Describe one choice your character made in this era that changed the direction of their story. Looking back, would you choose differently now? Why or why not?",
+      "Some historians call 1868 a 'restoration' (bringing back the emperor's power) and others call it a 'revolution' (overthrowing the old order entirely). Based on your story so far, which word fits better? Defend your answer with at least one specific detail."
+    ]},
+  { title:"Reflection: Building a New State", sub:"1868–1877 · Pause and think before the story continues.",
+    q:[
+      "The 1873 conscription law was nicknamed the 'blood tax,' and it applied to all classes, yet wealthier families could sometimes buy their way out of service. What does this tell you about the difference between what a law promises and how it is actually carried out?",
+      "The Satsuma Rebellion of 1877 was the last stand of samurai who had helped bring down the shogunate less than ten years earlier, now fighting the very government they helped create. Why do you think some of the Restoration's own supporters turned against it?",
+      "How did your character's social class shape the choices available to them in this era? Do you think a character from a different role would have faced the same options?"
+    ]},
+  { title:"Reflection: The Price of Modernization", sub:"1877–1889 · Pause and think before the epilogue.",
+    q:[
+      "The Meiji Constitution (1889) declares Japan 'shall be reigned over... by a line of Emperors unbroken for ages eternal' and that the Emperor 'is sacred and inviolable' — yet it also created Japan's first national legislature. Is this Constitution more about continuity with old Japan, or change toward something new? Use evidence from the document.",
+      "Movements like Itagaki's Freedom and People's Rights Movement pushed for representative government, while the Matsukata Deflation and events like the Chichibu Incident show real hardship for ordinary people in this same period. Can a nation modernize successfully while leaving some of its people behind? What does your character's experience suggest?",
+      "Thinking across all three eras (1853–1889): what is the single biggest change your character witnessed in Japan, and what, if anything, stayed the same?"
+    ]}
+];
+
+const FINAL_QUESTIONS = [
+  "If you had played this story as a different role (samurai, merchant, farmer, or woman of a samurai household), which would you choose, and what do you think would have changed about the choices available to that character?",
+  "The Meiji Restoration is often summarized by the slogan fukoku kyōhei — 'rich country, strong military.' Based on everything your character experienced across all three eras, write a short paragraph evaluating whether this era's transformation was worth its costs, and for whom it was worth those costs most and least."
+];
+
+// ══════════════════════════ DATA: EPILOGUES ══════════════════════════
+const EPILOGUES = {
+  samurai: {
+    rebel: { title:"The Last Samurai's Companion", text:"You survived Shiroyama, though many you marched with did not. Officially, you are a pardoned rebel; unofficially, a man watched carefully by a government you once helped create and then took up arms against. You spend your later years telling a version of the story that makes sense of choosing the old world over the new one, even as the new world, undeniably, endures around you." },
+    high: { title:"Servant of the New Japan", text:"You spend your later years in government service, respected if not wealthy, one of many former samurai who traded the sword for the ledger and the drill manual for the schoolroom. When you tell your grandchildren about the Restoration, you tell it as a story of necessary change, hard-won and worth its cost. Not everyone in your family agrees with that telling, even now." },
+    low: { title:"A Quiet Loyalty", text:"You never took up arms against the new order, but you never much embraced it either. You kept faith with the old ways as best you could in a Japan that had less and less use for them, respected by some for your consistency and dismissed by others as a relic." },
+    mid: { title:"The Man Between Two Eras", text:"You never fully became a man of the new Japan, nor stayed entirely a man of the old one. You served when asked, hesitated when it mattered, and watched old certainties dissolve around you one law at a time. Your grandchildren find your stories confusing; you're not always sure you disagree with them." }
+  },
+  merchant: {
+    high: { title:"Founder of a New House", text:"Your family's trading house becomes, within a generation, a genuinely modern company, respected for both its profits and its fairness. It never grows as large as the great zaibatsu conglomerates, but it survives, and it survives with a name people are glad to do business with." },
+    low: { title:"Built on Others' Ruin", text:"Your family's wealth grows enormously, built substantially on the misfortunes of samurai families who sold cheap and farming families who couldn't pay their debts. It is, by any measure of profit, a success. Whether it is a success by any other measure is a question your descendants will spend considerable effort avoiding." },
+    mid: { title:"The Careful House", text:"Your family's business survives the era neither spectacularly enriched nor especially compromised, a modest, careful trading house that adapted just enough to keep going. It is not the stuff of legend. It is, perhaps, exactly what most families who lived through this era actually became." }
+  },
+  farmer: {
+    chichibu: { title:"Marked, But Standing", text:"Your part in the district's debtors' uprising nearly cost you everything; several neighbors who marched beside you were arrested, and a few never came home. Your own family's land survives, barely, and the story of Chichibu becomes, in later years, one small chapter in a much longer argument about who Japan's modernization was really for." },
+    high: { title:"New Roads", text:"Your family found new roads through this era: wages from mill work, a petition signed, an exemption or opportunity seized where it appeared. The farm looks different by 1889 than it did in 1853, smaller in some ways, but connected to a wider world your grandparents never imagined." },
+    low: { title:"Roots That Hold", text:"Your family weathered the era mostly through quiet endurance: paying what was demanded, keeping your head down, trusting the land more than any government's promises. The farm survives, modestly, much as it always has, largely untouched by the grander story unfolding in Tokyo's newspapers." },
+    mid: { title:"Between Furrows", text:"Some years you took the risk; some years you played it safe. The family's fortunes rose and fell with the harvest and with choices that could have gone either way. By 1889 you have neither lost everything nor gained much beyond survival, which, in this era, is its own kind of accomplishment." }
+  },
+  woman: {
+    high: { title:"A Teacher of the New Japan", text:"You become one of Japan's first generation of professional women teachers, training students in a classroom that would have been unimaginable to your grandmother. The path costs you some of the security a traditional marriage might have offered, but you never quite regret it." },
+    low: { title:"The Bonds That Held", text:"You chose family duty over the newer paths opening, sometimes barely, to women of your generation. It is not a story of defeat; the bonds you kept, to family, to expectation, to a world you understood, held throughout an era when so much else came apart. Whether you'd choose the same path again is a question you turn over more than you let on." },
+    mid: { title:"Between Two Worlds", text:"You took some of the new opportunities open to you and set others aside, never fully choosing between the world you were raised in and the one taking shape around you. By 1889, you belong, in your own quiet way, to both." }
+  }
+};
+
+// ══════════════════════════ ENGINE ══════════════════════════
+let state = null;
+
+function newState(role){
+  return { role, nodeIdx:0, score:0, flags:[], history:[], reflections:[{},{},{}], finalAnswers:['',''] };
+}
+
+function goToRoleSelect(){
+  document.getElementById('screen-title').classList.add('hidden');
+  renderRoleGrid();
+  document.getElementById('screen-role').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function renderRoleGrid(){
+  const grid = document.getElementById('role-grid');
+  grid.innerHTML='';
+  Object.keys(ROLES).forEach(key=>{
+    const r = ROLES[key];
+    const card = document.createElement('div');
+    card.className='role-card';
+    card.innerHTML = `<div class="rnote">${r.note}</div><h3>${r.label}</h3><p>${r.blurb}</p><button onclick="startRole('${key}')">Live This Story</button>`;
+    grid.appendChild(card);
+  });
+}
+
+function startRole(role){
+  state = newState(role);
+  document.getElementById('screen-role').classList.add('hidden');
+  document.getElementById('screen-story').classList.remove('hidden');
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function currentEra(){ return Math.floor(state.nodeIdx/3) + 1; }
+
+function renderEraTrack(){
+  const track = document.getElementById('era-track');
+  const names = ['Era One: Black Ships, Broken Order','Era Two: Building a New Nation','Era Three: The Price of Modernization'];
+  track.innerHTML = names.map((n,i)=>{
+    const num=i+1, cur=currentEra();
+    let cls='era-dot'; if(num<cur) cls+=' done'; else if(num===cur) cls+=' active';
+    return `<div class="${cls}">${n}</div>`;
+  }).join('');
+}
+
+function renderNode(){
+  renderEraTrack();
+  const nodes = STORY[state.role];
+  const node = nodes[state.nodeIdx];
+  document.getElementById('story-year').textContent = node.year;
+  document.getElementById('story-text').innerHTML = `<p>${node.text}</p>`;
+
+  const archWrap = document.getElementById('archive-btn-wrap');
+  if(node.sources && node.sources.length){
+    archWrap.innerHTML = `<button class="archive-btn" onclick='openArchive(${JSON.stringify(node.sources)})'>\u{1F4DC} Open the Archive (${node.sources.length} source${node.sources.length>1?'s':''})</button>`;
+  } else { archWrap.innerHTML=''; }
+
+  const choicesWrap = document.getElementById('story-choices');
+  choicesWrap.innerHTML='';
+  node.choices.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent = c.label;
+    btn.onclick = ()=>pickChoice(i);
+    choicesWrap.appendChild(btn);
+  });
+  document.getElementById('consequence-wrap').innerHTML='';
+  renderJourney();
+}
+
+function pickChoice(i){
+  const nodes = STORY[state.role];
+  const node = nodes[state.nodeIdx];
+  const choice = node.choices[i];
+  state.score += (choice.delta||0);
+  if(choice.flag) state.flags.push(choice.flag);
+  state.history.push({ era: currentEra(), year: node.year, label: choice.label });
+
+  document.getElementById('story-choices').innerHTML='';
+  document.getElementById('consequence-wrap').innerHTML =
+    `<div class="consequence"><div class="cq-label">What happens</div><p>${choice.result}</p></div>
+     <div id="continue-wrap"><button class="btn-primary" onclick="advance()">Continue &rarr;</button></div>`;
+  renderJourney();
+}
+
+function advance(){
+  const justFinishedEra = (state.nodeIdx % 3 === 2);
+  state.nodeIdx++;
+  if(justFinishedEra){
+    const eraNum = currentEra()-1; // era that just closed (1,2,3)
+    if(eraNum===1){ showClosing(ERA1_CLOSING[state.role], ['charter_oath'], ()=>showReflection(0)); return; }
+    if(eraNum===3){ showClosing(ERA3_CLOSING[state.role], state.role==='woman' ? ['meiji_constitution','mori_arinori_note'] : ['meiji_constitution'], ()=>showReflection(2)); return; }
+    showReflection(eraNum-1); // era2 closes straight into reflection[1]
+    return;
+  }
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function showClosing(text, sourceIds, thenFn){
+  document.getElementById('story-year').textContent = 'A Nation Announces Itself';
+  document.getElementById('story-text').innerHTML = `<p>${text}</p>`;
+  document.getElementById('archive-btn-wrap').innerHTML = `<button class="archive-btn" onclick='openArchive(${JSON.stringify(sourceIds)})'>\u{1F4DC} Open the Archive (${sourceIds.length} source${sourceIds.length>1?'s':''})</button>`;
+  document.getElementById('story-choices').innerHTML='';
+  document.getElementById('consequence-wrap').innerHTML = `<div id="continue-wrap"><button class="btn-primary" onclick="(${thenFn.toString()})()">Continue &rarr;</button></div>`;
+  window.scrollTo(0,0);
+}
+
+function renderJourney(){
+  const list = document.getElementById('journey-list');
+  list.innerHTML = state.history.map(h=>`<li><span class="jy">${h.year}</span>${h.label}</li>`).join('');
+}
+
+function openArchive(ids){
+  const wrap = document.getElementById('archive-sources');
+  wrap.innerHTML = ids.map(id=>{
+    const s = SOURCES[id];
+    const typeLabel = s.type==='primary' ? 'Primary Source · Direct Quote' : 'Historical Context · Summary';
+    const typeCls = s.type==='primary' ? 'primary' : 'context';
+    return `<div class="source-block">
+      <span class="stype ${typeCls}">${typeLabel}</span>
+      <h4>${s.title}</h4>
+      <div class="syear">${s.year}</div>
+      <div class="stext">${s.text}</div>
+      <div class="snote">${s.note}</div>
+      <div class="scite">Source: ${s.cite}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('archive-overlay').classList.remove('hidden');
+}
+function closeArchive(){ document.getElementById('archive-overlay').classList.add('hidden'); }
+
+function showReflection(idx){
+  document.getElementById('screen-story').classList.add('hidden');
+  document.getElementById('screen-reflection').classList.remove('hidden');
+  document.getElementById('screen-reflection').dataset.idx = idx;
+  const r = REFLECTIONS[idx];
+  document.getElementById('refl-title').textContent = r.title;
+  document.getElementById('refl-sub').textContent = r.sub;
+
+  const eraHistory = state.history.filter(h=>h.era===idx+1);
+  document.getElementById('refl-recap').innerHTML = `<div class="rr-label">Your choices this era</div><ul>${eraHistory.map(h=>`<li><strong>${h.year}:</strong> ${h.label}</li>`).join('')}</ul>`;
+
+  const qwrap = document.getElementById('refl-questions');
+  qwrap.innerHTML = r.q.map((q,i)=>`<div class="refl-q"><label>${i+1}. ${q}</label><textarea id="rq-${i}">${(state.reflections[idx][i]||'')}</textarea></div>`).join('');
+  window.scrollTo(0,0);
+}
+
+function continueFromReflection(){
+  const idx = parseInt(document.getElementById('screen-reflection').dataset.idx,10);
+  REFLECTIONS[idx].q.forEach((q,i)=>{ state.reflections[idx][i] = document.getElementById('rq-'+i).value; });
+  document.getElementById('screen-reflection').classList.add('hidden');
+  if(idx===2){ showEpilogue(); return; }
+  document.getElementById('screen-story').classList.remove('hidden');
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function pickEpilogueKey(role){
+  if(role==='samurai' && state.flags.includes('samurai_rebel')) return 'rebel';
+  if(role==='farmer' && state.flags.includes('chichibu_uprising')) return 'chichibu';
+  if(state.score>=4) return 'high';
+  if(state.score<=-3) return 'low';
+  return 'mid';
+}
+
+function showEpilogue(){
+  document.getElementById('screen-epilogue').classList.remove('hidden');
+  const role = state.role;
+  const key = pickEpilogueKey(role);
+  const epi = EPILOGUES[role][key] || EPILOGUES[role].mid;
+  document.getElementById('epi-kicker').textContent = `${ROLES[role].label} · 1889`;
+  document.getElementById('epi-title').textContent = epi.title;
+  document.getElementById('epi-text').textContent = epi.text;
+  state.epilogueTitle = epi.title;
+
+  const fwrap = document.getElementById('final-questions');
+  fwrap.innerHTML = FINAL_QUESTIONS.map((q,i)=>`<div class="refl-q"><label>${i+1}. ${q}</label><textarea id="fq-${i}" oninput="state.finalAnswers[${i}]=this.value">${state.finalAnswers[i]||''}</textarea></div>`).join('');
+  window.scrollTo(0,0);
+}
+
+function restartGame(){
+  document.getElementById('screen-epilogue').classList.add('hidden');
+  document.getElementById('screen-title').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function printJourney(){
+  const role = ROLES[state.role];
+  let html = `<h1>Whose Japan? A Meiji Restoration Story</h1><h2>${role.label} (${role.note})</h2>`;
+  html += `<div class="p-section"><h3>Path Through History</h3><ul>` + state.history.map(h=>`<li><strong>${h.year}:</strong> ${h.label}</li>`).join('') + `</ul></div>`;
+  REFLECTIONS.forEach((r,idx)=>{
+    html += `<div class="p-section"><h3>${r.title}</h3>`;
+    r.q.forEach((q,i)=>{
+      html += `<div class="p-q">${q}</div><div class="p-a">${(state.reflections[idx][i]||'(no answer given)')}</div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<div class="p-section"><h3>Epilogue: ${state.epilogueTitle||''}</h3></div>`;
+  html += `<div class="p-section"><h3>Final Reflection</h3>`;
+  FINAL_QUESTIONS.forEach((q,i)=>{
+    html += `<div class="p-q">${q}</div><div class="p-a">${state.finalAnswers[i]||'(no answer given)'}</div>`;
+  });
+  html += `</div>`;
+  document.getElementById('print-summary').innerHTML = html;
+  window.print();
+}
+</script>
+</body>
+</html>
