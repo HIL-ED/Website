@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remember the Amendments</title>
+<meta name="description" content="A timed constitutional matching game for government students. Match amendments to their definitions, structural effects, and societal impact across three rounds.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #c2571a;
+    min-height: 100vh;
+    color: #1a1209;
+  }
+
+  /* Subtle texture on the burnt orange bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(0,0,0,0.04) 32px, rgba(0,0,0,0.04) 33px),
+      repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(0,0,0,0.02) 32px, rgba(0,0,0,0.02) 33px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 16px 20px;
+  }
+
+  /* ── HEADER BANNER ── */
+  .banner {
+    text-align: center;
+    margin-bottom: 14px;
+    padding: 12px 16px 10px;
+    border: 2px solid #8b3a00;
+    border-radius: 4px;
+    background: rgba(255,252,240,0.93);
+    box-shadow: 0 3px 16px rgba(0,0,0,0.25), inset 0 0 40px rgba(139,70,0,0.07);
+    position: relative;
+  }
+  .banner::before, .banner::after {
+    content: '✦';
+    color: #8b6914;
+    font-size: 18px;
+    position: absolute;
+    top: 8px;
+  }
+  .banner::before { left: 12px; }
+  .banner::after  { right: 12px; }
+
+  .banner h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #3d2b00;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .banner .subtitle {
+    font-size: 12px;
+    color: #7a5c1e;
+    margin-top: 3px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+  .banner .ornament {
+    color: #8b6914;
+    font-size: 12px;
+    letter-spacing: 6px;
+    margin: 3px 0 1px;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── INTRO ── */
+  .intro-box {
+    background: rgba(255,252,240,0.95);
+    border: 1.5px solid #c8a84b;
+    border-radius: 4px;
+    padding: 28px 32px;
+    max-width: 580px;
+    margin: 0 auto 24px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+  .intro-box h2 {
+    font-size: 15px;
+    color: #3d2b00;
+    margin-bottom: 16px;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .round-list { list-style: none; }
+  .round-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(139,105,20,0.2);
+    font-size: 14px;
+    color: #3d2b00;
+    line-height: 1.5;
+  }
+  .round-list li:last-child { border-bottom: none; }
+  .round-list li .round-label {
+    font-weight: 700;
+    color: #5c3d00;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .intro-note {
+    font-size: 13px;
+    color: #7a5c1e;
+    text-align: center;
+    margin-top: 14px;
+    font-style: italic;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-block;
+    padding: 10px 28px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 2px solid #8b3a00;
+    background: #3d2b00;
+    color: #f5e9c8;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #5c3d00; }
+  .btn.secondary {
+    background: rgba(255,252,240,0.9);
+    color: #3d2b00;
+    border-color: #8b6914;
+  }
+  .btn.secondary:hover { background: rgba(255,252,240,1); }
+  .btn-center { text-align: center; margin-top: 16px; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    margin-bottom: 10px;
+    padding: 7px 20px;
+    background: rgba(255,252,240,0.93);
+    border: 1.5px solid #8b3a00;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .stat { text-align: center; }
+  .stat-val { font-size: 20px; font-weight: 700; color: #3d2b00; font-family: Georgia, serif; }
+  .stat-label { font-size: 10px; color: #7a5c1e; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 1px; }
+
+  .round-info { text-align: center; margin-bottom: 10px; }
+  .round-badge {
+    display: inline-block;
+    background: #3d2b00;
+    color: #f5e9c8;
+    font-size: 11px;
+    padding: 3px 12px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-family: Georgia, serif;
+  }
+  .round-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff8e8;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .round-desc {
+    font-size: 12px;
+    color: #fde8cc;
+    margin-top: 2px;
+    font-style: italic;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* ── CARD GRID — 6×4 ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    aspect-ratio: 5/3;
+    cursor: pointer;
+    perspective: 700px;
+  }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .card.flipped .card-inner,
+  .card.matched .card-inner { transform: rotateY(180deg); }
+
+  .card-front, .card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 4px;
+    border: 1.5px solid #c8a84b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  }
+
+  /* FRONT: parchment card back design */
+  .card-front {
+    background: #fdf6e3;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+    box-shadow: inset 0 0 16px rgba(139,105,20,0.12), 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .card-front::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(139,105,20,0.28);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .cf-wtp {
+    font-size: 6.5px;
+    color: rgba(100,70,20,0.52);
+    font-style: italic;
+    text-align: center;
+    letter-spacing: 0.2px;
+    line-height: 1.4;
+    z-index: 1;
+    padding: 0 5px;
+  }
+  .cf-quill { font-size: 16px; color: rgba(100,70,20,0.38); z-index: 1; line-height: 1; }
+  .cf-seal {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(139,105,20,0.32);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .cf-seal span { font-size: 11px; color: rgba(100,70,20,0.38); }
+  .cf-lines {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: space-evenly;
+    padding: 5px; pointer-events: none;
+  }
+  .cf-line { height: 1px; background: rgba(120,90,40,0.16); }
+
+  /* BACK: revealed content */
+  .card-back {
+    background: #fffef9;
+    transform: rotateY(180deg);
+    text-align: center;
+    flex-direction: column;
+    box-shadow: inset 0 0 8px rgba(139,105,20,0.05), 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .card.matched .card-back {
+    background: #f0f8e8;
+    border-color: #7ab648;
+  }
+  .card-amend {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a0d00;
+    font-family: Georgia, serif;
+    line-height: 1.3;
+  }
+  .card-amend .amend-word {
+    display: block;
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7a5c1e;
+    margin-bottom: 2px;
+  }
+  .card-clue {
+    font-size: 9.5px;
+    color: #1a0d00;
+    line-height: 1.3;
+    font-family: Georgia, serif;
+  }
+
+  @keyframes wrongShake {
+    0%,100% { transform: rotateY(180deg) translateX(0); }
+    25%      { transform: rotateY(180deg) translateX(-4px); }
+    75%      { transform: rotateY(180deg) translateX(4px); }
+  }
+  .card.wrong .card-inner { animation: wrongShake 0.4s ease; }
+
+  /* ── BETWEEN SCREEN ── */
+  .between-box {
+    background: rgba(255,252,240,0.95);
+    border: 2px solid #c8a84b;
+    border-radius: 4px;
+    padding: 32px;
+    max-width: 460px;
+    margin: 0 auto 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .between-box h2 { font-size: 24px; color: #3d2b00; margin-bottom: 6px; letter-spacing: 1px; }
+  .between-box p  { font-size: 14px; color: #7a5c1e; font-style: italic; margin-bottom: 20px; }
+  .result-rows { margin: 16px 0 20px; }
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(139,105,20,0.2);
+    font-size: 14px; color: #3d2b00;
+  }
+  .result-row:last-child { border-bottom: none; font-weight: 700; }
+  .result-row .val { color: #5c3d00; font-weight: 700; }
+
+  /* ── RESULTS SCREEN ── */
+  .results-box {
+    background: rgba(255,252,240,0.95);
+    border: 2px solid #8b6914;
+    border-radius: 4px;
+    padding: 32px;
+    max-width: 520px;
+    margin: 0 auto 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .results-box h2 {
+    font-size: 22px; color: #3d2b00; text-align: center;
+    margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .results-box .results-sub {
+    text-align: center; font-size: 13px; color: #7a5c1e;
+    font-style: italic; margin-bottom: 20px;
+  }
+  .total-time {
+    text-align: center; margin-top: 16px; padding-top: 16px;
+    border-top: 2px solid #c8a84b;
+    font-size: 30px; font-weight: 700; color: #3d2b00; font-family: Georgia, serif;
+  }
+  .total-label {
+    font-size: 12px; color: #7a5c1e; text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 2px; text-align: center;
+  }
+
+  .bottom-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: repeat(6, 1fr); gap: 5px; }
+    .card-clue { font-size: 7.5px; }
+    .card-amend { font-size: 11px; }
+    .stats-bar { gap: 14px; }
+    .banner h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="banner">
+    <div class="ornament">— ✦ —</div>
+    <h1>Remember the Amendments</h1>
+    <div class="subtitle">A Constitutional Matching Game for Government Students</div>
+    <div class="ornament">— ✦ —</div>
+  </div>
+
+  <!-- INTRO SCREEN -->
+  <div id="intro-screen" class="screen active">
+    <div class="intro-box">
+      <h2>How to Play</h2>
+      <ul class="round-list">
+        <li>
+          <span class="round-label">Round 1 — Definitions</span>
+          Match each amendment number to what it says and protects
+        </li>
+        <li>
+          <span class="round-label">Round 2 — Structural Mechanics</span>
+          Match amendments to how they changed the executive, legislative, or judicial branch
+        </li>
+        <li>
+          <span class="round-label">Round 3 — Societal Impact</span>
+          Match amendments to their real-world effects on American society
+        </li>
+      </ul>
+      <p class="intro-note">12 randomly chosen amendments · 24 cards per round · timed trials<br>All three round times add up — lower is better. Compete with classmates!</p>
+    </div>
+    <div class="btn-center">
+      <button class="btn" onclick="startGame()">Begin Round 1 &rarr;</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <div class="round-info">
+      <div class="round-badge" id="round-badge">Round 1 of 3</div>
+      <div class="round-title" id="round-title">Amendment Definitions</div>
+      <div class="round-desc" id="round-desc">Match each amendment number to its definition</div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-val" id="timer">0:00</div><div class="stat-label">Time</div></div>
+      <div class="stat"><div class="stat-val" id="matches-display">0 / 12</div><div class="stat-label">Matches</div></div>
+      <div class="stat"><div class="stat-val" id="mistakes-display">0</div><div class="stat-label">Mistakes</div></div>
+    </div>
+    <div class="grid" id="card-grid"></div>
+    <div class="bottom-bar">
+      <button class="btn secondary" onclick="restartRound()">&#8635; Restart Round</button>
+    </div>
+  </div>
+
+  <!-- BETWEEN ROUNDS SCREEN -->
+  <div id="between-screen" class="screen">
+    <div class="between-box">
+      <h2 id="between-title">Round Complete!</h2>
+      <p id="between-msg">Well done — keep going!</p>
+      <div class="result-rows" id="between-rows"></div>
+      <button class="btn" id="next-round-btn" onclick="nextRound()">Continue &rarr;</button>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="results-screen" class="screen">
+    <div class="results-box">
+      <h2>Game Complete!</h2>
+      <p class="results-sub">Here is how you performed across all three rounds</p>
+      <div id="results-breakdown"></div>
+      <div class="total-time" id="total-time-display"></div>
+      <div class="total-label">Total Time</div>
+      <div class="btn-center" style="margin-top:20px">
+        <button class="btn" onclick="resetGame()">&#8635; Play Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA — 18 AMENDMENTS ──────────────────────────────────────────────────────
+
+const PAIRS = {
+  round1: [
+    {a:"1st",  b:"Protects freedoms of religion, speech, press, peaceful assembly, and petitioning the government"},
+    {a:"2nd",  b:"Protects the right of individuals to keep and bear arms"},
+    {a:"3rd",  b:"Prohibits the forced quartering of soldiers in private homes during peacetime without owner consent"},
+    {a:"4th",  b:"Guards against unreasonable searches and seizures; requires warrants based on probable cause"},
+    {a:"5th",  b:"Protects against self-incrimination, double jeopardy, and guarantees due process and just compensation"},
+    {a:"6th",  b:"Guarantees a speedy public trial, an impartial jury, the right to counsel, and to confront witnesses"},
+    {a:"8th",  b:"Prohibits excessive bail, excessive fines, and cruel and unusual punishment"},
+    {a:"10th", b:"Powers not delegated to the federal government nor prohibited to the states are reserved to the states or the people"},
+    {a:"12th", b:"Requires electors to cast separate ballots for president and vice president"},
+    {a:"13th", b:"Abolished slavery and involuntary servitude throughout the United States"},
+    {a:"14th", b:"Grants citizenship to all born or naturalized in the U.S. and guarantees equal protection and due process"},
+    {a:"15th", b:"Prohibits denying the right to vote based on race, color, or previous condition of servitude"},
+    {a:"16th", b:"Grants Congress the power to levy a federal income tax"},
+    {a:"17th", b:"Provides for the direct popular election of U.S. senators by voters of each state"},
+    {a:"19th", b:"Prohibits denying the right to vote on account of sex, granting women the right to vote"},
+    {a:"22nd", b:"Limits the president to two terms in office"},
+    {a:"24th", b:"Abolishes poll taxes as a requirement to vote in federal elections"},
+    {a:"25th", b:"Establishes presidential succession and procedures for presidential disability"},
+  ],
+  round2: [
+    {a:"1st",  b:"Congress may not pass any law restricting these freedoms — the Legislative branch is directly constrained"},
+    {a:"2nd",  b:"Limits federal and state legislative power to fully ban civilian gun ownership"},
+    {a:"3rd",  b:"Protects private property from executive military use; limits military power over civilians in peacetime"},
+    {a:"4th",  b:"Restricts executive law enforcement; evidence obtained illegally can be excluded from court (exclusionary rule)"},
+    {a:"5th",  b:"Courts cannot compel self-incrimination; due process requirements bind both the executive and judiciary"},
+    {a:"6th",  b:"The judiciary must provide speedy trials, impartial juries, and appointed counsel for all accused persons"},
+    {a:"8th",  b:"Courts and correctional systems are prohibited from imposing disproportionate sentences or cruel conditions"},
+    {a:"10th", b:"Limits federal power by reserving a broad sphere of authority to state governments and the people"},
+    {a:"12th", b:"Prevents a president and vice president from opposing parties — forces the executive ticket to run together"},
+    {a:"13th", b:"Congress gained broad new enforcement power to abolish slavery through legislation"},
+    {a:"14th", b:"Extended federal due process and equal protection requirements to all state governments — reshaping federalism"},
+    {a:"15th", b:"Congress gained power to enforce voting rights via legislation, limiting state control over elections"},
+    {a:"16th", b:"Reversed a Supreme Court ruling and gave Congress broad new taxing authority without apportionment by state"},
+    {a:"17th", b:"Removed senators from selection by state legislatures, shifting power directly to voters statewide"},
+    {a:"19th", b:"Congress gained enforcement power over sex-based voting discrimination, extending democratic accountability"},
+    {a:"22nd", b:"Constitutionally limited executive power by capping presidential terms — Congress cannot repeal this by statute"},
+    {a:"24th", b:"Prohibited Congress and states from using tax payment as a qualification for voting in federal elections"},
+    {a:"25th", b:"Formalized executive succession: Vice President assumes power; Cabinet may vote on presidential incapacity"},
+  ],
+  round3: [
+    {a:"1st",  b:"Enabled a free press, political dissent, labor unions, and the civil rights movement to grow in America"},
+    {a:"2nd",  b:"Fueled ongoing national debate over gun control, mass shootings, and individual versus public safety rights"},
+    {a:"3rd",  b:"Rarely litigated but underpins the right to privacy in the home; cited in early right-to-privacy cases"},
+    {a:"4th",  b:"Shaped police procedure nationwide and sparked ongoing debates about digital privacy and government surveillance"},
+    {a:"5th",  b:"Led directly to the Miranda warning — police must inform suspects of their right to remain silent"},
+    {a:"6th",  b:"Required states to provide public defenders, expanding access to legal representation for low-income defendants"},
+    {a:"8th",  b:"Drove decades of Supreme Court cases challenging the death penalty and harsh mandatory minimum sentences"},
+    {a:"10th", b:"Invoked in debates over states' rights, from marijuana legalization to gun sanctuaries to pandemic mandates"},
+    {a:"12th", b:"Fixed the 1800 election crisis where Jefferson and Burr tied; shaped the modern party-ticket system"},
+    {a:"13th", b:"Ended legal slavery but left deep economic inequality; led to sharecropping and Black Codes across the South"},
+    {a:"14th", b:"Became the basis for school desegregation, same-sex marriage, and nearly all modern civil rights law"},
+    {a:"15th", b:"Technically enfranchised Black men, but literacy tests and poll taxes suppressed voting for nearly a century more"},
+    {a:"16th", b:"Funded the modern welfare state — Social Security, Medicare, the interstate highway system, and national defense"},
+    {a:"17th", b:"Reduced political corruption in the Senate and made senators more directly accountable to ordinary citizens"},
+    {a:"19th", b:"Doubled the electorate virtually overnight, transforming American politics, policy priorities, and social norms"},
+    {a:"22nd", b:"Passed after FDR's four terms; reinforced democratic norms about peaceful and regular transfers of executive power"},
+    {a:"24th", b:"Removed a key tool used to disenfranchise poor and Black voters, especially across the Jim Crow South"},
+    {a:"25th", b:"Invoked during Watergate and when Reagan was shot — clarified leadership continuity in moments of crisis"},
+  ]
+};
+
+const TOTAL_PAIRS   = 12;
+const ROUND_TITLES  = ["", "Amendment Definitions", "Structural Mechanics", "Societal Impact"];
+const ROUND_DESCS   = ["", "Match each amendment number to its definition", "Match amendments to how they changed government branches", "Match amendments to their effects on American society"];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+let currentRound  = 1;
+let roundTimes    = [];
+let roundMistakes = [];
+let seconds       = 0;
+let timerInterval = null;
+let cards         = [];
+let flipped       = [];
+let matched       = [];
+let locked        = false;
+let mistakes      = 0;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+function fmt(s) {
+  return Math.floor(s/60) + ":" + (s%60 < 10 ? "0" : "") + (s%60);
+}
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    let j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildCards() {
+  const allPairs = PAIRS["round"+currentRound];
+  const chosen = shuffle([...allPairs]).slice(0, TOTAL_PAIRS);
+  let arr = [];
+  chosen.forEach((p, i) => {
+    arr.push({pair:i, type:"amendment", text:p.a});
+    arr.push({pair:i, type:"clue",      text:p.b});
+  });
+  return shuffle(arr);
+}
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById("timer").textContent = fmt(seconds);
+  }, 1000);
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
+function renderCards() {
+  const grid = document.getElementById("card-grid");
+  grid.innerHTML = "";
+  const linesHTML = Array(5).fill('<div class="cf-line"></div>').join("");
+
+  cards.forEach((c, idx) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.dataset.idx = idx;
+
+    const backContent = c.type === "amendment"
+      ? `<div class="card-amend"><span class="amend-word">Amendment</span>${c.text}</div>`
+      : `<div class="card-clue">${c.text}</div>`;
+
+    div.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front" aria-hidden="true">
+          <div class="cf-lines">${linesHTML}</div>
+          <div class="cf-quill">🪶</div>
+          <div class="cf-wtp">We the People of the United States, in Order to form a more perfect Union</div>
+          <div class="cf-seal"><span>★</span></div>
+        </div>
+        <div class="card-back">${backContent}</div>
+      </div>`;
+
+    div.addEventListener("click", () => handleClick(idx));
+    grid.appendChild(div);
+  });
+}
+
+function updateStats() {
+  document.getElementById("matches-display").textContent = (matched.length/2) + " / " + TOTAL_PAIRS;
+  document.getElementById("mistakes-display").textContent = mistakes;
+}
+
+// ── GAME LOGIC ────────────────────────────────────────────────────────────────
+
+function handleClick(idx) {
+  if (locked) return;
+  if (matched.includes(idx)) return;
+  if (flipped.includes(idx)) return;
+  if (flipped.length >= 2) return;
+
+  document.querySelector(`.card[data-idx="${idx}"]`).classList.add("flipped");
+  flipped.push(idx);
+
+  if (flipped.length === 2) {
+    locked = true;
+    const c1 = cards[flipped[0]], c2 = cards[flipped[1]];
+
+    if (c1.pair === c2.pair && c1.type !== c2.type) {
+      const [i0, i1] = [flipped[0], flipped[1]];
+      matched.push(i0, i1);
+      document.querySelector(`.card[data-idx="${i0}"]`).classList.add("matched");
+      document.querySelector(`.card[data-idx="${i1}"]`).classList.add("matched");
+      flipped = [];
+      locked  = false;
+      updateStats();
+      if (matched.length === cards.length) onRoundComplete();
+    } else {
+      mistakes++;
+      updateStats();
+      const [i0, i1] = [flipped[0], flipped[1]];
+      const e0 = document.querySelector(`.card[data-idx="${i0}"]`);
+      const e1 = document.querySelector(`.card[data-idx="${i1}"]`);
+      e0.classList.add("wrong"); e1.classList.add("wrong");
+      setTimeout(() => {
+        e0.classList.remove("flipped","wrong");
+        e1.classList.remove("flipped","wrong");
+        flipped = [];
+        locked  = false;
+      }, 1000);
+    }
+  }
+}
+
+function onRoundComplete() {
+  clearInterval(timerInterval);
+  roundTimes.push(seconds);
+  roundMistakes.push(mistakes);
+  showBetweenScreen();
+}
+
+function showBetweenScreen() {
+  const roundLabels = ["","Round 1 — Definitions","Round 2 — Structural Mechanics","Round 3 — Societal Impact"];
+  const nextMsgs    = ["","Next up: How amendments changed government structure","Next up: How amendments shaped American society","See your final results below"];
+
+  document.getElementById("between-title").textContent = "Round " + currentRound + " Complete!";
+  document.getElementById("between-msg").textContent   = nextMsgs[currentRound];
+
+  document.getElementById("between-rows").innerHTML = `
+    <div class="result-row"><span>${roundLabels[currentRound]}</span><span class="val">${fmt(roundTimes[roundTimes.length-1])}</span></div>
+    <div class="result-row"><span>Mistakes this round</span><span class="val">${roundMistakes[roundMistakes.length-1]}</span></div>
+  `;
+
+  const btn = document.getElementById("next-round-btn");
+  if (currentRound < 3) {
+    btn.textContent = "Continue to Round " + (currentRound+1) + " →";
+    btn.onclick = nextRound;
+  } else {
+    btn.textContent = "See Final Results →";
+    btn.onclick = showResults;
+  }
+  show("between-screen");
+}
+
+function nextRound() {
+  currentRound++;
+  seconds = 0; mistakes = 0;
+  matched = []; flipped = []; locked = false;
+
+  document.getElementById("round-badge").textContent = "Round " + currentRound + " of 3";
+  document.getElementById("round-title").textContent = ROUND_TITLES[currentRound];
+  document.getElementById("round-desc").textContent  = ROUND_DESCS[currentRound];
+  document.getElementById("timer").textContent       = "0:00";
+  updateStats();
+
+  cards = buildCards();
+  renderCards();
+  show("game-screen");
+  startTimer();
+}
+
+function showResults() {
+  const labels = ["Round 1 — Definitions","Round 2 — Structural Mechanics","Round 3 — Societal Impact"];
+  const total  = roundTimes.reduce((a,b) => a+b, 0);
+
+  let html = "";
+  roundTimes.forEach((t, i) => {
+    html += `<div class="result-row">
+      <span>${labels[i]}</span>
+      <span class="val">${fmt(t)} <span style="font-weight:400;color:#7a5c1e;font-size:13px">(${roundMistakes[i]} mistake${roundMistakes[i]!==1?"s":""})</span></span>
+    </div>`;
+  });
+  document.getElementById("results-breakdown").innerHTML = html;
+  document.getElementById("total-time-display").textContent = fmt(total);
+  show("results-screen");
+}
+
+function startGame() {
+  currentRound = 1;
+  seconds = 0; mistakes = 0;
+  roundTimes = []; roundMistakes = [];
+  matched = []; flipped = []; locked = false;
+
+  document.getElementById("round-badge").textContent = "Round 1 of 3";
+  document.getElementById("round-title").textContent = ROUND_TITLES[1];
+  document.getElementById("round-desc").textContent  = ROUND_DESCS[1];
+  document.getElementById("timer").textContent       = "0:00";
+  updateStats();
+
+  cards = buildCards();
+  renderCards();
+  show("game-screen");
+  startTimer();
+}
+
+function restartRound() {
+  clearInterval(timerInterval);
+  seconds = 0; mistakes = 0;
+  matched = []; flipped = []; locked = false;
+  document.getElementById("timer").textContent = "0:00";
+  updateStats();
+  cards = buildCards();
+  renderCards();
+  startTimer();
+}
+
+function resetGame() {
+  clearInterval(timerInterval);
+  roundTimes = []; roundMistakes = [];
+  show("intro-screen");
+}
+</script>
+</body>
+</html>
