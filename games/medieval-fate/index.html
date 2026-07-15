@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medieval Fate — A Middle Ages RPG</title>
+<title>Medieval Fate: A Middle Ages RPG</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
 
@@ -590,7 +590,7 @@
       <div class="panel-title">📜 THE YEAR IS 1347 AD</div>
       <div class="typewriter-box" id="intro-text">
         Welcome, traveler. You are about to begin your life in Medieval Europe.<br><br>
-        The world is harsh. Disease, famine, and war threaten all — from the lowest serf to the mightiest noble.<br><br>
+        The world is harsh. Disease, famine, and war threaten all, from the lowest serf to the mightiest noble.<br><br>
         Your fate is determined by the dice of fortune. Will you survive?<br><br>
         <span style="color:var(--gold2)">✦ Discover your place in the world and begin your journey ✦</span>
       </div>
@@ -602,7 +602,7 @@
     <div class="panel">
       <div class="panel-title">📖 HOW TO PLAY</div>
       <div style="font-size:19px; line-height:1.7; color:var(--text2)">
-        <span style="color:var(--gold2)">►</span> Reveal your character's place in Medieval society — your birth determines your fate.<br>
+        <span style="color:var(--gold2)">►</span> Reveal your character's place in Medieval society: your birth determines your fate.<br>
         <span style="color:var(--gold2)">►</span> Each year, a new event will challenge your character's survival.<br>
         <span style="color:var(--gold2)">►</span> Fate decides your outcome: <span style="color:var(--green2)">Success</span>, <span style="color:#88ccff">Partial Success</span>, or <span style="color:var(--red2)">Failure</span>. Your station in life and circumstances affect your chances.<br>
         <span style="color:var(--gold2)">►</span> Three hardships = death. Run out of money = death within two years.<br>
@@ -624,7 +624,7 @@
       <div class="form-row">
         <label>GENDER</label>
         <select id="char-gender" onchange="resetRolls()">
-          <option value="">— Choose Gender —</option>
+          <option value="">Choose Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
@@ -912,7 +912,7 @@ const ALL_EVENTS = [
         return `You must pay a large tithe of ${loss} gold in coin. Remaining: ${c.money}`;
       },
       setback: (c) => {
-        return `You pay with goods and labor instead of coin — no money lost, but you are exhausted. -1 to next roll.`;
+        return `You pay with goods and labor instead of coin. No money is lost, but you are exhausted. -1 to next roll.`;
       },
       success: () => "You talk your way out of the worst of the tithe. Life continues normally."
     }
@@ -972,7 +972,7 @@ const ALL_EVENTS = [
   {
     id:"plague",
     name:"☠ BLACK PLAGUE",
-    desc:"The Black Death has come to your region. No one — noble, serf, or priest — is safe from its terrible reach.",
+    desc:"The Black Death has come to your region. No one (noble, serf, or priest) is safe from its terrible reach.",
     affects: [1,2,3],
     modifiers: [],
     outcomes: {
@@ -1067,7 +1067,7 @@ const ALL_EVENTS = [
   {
     id:"church_state",
     name:"⛪ CHURCH VS STATE",
-    desc:"A religious leader exerts political power. The people are divided — is this divine intervention or blasphemy?",
+    desc:"A religious leader exerts political power. The people are divided: is this divine intervention or blasphemy?",
     affects: [1],
     exemptEstate:[2,3],
     exemptMsg: "As a layperson, the internal affairs of the Church hierarchy do not threaten you directly.",
@@ -1164,7 +1164,7 @@ const ALL_EVENTS = [
         return "You lose someone close to the water sickness.";
       },
       setback: (c) => {
-        return "You fall ill but recover. Weakened constitution — -1 to next 2 rolls.";
+        return "You fall ill but recover. Weakened constitution: -1 to next 2 rolls.";
       },
       success: () => "You find clean water in time and avoid the worst of the illness."
     }
@@ -1192,7 +1192,7 @@ const ALL_EVENTS = [
   {
     id:"land_dispute",
     name:"🏰 FIEFDOM LAND DISPUTE",
-    desc:"A neighboring lord claims the land — and all who live upon it — belongs to him. The legal battle rages.",
+    desc:"A neighboring lord claims the land, and all who live upon it, belongs to him. The legal battle rages.",
     affects: [1,2,3],
     modifiers: [],
     outcomes: {
@@ -1240,7 +1240,7 @@ const ALL_EVENTS = [
     modifiers: [],
     outcomes: {
       failure: (c) => {
-        if(Math.random()>0.5) return "You are gravely injured. -2 to your next 3 rolls. (Or death — at teacher's discretion)";
+        if(Math.random()>0.5) return "You are gravely injured. -2 to your next 3 rolls. (Or death, at teacher's discretion)";
         return "The hunting accident proves fatal. YOUR CHARACTER DIES.";
       },
       setback: (c) => {
@@ -1288,7 +1288,7 @@ const ALL_EVENTS = [
   {
     id:"trial_ordeal",
     name:"⚖ TRIAL BY ORDEAL",
-    desc:"The local magistrate has accused someone in your community of a crime. The Church demands a trial by ordeal — hot coals, boiling water, burning iron — to determine guilt. No one is above suspicion.",
+    desc:"The local magistrate has accused someone in your community of a crime. The Church demands a trial by ordeal (hot coals, boiling water, burning iron) to determine guilt. No one is above suspicion.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 if literate", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:1}
@@ -1349,7 +1349,7 @@ const ALL_EVENTS = [
   {
     id:"merchant",
     name:"📣 TRAVELING MERCHANT",
-    desc:"A merchant caravan has arrived bringing exotic goods, spices, and news from distant lands. Trade is opportunity — but also risk.",
+    desc:"A merchant caravan has arrived bringing exotic goods, spices, and news from distant lands. Trade is opportunity, but also risk.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 if literate (read contracts)", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:1},
@@ -1376,7 +1376,7 @@ const ALL_EVENTS = [
   {
     id:"interdict",
     name:"🔔 INTERDICT PLACED ON THE VILLAGE",
-    desc:"The bishop has placed an interdict on your village — no sacraments, no church services, no Christian burial. Spiritual terror ripples through every household.",
+    desc:"The bishop has placed an interdict on your village: no sacraments, no church services, no Christian burial. Spiritual terror ripples through every household.",
     affects: [1,2,3],
     modifiers: [],
     outcomes: {
@@ -1450,7 +1450,7 @@ const ALL_EVENTS = [
   {
     id:"royal_decree",
     name:"✒ ROYAL DECREE",
-    desc:"The king has issued a new decree — a tax, a conscription order, or a new law — that reshapes daily life. Those with connections fare better than those without.",
+    desc:"The king has issued a new decree (a tax, a conscription order, or a new law) that reshapes daily life. Those with connections fare better than those without.",
     affects: [2,3],
     exemptEstate:[1],
     exemptMsg:"The clergy are traditionally exempt from royal taxation. The decree does not apply to you.",
@@ -1479,7 +1479,7 @@ const ALL_EVENTS = [
   {
     id:"witchcraft",
     name:"🧙 ACCUSATION OF WITCHCRAFT",
-    desc:"Hysteria has gripped the village. A neighbor has accused someone of consorting with the devil. Suspicion spreads like fire and no one — especially women and the poor — is above accusation.",
+    desc:"Hysteria has gripped the village. A neighbor has accused someone of consorting with the devil. Suspicion spreads like fire and no one, especially women and the poor, is above accusation.",
     affects: [1,2,3],
     modifiers: [
       {label:"+2 for 1st estate (beyond suspicion)", condition:(c)=>c.estate===1, value:2},
@@ -1490,7 +1490,7 @@ const ALL_EVENTS = [
       failure: (c) => {
         if(c.estate!==3){
           c.estate=3; c.estateModifier=0;
-          return "You or a family member is accused. Your social standing is destroyed — cast into the 3rd estate.";
+          return "You or a family member is accused. Your social standing is destroyed: you are cast into the 3rd estate.";
         }
         return "You are accused of witchcraft. YOUR CHARACTER DIES at the stake.";
       },
@@ -1505,7 +1505,7 @@ const ALL_EVENTS = [
   {
     id:"cathedral_levy",
     name:"🛕 CHURCH CONSTRUCTION LEVY",
-    desc:"The bishop has ordered a new cathedral built. Every soul in the diocese must contribute labor or coin. It is a holy obligation — and a crushing burden.",
+    desc:"The bishop has ordered a new cathedral built. Every soul in the diocese must contribute labor or coin. It is a holy obligation, and a crushing burden.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 for 2nd estate (can pay a substitute)", condition:(c)=>c.estate===2, value:1}
@@ -1561,7 +1561,7 @@ const ALL_EVENTS = [
   {
     id:"crusaders_return",
     name:"⚓ RETURN OF THE CRUSADERS",
-    desc:"Soldiers are returning from the Holy Land — broken, diseased, and desperate. They bring foreign illness, strange ideas, and a hunger for land and plunder.",
+    desc:"Soldiers are returning from the Holy Land, broken, diseased, and desperate. They bring foreign illness, strange ideas, and a hunger for land and plunder.",
     affects: [1,2,3],
     modifiers: [
       {label:"+2 for 2nd estate (can house veterans)", condition:(c)=>c.estate===2, value:2},
@@ -1595,7 +1595,7 @@ const ALL_EVENTS = [
     ],
     outcomes: {
       failure: (c) => {
-        if(c.estate===3) return "You are implicated in heresy. YOUR CHARACTER DIES — burned at the stake.";
+        if(c.estate===3) return "You are implicated in heresy. YOUR CHARACTER DIES, burned at the stake.";
         c.penalties.push({value:-2, turnsLeft:3});
         return "You are implicated in heresy and lose all estate influence for 3 turns. -2 to all rolls.";
       },
@@ -1610,7 +1610,7 @@ const ALL_EVENTS = [
   {
     id:"plague_doctor",
     name:"🏥 PLAGUE DOCTOR ARRIVES",
-    desc:"A physician has come to town claiming to cure the sick — for a fee. Bloodletting, foul herbs, strange powders. Desperate times call for desperate measures.",
+    desc:"A physician has come to town claiming to cure the sick, for a fee. Bloodletting, foul herbs, strange powders. Desperate times call for desperate measures.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 if literate (skeptical of quackery)", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:1}
@@ -1634,7 +1634,7 @@ const ALL_EVENTS = [
   {
     id:"enclosure",
     name:"🌾 ENCLOSURE OF COMMON LANDS",
-    desc:"A local lord has fenced off the common fields that peasants relied on for grazing and foraging. This is legal — but devastating for the poor.",
+    desc:"A local lord has fenced off the common fields that peasants relied on for grazing and foraging. This is legal, but devastating for the poor.",
     affects: [2,3],
     exemptEstate:[1],
     exemptMsg:"The Church's lands are untouched by the enclosure. You watch from the hillside.",
@@ -1647,7 +1647,7 @@ const ALL_EVENTS = [
           return `The peasants revolt against your enclosure. Lose ${loss} gold and -1 to next 2 rolls. Remaining: ${c.money}`;
         }
         let loss=3; c.money=Math.max(0,c.money-loss);
-        return `You lose access to the commons. Income reduced — lose ${loss} gold. Remaining: ${c.money}`;
+        return `You lose access to the commons. Income reduced: lose ${loss} gold. Remaining: ${c.money}`;
       },
       setback: (c) => {
         if(c.estate===2){
@@ -1670,7 +1670,7 @@ const ALL_EVENTS = [
   {
     id:"feast_day",
     name:"🎭 FEAST DAY OF THE PATRON SAINT",
-    desc:"The village erupts in celebration for the patron saint's feast day. Food, drink, and revelry fill the streets — but so do gambling, brawling, and temptation.",
+    desc:"The village erupts in celebration for the patron saint's feast day. Food, drink, and revelry fill the streets, but so do gambling, brawling, and temptation.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 for 1st estate (organizers of the feast)", condition:(c)=>c.estate===1, value:1},
@@ -1697,7 +1697,7 @@ const ALL_EVENTS = [
   {
     id:"debt_collection",
     name:"📜 DEBT COLLECTION",
-    desc:"A creditor — a moneylender, a lord, or the Church itself — has come to collect an old debt, real or fabricated. In an age before reliable records, anyone can claim you owe them.",
+    desc:"A creditor (a moneylender, a lord, or the Church itself) has come to collect an old debt, real or fabricated. In an age before reliable records, anyone can claim you owe them.",
     affects: [1,2,3],
     modifiers: [
       {label:"+2 if literate (written records as defense)", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:2},
@@ -1725,7 +1725,7 @@ const ALL_EVENTS = [
   {
     id:"eclipse",
     name:"🌙 ECLIPSE OR COMET",
-    desc:"A solar eclipse or bright comet blazes across the sky. The people are terrified — scholars say it portends disaster, priests call it God's warning, and charlatans exploit the panic.",
+    desc:"A solar eclipse or bright comet blazes across the sky. The people are terrified: scholars say it portends disaster, priests call it God's warning, and charlatans exploit the panic.",
     affects: [1,2,3],
     modifiers: [
       {label:"+2 if literate (understand astronomy)", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:2},
@@ -1777,7 +1777,7 @@ const ALL_EVENTS = [
   {
     id:"noble_patronage",
     name:"🤝 NOBLE PATRONAGE",
-    desc:"A wealthy noble or church official has taken notice of your reputation and is offering patronage — financial support, legal protection, and a seat at a more powerful table.",
+    desc:"A wealthy noble or church official has taken notice of your reputation and is offering patronage: financial support, legal protection, and a seat at a more powerful table.",
     affects: [1,2,3],
     modifiers: [
       {label:"+2 if literate (educated individuals are prized)", condition:(c)=>c.literacy && c.literacy!=="Not Literate", value:2},
@@ -1787,7 +1787,7 @@ const ALL_EVENTS = [
     outcomes: {
       failure: (c) => {
         let loss=3; c.money=Math.max(0,c.money-loss);
-        return `You offend the patron or are passed over. Gifts went unappreciated — lose ${loss} gold. Remaining: ${c.money}`;
+        return `You offend the patron or are passed over. Gifts went unappreciated: lose ${loss} gold. Remaining: ${c.money}`;
       },
       setback: (c) => {
         let gain=5; c.money+=gain;
@@ -1805,7 +1805,7 @@ const ALL_EVENTS = [
   {
     id:"inheritance_windfall",
     name:"💰 INHERITANCE WINDFALL",
-    desc:"A distant relative — a merchant, a minor lord, or a childless cleric — has died and left you something unexpected. In a world where most people die with nothing, this is rare fortune.",
+    desc:"A distant relative (a merchant, a minor lord, or a childless cleric) has died and left you something unexpected. In a world where most people die with nothing, this is rare fortune.",
     affects: [1,2,3],
     modifiers: [
       {label:"+1 for 2nd estate (family networks documented)", condition:(c)=>c.estate===2, value:1},
@@ -1879,7 +1879,7 @@ const ALL_EVENTS = [
       },
       setback: (c) => {
         c.penalties.push({value:1, turnsLeft:2});
-        return "A partial opportunity — you gain limited education. +1 to next 2 rolls.";
+        return "A partial opportunity: you gain limited education. +1 to next 2 rolls.";
       },
       success: (c) => {
         let gain=5; c.money+=gain;
@@ -2159,7 +2159,7 @@ function renderCharacter() {
   document.getElementById('stat-weapon').textContent = (WEAPON_EMOJI[c.weapon]||'') + ' ' + (c.weapon||'None');
   document.getElementById('stat-literacy').textContent = c.literacy || '—';
 
-  // fortune display — descriptive, not numeric
+  // fortune display: descriptive, not numeric
   let totalMod = c.estateModifier;
   c.penalties && c.penalties.forEach(p=>{ totalMod += p.value; });
   let fortuneLabel, fortuneColor;
@@ -2258,7 +2258,7 @@ function loadNextEvent() {
 }
 
 function renderModifiers(evt) {
-  // modifiers are internal — not displayed to players
+  // modifiers are internal, not displayed to players
 }
 
 function calcModifier(evt) {

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanities Immersed Learning: About Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: #e4d8c2; color: #201e1d;
+    font-family: 'Figtree', system-ui, sans-serif;
+    display: flex; justify-content: center;
+    padding: 48px 20px;
+  }
+  a { color: #cc6b31; }
+  a:hover { color: #9f3f20; }
+
+  .page {
+    width: 100%; max-width: 1000px;
+    background: #f5ead8; border-radius: 28px; overflow: hidden;
+    box-shadow: 0 12px 32px rgba(46,43,37,0.22);
+  }
+
+  .nav {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 48px; background: #f9f4ed;
+    border-bottom: 1px solid rgba(32,30,29,0.08);
+  }
+  .nav .brand {
+    margin-right: auto; text-decoration: none;
+    font-family: 'Caprasimo', serif; font-size: 20px; color: #16305c;
+  }
+  .nav .brand:hover { color: #16305c; opacity: .85; }
+  .nav a.navlink {
+    text-decoration: none; color: #201e1d;
+    font-size: 14px; font-weight: 600;
+  }
+  .nav a.navlink:hover { color: #9f3f20; }
+
+  .intro {
+    padding: 48px 48px 8px; text-align: center;
+  }
+  .intro h1 {
+    font-family: 'Caprasimo', serif; font-weight: 400;
+    font-size: 34px; margin: 0 0 10px; color: #201e1d;
+  }
+  .intro p {
+    font-size: 15px; line-height: 1.6; opacity: .8; margin: 0 auto; max-width: 56ch;
+  }
+
+  .mission {
+    margin: 32px 48px 8px; padding: 32px; border-radius: 24px;
+    background: #e8f6f4; text-align: center;
+  }
+  .mission p {
+    font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 60ch; opacity: .85;
+  }
+
+  .team {
+    padding: 40px 48px 8px;
+  }
+  .team h6 {
+    text-align: center;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: #645c50; font-weight: 700; margin: 0 0 24px;
+  }
+  .team-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .founder {
+    background: #ebddc5; border-radius: 24px; padding: 32px 24px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 6px;
+  }
+  .founder .avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: #cc6b31; color: #fff2eb;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Caprasimo', serif; font-size: 26px;
+    margin-bottom: 10px;
+  }
+  .founder .name {
+    font-family: 'Caprasimo', serif; font-weight: 400; font-size: 17px;
+  }
+  .founder .role {
+    font-size: 13px; color: #645c50; font-weight: 600;
+  }
+
+  footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 40px;
+    padding: 22px 48px; background: #f9f4ed;
+    border-top: 1px solid rgba(32,30,29,0.08);
+    font-size: 13px; opacity: .7;
+  }
+  footer a { text-decoration: none; }
+
+  @media (max-width: 700px) {
+    .nav { flex-wrap: wrap; padding: 16px 24px; }
+    .intro { padding: 32px 24px 8px; }
+    .mission { margin: 24px 24px 8px; padding: 24px; }
+    .team { padding: 32px 24px 8px; }
+    .team-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="nav">
+    <a class="brand" href="../">Humanities Immersed Learning</a>
+    <a class="navlink" href="../">Home</a>
+    <a class="navlink" href="../games/">Games</a>
+    <a class="navlink" href="../teachers/">Teachers</a>
+    <a class="navlink" href="../blog/">Blog</a>
+    <a class="navlink" href="../contact/">Contact</a>
+  </div>
+
+  <div class="intro">
+    <h1>About Us</h1>
+    <p>Humanities Immersed Learning is a small team building history and civics games that students actually want to play.</p>
+  </div>
+
+  <div class="mission">
+    <p>We believe students learn history by living it, not memorizing it. Every game we build applies Experiential Narrative Education, our framework for turning academic content into roleplay, choice, and consequence, so learning actually sticks.</p>
+  </div>
+
+  <div class="team">
+    <h6>Founders</h6>
+    <div class="team-grid">
+      <div class="founder">
+        <div class="avatar">K</div>
+        <div class="name">Kyle Michl</div>
+        <div class="role">Co-Founder</div>
+      </div>
+      <div class="founder">
+        <div class="avatar">H</div>
+        <div class="name">Henry Tikkanen</div>
+        <div class="role">Co-Founder</div>
+      </div>
+      <div class="founder">
+        <div class="avatar">L</div>
+        <div class="name">Landon Courville</div>
+        <div class="role">Co-Founder</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2026 Humanities Immersed Learning LLC</div>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+      <a href="../">Back to Home</a>
+      <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
