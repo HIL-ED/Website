@@ -6,24 +6,34 @@
 <title>Whose Japan? A Meiji Restoration Story</title>
 <meta name="description" content="A branching narrative through the Meiji Restoration (1853-1889). Choose a role, live through the choices real Japanese people faced, and examine primary sources along the way.">
 <link rel="icon" type="image/png" href="../../images/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
 :root {
-  --paper: #f3ead9;
-  --paper-dark: #e8dcc4;
-  --card: #faf3e6;
-  --ink: #241f18;
-  --ink-soft: #5a5142;
-  --indigo: #1d3050;
-  --indigo-light: #2c4770;
-  --vermillion: #ae3b2a;
-  --vermillion-dark: #8a2e21;
-  --gold: #b9902f;
-  --line: rgba(36,31,24,0.14);
+  --paper: #f1e7d2;
+  --paper-dark: #e3d4b4;
+  --card: #fbf5e7;
+  --ink: #211c15;
+  --ink-soft: #5c5344;
+  --indigo: #16233c;
+  --indigo-light: #263a5c;
+  --vermillion: #bd3b20;
+  --vermillion-dark: #8f2a17;
+  --seal: #a3281c;
+  --gold: #b6892e;
+  --line: rgba(33,28,21,0.16);
 }
-html,body { margin:0; padding:0; background:var(--paper); color:var(--ink); font-family:'Noto Sans', sans-serif; }
-body { min-height:100vh; }
+* { -webkit-tap-highlight-color: transparent; }
+html,body { margin:0; padding:0; color:var(--ink); font-family:'Zen Kaku Gothic New', 'Noto Sans', sans-serif; }
+body {
+  min-height:100vh;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(182,137,46,0.07), transparent 42%),
+    radial-gradient(circle at 85% 8%, rgba(189,59,32,0.05), transparent 38%),
+    radial-gradient(circle at 76% 82%, rgba(22,35,60,0.05), transparent 45%),
+    radial-gradient(circle at 8% 88%, rgba(182,137,46,0.06), transparent 40%);
+}
 h1,h2,h3,.serif { font-family:'Shippori Mincho', serif; font-weight:700; }
 a { color: var(--vermillion); }
 button { font-family:inherit; cursor:pointer; }
@@ -31,111 +41,140 @@ button { font-family:inherit; cursor:pointer; }
 .wrap { max-width: 880px; margin:0 auto; padding: 36px 22px 80px; }
 .center { text-align:center; }
 
+/* ── DECORATIVE MOTIFS ── */
+.wave-divider {
+  height:15px; margin:18px auto; max-width:220px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20' viewBox='0 0 40 20'%3E%3Cpath d='M0,20 A10,10 0 0,1 20,20 A10,10 0 0,1 40,20' fill='none' stroke='%23b6892e' stroke-width='1.8'/%3E%3Cpath d='M-10,20 A10,10 0 0,1 10,20' fill='none' stroke='%23b6892e' stroke-width='1.8'/%3E%3Cpath d='M30,20 A10,10 0 0,1 50,20' fill='none' stroke='%23b6892e' stroke-width='1.8'/%3E%3C/svg%3E");
+  background-repeat: repeat-x; background-position: top center; background-size: 34px 15px;
+}
+.wave-strip {
+  height:14px; width:100%;
+  background-color: var(--indigo);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'%3E%3Cpath d='M0,0 H28 V6 A7,7 0 0,1 14,6 A7,7 0 0,1 0,6 Z' fill='%2316233c'/%3E%3Ccircle cx='14' cy='2' r='2.1' fill='none' stroke='%23b6892e' stroke-width='0.9'/%3E%3C/svg%3E");
+  background-repeat: repeat-x; background-position: top center; background-size: 28px 14px;
+  border-radius:12px 12px 0 0;
+}
+.hanko {
+  display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  width:38px; height:38px; border-radius:50%;
+  background: var(--seal); color:#fbeee2;
+  font-family:'Shippori Mincho', serif; font-weight:700; font-size:1.05rem;
+  border:2px solid #7d1d13;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.28), inset 0 0 0 2px rgba(251,238,226,0.15);
+  transform: rotate(-4deg);
+}
+
 /* ── TITLE ── */
-#screen-title .kicker { font-size:0.75rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--vermillion); margin-bottom:10px; }
-#screen-title h1 { font-size:2.3rem; line-height:1.25; margin:0 0 6px; color:var(--indigo); }
-#screen-title .sub { font-size:1rem; color:var(--ink-soft); font-style:italic; margin-bottom:28px; }
-.lede { max-width:640px; margin:0 auto 30px; font-size:1rem; line-height:1.75; color:var(--ink); }
+#screen-title .titlehead { display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:2px; }
+#screen-title .kicker { font-size:0.75rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--vermillion); margin-bottom:10px; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700; }
+#screen-title h1 { font-size:2.4rem; line-height:1.28; margin:0 0 6px; color:var(--indigo); }
+#screen-title .sub { font-size:1rem; color:var(--ink-soft); font-style:italic; font-family:'Shippori Mincho',serif; margin-bottom:6px; }
+.lede { max-width:640px; margin:0 auto 30px; font-size:1.05rem; line-height:1.85; color:var(--ink); font-family:'Shippori Mincho', serif; }
 .lede p { margin:0 0 14px; }
-.rule { width:64px; height:3px; background:var(--gold); margin:22px auto; border:none; }
 .btn-primary {
   background:var(--vermillion); color:#fdf6ea; border:none; padding:14px 34px;
-  font-size:1rem; font-weight:600; border-radius:3px; letter-spacing:0.02em;
+  font-family:'Zen Kaku Gothic New',sans-serif; font-size:1rem; font-weight:700; border-radius:3px; letter-spacing:0.03em;
   box-shadow:0 3px 0 var(--vermillion-dark);
 }
 .btn-primary:hover { background:var(--vermillion-dark); }
 .btn-secondary {
   background:transparent; color:var(--indigo); border:1.5px solid var(--indigo);
-  padding:10px 22px; font-size:0.88rem; font-weight:600; border-radius:3px;
+  font-family:'Zen Kaku Gothic New',sans-serif; padding:10px 22px; font-size:0.88rem; font-weight:700; border-radius:3px;
 }
 .btn-secondary:hover { background:var(--indigo); color:#fdf6ea; }
 
 /* ── ROLE SELECT ── */
 #screen-role h2 { text-align:center; color:var(--indigo); font-size:1.7rem; margin-bottom:6px; }
-#screen-role .sub { text-align:center; color:var(--ink-soft); font-style:italic; margin-bottom:28px; }
+#screen-role .sub { text-align:center; color:var(--ink-soft); font-style:italic; font-family:'Shippori Mincho',serif; margin-bottom:28px; }
 .role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
 .role-card {
   background:var(--card); border:1px solid var(--line); border-radius:10px;
-  padding:22px 22px 20px; display:flex; flex-direction:column; gap:8px;
-  border-top:4px solid var(--indigo); transition:transform .15s ease, box-shadow .15s ease;
+  padding:0 22px 20px; display:flex; flex-direction:column; gap:8px;
+  overflow:hidden; transition:transform .15s ease, box-shadow .15s ease;
 }
-.role-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(36,31,24,0.14); }
+.role-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(36,31,24,0.16); }
+.role-card .rnote { font-size:0.8rem; color:var(--vermillion); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:18px; }
 .role-card h3 { font-size:1.15rem; color:var(--indigo); margin:0; }
-.role-card .rnote { font-size:0.8rem; color:var(--vermillion); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
-.role-card p { font-size:0.9rem; line-height:1.55; color:var(--ink); margin:0; flex:1; }
-.role-card button { margin-top:8px; align-self:flex-start; background:var(--indigo); color:#fdf6ea; border:none; padding:9px 18px; border-radius:3px; font-size:0.85rem; font-weight:600; }
+.role-card p { font-size:0.92rem; line-height:1.6; color:var(--ink); margin:0; flex:1; font-family:'Shippori Mincho',serif; }
+.role-card button {
+  margin-top:8px; align-self:flex-start; background:var(--indigo); color:#fdf6ea; border:none;
+  font-family:'Zen Kaku Gothic New',sans-serif; padding:9px 18px; border-radius:3px; font-size:0.85rem; font-weight:700;
+}
 .role-card button:hover { background:var(--indigo-light); }
 
 /* ── STORY ── */
-#screen-story .era-track { display:flex; justify-content:center; gap:10px; margin-bottom:22px; }
-.era-dot { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; padding:5px 12px; border-radius:999px; background:var(--paper-dark); color:var(--ink-soft); border:1px solid var(--line); }
+#screen-story .era-track { display:flex; justify-content:center; gap:10px; margin-bottom:22px; flex-wrap:wrap; }
+.era-dot { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; padding:5px 12px; border-radius:999px; background:var(--paper-dark); color:var(--ink-soft); border:1px solid var(--line); font-weight:600; }
 .era-dot.active { background:var(--indigo); color:#fdf6ea; border-color:var(--indigo); }
 .era-dot.done { background:var(--gold); color:#241f18; border-color:var(--gold); }
 
-.story-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px; }
-.story-year { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--vermillion); font-weight:700; margin-bottom:8px; }
-.story-text { font-size:1.04rem; line-height:1.8; color:var(--ink); white-space:pre-line; }
+.story-card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.story-card-inner { padding:26px 32px 30px; }
+.story-year { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--vermillion); font-weight:700; margin-bottom:10px; }
+.story-text { font-size:1.1rem; line-height:1.85; color:var(--ink); white-space:pre-line; font-family:'Shippori Mincho', serif; }
 .story-text p { margin:0 0 14px; }
 
 .archive-btn {
   display:inline-flex; align-items:center; gap:7px; margin-top:16px;
   background:var(--paper-dark); border:1px solid var(--gold); color:var(--indigo);
-  padding:9px 16px; border-radius:5px; font-size:0.85rem; font-weight:600;
+  font-family:'Zen Kaku Gothic New',sans-serif; padding:9px 16px; border-radius:5px; font-size:0.85rem; font-weight:700;
 }
 .archive-btn:hover { background:var(--gold); color:#fff; }
 
 .choices { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
 .choice-btn {
   text-align:left; background:#fff; border:1.5px solid var(--indigo); color:var(--indigo);
-  padding:14px 18px; border-radius:7px; font-size:0.95rem; line-height:1.45; font-weight:500;
+  font-family:'Zen Kaku Gothic New',sans-serif; padding:14px 18px; border-radius:7px; font-size:0.95rem; line-height:1.45; font-weight:500;
 }
 .choice-btn:hover { background:var(--indigo); color:#fdf6ea; }
 
-.consequence { margin-top:22px; padding:18px 20px; background:#fbf1de; border-left:4px solid var(--vermillion); border-radius:0 6px 6px 0; }
-.consequence .cq-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--vermillion); font-weight:700; margin-bottom:6px; }
-.consequence p { margin:0; font-size:0.96rem; line-height:1.65; font-style:italic; }
+.consequence { margin-top:22px; padding:18px 20px; background:#f7e9c8; border-left:4px solid var(--vermillion); border-radius:0 6px 6px 0; }
+.consequence .cq-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--vermillion); font-weight:700; margin-bottom:6px; font-family:'Zen Kaku Gothic New',sans-serif; }
+.consequence p { margin:0; font-size:1rem; line-height:1.7; font-style:italic; font-family:'Shippori Mincho',serif; }
 #continue-wrap { margin-top:20px; text-align:right; }
 
 /* journey log */
 #journey { max-width:880px; margin:18px auto 0; }
-#journey summary { cursor:pointer; font-size:0.82rem; color:var(--ink-soft); font-weight:600; padding:6px 4px; }
-#journey-list { font-size:0.85rem; line-height:1.6; color:var(--ink-soft); padding:6px 4px 0 18px; }
+#journey summary { cursor:pointer; font-size:0.82rem; color:var(--ink-soft); font-weight:700; padding:6px 4px; }
+#journey-list { font-size:0.85rem; line-height:1.6; color:var(--ink-soft); padding:6px 4px 0 18px; font-family:'Shippori Mincho',serif; }
 #journey-list li { margin-bottom:4px; }
-#journey-list .jy { color:var(--vermillion); font-weight:700; margin-right:6px; }
+#journey-list .jy { color:var(--vermillion); font-weight:700; margin-right:6px; font-family:'Zen Kaku Gothic New',sans-serif; }
 
 /* ── ARCHIVE MODAL ── */
-#archive-overlay { position:fixed; inset:0; background:rgba(20,16,10,0.65); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+#archive-overlay { position:fixed; inset:0; background:rgba(15,12,8,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
 #archive-overlay.hidden { display:none; }
-#archive-modal { background:var(--paper); border-radius:10px; max-width:640px; width:100%; max-height:82vh; overflow-y:auto; padding:26px 28px; box-shadow:0 20px 50px rgba(0,0,0,0.35); }
-#archive-modal h3 { color:var(--indigo); margin:0 0 4px; font-size:1.25rem; }
+#archive-modal { background:var(--paper); border-radius:10px; max-width:640px; width:100%; max-height:82vh; overflow-y:auto; padding:26px 28px; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+#archive-modal h3 { color:var(--indigo); margin:0 0 4px; font-size:1.3rem; }
 #archive-modal .arch-close { float:right; background:none; border:none; font-size:1.3rem; color:var(--ink-soft); line-height:1; }
 .source-block { border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-top:16px; background:var(--card); }
-.source-block .stype { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; padding:2px 9px; border-radius:999px; display:inline-block; margin-bottom:8px; }
+.source-block .stype { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; padding:2px 9px; border-radius:999px; display:inline-block; margin-bottom:8px; font-family:'Zen Kaku Gothic New',sans-serif; }
 .stype.primary { background:#dcecd8; color:#2c5a26; }
 .stype.context { background:#e0e8f2; color:var(--indigo); }
-.source-block h4 { margin:0 0 2px; font-size:1rem; color:var(--ink); }
-.source-block .syear { font-size:0.75rem; color:var(--ink-soft); margin-bottom:10px; }
-.source-block .stext { font-size:0.92rem; line-height:1.6; font-style:italic; color:var(--ink); border-left:3px solid var(--gold); padding-left:12px; margin-bottom:10px; }
-.source-block .snote { font-size:0.85rem; line-height:1.55; color:var(--ink-soft); margin-bottom:8px; }
-.source-block .scite { font-size:0.72rem; color:var(--ink-soft); opacity:0.8; }
+.stype.recreated { background:#f6ddc8; color:#8a4a12; }
+.source-block h4 { margin:0 0 2px; font-size:1.05rem; color:var(--ink); font-family:'Shippori Mincho',serif; }
+.source-block .syear { font-size:0.75rem; color:var(--ink-soft); margin-bottom:10px; font-family:'Zen Kaku Gothic New',sans-serif; }
+.source-block .stext { font-size:0.96rem; line-height:1.65; font-style:italic; color:var(--ink); border-left:3px solid var(--gold); padding-left:12px; margin-bottom:10px; font-family:'Shippori Mincho',serif; }
+.source-block .snote { font-size:0.86rem; line-height:1.6; color:var(--ink-soft); margin-bottom:8px; font-family:'Zen Kaku Gothic New',sans-serif; }
+.source-block .scite { font-size:0.72rem; color:var(--ink-soft); opacity:0.85; font-family:'Zen Kaku Gothic New',sans-serif; }
 
 /* ── REFLECTION ── */
-#screen-reflection .refl-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px; }
+#screen-reflection .refl-card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+#screen-reflection .refl-card-inner { padding:26px 32px 30px; }
 #screen-reflection h2 { color:var(--indigo); margin:0 0 4px; font-size:1.4rem; }
-#screen-reflection .refl-sub { color:var(--ink-soft); font-style:italic; margin-bottom:18px; font-size:0.92rem; }
+#screen-reflection .refl-sub { color:var(--ink-soft); font-style:italic; font-family:'Shippori Mincho',serif; margin-bottom:18px; font-size:0.94rem; }
 #refl-recap { background:var(--paper-dark); border-radius:8px; padding:12px 16px; margin-bottom:22px; font-size:0.85rem; }
-#refl-recap .rr-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:6px; font-weight:700; }
-#refl-recap ul { margin:0; padding-left:18px; line-height:1.6; }
+#refl-recap .rr-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:6px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif; }
+#refl-recap ul { margin:0; padding-left:18px; line-height:1.6; font-family:'Shippori Mincho',serif; }
 .refl-q { margin-bottom:18px; }
-.refl-q label { display:block; font-size:0.94rem; font-weight:600; color:var(--ink); margin-bottom:7px; line-height:1.5; }
-.refl-q textarea { width:100%; min-height:70px; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-family:inherit; font-size:0.9rem; line-height:1.55; resize:vertical; background:#fff; }
+.refl-q label { display:block; font-size:0.95rem; font-weight:600; color:var(--ink); margin-bottom:7px; line-height:1.55; font-family:'Shippori Mincho',serif; }
+.refl-q textarea { width:100%; min-height:70px; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-family:'Zen Kaku Gothic New',sans-serif; font-size:0.9rem; line-height:1.55; resize:vertical; background:#fff; }
 .refl-q textarea:focus { outline:2px solid var(--gold); border-color:var(--gold); }
 
 /* ── EPILOGUE / FINAL ── */
-#screen-epilogue .epi-card { background:var(--indigo); color:#fdf6ea; border-radius:12px; padding:32px 34px; margin-bottom:26px; }
-#screen-epilogue .epi-card .kicker { color:#e8c774; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:8px; }
-#screen-epilogue .epi-card h2 { font-size:1.5rem; margin:0 0 12px; color:#fdf6ea; }
-#screen-epilogue .epi-card p { font-size:1rem; line-height:1.75; margin:0; }
+#screen-epilogue .epi-card { background:var(--indigo); color:#fdf6ea; border-radius:12px; padding:32px 34px; margin-bottom:26px; position:relative; }
+#screen-epilogue .epi-card .kicker { color:#e0c17a; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:8px; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700; }
+#screen-epilogue .epi-card h2 { font-size:1.55rem; margin:0 0 12px; color:#fdf6ea; }
+#screen-epilogue .epi-card p { font-size:1.05rem; line-height:1.8; margin:0; font-family:'Shippori Mincho',serif; }
 #final-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; justify-content:center; }
 
 footer.site { text-align:center; padding:26px 20px; font-size:0.78rem; color:var(--ink-soft); }
@@ -143,20 +182,8 @@ footer.site a { color:var(--ink-soft); }
 
 @media (max-width:600px) {
   .wrap { padding:24px 16px 60px; }
-  .story-card, #screen-reflection .refl-card { padding:22px 18px; }
+  .story-card-inner, #screen-reflection .refl-card-inner { padding:20px 18px 24px; }
   #screen-title h1 { font-size:1.7rem; }
-}
-
-/* ── PRINT ── */
-#print-summary { display:none; }
-@media print {
-  body * { visibility:hidden; }
-  #print-summary, #print-summary * { visibility:visible; }
-  #print-summary { display:block; position:absolute; top:0; left:0; width:100%; padding:0 24px; color:#000; }
-  #print-summary h1 { font-family:serif; }
-  #print-summary .p-section { margin-bottom:20px; page-break-inside:avoid; }
-  #print-summary .p-q { font-weight:700; margin-top:10px; }
-  #print-summary .p-a { margin:4px 0 0; white-space:pre-wrap; }
 }
 </style>
 </head>
@@ -168,8 +195,9 @@ footer.site a { color:var(--ink-soft); }
   <section id="screen-title">
     <div class="center">
       <div class="kicker">A Branching History · 1853&ndash;1889</div>
-      <h1>Whose Japan?<br>A Meiji Restoration Story</h1>
+      <div class="titlehead"><span class="hanko">史</span><h1>Whose Japan?<br>A Meiji Restoration Story</h1></div>
       <div class="sub">You will not play a game. You will live a choice, again and again, and see where it leads.</div>
+      <div class="wave-divider"></div>
     </div>
     <div class="lede">
       <p>In 1853, four foreign warships anchor off the coast of a country that has spent over two hundred years deliberately closed to the outside world. By 1889, that country has a written constitution, a national army built from conscripts instead of hereditary warriors, railways, telegraph lines, and factories &mdash; and a great many people who paid a steep price for all of it.</p>
@@ -189,11 +217,14 @@ footer.site a { color:var(--ink-soft); }
   <section id="screen-story" class="hidden">
     <div class="era-track" id="era-track"></div>
     <div class="story-card">
-      <div class="story-year" id="story-year"></div>
-      <div class="story-text" id="story-text"></div>
-      <div id="archive-btn-wrap"></div>
-      <div class="choices" id="story-choices"></div>
-      <div id="consequence-wrap"></div>
+      <div class="wave-strip"></div>
+      <div class="story-card-inner">
+        <div class="story-year" id="story-year"></div>
+        <div class="story-text" id="story-text"></div>
+        <div id="archive-btn-wrap"></div>
+        <div class="choices" id="story-choices"></div>
+        <div id="consequence-wrap"></div>
+      </div>
     </div>
     <details id="journey">
       <summary>Your journey so far &#9662;</summary>
@@ -204,25 +235,32 @@ footer.site a { color:var(--ink-soft); }
   <!-- REFLECTION -->
   <section id="screen-reflection" class="hidden">
     <div class="refl-card">
-      <h2 id="refl-title"></h2>
-      <div class="refl-sub" id="refl-sub"></div>
-      <div id="refl-recap"></div>
-      <div id="refl-questions"></div>
-      <div class="center"><button class="btn-primary" onclick="continueFromReflection()">Continue the Story &rarr;</button></div>
+      <div class="wave-strip"></div>
+      <div class="refl-card-inner">
+        <h2 id="refl-title"></h2>
+        <div class="refl-sub" id="refl-sub"></div>
+        <div id="refl-recap"></div>
+        <div id="refl-questions"></div>
+        <div class="center"><button class="btn-primary" onclick="continueFromReflection()">Continue the Story &rarr;</button></div>
+      </div>
     </div>
   </section>
 
   <!-- EPILOGUE + FINAL REFLECTION -->
   <section id="screen-epilogue" class="hidden">
     <div class="epi-card">
+      <span class="hanko" style="position:absolute; top:20px; right:24px;">誓</span>
       <div class="kicker" id="epi-kicker"></div>
       <h2 id="epi-title"></h2>
       <p id="epi-text"></p>
     </div>
-    <div class="refl-card" style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 32px;">
-      <h2 style="color:var(--indigo); font-size:1.3rem; margin:0 0 4px;">Final Reflection</h2>
-      <div class="refl-sub">Take a step back from your character and think as a historian.</div>
-      <div id="final-questions"></div>
+    <div class="refl-card">
+      <div class="wave-strip"></div>
+      <div class="refl-card-inner">
+        <h2 style="color:var(--indigo); font-size:1.3rem; margin:0 0 4px;">Final Reflection</h2>
+        <div class="refl-sub">Take a step back from your character and think as a historian.</div>
+        <div id="final-questions"></div>
+      </div>
     </div>
     <div id="final-actions">
       <button class="btn-primary" onclick="printJourney()">Print My Journey &amp; Reflections</button>
@@ -239,12 +277,10 @@ footer.site a { color:var(--ink-soft); }
   <div id="archive-modal">
     <button class="arch-close" onclick="closeArchive()">&times;</button>
     <h3>The Archive</h3>
-    <div class="refl-sub" style="margin-top:0;">Primary sources are direct quotations. Historical context entries are accurate summaries, not verbatim quotes &mdash; read the citation to see the difference.</div>
+    <div class="refl-sub" style="margin-top:0;">Three kinds of entry, always labeled: <strong>primary sources</strong> are direct quotations; <strong>historical context</strong> entries are accurate summaries of real events, not verbatim quotes; <strong>recreated sources</strong> are illustrative documents written for this story to feel like a real artifact, grounded in real history but not an actual archival record. Read each citation to see which is which.</div>
     <div id="archive-sources"></div>
   </div>
 </div>
-
-<div id="print-summary"></div>
 
 <script>
 // ══════════════════════════ DATA: ROLES ══════════════════════════
@@ -328,7 +364,75 @@ const SOURCES = {
   mori_arinori_note: { type:'context', title:"The Morning of Constitution Day", year:'1889',
     text:"On the very morning the Meiji Constitution was promulgated, February 11, 1889, Mori Arinori &mdash; the reform-minded Education Minister who had championed Western-style schooling and modern ideas about women's education &mdash; was stabbed and killed outside his home by a nationalist who believed Mori had disrespected Ise Shrine, one of Shinto's most sacred sites.",
     note:"The assassination was a jarring reminder that Japan's opening to the world had never been uncontested &mdash; for every reformer pushing change, others feared the country was losing something essential in the process.",
-    cite:"Historical background on the assassination of Mori Arinori, February 11, 1889." }
+    cite:"Historical background on the assassination of Mori Arinori, February 11, 1889." },
+  edo_surrender: { type:'context', title:"The Bloodless Surrender of Edo Castle", year:'1868',
+    text:"Rather than let Japan's largest city burn in a siege, Imperial commander Saigō Takamori and shogunate negotiator Katsu Kaishū met face to face and agreed to hand over Edo Castle without a fight. Edo (soon renamed Tokyo) was spared the destruction that engulfed other war zones during the Boshin War.",
+    note:"Both men were later celebrated for the decision &mdash; a reminder that even a revolution built on rebellion had leaders willing to negotiate rather than raze the capital to prove a point.",
+    cite:"Historical background on the April 1868 surrender of Edo Castle." },
+  haihan_chiken: { type:'context', title:"Haihan Chiken: Abolishing the Domains", year:'1871',
+    text:"In a single edict, the government abolished all remaining feudal domains (han) and replaced them with centrally administered prefectures answering directly to Tokyo. Former daimyo lords were pensioned off and required to live in the capital; their domains' debts were assumed by the state.",
+    note:"It was, in effect, a bloodless revolution against feudalism itself, done by decree rather than war &mdash; and it is what made every later reform (a national tax system, a national army, a national school system) possible.",
+    cite:"Summarized from the 1871 Haihan Chiken edict." },
+  saigo_proclamation: { type:'context', title:"The Government Declares Saigō a Rebel", year:'1877',
+    text:"When Saigō Takamori's forces marched out of Kagoshima, the Meiji government formally stripped him of his court rank and imperial decorations and declared him and his followers rebels against the throne he had helped install less than a decade earlier, ordering the Imperial Army to suppress the uprising by force.",
+    note:"The proclamation captures the strange irony at the heart of the Satsuma Rebellion: the government was condemning, as a traitor to the Emperor, one of the men most responsible for putting that Emperor's government in power.",
+    cite:"Historical background on the 1877 government proclamation against Saigō Takamori." },
+  ito_prussian_model: { type:'context', title:"Itō's Choice: The Prussian Model", year:'1882–1883',
+    text:"Sent to Europe to study constitutions, Itō Hirobumi rejected Britain's parliamentary system, where an elected legislature effectively controls the government, in favor of Prussia's model, where a constitution is granted by the monarch and a Diet advises but cannot overrule the emperor's ministers. Reformer Ōkuma Shigenobu, who had pushed for the British model, was forced out of government in 1881 for moving too fast.",
+    note:"The choice of model was not a technical detail &mdash; it decided how much real power the coming Constitution would actually hand to elected representatives, versus how much it would keep concentrated in the throne and its ministers.",
+    cite:"Historical background on Itō Hirobumi's 1882–83 constitutional study mission and the 1881 Political Crisis." },
+  merchant_ledger: { type:'recreated', title:"A Yokohama Trading Ledger", year:'1868',
+    text:"Rice, 200 koku, sold to Imperial Army quartermaster — 340% of pre-war price.<br>Cotton uniforms, 500 sets, sold to shogunate garrison — payment in gold, no questions asked.<br>Transport barges, hired to both armies on different weeks — paid twice for the same boats.",
+    note:"This ledger page is a recreation, not an archival document, but every line reflects a real pattern: wartime demand let merchants on both sides of the Boshin War name their own price, and few kept careful track of whose money they were taking.",
+    cite:"Illustrative reconstruction based on general accounts of Boshin War-era merchant profiteering; not an actual historical ledger." },
+  commutation_bonds: { type:'context', title:"Selling Off a Stipend: The Commutation Bonds", year:'1873–1876',
+    text:"When the government converted samurai hereditary stipends into one-time interest-bearing bonds (kinroku kōsai), most samurai received far less income than their old rice payments had guaranteed. Many, desperate for cash and unfamiliar with finance, sold their bonds immediately, often to merchants and moneylenders, at steep discounts below face value.",
+    note:"The bond sell-off transferred a meaningful share of the old samurai class's remaining wealth into the hands of merchants and financiers almost overnight &mdash; one of the quieter but most consequential wealth transfers of the entire Restoration.",
+    cite:"Historical background on the 1873–76 samurai stipend commutation (chitsuroku shobun)." },
+  seinan_war_finance: { type:'context', title:"Financing the Seinan War", year:'1877',
+    text:"Crushing the Satsuma Rebellion was extraordinarily expensive. The government paid for it largely by printing new paper currency (fiat notes not backed by gold or silver), nearly doubling the amount of paper money in circulation within the year.",
+    note:"This wartime spending fed years of inflation afterward &mdash; the same inflation Finance Minister Matsukata's harsh deflationary policies were later designed to reverse, at real cost to rural families with debts denominated in cash.",
+    cite:"Historical background on Meiji government war finance during the 1877 Satsuma Rebellion." },
+  mitsubishi_contracts: { type:'context', title:"Mitsubishi's Rise Through Government Contracts", year:'1874–1877',
+    text:"Iwasaki Yatarō's young shipping company, Mitsubishi, won lucrative government contracts to transport troops and supplies during the 1874 Taiwan Expedition and again during the 1877 Satsuma Rebellion. Those contracts, and the ships and routes they built, helped launch Mitsubishi into one of Japan's first and largest zaibatsu conglomerates.",
+    note:"Mitsubishi's rise is a clear example of how closely government favor and private fortune were intertwined in this era &mdash; a connection smaller trading houses without such contracts rarely enjoyed.",
+    cite:"Historical background on Mitsubishi's early government shipping contracts, 1874–77." },
+  village_petition: { type:'recreated', title:"A Village Petition for Tax Relief", year:'1854',
+    text:"To the Domain Office, from the elders of this village: We write in respect and hardship. The new coastal defense tax falls upon us as upon the wealthier villages downriver, yet our harvest this year was thin, and the road to the shore we are asked to help fortify passes nowhere near our fields. We ask only that our burden be weighed against our means, and not against our neighbors' greater fortune.",
+    note:"This petition is a recreation, styled after the many real village petitions (mura ukesho and similar documents) that tenant communities submitted to domain offices throughout the Edo and early Meiji periods, not a transcription of an actual 1854 document.",
+    cite:"Illustrative reconstruction modeled on common village petition conventions of the period; not an actual archival document." },
+  uchikowashi_context: { type:'context', title:"Uchikowashi: The 'Smashings'", year:'1860s',
+    text:"When rice and goods prices spiked faster than wages, crowds in towns across Japan would target the homes and warehouses of rice merchants and moneylenders believed to be hoarding grain for profit, breaking in to distribute or destroy stockpiles. These uchikowashi (\"smashings\") were usually targeted and semi-organized, not random looting.",
+    note:"Historians describe uchikowashi as a kind of \"moral economy\" protest: participants believed merchants had violated an unwritten obligation to sell at a fair price during hardship, and rarely attacked ordinary neighbors or homes uninvolved in hoarding.",
+    cite:"Historical background on uchikowashi disturbances during the Bakumatsu period (1853–1868)." },
+  requisition_notice: { type:'recreated', title:"An Army Requisition Notice", year:'1868',
+    text:"By order of the column now passing through this district: each household shall provide rice, dried goods, and any spare cart or draft animal for the army's use. Porters between the ages of fifteen and fifty shall present themselves at the village headman's house by dawn. Compensation, where given, will be at the army's discretion.",
+    note:"This notice is a recreation, not a surviving document, but it reflects the real and well-documented practice of both Imperial and shogunate forces requisitioning food, animals, carts, and forced labor from villages along their marching routes during the Boshin War.",
+    cite:"Illustrative reconstruction based on general accounts of Boshin War-era military requisitioning; not an actual archival document." },
+  dekasegi_context: { type:'context', title:"Dekasegi: Leaving the Village for Wages", year:'1880s',
+    text:"As rural debt deepened under the Matsukata Deflation, growing numbers of young people left their villages temporarily or permanently for wage work in the textile mills, construction sites, and workshops of Japan's expanding cities and factory towns, a pattern known as dekasegi (\"working away from home\").",
+    note:"Dekasegi wages became a lifeline for many rural households, but the pattern also accelerated the hollowing-out of village communities that continued well into the twentieth century.",
+    cite:"Historical background on rural-to-urban labor migration (dekasegi) in the 1880s." },
+  household_diary: { type:'recreated', title:"A Household Ledger", year:'1866',
+    text:"Third month: paid the rice merchant, settled accounts with the roof-thatcher, refused a servant's request for advance wages until harvest. Fourth month: Father and eldest brother departed again for domain business; I have kept the household seal in my own keeping since the New Year. Fifth month: a dispute between two tenant families resolved without needing to trouble the men of the house.",
+    note:"This diary fragment is a recreation, but it reflects a real and well-documented pattern: with samurai men increasingly absent for military and political duties through the 1860s, women in these households often took on financial and administrative responsibilities well beyond what was formally expected of them.",
+    cite:"Illustrative reconstruction based on general accounts of samurai household management during the Bakumatsu period; not an actual diary." },
+  women_wounded_context: { type:'context', title:"Women and the Wounded of the Boshin War", year:'1868',
+    text:"As fighting spread through domains like Aizu and Nagaoka during the Boshin War, women in samurai and commoner households alike were frequently called on to nurse wounded soldiers, from either side, in makeshift shelters, temples, and private homes, often with no formal medical training beyond what tradition and necessity taught them.",
+    note:"Some of this era's most vivid personal accounts of the Boshin War come from women who cared for the wounded, work that placed them, briefly, at the center of a war usually narrated through the men who fought it.",
+    cite:"Historical background on women's roles caring for the wounded during the 1868–69 Boshin War." },
+  womens_normal_school: { type:'context', title:"The Tokyo Women's Normal School", year:'1875',
+    text:"Established by the government in 1875, the Tokyo Women's Normal School was Japan's first institution dedicated to training women as professional schoolteachers, combining Western-influenced pedagogy with instruction in moral cultivation. Its early graduates went on to teach across the country as Japan built a national system of compulsory education.",
+    note:"Teaching became one of the very few professional careers open to educated women in Meiji Japan, and the school's graduates were among the first Japanese women to earn an independent wage through credentialed, respected work.",
+    cite:"Historical background on the founding of the Tokyo Women's Normal School, 1875." },
+  soldiers_letter: { type:'recreated', title:"A Soldier's Letter Home", year:'1877',
+    text:"We have marched three days through rain with little rest. The rebels hold the high ground and know it well, they were trained by men who taught us the same drills. Tell Mother I am unhurt as of this writing. I do not know how long that will remain true, or how many more of these hills there are to take before it is over.",
+    note:"This letter is a recreation, but its details reflect real, well-documented conditions of the 1877 Satsuma Rebellion campaign: brutal terrain, exhausted conscript soldiers, and the strange fact that both sides had trained under similar modern methods.",
+    cite:"Illustrative reconstruction based on general accounts of conscript soldiers' experience during the 1877 Satsuma Rebellion; not an actual letter." },
+  ryosai_kenbo: { type:'context', title:"The 'Good Wife, Wise Mother' Ideal", year:'1880s',
+    text:"By the mid-1880s, the Ministry of Education had settled on ryōsai kenbo (\"good wife, wise mother\") as the official aim of girls' education: schooling that prepared women to manage households efficiently and raise loyal, capable citizens, rather than to pursue independent careers or advanced scholarship in their own right.",
+    note:"Ryōsai kenbo expanded girls' access to schooling far beyond what previous generations had, while simultaneously defining the acceptable purpose of that schooling narrowly &mdash; a tension historians still point to when debating how much the Restoration actually changed for women.",
+    cite:"Historical background on the ryōsai kenbo educational ideal as promoted by the Ministry of Education in the 1880s." }
 };
 
 // ══════════════════════════ DATA: STORY NODES ══════════════════════════
@@ -350,12 +454,14 @@ samurai: [
     {label:"Counsel restraint, warning your lord that provoking foreign navies invites only more disaster.", delta:0, result:"Your caution is politely ignored. Chōshū's radicals carry the day, and the bombardment happens regardless of your warning &mdash; though your reputation for careful judgment quietly grows among the domain's older officials."}
   ]},
 { year:'1868', text:`By January 1868, Chōshū and its rival-turned-ally Satsuma have formed a secret alliance against the shogunate. Imperial forces march on Edo. The last shogun, Tokugawa Yoshinobu, surrenders his authority rather than see the country descend into full civil war, though scattered loyalists keep fighting into 1869. In a castle town far from the front, you learn a fifteen-year-old boy &mdash; Emperor Meiji &mdash; now sits, at least in name, at the head of a new government built substantially by men from your own domain.`,
+  sources:['edo_surrender'],
   choices:[
     {label:"Fight in the Boshin War for the new Imperial army against the shogunate's last loyalists.", delta:1, result:"You march north with the Imperial forces. The fighting is brutal in places, but by 1869 the shogunate's last holdouts surrender. You return home a veteran of the war that made the 'restoration' real."},
     {label:"Use your knowledge of Western drill to help organize your domain's new soldiers, away from the front lines.", delta:1, result:"You spend the war training conscript-style units in European formations rather than fighting yourself — quieter work, but work the new government will need for years to come."},
     {label:"Refuse to fight neighbors over politics in Edo, and focus on protecting your own family through the chaos.", delta:0, result:"You sit out the war entirely. Your family is safe, but old comrades who fought will later hold posts and honors that never come your way."}
   ]},
 { year:'1871', text:`In 1871 the government abolishes the domains outright, replacing them with centrally-administered prefectures. Your own lord, like every daimyo in Japan, surrenders his hereditary authority to the throne. Samurai stipends, already reduced, are marked for full conversion into one-time government bonds worth a fraction of the old rice payments. The identity your family has held for two hundred years is being dissolved by decree, all at once.`,
+  sources:['haihan_chiken'],
   choices:[
     {label:"Accept a post in the new government's rapidly growing bureaucracy — put your training to use in a new form.", delta:1, result:"Your record from the Boshin War and your fluency with Western methods earn you a junior post in the new prefectural administration. The pay is modest, the paperwork endless, but it is a future."},
     {label:"Refuse a government post out of loyalty to the old order, and struggle to find your footing in the world replacing it.", delta:-1, result:"You decline what feels like an insult to everything your family stood for. Money grows tight. Old comrades who took government posts now outrank you in everything but pride."}
@@ -367,6 +473,7 @@ samurai: [
     {label:"Feel the sting of losing what made your family's name mean something for centuries, and grumble with old comrades.", delta:-1, result:"You and men who once called themselves your equals now meet quietly to complain over cups of sake about a world that no longer needs men like you."}
   ]},
 { year:'1877', text:`Saigō Takamori — the same general who helped bring down the shogunate less than a decade ago — leads tens of thousands of disaffected former samurai into open rebellion against the very government he helped create, furious at policies that stripped samurai of status, income, and purpose. The imperial army sent to crush the rebellion is made up overwhelmingly of conscripted commoners, not samurai. You must decide, after everything, where your loyalty finally lies.`,
+  sources:['saigo_proclamation'],
   choices:[
     {label:"Serve the modern government you helped build, even if it means fighting former samurai who look a great deal like you once did.", delta:1, result:"You serve in the campaign that ends at Shiroyama, where Saigō's last men make their stand. The rebellion is crushed within months. You feel little triumph in it."},
     {label:"Sympathize quietly with Saigō's rebels, but stay out of the fighting on either side.", delta:0, result:"You send no soldiers and take no side, watching from a distance as a war unfolds between two versions of the country you might have become."},
@@ -385,6 +492,7 @@ samurai: [
     {label:"Carry out the policy exactly as ordered, trusting the ministry's economists understand the larger picture better than you do.", delta:0, result:"You follow your orders without complaint. The currency stabilizes. You try not to think too hard about the families it stabilizes at the expense of."}
   ]},
 { year:'Mid-1880s', text:`Word reaches you that Itō Hirobumi — once one of the young Chōshū men smuggled to Britain alongside you — has traveled to Prussia and settled on a German-style model for Japan's coming constitution: a document granted by the Emperor's grace, with a Diet that advises but does not truly rule. Not everyone agrees this goes far enough.`,
+  sources:['ito_prussian_model'],
   choices:[
     {label:"Trust Itō's judgment — a strong, stable state matters more right now than a fully democratic one.", delta:1, result:"You've seen enough chaos in your lifetime to value order over ideals that might not survive contact with reality."},
     {label:"Wish quietly that Japan had chosen a bolder, more democratic path, even after everything you've seen.", delta:0, result:"You keep the thought to yourself. Men who say such things too loudly still find themselves watched by the police."}
@@ -405,11 +513,13 @@ merchant: [
     {label:"Extend fair credit and steady prices to struggling neighbors and regular customers, even as prices spike around you.", delta:1, result:"You take a smaller profit than you could. Neighbors remember it, though — and remembered goodwill has its own kind of value when the political winds shift again."}
   ]},
 { year:'1868', text:`The Boshin War disrupts shipping and trade routes across the country as imperial and shogunate forces contest the roads and harbors. Foreign merchants at Yokohama, technically neutral, watch the fighting from a careful distance and keep trading anyway. Your family's warehouses hold goods that either side might pay well to move.`,
+  sources:['merchant_ledger'],
   choices:[
     {label:"Gamble on wartime supply contracts, selling to whichever side offers the best price for transport and goods.", delta:-1, result:"You take the risk and the profit, moving goods for both sides at different points in the war. It works. You try not to think too hard about what, exactly, some of those goods were for."},
     {label:"Play it safe, holding your capital and waiting out the war rather than risking entanglement with either side.", delta:0, result:"You sit out the speculation. Others in Yokohama make and lose fortunes on wartime contracts; your family's position stays modest but steady."}
   ]},
 { year:'1871–1872', text:`With the domains abolished and samurai stipends being converted to bonds worth a fraction of their old value, many once-proud samurai families are quietly selling land, swords, and heirlooms to raise cash. A trading house with capital on hand can acquire property and connections at prices unthinkable five years ago.`,
+  sources:['commutation_bonds'],
   choices:[
     {label:"Buy up former samurai land and assets while prices are low, converting them to new commercial ventures.", delta:-1, result:"You expand the family's holdings considerably. Some of what you buy comes from families you've known for years, now humbled. It is, strictly speaking, only business."},
     {label:"Refuse these particular deals, uneasy about profiting so directly from another family's fall from status.", delta:1, result:"You pass on the opportunity. A rival trading house buys what you wouldn't, and grows larger for it. You tell yourself you'll sleep better regardless."}
@@ -421,6 +531,7 @@ merchant: [
     {label:"Keep the old family-run structure, distrustful of handing any control of the business to outsiders.", delta:0, result:"You keep full control of a smaller enterprise. It suits you, even as some larger competitors, restructured along Shibusawa's lines, begin to outgrow you."}
   ]},
 { year:'1877', text:`The government's war against Saigō Takamori's rebels requires enormous quantities of supplies, moved fast: rice, uniforms, transport ships. A merchant house with the right connections can win contracts worth more than years of ordinary trade.`,
+  sources:['seinan_war_finance'],
   choices:[
     {label:"Pursue and win a lucrative government supply contract to help crush the rebellion.", delta:-1, result:"The contract is enormously profitable. It also makes you, in a very literal sense, a supplier to a war against fellow Japanese, a fact some of your older relatives find hard to reconcile."},
     {label:"Decline to pursue war contracts, uneasy about profiting from a conflict between Japanese, whichever side is 'right.'", delta:1, result:"You let a competitor win the contract instead. Your business grows more slowly this year, but you can look your father in the eye about how you grew it."}
@@ -438,6 +549,7 @@ merchant: [
     {label:"Forgive or restructure some of the debts owed by families you know personally, even at real cost to your own ledgers.", delta:2, result:"You take a real financial hit doing this. You also keep relationships, and a reputation, that some of your more ruthless competitors will eventually come to envy."}
   ]},
 { year:'Mid-1880s', text:`As the government finalizes new commercial and banking laws to accompany the coming constitution, it becomes clear the biggest winners will be a handful of massive conglomerates, zaibatsu like Mitsubishi and Mitsui, favored with government contracts and connections your family's trading house has never had.`,
+  sources:['mitsubishi_contracts'],
   choices:[
     {label:"Seek a partnership or alliance with one of the rising zaibatsu, even if it means becoming the junior partner.", delta:1, result:"You strike a working relationship with a larger house, trading some independence for access to capital and contracts your family could never win alone."},
     {label:"Keep the business fully independent, betting that smaller, more agile firms can still find a place in the new economy.", delta:-1, result:"You stay your own master, for better or worse, watching the zaibatsu grow larger every year while your own house grows only slowly."}
@@ -446,16 +558,19 @@ merchant: [
 
 farmer: [
 { year:'1853–1854 · Era One', text:`Your family works a small plot of rented land in a mountain valley, days' travel from the coast — far enough that the 'black ships' feel like rumor until your domain lord, alarmed by Perry's arrival, orders new emergency taxes across every village to pay for coastal fortifications and cannon your valley will likely never even see.`,
+  sources:['village_petition'],
   choices:[
     {label:"Join neighbors petitioning the domain office for tax relief, arguing the emergency tax falls hardest on those who can least afford it.", delta:1, result:"The petition is heard, grudgingly, and a small adjustment is made for the poorest households. It is not much, but your neighbors remember that you were willing to ask."},
     {label:"Pay the new tax without protest, keeping your family's head down and hoping to avoid any official's notice.", delta:-1, result:"You pay what's demanded, same as most of the valley. Officials never learn your family's name, which, in uncertain times, may be exactly the safest thing to be."}
   ]},
 { year:'1860s', text:`Treaty port trade sends rice and cloth prices climbing faster than any wage in the countryside can keep up with. In a nearby market town, a crowd of hungry villagers breaks into a rice merchant's warehouse, one of dozens of such 'smashings' (uchikowashi) breaking out across Japan in these years.`,
+  sources:['uchikowashi_context'],
   choices:[
     {label:"Join the crowd demanding fair prices, even knowing the risk of arrest or worse if the domain's men arrive.", delta:1, result:"You take rice home that night, along with a healthy fear of the domain's response. No punishment comes this time; the merchant, humiliated, quietly lowers his prices rather than draw more attention."},
     {label:"Stay out of the riot, afraid of the consequences, and endure the hunger and higher prices as quietly as you can.", delta:-1, result:"You watch from the edge of the crowd and go home empty-handed. Your family manages, barely, on a thinner harvest than usual and a winter with less to spare."}
   ]},
 { year:'1868', text:`Armies moving through the region during the Boshin War, imperial and shogunate alike, requisition food, carts, and labor from villages along their path with little regard for who can or cannot spare it. Word reaches your valley that a column is a day's march away and will expect your village to provide porters and supplies.`,
+  sources:['requisition_notice'],
   choices:[
     {label:"Try to hide some of the family's stores and a few valuables before the soldiers arrive.", delta:1, result:"You manage to keep back enough rice to see the family through the winter, at real risk of punishment if discovered. The soldiers pass through, take what's visible, and move on."},
     {label:"Give openly whatever the passing army demands and hope good behavior earns your family some measure of safety.", delta:-1, result:"You hand over what's asked without resistance. The soldiers move on without incident, though the family's stores are thinner than you'd like heading into the cold months."}
@@ -491,6 +606,7 @@ farmer: [
     {label:"Negotiate individually and quietly with the moneylender, keeping your head down rather than risk the fate Chichibu's rebels met.", delta:-1, result:"You manage a private arrangement to delay part of the debt. It costs the family dearly in interest over the following years, but no one comes looking for you afterward."}
   ]},
 { year:'Mid-1880s', text:`The worst of the deflation has passed, but its scars remain: emptied villages, land consolidated into fewer hands, and a steady trickle of young people leaving for the growing cities and their factories, mills, and workshops.`,
+  sources:['dekasegi_context'],
   choices:[
     {label:"Send a family member to seek work in the growing city, hoping for a wage income to steady the family through hard years.", delta:1, result:"A son or daughter leaves for the city. Letters back describe crowded dormitories and long shifts, but also money sent home that the land alone could never have provided."},
     {label:"Keep the whole family working the land, trusting that the soil, at least, has never lied to you.", delta:-1, result:"You stay. Some years are lean and some are less lean, but the family's fate remains tied, as it always has, to the harvest."}
@@ -505,11 +621,13 @@ woman: [
     {label:"Accept that such matters are not a woman's concern, for now, and wait for news the way you always have.", delta:-1, result:"You wait, as expected, for whatever news filters down through the household. It is frustrating in a way you can't quite name, though you'd struggle to explain why to anyone who asked."}
   ]},
 { year:'1860s', text:`As the political crisis deepens through the 1860s, the men of your household are increasingly absent, called away for domain business, military drilling, or political meetings that grow more dangerous by the year. Someone has to manage the household's practical affairs while they're gone.`,
+  sources:['household_diary'],
   choices:[
     {label:"Take charge of running the household's daily affairs and finances while the men are away, learning skills no one expected you'd need.", delta:1, result:"You manage accounts, servants, and difficult decisions that would once have been considered entirely beyond a woman's role. You are good at it, a fact that surprises exactly no one who has actually watched you do it."},
     {label:"Retreat into the traditional domestic duties expected of you, and wait anxiously for news of your father and brothers.", delta:-1, result:"You keep to the roles you were raised for, managing worry more than affairs. It is what is expected, and there is a kind of quiet dignity in it too."}
   ]},
 { year:'1868', text:`The Boshin War brings real danger close to home: soldiers moving through the region, wounded men needing care, households uncertain which side, if either, will treat them as friend or enemy when the fighting passes.`,
+  sources:['women_wounded_context'],
   choices:[
     {label:"Help shelter and care for wounded fighters who come through, whichever side they fought for.", delta:1, result:"You tend to frightened, injured young men who a year ago would have been strangers or even enemies to your family. Some of what you learn about wounds and fevers, you will carry for the rest of your life."},
     {label:"Focus entirely on protecting your immediate family and household, and keep your distance from the wider danger and disorder.", delta:-1, result:"Your family stays safe and largely uninvolved. You hear, secondhand, about neighbors who took greater risks, for better and for worse."}
@@ -521,11 +639,13 @@ woman: [
     {label:"Accept your family's existing plan for an arranged marriage, seeing it as the more secure and dutiful path in uncertain times.", delta:-1, result:"You accept the match your family has arranged. It is, by every practical measure, a sound decision, and you tell yourself that other kinds of ambition can wait for a daughter of your own, someday."}
   ]},
 { year:'1875', text:`In 1875, the government opens the Tokyo Women's Normal School, training Japan's first generation of professional women schoolteachers, an entirely new kind of respectable career for a woman of your background.`,
+  sources:['womens_normal_school'],
   choices:[
     {label:"Enroll and train to become one of Japan's first professional women teachers.", delta:1, result:"You leave home for formal schooling most women of your mother's generation never had access to at all. It is demanding, occasionally lonely, and unmistakably yours."},
     {label:"Set the idea aside in favor of finding a stable marriage to secure your family's future during still-uncertain times.", delta:-1, result:"You choose the more conventional path. It brings its own security and its own satisfactions, even as you sometimes wonder, quietly, about the school and the life you didn't choose."}
   ]},
 { year:'1877', text:`A brother or cousin, conscripted into the new national army, is called up to help put down Saigō Takamori's rebellion in the south. The household waits for news the way households have waited through every conflict of your lifetime, only this time the enemy is not foreign.`,
+  sources:['soldiers_letter'],
   choices:[
     {label:"Write to your relative regularly and take an active hand in managing the household's affairs while he's away.", delta:1, result:"Your letters, practical and steady, are, he tells you afterward, some of the only things that kept him grounded through a brutal campaign. You run the household capably in his absence."},
     {label:"Focus on prayer and quiet hope for his safe return, leaving the household's larger decisions to older relatives.", delta:-1, result:"You wait, as generations of women in your family have waited before you, hoping quietly. He returns, eventually, changed by what he saw."}
@@ -543,6 +663,7 @@ woman: [
     {label:"Feel largely helpless in the face of a crisis this large, and focus your energy on your own family's stability instead.", delta:-1, result:"You watch the hardship spread around you without any clear way to act on it, telling yourself, not entirely convincingly, that there was little more you could have done."}
   ]},
 { year:'Mid-1880s', text:`By the mid-1880s, the government has settled on an official vision for women's education: ryōsai kenbo, “good wife, wise mother” — training girls to be better household managers and mothers of future citizens and soldiers, rather than independent professionals or scholars in their own right.`,
+  sources:['ryosai_kenbo'],
   choices:[
     {label:"Push against the narrower vision, arguing (quietly, where you can) that women's education should aim higher than motherhood alone.", delta:1, result:"You raise the argument where it's safe to, among trusted friends and, once, to a sympathetic official. It changes little immediately, but the argument itself feels important to have made."},
     {label:"Accept the state's vision as a real, if limited, step forward — being educated at all is more than your grandmother ever had.", delta:0, result:"You take what progress is offered without demanding more, telling yourself that incremental change is still change."}
@@ -638,7 +759,7 @@ function renderRoleGrid(){
     const r = ROLES[key];
     const card = document.createElement('div');
     card.className='role-card';
-    card.innerHTML = `<div class="rnote">${r.note}</div><h3>${r.label}</h3><p>${r.blurb}</p><button onclick="startRole('${key}')">Live This Story</button>`;
+    card.innerHTML = `<div class="wave-strip"></div><div class="rnote">${r.note}</div><h3>${r.label}</h3><p>${r.blurb}</p><button onclick="startRole('${key}')">Live This Story</button>`;
     grid.appendChild(card);
   });
 }
@@ -735,8 +856,8 @@ function openArchive(ids){
   const wrap = document.getElementById('archive-sources');
   wrap.innerHTML = ids.map(id=>{
     const s = SOURCES[id];
-    const typeLabel = s.type==='primary' ? 'Primary Source · Direct Quote' : 'Historical Context · Summary';
-    const typeCls = s.type==='primary' ? 'primary' : 'context';
+    const typeLabel = s.type==='primary' ? 'Primary Source · Direct Quote' : s.type==='recreated' ? 'Recreated Source · Illustrative' : 'Historical Context · Summary';
+    const typeCls = s.type;
     return `<div class="source-block">
       <span class="stype ${typeCls}">${typeLabel}</span>
       <h4>${s.title}</h4>
@@ -793,6 +914,7 @@ function showEpilogue(){
   document.getElementById('epi-title').textContent = epi.title;
   document.getElementById('epi-text').textContent = epi.text;
   state.epilogueTitle = epi.title;
+  state.epilogueBody = epi.text;
 
   const fwrap = document.getElementById('final-questions');
   fwrap.innerHTML = FINAL_QUESTIONS.map((q,i)=>`<div class="refl-q"><label>${i+1}. ${q}</label><textarea id="fq-${i}" oninput="state.finalAnswers[${i}]=this.value">${state.finalAnswers[i]||''}</textarea></div>`).join('');
@@ -805,25 +927,47 @@ function restartGame(){
   window.scrollTo(0,0);
 }
 
+function escHtml(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function printJourney(){
   const role = ROLES[state.role];
-  let html = `<h1>Whose Japan? A Meiji Restoration Story</h1><h2>${role.label} (${role.note})</h2>`;
-  html += `<div class="p-section"><h3>Path Through History</h3><ul>` + state.history.map(h=>`<li><strong>${h.year}:</strong> ${h.label}</li>`).join('') + `</ul></div>`;
+  let body = `<h1>Whose Japan? A Meiji Restoration Story</h1><h2>${escHtml(role.label)} (${escHtml(role.note)})</h2>`;
+  body += `<div class="p-section"><h3>Path Through History</h3><ul>` + state.history.map(h=>`<li><strong>${escHtml(h.year)}:</strong> ${escHtml(h.label)}</li>`).join('') + `</ul></div>`;
   REFLECTIONS.forEach((r,idx)=>{
-    html += `<div class="p-section"><h3>${r.title}</h3>`;
+    body += `<div class="p-section"><h3>${escHtml(r.title)}</h3>`;
     r.q.forEach((q,i)=>{
-      html += `<div class="p-q">${q}</div><div class="p-a">${(state.reflections[idx][i]||'(no answer given)')}</div>`;
+      body += `<div class="p-q">${escHtml(q)}</div><div class="p-a">${escHtml(state.reflections[idx][i]||'(no answer given)')}</div>`;
     });
-    html += `</div>`;
+    body += `</div>`;
   });
-  html += `<div class="p-section"><h3>Epilogue: ${state.epilogueTitle||''}</h3></div>`;
-  html += `<div class="p-section"><h3>Final Reflection</h3>`;
+  body += `<div class="p-section"><h3>Epilogue: ${escHtml(state.epilogueTitle||'')}</h3><p>${escHtml(state.epilogueBody||'')}</p></div>`;
+  body += `<div class="p-section"><h3>Final Reflection</h3>`;
   FINAL_QUESTIONS.forEach((q,i)=>{
-    html += `<div class="p-q">${q}</div><div class="p-a">${state.finalAnswers[i]||'(no answer given)'}</div>`;
+    body += `<div class="p-q">${escHtml(q)}</div><div class="p-a">${escHtml(state.finalAnswers[i]||'(no answer given)')}</div>`;
   });
-  html += `</div>`;
-  document.getElementById('print-summary').innerHTML = html;
-  window.print();
+  body += `</div>`;
+
+  const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Your Meiji Restoration Journey</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif; color:#211d17; max-width:720px; margin:36px auto; padding:0 24px; line-height:1.65;}
+  h1{font-size:1.6rem; margin-bottom:2px;}
+  h2{font-size:1.15rem; color:#16233d; margin-top:0; font-weight:normal; font-style:italic;}
+  h3{font-size:1.05rem; color:#bf3b20; border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:30px;}
+  .p-q{font-weight:700; margin-top:14px;}
+  .p-a{margin:4px 0 0; white-space:pre-wrap;}
+  ul{padding-left:20px;}
+  .p-section{page-break-inside:avoid;}
+  @media print { body{ margin:0.4in; } }
+</style></head><body>${body}</body></html>`;
+
+  const win = window.open('', '_blank');
+  if(!win){ alert('Your browser blocked the print window as a pop-up. Please allow pop-ups for this page and try again.'); return; }
+  win.document.open();
+  win.document.write(doc);
+  win.document.close();
+  win.onload = function(){ win.focus(); win.print(); };
 }
 </script>
 </body>
