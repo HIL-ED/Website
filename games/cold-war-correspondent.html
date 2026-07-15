@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Red Scare: Panic in America</title>
+<style>
+:root{
+  --paper:#efe6cf;
+  --paper-dark:#e2d5b0;
+  --ink:#2a2420;
+  --ink-soft:#544a3d;
+  --rule:#8a7a5c;
+  --accent:#8c2d21;
+  --accent-2:#1f4c3f;
+  --gold:#a8842f;
+  --sec-color:#8c2d21;
+  --lib-color:#1f4c3f;
+  --trust-color:#2b4d78;
+  --career-color:#6b4a97;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --text-scale:1;
+  --radius:4px;
+}
+body.colorblind{
+  --sec-color:#b5590a;
+  --lib-color:#0c6cad;
+  --trust-color:#8a8a00;
+  --career-color:#7a2e8a;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  background:#171310;
+  color:var(--ink);
+  font-size:calc(16px * var(--text-scale));
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+body.text-md{--text-scale:1;}
+body.text-lg{--text-scale:1.18;}
+body.text-xl{--text-scale:1.4;}
+body.reduce-motion *{ animation-duration:.001s !important; transition-duration:.001s !important; }
+
+#app{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at top, #241d17 0%, #100d0a 70%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.screen{
+  display:none;
+  width:100%;
+  min-height:100vh;
+  flex-direction:column;
+  align-items:center;
+  padding:18px 14px 40px;
+}
+.screen.active{display:flex;}
+
+/* ===== Newspaper paper card ===== */
+.paper{
+  width:100%;
+  max-width:920px;
+  background:
+    linear-gradient(var(--paper), var(--paper));
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(120,100,60,.03) 0px, rgba(120,100,60,.03) 1px, transparent 1px, transparent 3px),
+    radial-gradient(circle at 10% 15%, rgba(120,100,60,.10), transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(120,100,60,.10), transparent 40%);
+  border:1px solid #55492f;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:22px 26px 28px;
+  position:relative;
+}
+.paper::before{
+  content:"";
+  position:absolute; inset:6px;
+  border:1px solid rgba(60,50,30,.35);
+  pointer-events:none;
+}
+
+.masthead{
+  text-align:center;
+  border-bottom:4px double var(--ink);
+  padding-bottom:8px;
+  margin-bottom:10px;
+}
+.masthead h1{
+  font-family:'Playfair Display','Times New Roman',serif;
+  font-size:2.6em;
+  letter-spacing:2px;
+  margin:0;
+  text-transform:uppercase;
+}
+.masthead .sub{
+  display:flex;
+  justify-content:space-between;
+  font-size:.72em;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-top:4px;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+/* buttons */
+button{
+  font-family:inherit;
+  cursor:pointer;
+}
+.btn{
+  display:inline-block;
+  background:var(--ink);
+  color:var(--paper);
+  border:2px solid var(--ink);
+  padding:12px 20px;
+  font-size:1em;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  border-radius:var(--radius);
+  min-height:44px;
+  transition:transform .15s ease, background .15s ease;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+.btn.secondary{background:transparent; color:var(--ink);}
+.btn.accent{background:var(--accent); border-color:var(--accent); color:#fff;}
+.btn.small{padding:8px 14px; font-size:.85em; min-height:36px;}
+.btn-row{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:14px;}
+.btn[disabled]{opacity:.4; cursor:not-allowed; transform:none;}
+
+/* ===== Menu screen ===== */
+#screen-era-select .paper{max-width:960px; text-align:center;}
+.era-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-top:16px; text-align:left;}
+.era-card{
+  background:var(--paper-dark);
+  border:1px solid var(--rule);
+  border-top:5px solid var(--era-accent, var(--accent));
+  border-radius:var(--radius);
+  padding:14px;
+  text-align:center;
+  display:flex; flex-direction:column;
+}
+.era-card .scene-illustration{max-width:210px; margin:0 auto 6px;}
+.era-card h3{margin:4px 0 0; font-family:'Playfair Display',serif; font-size:1.2em;}
+.era-years{font-size:.78em; color:var(--ink-soft); letter-spacing:1px; margin:2px 0 8px;}
+.era-tagline{font-size:.85em; font-style:italic; min-height:3.4em; flex:1;}
+.era-badge{display:inline-block; background:#2b6e3a; color:#fff; font-size:.68em; padding:3px 9px; border-radius:10px; margin-top:6px; align-self:center;}
+.menu-tagline{font-style:italic; color:var(--ink-soft); margin:4px 0 18px;}
+.stamp{
+  display:inline-block;
+  border:3px solid var(--accent);
+  color:var(--accent);
+  padding:4px 14px;
+  transform:rotate(-4deg);
+  font-weight:bold;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:.8em;
+  margin-bottom:10px;
+}
+
+/* ===== Resource HUD ===== */
+.hud{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:12px 0 18px;
+}
+.res{
+  background:rgba(0,0,0,.04);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:6px 8px 8px;
+}
+.res .res-label{
+  display:flex; align-items:center; gap:5px;
+  font-size:.68em; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--ink-soft);
+  margin-bottom:4px;
+}
+.res .res-bar-track{
+  background:rgba(0,0,0,.15);
+  height:12px;
+  border-radius:6px;
+  overflow:hidden;
+  border:1px solid rgba(0,0,0,.25);
+}
+.res .res-bar-fill{
+  height:100%;
+  width:50%;
+  border-radius:6px;
+  transition:width .8s cubic-bezier(.2,.8,.2,1), background .3s;
+}
+.res[data-res="security"] .res-bar-fill{background:var(--sec-color);}
+.res[data-res="liberties"] .res-bar-fill{background:var(--lib-color);}
+.res[data-res="trust"] .res-bar-fill{background:var(--trust-color);}
+.res[data-res="career"] .res-bar-fill{background:var(--career-color);}
+.res .res-val{font-size:.72em; text-align:right; margin-top:2px; color:var(--ink-soft);}
+.res.pulse{animation:pulse .6s ease;}
+@keyframes pulse{0%{transform:scale(1);}30%{transform:scale(1.04);}100%{transform:scale(1);}}
+.res.flash-up{box-shadow:0 0 0 2px #2b6e3a inset;}
+.res.flash-down{box-shadow:0 0 0 2px #7a2020 inset;}
+
+/* ===== Headline / date stamp ===== */
+.year-flag{
+  display:inline-block;
+  background:var(--ink);
+  color:var(--paper);
+  padding:3px 10px;
+  font-size:.75em;
+  letter-spacing:1px;
+  border-radius:var(--radius);
+  margin-bottom:8px;
+}
+.headline{
+  font-family:'Playfair Display','Times New Roman',serif;
+  font-size:1.7em;
+  line-height:1.15;
+  margin:2px 0 10px;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:8px;
+}
+.byline{font-size:.75em; text-transform:uppercase; color:var(--ink-soft); letter-spacing:1px; margin-bottom:12px;}
+
+.scene-illustration{
+  width:100%;
+  max-width:520px;
+  margin:0 auto 14px;
+  display:block;
+  border:1px solid var(--rule);
+  background:#e9dfc2;
+  border-radius:var(--radius);
+}
+
+.dialogue-box{
+  background:rgba(255,255,255,.35);
+  border-left:4px solid var(--accent);
+  padding:12px 14px;
+  margin-bottom:16px;
+  min-height:3.4em;
+  font-size:1.05em;
+  line-height:1.5;
+}
+.dialogue-box .caret{
+  display:inline-block;
+  width:.5em;
+  border-right:2px solid var(--ink);
+  animation:blink 1s step-start infinite;
+}
+@keyframes blink{50%{border-color:transparent;}}
+
+.subtitle-cue{
+  font-size:.75em;
+  color:var(--ink-soft);
+  font-style:italic;
+  margin:-8px 0 12px;
+}
+
+.choices{display:flex; flex-direction:column; gap:10px;}
+.choice-btn{
+  text-align:left;
+  background:var(--paper-dark);
+  border:2px solid var(--ink);
+  color:var(--ink);
+  padding:12px 14px;
+  border-radius:var(--radius);
+  font-size:1em;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  min-height:48px;
+}
+.choice-btn .num{
+  flex:0 0 auto;
+  background:var(--ink);
+  color:var(--paper);
+  width:1.6em; height:1.6em;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.85em;
+}
+.choice-btn:hover{background:#d9cba0;}
+.choice-btn:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+.choice-btn[disabled]{opacity:.55;}
+
+.outcome-panel{
+  animation:fadeSlide .5s ease;
+}
+@keyframes fadeSlide{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+.outcome-panel h3{margin:6px 0; font-family:'Playfair Display',serif;}
+.delta-row{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;}
+.delta-chip{
+  font-size:.75em;
+  padding:4px 8px;
+  border-radius:12px;
+  border:1px solid var(--ink-soft);
+  background:rgba(255,255,255,.4);
+}
+.delta-chip.pos{color:#1c5c2b; border-color:#1c5c2b;}
+.delta-chip.neg{color:#7a2020; border-color:#7a2020;}
+
+.what-really{
+  margin-top:14px;
+  background:#e7dcb8;
+  border:1px dashed var(--gold);
+  padding:12px 14px;
+  border-radius:var(--radius);
+}
+.what-really h4{margin:0 0 6px; text-transform:uppercase; letter-spacing:1px; font-size:.78em; color:var(--gold);}
+
+/* ===== Rumor card ===== */
+.rumor-card{
+  background:#f2ead0;
+  border:2px dotted var(--ink-soft);
+  padding:14px;
+  border-radius:var(--radius);
+}
+.rumor-tag{
+  display:inline-block; background:var(--accent); color:#fff; font-size:.68em;
+  padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;
+}
+
+/* ===== Minigame ===== */
+.minigame-wrap{width:100%;}
+.mg-instructions{margin-bottom:12px; font-size:.95em; color:var(--ink-soft);}
+.mg-grid{display:grid; gap:10px;}
+.mg-item{
+  background:var(--paper-dark);
+  border:1px solid var(--ink-soft);
+  padding:10px 12px;
+  border-radius:var(--radius);
+  font-size:.95em;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.mg-item.selected{outline:3px solid var(--gold);}
+.mg-item.correct{background:#c9e3c4; border-color:#2b6e3a;}
+.mg-item.incorrect{background:#ecc4c0; border-color:#7a2020;}
+.mg-buckets{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:14px;}
+.mg-bucket{
+  min-height:70px;
+  border:2px dashed var(--ink-soft);
+  border-radius:var(--radius);
+  padding:8px;
+  font-size:.8em;
+  text-align:center;
+}
+.mg-bucket h5{margin:0 0 6px; text-transform:uppercase; letter-spacing:1px; font-size:.9em;}
+.mg-bucket .mg-bucket-item{background:#fff8e6; border:1px solid var(--rule); border-radius:3px; padding:4px 6px; margin-bottom:4px; font-size:.9em;}
+
+.timeline-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+.timeline-list li{
+  background:var(--paper-dark);
+  border:1px solid var(--ink-soft);
+  padding:10px 12px;
+  border-radius:var(--radius);
+  display:flex; align-items:center; gap:10px;
+}
+.timeline-list li .order-badge{
+  background:var(--ink); color:var(--paper); border-radius:50%;
+  width:1.8em; height:1.8em; display:flex; align-items:center; justify-content:center; font-size:.8em; flex:0 0 auto;
+}
+.timeline-list li .move-btns{margin-left:auto; display:flex; gap:4px;}
+.timeline-list li .move-btns button{
+  border:1px solid var(--ink); background:transparent; border-radius:3px; width:30px;height:30px; font-size:.9em;
+}
+
+.evidence-piece{
+  background:var(--paper-dark);
+  border:1px solid var(--ink-soft);
+  border-radius:var(--radius);
+  padding:10px 12px;
+  margin-bottom:8px;
+  display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap;
+}
+.evidence-piece .ev-text{flex:1 1 220px; font-size:.92em;}
+.evidence-piece .ev-toggle{display:flex; gap:6px;}
+.evidence-piece .ev-toggle button{
+  border:1px solid var(--ink); background:transparent; padding:5px 10px; border-radius:3px; font-size:.78em;
+}
+.evidence-piece .ev-toggle button.active{background:var(--ink); color:var(--paper);}
+
+.mg-score{margin-top:14px; font-weight:bold;}
+
+/* ===== HUD wrapper on game screen ===== */
+.game-topbar{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:8px; gap:8px; flex-wrap:wrap;
+}
+.game-topbar .icon-btn{
+  background:transparent; border:1px solid var(--ink-soft); border-radius:50%;
+  width:38px; height:38px; font-size:1.1em; color:var(--ink);
+}
+.progress-track{
+  height:6px; background:rgba(0,0,0,.15); border-radius:3px; overflow:hidden; margin-bottom:14px;
+}
+.progress-fill{height:100%; background:var(--accent); width:0%; transition:width .5s ease;}
+
+.confidential-strip{
+  display:flex; align-items:center; gap:10px;
+  background:rgba(0,0,0,.05);
+  border:1px dashed var(--ink-soft);
+  border-radius:var(--radius);
+  padding:8px 12px;
+  font-size:.78em;
+  color:var(--ink-soft);
+  margin-bottom:14px;
+}
+.confidential-strip .cs-icon{font-size:1.3em; flex:0 0 auto;}
+
+.checkpoint-history{
+  display:flex; flex-direction:column; gap:8px;
+  margin:10px 0 18px;
+  max-height:340px;
+  overflow-y:auto;
+  padding-right:4px;
+}
+.history-row{
+  background:rgba(255,255,255,.35);
+  border-left:3px solid var(--gold);
+  padding:8px 10px;
+  border-radius:var(--radius);
+  font-size:.88em;
+}
+.history-row .history-headline{font-weight:bold; margin-bottom:2px;}
+.history-row .history-choice{color:var(--ink-soft); font-style:italic; margin-bottom:4px;}
+.history-row.is-rumor{border-left-color:var(--accent);}
+
+.career-summary{
+  background:#e7dcb8;
+  border:1px solid var(--gold);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin:14px 0;
+}
+.career-summary h3{margin-top:0;}
+.career-summary p{margin:0 0 10px; line-height:1.55;}
+.career-summary p:last-child{margin-bottom:0;}
+
+/* ===== overlays ===== */
+.overlay{
+  position:fixed; inset:0; background:rgba(10,8,6,.78);
+  display:none; align-items:center; justify-content:center; z-index:50; padding:16px;
+}
+.overlay.active{display:flex;}
+.overlay .paper{max-width:520px; max-height:90vh; overflow:auto;}
+
+/* achievements */
+.badge-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+.badge{
+  width:78px; text-align:center; font-size:.68em;
+}
+.badge .badge-icon{
+  width:56px; height:56px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #f6e6b0, var(--gold));
+  border:2px solid #7a5c1a;
+  display:flex; align-items:center; justify-content:center; font-size:1.6em; margin:0 auto 4px;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+.badge.locked .badge-icon{background:#5a5548; border-color:#3a362c; filter:grayscale(1); opacity:.5;}
+.badge.locked{opacity:.6;}
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:var(--paper); padding:12px 18px; border-radius:6px;
+  box-shadow:var(--shadow); z-index:80; opacity:0; transition:opacity .4s, transform .4s;
+  display:flex; align-items:center; gap:10px; max-width:90vw;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.toast .badge-icon{width:34px;height:34px;font-size:1.1em;margin:0;}
+
+/* accessibility panel */
+.a11y-grid{display:flex; flex-direction:column; gap:14px; text-align:left;}
+.a11y-row{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+.toggle{
+  position:relative; width:48px; height:26px; background:#999; border-radius:13px; border:none; flex:0 0 auto;
+}
+.toggle::after{
+  content:""; position:absolute; top:2px; left:2px; width:22px; height:22px; background:#fff; border-radius:50%; transition:left .2s;
+}
+.toggle.on{background:var(--accent-2);}
+.toggle.on::after{left:24px;}
+.seg{display:flex; gap:6px;}
+.seg button{border:1px solid var(--ink); background:transparent; padding:6px 10px; border-radius:4px; font-size:.85em;}
+.seg button.active{background:var(--ink); color:var(--paper);}
+
+/* teacher */
+.teacher-list{max-height:280px; overflow:auto; text-align:left; border:1px solid var(--rule); padding:8px; border-radius:4px; margin:10px 0;}
+.teacher-list button{display:block; width:100%; text-align:left; background:transparent; border:none; border-bottom:1px solid rgba(0,0,0,.08); padding:7px 4px; font-size:.9em;}
+.teacher-list button:hover{background:rgba(0,0,0,.06);}
+
+/* endings */
+.ending-title{font-family:'Playfair Display',serif; font-size:2em; text-align:center; margin:6px 0;}
+.score-circle{
+  width:130px; height:130px; border-radius:50%; border:6px solid var(--accent);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; margin:14px auto;
+  background:rgba(255,255,255,.3);
+}
+.score-circle .num{font-size:2em; font-weight:bold;}
+.score-circle .lbl{font-size:.65em; text-transform:uppercase; letter-spacing:1px;}
+.reflect-q{background:rgba(0,0,0,.04); border-left:3px solid var(--accent-2); padding:8px 12px; margin-bottom:8px; font-size:.92em;}
+
+/* footer nav for game */
+.game-footer{display:flex; justify-content:space-between; margin-top:16px; gap:10px; flex-wrap:wrap;}
+
+.kbd-hint{font-size:.7em; color:var(--ink-soft); text-align:center; margin-top:10px;}
+kbd{background:#333; color:#fff; padding:1px 6px; border-radius:3px; font-size:.9em;}
+
+/* responsive */
+@media (max-width:640px){
+  .hud{grid-template-columns:repeat(2,1fr);}
+  .masthead h1{font-size:1.9em;}
+  .headline{font-size:1.3em;}
+  .paper{padding:16px 14px 20px;}
+}
+</style>
+</head>
+<body class="text-md">
+<div id="app">
+
+<!-- ===================== INTRO ===================== -->
+<div class="screen active" id="screen-intro">
+  <div class="paper" style="max-width:640px;text-align:center;">
+    <div class="stamp" id="intro-stamp">CLASSIFIED</div>
+    <h1 style="font-family:'Playfair Display',serif;">COLD WAR CORRESPONDENT</h1>
+    <p class="menu-tagline">Four decades. Three assignments. One enduring question.</p>
+    <div class="dialogue-box" id="intro-text" style="min-height:5em;"></div>
+    <div class="btn-row">
+      <button class="btn accent" id="intro-continue">Continue</button>
+      <button class="btn secondary" id="intro-skip">Skip Intro</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MAIN MENU ===================== -->
+<div class="screen" id="screen-menu">
+  <div class="paper">
+    <div class="masthead">
+      <h1>Cold War Correspondent</h1>
+      <div class="sub"><span>A Newsroom Across Four Decades</span><span>Five Cents</span></div>
+    </div>
+    <p class="menu-tagline">You are a newspaper reporter. Pick your decade, and every headline you write shapes a nation gripped by fear. Guard the country. Guard its freedoms. Guard your byline. You cannot always do all three.</p>
+    <div class="btn-row">
+      <button class="btn accent" id="menu-new">New Game</button>
+      <button class="btn" id="menu-continue">Continue</button>
+      <button class="btn secondary" id="menu-tutorial">How to Play</button>
+      <button class="btn secondary" id="menu-a11y">Accessibility</button>
+      <button class="btn secondary" id="menu-badges">Badges</button>
+    </div>
+    <p class="kbd-hint">Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> at any time to unlock Teacher Mode.</p>
+  </div>
+</div>
+
+<!-- ===================== ERA SELECT ===================== -->
+<div class="screen" id="screen-era-select">
+  <div class="paper">
+    <div class="masthead"><h1 style="font-size:1.8em;">Choose Your Assignment</h1></div>
+    <p class="menu-tagline">Each decade is a complete, standalone posting — roughly 10–15 minutes of real history, real trade-offs, and no easy answers.</p>
+    <div class="era-grid" id="era-grid"></div>
+    <div class="btn-row"><button class="btn secondary" id="era-select-back">Back to Menu</button></div>
+  </div>
+</div>
+
+<!-- ===================== TUTORIAL ===================== -->
+<div class="screen" id="screen-tutorial">
+  <div class="paper" style="max-width:680px;">
+    <div class="masthead"><h1 style="font-size:1.6em;">How To Play</h1></div>
+    <div class="hud" style="margin-top:4px;">
+      <div class="res" data-res="security"><div class="res-label">🛡 Security</div><div class="res-bar-track"><div class="res-bar-fill" style="width:60%;"></div></div></div>
+      <div class="res" data-res="liberties"><div class="res-label">⚖ Liberties</div><div class="res-bar-track"><div class="res-bar-fill" style="width:45%;"></div></div></div>
+      <div class="res" data-res="trust"><div class="res-label">🤝 Trust</div><div class="res-bar-track"><div class="res-bar-fill" style="width:70%;"></div></div></div>
+      <div class="res" data-res="career"><div class="res-label">💼 Career</div><div class="res-bar-track"><div class="res-bar-fill" style="width:30%;"></div></div></div>
+    </div>
+    <div class="dialogue-box">Each decade you choose puts you through 8–10 major, real historical flashpoints — chosen to show how bias and distrust took hold during the Cold War — plus a short epilogue. Each choice shifts four resources: <b>National Security</b>, <b>Civil Liberties</b>, <b>Public Trust</b>, and your <b>Career</b>. There is rarely a "correct" answer — only trade-offs, the way real reporters faced them.</div>
+    <div class="dialogue-box"><b>Your numbers stay confidential as you play</b> — you won't see exact stats after every choice. Instead, your editor calls you in for a <b>Field Report</b> at a few key moments to show how your reporting has shaped things so far. Focus on the history and the trade-offs, not on gaming the meter.</div>
+    <div class="dialogue-box">Between big events you'll hear <b>rumors</b> to weigh, and play short <b>minigames</b>: Fact Check, Propaganda Detector, Timeline Builder, and the Evidence Board. After every decision, a "What Really Happened" box gives you the real history. At the very end, you'll get your full record — plus an educated guess at what would really have happened to a reporter like you.</div>
+    <div class="dialogue-box">Controls: click/tap a choice, or press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>. Press <kbd>Enter</kbd> or <kbd>Space</kbd> to continue. Press <kbd>Esc</kbd> to pause. Your progress saves automatically, decade by decade.</div>
+    <div class="btn-row"><button class="btn accent" id="tutorial-done">Got it — Start Reporting</button></div>
+  </div>
+</div>
+
+<!-- ===================== ACCESSIBILITY ===================== -->
+<div class="screen" id="screen-a11y">
+  <div class="paper" style="max-width:600px;">
+    <div class="masthead"><h1 style="font-size:1.6em;">Accessibility</h1></div>
+    <div class="a11y-grid">
+      <div class="a11y-row">
+        <div><b>Colorblind-friendly palette</b><br><small>Uses a distinct, high-contrast palette for resource bars.</small></div>
+        <button class="toggle" id="toggle-colorblind"></button>
+      </div>
+      <div class="a11y-row">
+        <div><b>Subtitles for sound cues</b><br><small>Shows text descriptions of sound effects.</small></div>
+        <button class="toggle" id="toggle-subtitles"></button>
+      </div>
+      <div class="a11y-row">
+        <div><b>Reduce motion</b><br><small>Minimizes animations and transitions.</small></div>
+        <button class="toggle" id="toggle-motion"></button>
+      </div>
+      <div class="a11y-row">
+        <div><b>Text size</b></div>
+        <div class="seg" id="seg-textsize">
+          <button data-size="md">A</button>
+          <button data-size="lg">A+</button>
+          <button data-size="xl">A++</button>
+        </div>
+      </div>
+      <div class="a11y-row">
+        <div><b>Sound effects</b></div>
+        <button class="toggle" id="toggle-sound"></button>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn accent" id="a11y-back">Back</button></div>
+  </div>
+</div>
+
+<!-- ===================== BADGES SCREEN ===================== -->
+<div class="screen" id="screen-badges">
+  <div class="paper" style="max-width:680px;">
+    <div class="masthead"><h1 style="font-size:1.6em;">Press Badges</h1></div>
+    <div class="badge-row" id="badge-display"></div>
+    <div class="btn-row"><button class="btn accent" id="badges-back">Back</button></div>
+  </div>
+</div>
+
+<!-- ===================== GAME SCREEN ===================== -->
+<div class="screen" id="screen-game">
+  <div class="paper" style="max-width:760px;">
+    <div class="game-topbar">
+      <div class="masthead" style="border:none;padding:0;margin:0;flex:1;text-align:left;">
+        <h1 style="font-size:1.3em;">The National Ledger</h1>
+      </div>
+      <button class="icon-btn" id="btn-pause" title="Pause" aria-label="Pause">⏸</button>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="confidential-strip" id="confidential-strip">
+      <span class="cs-icon">🗂️</span>
+      <span>Your standing with Security, Liberties, Trust &amp; Career is confidential — the editor will call you in for a <b>Field Report</b> at key moments, and for your full record at the end of your career.</span>
+    </div>
+
+    <div id="game-content"></div>
+
+  </div>
+</div>
+
+<!-- ===================== ENDING SCREEN ===================== -->
+<div class="screen" id="screen-ending">
+  <div class="paper" style="max-width:720px;">
+    <div class="masthead"><h1>Final Edition</h1></div>
+    <div id="ending-content"></div>
+  </div>
+</div>
+
+<!-- ===================== OVERLAYS ===================== -->
+<div class="overlay" id="overlay-pause">
+  <div class="paper" style="max-width:420px; text-align:center;">
+    <h2 style="font-family:'Playfair Display',serif;">Paused</h2>
+    <div class="btn-row" style="flex-direction:column;">
+      <button class="btn accent" id="pause-resume">Resume</button>
+      <button class="btn" id="pause-a11y">Accessibility</button>
+      <button class="btn" id="pause-restart">Restart Game</button>
+      <button class="btn secondary" id="pause-menu">Main Menu</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-achievement">
+</div>
+
+<div class="overlay" id="overlay-teacher">
+  <div class="paper" style="max-width:620px; max-height:85vh;">
+    <h2 style="font-family:'Playfair Display',serif;">📋 Teacher Mode</h2>
+    <p><small>Jump to any scene, review endings, or reset the save.</small></p>
+    <h4>Jump to Scene</h4>
+    <div class="teacher-list" id="teacher-scene-list"></div>
+    <div class="btn-row">
+      <button class="btn small" id="teacher-endings">View All Endings</button>
+      <button class="btn small" id="teacher-notes">View Historical Notes</button>
+      <button class="btn small secondary" id="teacher-reset">Reset Save Data</button>
+      <button class="btn small accent" id="teacher-close">Close</button>
+    </div>
+    <div id="teacher-subpanel"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-confirm">
+  <div class="paper" style="max-width:400px; text-align:center;">
+    <p id="confirm-text">Are you sure?</p>
+    <div class="btn-row">
+      <button class="btn accent" id="confirm-yes">Yes</button>
+      <button class="btn secondary" id="confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =====================================================================
+   RED SCARE: PANIC IN AMERICA
+   Single-file educational game engine
+   ===================================================================== */
+
+/* ---------- AUDIO ---------- */
+const Sound = (function(){
+  let ctx = null;
+  function ensure(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ ctx=null; } } return ctx; }
+  function enabled(){ return State.settings.sound; }
+  function tone(freq, dur, type, vol, delay){
+    if(!enabled()) return;
+    const c = ensure(); if(!c) return;
+    delay = delay||0;
+    const t0 = c.currentTime + delay;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type||'sine';
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(vol||0.12, t0+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    osc.connect(gain); gain.connect(c.destination);
+    osc.start(t0); osc.stop(t0+dur+0.02);
+  }
+  function noiseBurst(freqCenter, q, dur, vol, delay){
+    const c = ensure(); if(!c) return;
+    delay = delay||0;
+    const t0 = c.currentTime + delay;
+    const bufferSize = Math.max(1, Math.floor(c.sampleRate*dur));
+    const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+    const noise = c.createBufferSource();
+    noise.buffer = buffer;
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = freqCenter;
+    filter.Q.value = q;
+    const gain = c.createGain();
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    noise.connect(filter); filter.connect(gain); gain.connect(c.destination);
+    noise.start(t0); noise.stop(t0+dur+0.01);
+  }
+  return {
+    click(){ tone(520,0.06,'square',0.08); },
+    type(){
+      // mechanical typewriter key: a sharp filtered-noise clack plus a low percussive thunk
+      if(!enabled()) return;
+      noiseBurst(2200+Math.random()*1400, 1.8+Math.random(), 0.02, 0.16);
+      tone(110+Math.random()*35, 0.035, 'square', 0.05);
+    },
+    carriageReturn(){
+      // ding + slide, played when a line of typewriter text finishes
+      if(!enabled()) return;
+      tone(1600, 0.09, 'sine', 0.07);
+      noiseBurst(700, 2.5, 0.14, 0.07, 0.08);
+    },
+    success(){ tone(523,0.12,'triangle',0.1); tone(659,0.12,'triangle',0.1,0.09); tone(784,0.18,'triangle',0.12,0.18); },
+    fail(){ tone(220,0.18,'sawtooth',0.09); tone(160,0.22,'sawtooth',0.09,0.12); },
+    pageTurn(){ tone(300,0.09,'sawtooth',0.05); tone(180,0.12,'sawtooth',0.05,0.05); },
+    stamp(){ tone(90,0.09,'square',0.15); },
+    badge(){ tone(660,0.1,'sine',0.1); tone(880,0.1,'sine',0.1,0.1); tone(1100,0.22,'sine',0.13,0.2); },
+    open(){ tone(440,0.08,'triangle',0.08); }
+  };
+})();
+
+/* ---------- SCENE SVG ILLUSTRATIONS ---------- */
+function iconPaths(type){
+ switch(type){
+  case 'radio': return '<circle cx="150" cy="95" r="34" fill="none" stroke="currentColor" stroke-width="4"/><rect x="90" y="120" width="120" height="55" rx="6" fill="currentColor" opacity=".85"/><line x1="150" y1="70" x2="150" y2="40" stroke="currentColor" stroke-width="4"/><circle cx="150" cy="35" r="5" fill="currentColor"/><path d="M120 95 a30 30 0 0 1 60 0" fill="none" stroke="currentColor" stroke-width="3" opacity=".6"/>';
+  case 'capitol': return '<rect x="70" y="140" width="160" height="16" fill="currentColor"/><rect x="85" y="90" width="10" height="50" fill="currentColor"/><rect x="110" y="90" width="10" height="50" fill="currentColor"/><rect x="140" y="90" width="10" height="50" fill="currentColor"/><rect x="170" y="90" width="10" height="50" fill="currentColor"/><rect x="200" y="90" width="10" height="50" fill="currentColor"/><path d="M70 90 L150 45 L230 90 Z" fill="currentColor"/><circle cx="150" cy="35" r="9" fill="none" stroke="currentColor" stroke-width="3"/>';
+  case 'office': return '<rect x="75" y="80" width="150" height="90" fill="none" stroke="currentColor" stroke-width="4"/><rect x="95" y="100" width="40" height="30" fill="currentColor" opacity=".7"/><rect x="150" y="100" width="55" height="8" fill="currentColor"/><rect x="150" y="118" width="55" height="8" fill="currentColor"/><rect x="150" y="136" width="35" height="8" fill="currentColor"/><line x1="75" y1="170" x2="225" y2="170" stroke="currentColor" stroke-width="4"/>';
+  case 'hearingroom': return '<rect x="60" y="60" width="180" height="14" fill="currentColor"/><rect x="75" y="80" width="150" height="10" fill="currentColor" opacity=".7"/><path d="M100 175 v-40 a50 12 0 0 1 100 0 v40 Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="150" cy="110" r="10" fill="currentColor"/>';
+  case 'filmset': return '<rect x="90" y="70" width="120" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="150" cy="110" r="26" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="150" cy="110" r="6" fill="currentColor"/><path d="M90 70 L70 55 M130 70 L115 55 M170 70 L185 55 M210 70 L230 55" stroke="currentColor" stroke-width="4"/>';
+  case 'factory': return '<rect x="70" y="110" width="160" height="55" fill="currentColor" opacity=".8"/><rect x="90" y="70" width="18" height="45" fill="currentColor"/><rect x="130" y="55" width="18" height="60" fill="currentColor"/><rect x="170" y="80" width="18" height="35" fill="currentColor"/><ellipse cx="99" cy="65" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="3" opacity=".6"/><ellipse cx="139" cy="48" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="3" opacity=".6"/>';
+  case 'map': return '<circle cx="150" cy="110" r="60" fill="none" stroke="currentColor" stroke-width="4"/><path d="M95 90 Q150 60 205 90 Q150 130 95 90 Z" fill="currentColor" opacity=".4"/><line x1="90" y1="110" x2="210" y2="110" stroke="currentColor" stroke-width="2" opacity=".5"/><circle cx="150" cy="110" r="5" fill="currentColor"/>';
+  case 'courtroom': return '<rect x="80" y="150" width="140" height="14" fill="currentColor"/><path d="M100 150 v-60 h100 v60" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="150" cy="70" r="20" fill="none" stroke="currentColor" stroke-width="4"/><line x1="120" y1="70" x2="180" y2="70" stroke="currentColor" stroke-width="4"/><line x1="150" y1="70" x2="150" y2="55" stroke="currentColor" stroke-width="4"/>';
+  case 'podium': return '<path d="M120 170 L135 100 L165 100 L180 170 Z" fill="currentColor" opacity=".85"/><circle cx="150" cy="65" r="22" fill="none" stroke="currentColor" stroke-width="4"/><rect x="140" y="87" width="20" height="15" fill="currentColor"/>';
+  case 'evidence': return '<rect x="75" y="70" width="150" height="100" fill="none" stroke="currentColor" stroke-width="4"/><line x1="90" y1="95" x2="150" y2="95" stroke="currentColor" stroke-width="3"/><line x1="90" y1="115" x2="180" y2="115" stroke="currentColor" stroke-width="3"/><line x1="90" y1="135" x2="160" y2="135" stroke="currentColor" stroke-width="3"/><circle cx="200" cy="150" r="14" fill="none" stroke="currentColor" stroke-width="3"/><line x1="210" y1="160" x2="222" y2="172" stroke="currentColor" stroke-width="3"/>';
+  case 'satellite': return '<circle cx="150" cy="110" r="14" fill="currentColor"/><line x1="140" y1="100" x2="115" y2="80" stroke="currentColor" stroke-width="3"/><line x1="160" y1="100" x2="185" y2="80" stroke="currentColor" stroke-width="3"/><line x1="140" y1="120" x2="115" y2="140" stroke="currentColor" stroke-width="3"/><line x1="160" y1="120" x2="185" y2="140" stroke="currentColor" stroke-width="3"/><ellipse cx="150" cy="110" rx="70" ry="26" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>';
+  default: return '<circle cx="150" cy="110" r="40" fill="none" stroke="currentColor" stroke-width="4"/>';
+ }
+}
+function sceneSVG(type, accent, label){
+ return '<svg class="scene-illustration" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+label.replace(/"/g,'')+'">'+
+  '<defs><radialGradient id="vg" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#fff7de"/><stop offset="100%" stop-color="'+accent+'" stop-opacity="0.25"/></radialGradient></defs>'+
+  '<rect x="0" y="0" width="300" height="220" fill="url(#vg)"/>'+
+  '<rect x="6" y="6" width="288" height="208" fill="none" stroke="'+accent+'" stroke-width="2" opacity=".6"/>'+
+  '<rect x="12" y="12" width="276" height="196" fill="none" stroke="'+accent+'" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/>'+
+  '<g color="'+accent+'" style="color:'+accent+';">'+iconPaths(type)+'</g>'+
+  '<text x="150" y="205" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="'+accent+'" letter-spacing="1">'+label+'</text>'+
+ '</svg>';
+}
+
+/* ---------- DATA: SCENARIOS ---------- */
+const MG_FACTCHECK = {
+ title:"Fact Check", instructions:"Newsroom deadline. Sort each statement as Fact, Opinion, or Rumor. Click a statement, then click the correct bucket.",
+ items:[
+  {text:"The Soviet Union tested its first atomic bomb in August 1949.", answer:"Fact"},
+  {text:"There are 205 known Communists currently working in the State Department.", answer:"Rumor"},
+  {text:"Hollywood films are secretly encoded with messages to convert American children to communism.", answer:"Rumor"},
+  {text:"Reasonable people can disagree about how to balance national security and civil liberties.", answer:"Opinion"},
+  {text:"The Taft-Hartley Act required union officers to sign non-Communist affidavits.", answer:"Fact"},
+  {text:"Anyone who criticizes a loyalty investigation must have something to hide.", answer:"Opinion"}
+ ]
+};
+const MG_PROPAGANDA = {
+ title:"Propaganda Detector", instructions:"Identify the propaganda technique used in each statement.",
+ techniques:["Name-Calling","Bandwagon","Fear Appeal","Card Stacking","Testimonial"],
+ items:[
+  {text:"He's nothing but a Kremlin stooge dressed up in a senator's suit.", answer:"Name-Calling"},
+  {text:"Every true patriot in this town has already signed the loyalty pledge — have you?", answer:"Bandwagon"},
+  {text:"If we don't act now, Communists will be teaching in your child's classroom by fall.", answer:"Fear Appeal"},
+  {text:"The senator only presents witnesses who support his case, leaving out those who cleared the accused entirely.", answer:"Card Stacking"},
+  {text:"A decorated war hero says this new bill will keep America strong and free.", answer:"Testimonial"}
+ ]
+};
+const MG_EVIDENCE = {
+ title:"Evidence Board", instructions:"A State Department typist has been accused of Communist sympathies. Mark each piece of evidence Reliable or Unreliable, then decide whether there's enough evidence to formally accuse her.",
+ pieces:[
+  {text:"An anonymous tip from a coworker who recently lost a promotion to her.", reliable:false},
+  {text:"An FBI surveillance photo of her at a public rally about rent control.", reliable:false},
+  {text:"A signed Communist Party membership card from 1938, before the party was outlawed for federal employees.", reliable:true},
+  {text:"Testimony from her ex-husband, who is currently suing her in a bitter custody dispute.", reliable:false},
+  {text:"A confession, corroborated independently by two unrelated witnesses with no connection to each other.", reliable:true}
+ ],
+ correctDecision:"insufficient"
+};
+const MG_TIMELINE_ERA1 = {
+ title:"Timeline Builder", instructions:"Arrange these events in the correct chronological order (earliest first) using the arrows.",
+ events:[
+  {text:"Truman Doctrine announced", order:1},
+  {text:"HUAC Hollywood hearings begin", order:2},
+  {text:"Berlin Blockade begins", order:3},
+  {text:"Soviet Union tests atomic bomb", order:4},
+  {text:"Korean War begins", order:5},
+  {text:"Army-McCarthy hearings televised", order:6}
+ ]
+};
+const MG_TIMELINE_ERA2 = {
+ title:"Timeline Builder", instructions:"Arrange these events in the correct chronological order (earliest first) using the arrows.",
+ events:[
+  {text:"Bay of Pigs invasion fails", order:1},
+  {text:"Berlin Wall is built", order:2},
+  {text:"Cuban Missile Crisis", order:3},
+  {text:"President Kennedy assassinated", order:4},
+  {text:"Gulf of Tonkin incident reported", order:5},
+  {text:"Tet Offensive launched", order:6}
+ ]
+};
+const MG_TIMELINE_ERA3 = {
+ title:"Timeline Builder", instructions:"Arrange these events in the correct chronological order (earliest first) using the arrows.",
+ events:[
+  {text:"Soviet Union invades Afghanistan", order:1},
+  {text:"Reagan delivers 'Evil Empire' speech", order:2},
+  {text:"KAL 007 is shot down", order:3},
+  {text:"Able Archer 83 exercise runs", order:4},
+  {text:"Chernobyl disaster occurs", order:5},
+  {text:"The Berlin Wall falls", order:6}
+ ]
+};
+
+const ACHIEVEMENTS = [
+ {id:'firstbyline', icon:'📰', title:'First Byline', desc:'Began your reporting career.'},
+ {id:'skeptic', icon:'🔎', title:'Skeptical Eye', desc:"Demanded evidence before printing McCarthy's Wheeling claim."},
+ {id:'factchecker', icon:'✅', title:'Fact Checker', desc:'Sorted every statement correctly in Fact Check.'},
+ {id:'propspotter', icon:'📢', title:'Propaganda Spotter', desc:'Identified every propaganda technique correctly.'},
+ {id:'historian', icon:'🗓️', title:'Timeline Historian', desc:'Built a perfect chronology.'},
+ {id:'carefuljournalist', icon:'🗂️', title:'Careful Journalist', desc:'Reached the right call on the Evidence Board.'},
+ {id:'balanced', icon:'⚖️', title:'Balanced Voice', desc:'Finished with all four resources between 40 and 60.'},
+ {id:'survivor', icon:'🏁', title:'Survivor of the Storm', desc:'Filed your final story of the era.'}
+,
+ {id:'coldwarveteran', icon:'🌐', title:'Cold War Correspondent', desc:'Completed all three decades of the Cold War.'}
+];
+
+const ERAS = {
+ redscare: {
+  id:'redscare', label:'The Red Scare', years:'1947–1957', accent:'#8c2d21', icon:'hearingroom',
+  tagline:'Loyalty oaths, blacklists, and a senator with a list no one ever saw.',
+  scenarios: [
+{id:'loyalty-program', year:'March 1947', scene:'office', accent:'#4a3b25',
+ headline:"TRUMAN ORDERS LOYALTY CHECKS FOR FEDERAL WORKERS",
+ dialogue:"Executive Order 9835 creates loyalty review boards for every federal employee — nearly five million people. A clerk you know, June Ostrander, has been quietly suspended pending review. No formal charge. No public evidence. She just wants to know why.",
+ choices:[
+   {text:"Applaud the program as prudent vigilance in dangerous times.", style:'sensational', delta:{security:10,liberties:-10,trust:-2,career:3}, outcome:"Your column backs the loyalty program firmly. Security hawks praise you; June's case goes unmentioned, and she is quietly dismissed weeks later."},
+   {text:"Investigate June's case and publish what due process actually looks like.", style:'cautious', delta:{security:-4,liberties:9,trust:4,career:-3}, outcome:"Your investigation reveals June was accused based on an anonymous tip about a book club. The piece draws praise from civil libertarians — and a warning call from a federal press liaison."},
+   {text:"Report the program's scope and let the numbers speak.", style:'balanced', delta:{security:1,liberties:0,trust:1,career:-4}, outcome:"A straightforward account of the new boards and their reach. Readers get facts, not a verdict."}
+ ],
+ whatHappened:"Truman's Loyalty Program screened roughly 5 million federal employees between 1947 and 1956. Investigators found no confirmed cases of espionage, though thousands of people lost jobs, reputations, or careers — often on the basis of rumor, association, or anonymous tips, with no right to confront their accusers. Historians widely regard it as an early, influential template for the guilt-by-association tactics that would define the era."},
+
+{id:'huac', year:'October 1947', scene:'hearingroom', accent:'#3e2f20',
+ headline:"CONGRESS GRILLS HOLLYWOOD OVER 'RED' INFLUENCE",
+ dialogue:"The House Un-American Activities Committee has summoned dozens of Hollywood figures. 'Friendly witnesses' name colleagues suspected of Communist Party ties; a smaller group refuses to answer questions about their political beliefs, citing the First Amendment. Your press pass gets you a seat in the packed hearing room.",
+ choices:[
+   {text:"Lead with the friendly witnesses' testimony — it's the bigger story.", style:'sensational', delta:{security:7,liberties:-7,trust:-1,career:5}, outcome:"Your front page features damning testimony against several screenwriters. It sells papers — and effectively ends a few careers before any trial."},
+   {text:"Center the unfriendly witnesses' argument about constitutional rights.", style:'cautious', delta:{security:-3,liberties:8,trust:2,career:-2}, outcome:"You give real space to the free-speech argument. It's a harder sell to editors chasing spy intrigue, but readers write in calling it fair."},
+   {text:"Cover both sides of the hearing room without taking sides.", style:'balanced', delta:{security:0,liberties:0,trust:3,career:-4}, outcome:"Your dual-perspective piece is widely quoted by other papers for its balance."}
+ ],
+ whatHappened:"HUAC's 1947 Hollywood hearings pitted 'friendly witnesses' (including Walt Disney and Ronald Reagan) against ten writers and directors who refused to answer questions about party membership, invoking the First Amendment rather than the Fifth. The 'Hollywood Ten' were cited for contempt of Congress. The hearings never proved a single instance of on-screen propaganda, but they permanently reshaped how the industry — and the press — approached political dissent."},
+
+{id:'hollywood-ten', year:'November 1947', scene:'filmset', accent:'#332a1c',
+ headline:"TEN HOLLYWOOD FIGURES CITED FOR CONTEMPT, BLACKLIST BEGINS",
+ dialogue:"The Hollywood Ten have been cited for contempt of Congress. Under pressure, studio executives meet at the Waldorf-Astoria and agree not to knowingly employ any Communist. A young screenwriter you've interviewed before, deemed 'suspect,' can no longer get his calls returned.",
+ choices:[
+   {text:"Publish the studios' emerging blacklist as a public service list.", style:'sensational', credibilityRisk:true, delta:{security:6,liberties:-9,trust:-3,career:4}, outcome:"Your paper runs names circulating in the industry. It becomes a reference sheet for casting directors — and a life sentence for those named, guilty or not."},
+   {text:"Write a profile humanizing the blacklisted screenwriter's ordeal.", style:'cautious', delta:{security:-3,liberties:9,trust:3,career:-3}, outcome:"Your sympathetic profile draws hate mail alongside praise. Your editor pulls you aside: 'Careful. This one could follow you.'"},
+   {text:"Report on the Waldorf Statement itself, not individual names.", style:'balanced', delta:{security:0,liberties:1,trust:2,career:-4}, outcome:"You cover the policy without becoming part of the naming machine — a narrow but principled line to walk."}
+ ],
+ whatHappened:"The 'Waldorf Statement' of November 1947 formalized Hollywood's blacklist. Over the following decade, an estimated 300+ actors, writers, and directors were denied work, often based on hearsay, old petitions, or refusal to testify — not proven wrongdoing. Many worked under pseudonyms or left the country; some never recovered their careers. The studios' capitulation was driven partly by principle, but largely by fear of boycotts and box-office losses."},
+
+{id:'hiss-accused', year:'August 1948', scene:'hearingroom', accent:'#3e2f20',
+ headline:"EX-STATE DEPT OFFICIAL ALGER HISS ACCUSED OF SOVIET TIES",
+ dialogue:"Whittaker Chambers, a former Communist courier turned Time editor, tells HUAC that Alger Hiss — a respected former State Department official — passed him documents for the Soviets in the 1930s. Hiss denies it under oath, calmly and completely. A young committee member named Richard Nixon presses the case hard.",
+ choices:[
+   {text:"Run with Chambers' accusation as the real story — a Soviet spy exposed.", style:'sensational', credibilityRisk:true, delta:{security:8,liberties:-6,trust:-2,career:5}, outcome:"Your paper treats Chambers as credible from day one. It's a sensational scoop — if Hiss turns out to be innocent, you've ruined a man's name."},
+   {text:"Note that this is one man's uncorroborated word against another's.", style:'cautious', delta:{security:-3,liberties:6,trust:4,career:-2}, outcome:"You urge readers to withhold judgment pending evidence. It's the responsible call, though it robs your story of its punch."},
+   {text:"Cover Nixon's aggressive investigation as the emerging angle.", style:'balanced', delta:{security:1,liberties:0,trust:1,career:-2}, outcome:"You track the young congressman's rising profile. It's an interesting angle, but your editor thinks you buried the real lede — Hiss's guilt or innocence — under process coverage."}
+ ],
+ whatHappened:"The Hiss–Chambers case became one of the defining controversies of the era. At this point, in August 1948, there was no documentary evidence — only Chambers' testimony. The 'Pumpkin Papers' microfilm would not surface until December. Debate over Hiss's guilt persisted for decades; Soviet archive material released after the Cold War later gave weight to Chambers' account, but even scholars remain divided on some particulars."},
+
+{id:'wheeling', year:'February 1950', scene:'podium', accent:'#4a2020',
+ headline:"SENATOR CLAIMS LIST OF '205' COMMUNISTS IN STATE DEPARTMENT",
+ dialogue:"A little-known senator from Wisconsin, Joseph McCarthy, tells a Republican women's club in Wheeling, West Virginia that he holds a list of 205 known Communists working in the State Department. He waves a paper in the air. No one in the room — or in your newsroom tonight — has actually seen the list.",
+ choices:[
+   {text:"Run the '205 names' claim on the front page tomorrow.", style:'sensational', credibilityRisk:true, delta:{security:6,liberties:-10,trust:-4,career:6}, outcome:"Your paper is the first to splash McCarthy's number nationwide. Circulation spikes. You have just helped launch the most explosive political weapon of the decade — sight unseen."},
+   {text:"Call McCarthy's office and demand to see the list before printing anything.", style:'cautious', skepticAchievement:true, delta:{security:-2,liberties:9,trust:6,career:-4}, outcome:"McCarthy's office stalls, then the number quietly changes in later speeches — 205, then 57, then 81. Your paper holds the story a full day for verification. Competitors scoop you, but you avoid printing a number that was never real."},
+   {text:"Print McCarthy's claim in a small item, clearly labeled 'unverified.'", style:'balanced', delta:{security:0,liberties:1,trust:1,career:-4}, outcome:"You cover the speech without amplifying it uncritically — a middle path that still gets the claim into print."}
+ ],
+ whatHappened:"McCarthy's Wheeling speech on February 9, 1950 is often cited as the true start of 'McCarthyism.' He never produced a verified list, and his numbers shifted wildly in the following days and weeks. No credible list of 205 (or 57, or 81) State Department Communists was ever substantiated. Yet many newspapers reported the claim uncritically — a case study in how unverified accusations, once printed, become 'true' in the public mind regardless of evidence."},
+
+{id:'mccarran', year:'September 1950', scene:'capitol', accent:'#4a3b25',
+ headline:"CONGRESS PASSES INTERNAL SECURITY ACT OVER TRUMAN VETO",
+ dialogue:"The McCarran Internal Security Act requires Communist organizations to register with the government and creates provisions for detention camps during a declared 'internal security emergency.' Truman vetoes it, calling it a threat to free speech — Congress overrides him almost unanimously.",
+ choices:[
+   {text:"Support the Act as overdue protection against subversion.", style:'sensational', delta:{security:9,liberties:-9,trust:-1,career:4}, outcome:"Your endorsement aligns with the overwhelming congressional mood. Few readers object today — though the detention camp provisions will trouble the nation's conscience later."},
+   {text:"Highlight Truman's warning that this could jail people for their beliefs.", style:'cautious', delta:{security:-4,liberties:9,trust:4,career:-3}, outcome:"You give real weight to a veto message most papers buried. It's an unpopular stance in September 1950, but a prescient one."},
+   {text:"Explain the law's provisions clearly, including the veto fight.", style:'balanced', delta:{security:0,liberties:0,trust:2,career:-4}, outcome:"A straightforward account of a complex, controversial law."}
+ ],
+ whatHappened:"The McCarran Act passed with veto-proof majorities in both parties. Its detention camp provisions were never activated, but six camps were built and maintained on standby for years. Truman's veto message warned it could punish people for association and belief rather than acts — a concern that later Supreme Court decisions would partly validate by striking down some of the law's provisions."},
+
+{id:'rosenberg-trial', year:'March 1951', scene:'courtroom', accent:'#3a2e1e',
+ headline:"ROSENBERGS ON TRIAL FOR ATOMIC ESPIONAGE",
+ dialogue:"The trial has gripped the nation. Prosecutors argue the Rosenbergs helped the Soviets 'steal' the atomic bomb, shortening the U.S. monopoly by years and enabling the Korean War. The defense argues the key witness, Ethel's own brother, has strong incentive to cooperate with prosecutors to save himself.",
+ choices:[
+   {text:"Editorialize that the death penalty is deserved for such treason.", style:'sensational', delta:{security:7,liberties:-9,trust:-3,career:3}, outcome:"Your column matches the fevered public mood. It will look far less comfortable in hindsight, especially regarding Ethel."},
+   {text:"Question the reliability of testimony from a cooperating family member.", style:'cautious', delta:{security:-3,liberties:8,trust:4,career:-2}, outcome:"You raise a legitimate evidentiary concern that the rushed public mood has little patience for."},
+   {text:"Cover the trial's legal arguments without predicting the verdict.", style:'balanced', delta:{security:0,liberties:1,trust:3,career:-3}, outcome:"Solid, professional courtroom reporting that holds up well over time."}
+ ],
+ whatHappened:"The Rosenbergs were convicted in March 1951 and sentenced to death — an unusually severe penalty, especially for Ethel, whose conviction rested heavily on her brother David Greenglass's testimony. Greenglass later admitted he had fabricated or exaggerated key details implicating his sister, hoping to protect his own wife from prosecution. The trial took place amid intense Cold War fear following the Korean War's outbreak just months earlier."},
+
+{id:'mccarthy-army', year:'late 1953', scene:'hearingroom', accent:'#3e2f20',
+ headline:"McCARTHY ACCUSES ARMY OF HARBORING COMMUNISTS",
+ dialogue:"Senator McCarthy, now chair of a powerful investigations subcommittee, turns his sights on the U.S. Army, alleging Communist infiltration at Fort Monmouth. Behind the scenes, it's rumored McCarthy is furious the Army drafted his former aide, Roy Cohn's friend David Schine, and refused Cohn's demands for special treatment.",
+ choices:[
+   {text:"Cover the Army allegations as McCarthy's biggest case yet.", style:'sensational', delta:{security:4,liberties:-7,trust:-3,career:3}, outcome:"You give McCarthy's claims prominent play. Even sympathetic colleagues start to wonder how much evidence actually backs this one."},
+   {text:"Report on the Schine controversy as the real story behind the story.", style:'cautious', delta:{security:-2,liberties:6,trust:5,career:-1}, outcome:"Your dig into the personal grudge behind the headlines is exactly the kind of reporting that will, within months, unravel McCarthy's credibility."},
+   {text:"Cover both the allegations and the swirling rumors evenhandedly.", style:'balanced', delta:{security:0,liberties:1,trust:3,career:-3}, outcome:"A fair account that leaves room for the truth to surface as it will, very publicly, on television."}
+ ],
+ whatHappened:"McCarthy's investigation of the Army was widely seen, even at the time, as retaliation for the Army's refusal to grant preferential treatment to Cohn's associate, Private David Schine. This episode directly triggered the Army-McCarthy hearings and became a major turning point — the moment many in Washington and the press began openly questioning McCarthy's motives rather than just his targets."},
+
+{id:'army-mccarthy', year:'April–June 1954', scene:'hearingroom', accent:'#3e2f20',
+ headline:"'HAVE YOU NO SENSE OF DECENCY?' — HEARINGS RIVET NATION",
+ dialogue:"For the first time, congressional hearings are broadcast live on television into millions of homes. When McCarthy attacks a young lawyer on the Army's legal team, chief counsel Joseph Welch stops him cold: 'Have you no sense of decency, sir, at long last?' The hearing room falls silent. Applause breaks out.",
+ choices:[
+   {text:"Defend McCarthy's aggressive tactics as necessary toughness.", style:'sensational', delta:{security:2,liberties:-6,trust:-8,career:-3}, outcome:"Your defense now runs sharply against the tide of public opinion. Readers who once cheered you begin writing letters of complaint."},
+   {text:"Report plainly on Welch's rebuke and the room's reaction.", style:'balanced', delta:{security:0,liberties:4,trust:6,career:-3}, outcome:"Your straightforward account of the moment captures exactly why it became a turning point — often quoted for decades after."},
+   {text:"Reflect on how television itself is changing American politics.", style:'cautious', delta:{security:-1,liberties:5,trust:6,career:3}, outcome:"A prescient piece on media and public opinion that other reporters will cite for years."}
+ ],
+ whatHappened:"The Army-McCarthy hearings ran for 36 days and were watched by an estimated 20 million Americans — one of the first major televised congressional hearings. Welch's rebuke on June 9, 1954 is widely credited as the moment public opinion decisively turned against McCarthy, though his support had already been eroding for months among journalists and senators who had grown skeptical of his unproven claims."},
+
+{id:'censure', year:'December 1954', scene:'capitol', accent:'#4a3b25',
+ headline:"SENATE CENSURES McCARTHY",
+ dialogue:"By a vote of 67 to 22, the Senate formally condemns Joseph McCarthy's conduct. His influence collapses almost overnight. Colleagues who once sought his endorsement now avoid him in the halls. You have covered his entire rise. Now you must cover his fall.",
+ choices:[
+   {text:"Write that McCarthy was a reckless demagogue who nearly wrecked due process.", style:'sensational', delta:{security:-2,liberties:8,trust:4,career:2}, outcome:"A forceful editorial that matches the shifting national mood — though it says little about the press's own role in amplifying him for years."},
+   {text:"Write an honest reflection on how the press helped build McCarthy's power.", style:'cautious', delta:{security:0,liberties:7,trust:7,career:-2}, outcome:"A rare piece of press self-criticism. It costs you some standing with editors who'd rather move on, but it's the most honest thing you've written in years."},
+   {text:"Report the censure vote and its practical consequences in Washington.", style:'balanced', delta:{security:0,liberties:2,trust:3,career:-3}, outcome:"A clean, professional account of the vote and its fallout."}
+ ],
+ whatHappened:"The Senate censured McCarthy on December 2, 1954, for conduct 'contrary to Senate traditions.' Notably, the censure addressed his behavior toward colleagues and committees — not the substance of his anti-communist accusations, which were never formally repudiated by the vote itself. McCarthy remained a senator until his death in 1957, but wielded little further influence. Many journalists later reflected uncomfortably on how eagerly the press had amplified his unproven claims for years before finally turning skeptical."}
+
+],
+  epilogue: {id:'sputnik', year:'October 1957', scene:'satellite', accent:'#1f2c3a',
+ headline:"SOVIET SATELLITE SPUTNIK ORBITS EARTH",
+ dialogue:"Three years after McCarthy's fall, a small Soviet satellite crosses the American night sky, beeping steadily on shortwave radios across the country. It is proof the Soviet Union has real, formidable technical power — proof that did not require a single hidden spy to explain. You sit down to write your last column of this long, anxious decade. What do you want history to remember?",
+ choices:[
+   {text:"That the threats we faced were real, and vigilance kept us safe.", style:'sensational', delta:{security:5,liberties:-2,trust:0,career:2}},
+   {text:"That fear made us betray our own values more than any enemy did.", style:'cautious', delta:{security:-2,liberties:6,trust:2,career:0}},
+   {text:"That the truth was always more complicated than either side admitted.", style:'balanced', delta:{security:0,liberties:0,trust:2,career:-3}}
+ ],
+ whatHappened:"Sputnik's October 1957 launch triggered a new wave of anxiety — this time about a 'missile gap' and American technical inferiority — and poured fuel into the Space Race. It's a fitting bookend: real Soviet capability, no espionage required, arriving just as the domestic Red Scare's fever had finally broken. The era left a complicated legacy — genuine Soviet espionage did occur, but far more Americans were harmed by unfounded accusations, blacklists, and loyalty tests than by any actual spy ring."
+},
+  rumors: [
+ {id:'r1', text:"A neighbor tells you the local librarian keeps 'subversive' books hidden behind the checkout desk — mostly, it turns out, Steinbeck novels.", investigate:{delta:{trust:4,liberties:2,career:-1}, result:"You check. The books are Grapes of Wrath and a few union history texts. You print nothing. The rumor fizzles, but similar ones elsewhere lead to actual book removals."}, ignore:{delta:{career:1,trust:-2}, result:"You let it go without checking. A week later a smaller paper runs the story uncritically, and the librarian is reassigned."}},
+ {id:'r2', text:"A source claims a local schoolteacher led students in singing 'the Communist anthem' — actually, she just taught a unit on world folk songs, including a Russian one.", investigate:{delta:{trust:4,liberties:3,career:-1}, result:"A quick call to the school confirms it was a folk-music lesson. You quietly kill the tip."}, ignore:{delta:{career:1,trust:-3,security:1}, result:"The rumor spreads by word of mouth. The teacher is investigated by the school board anyway."}},
+ {id:'r3', text:"A tipster insists your own copy editor was seen at a 'Communist front' meeting downtown — really a tenant's rights forum with a few Party members in attendance.", investigate:{delta:{trust:3,liberties:4,career:-2}, result:"You look into it and find nothing damning — just overlapping attendance at a public meeting. You defend your colleague."}, ignore:{delta:{career:2,trust:-4,liberties:-2}, result:"You say nothing. Your editor hears the rumor secondhand and quietly reassigns your colleague to less visible duties."}},
+ {id:'r4', text:"A reader writes that a returning Korean War veteran has been 'acting suspicious,' asking too many questions about local factory security.", investigate:{delta:{security:3,trust:2,liberties:1}, result:"You learn he's simply job-hunting and asking about safety conditions after a factory injury elsewhere. No story here."}, ignore:{delta:{security:-1,career:1}, result:"You skip it. The veteran later complains publicly about being shunned by neighbors over nothing."}},
+ {id:'r5', text:"A local businessman claims his rival is a 'secret Red' to drive away customers — with zero evidence beyond a labor dispute between them.", investigate:{delta:{liberties:4,trust:3,career:-1}, result:"Digging in, you find the accusation is pure business sabotage dressed up in political language. You decline to run it."}, ignore:{delta:{career:1,trust:-3}, result:"You pass on it, but the rumor still costs the rival several contracts before it dies down on its own."}},
+ {id:'r6', text:"An anonymous letter accuses a city council member of Communist sympathies based solely on a Moscow-published book found on his shelf — a satirical novel banned in the USSR itself.", investigate:{delta:{liberties:5,trust:4,security:1}, result:"You verify the book is actually anti-Soviet satire. The accusation collapses under five minutes of research."}, ignore:{delta:{career:1,trust:-3,liberties:-1}, result:"Without your scrutiny, the letter is forwarded to a loyalty board, which takes months to clear the council member."}},
+ {id:'r7', text:"A shopkeeper swears he overheard 'coded Soviet radio messages' — likely just amateur ham radio operators trading call signs.", investigate:{delta:{security:2,trust:3}, result:"An FCC contact confirms it's ordinary amateur radio traffic. Not every crackle in the static is Moscow."}, ignore:{delta:{security:-1,career:1}, result:"You don't check. The shopkeeper tells three more people, and a small panic ripples through the block for a week."}},
+ {id:'r8', text:"A colleague suggests running a photo of a peaceful integration rally captioned to imply it's a 'Communist-organized' demonstration — the organizers are, in fact, local church groups.", investigate:{delta:{liberties:6,trust:4,career:-1}, result:"You refuse the misleading caption and run an accurate one instead. Your colleague is annoyed; your editor, eventually, is not."}, ignore:{delta:{career:2,trust:-5,liberties:-3}, result:"The misleading caption runs elsewhere and does real damage to the rally organizers' reputations."}}
+],
+  checkpointAnchors: ['hollywood-ten','mccarran','army-mccarthy'],
+  minigames: { factcheck: MG_FACTCHECK, propaganda: MG_PROPAGANDA, evidence: MG_EVIDENCE, timeline: MG_TIMELINE_ERA1 },
+  endings: {
+ hardliner:{title:"The Hard-Liner", text:"You spent seven years sounding the alarm, and the country listened. Your name became synonymous with vigilance. But civil liberties frayed badly on your watch — friends of yours lost jobs on rumor alone, and you rarely stopped to ask if the evidence was ever really there. History will remember you as effective. It will also ask, uncomfortably, at what cost."},
+ conscience:{title:"The Conscience of the Press", text:"You asked for evidence when others printed rumor. You gave column space to the accused, not just the accusers. It cost you access, and sometimes it cost you readers — but by 1954, colleagues who once mocked your caution were quietly asking how you knew to be careful. You are remembered, decades later, as one of the reporters who got it right."},
+ careerist:{title:"The Careerist", text:"You climbed. Bylines turned into a masthead credit, then an editor's office. But you got there by chasing the sensational angle more often than the true one, and readers who once trusted you started reading you the way you read McCarthy — with one eyebrow raised. Success, on paper. A complicated legacy, in fact."},
+ blacklisted:{title:"Blacklisted", text:"Somewhere along the way, you asked one too many uncomfortable questions, or printed one too many unpopular truths — and the machinery of suspicion, the very one you'd been covering, turned on you. Your byline disappeared from the paper sometime in 1953. It is, in its way, the most honest ending this era could offer: even careful people got caught in it."},
+ balanced:{title:"The Balanced Chronicler", text:"You never became the loudest voice in the newsroom, and you never became a martyr for it either. Instead, across seven turbulent years, you tried — imperfectly, but consistently — to hold security, liberty, trust, and your own integrity in a rough balance. Readers didn't always love your caution. Historians, later, called it exactly what the era needed more of."}
+},
+  reflectionQuestions: [
+ "Which of your decisions do you feel best about now — and would you make the same choice again, knowing what you know today?",
+ "The Red Scare produced real espionage cases and countless false accusations. How should a free press tell the difference under pressure and on deadline?",
+ "How did fear of communism abroad change what Americans were willing to accept regarding rights and due process at home?",
+ "What responsibility did newspapers bear for amplifying Senator McCarthy's unverified claims — and what would you have done differently in that newsroom?",
+ "Are there echoes of this era's dynamics — fear, unverified accusations, guilt by association — in more recent events? What makes them similar or different?"
+],
+  keyRisk: ['wheeling','mccarthy-army','hiss-accused'],
+  keyDefense: ['huac','hollywood-ten','rosenberg-trial','censure','loyalty-program'],
+  fateGuesses: {
+ hardliner:"Best guess: you'd have ridden high through 1954, a trusted byline for readers who wanted their fears confirmed. Then McCarthy's censure made your brand of certainty look reckless almost overnight, and your influence likely faded fast — a comfortable, forgettable career, remembered by historians (if at all) as part of how the panic spread.",
+ conscience:"Best guess: a genuinely hard decade professionally — passed over for assignments, quietly frozen out by editors nervous about your reputation for asking inconvenient questions. But once archives opened and history caught up to what you'd been saying all along, a real, if belated, vindication. The kind of career journalism students study specifically because it was hard.",
+ careerist:"Best guess: real, tangible success in the short term — a masthead credit, a byline people recognized, maybe an editor's office by 1960. And a permanently mixed legacy: the kind of career where the obituary needs two paragraphs, one for what you accomplished and one for how you got there.",
+ blacklisted:"Best guess: you didn't survive this decade professionally, at least not under your own byline. Maybe you left journalism for good. Maybe, like some blacklisted writers of the era, you resurfaced years later writing under someone else's name. Either way, 1947 to 1954 cost you the career you started it with.",
+ balanced:"Best guess: a solid, respected, unspectacular career — never the loudest voice in the newsroom, but the one colleagues quietly trusted when it mattered. A historian researching this decade today would probably find your old columns useful precisely because they held up."
+}
+ },
+ brinkofwar: {
+  id:'brinkofwar', label:'Brink of War', years:'1958–1968', accent:'#1f4c3f', icon:'map',
+  tagline:'A wall goes up, missiles reach Cuba, and the credibility gap begins.',
+  scenarios: [
+{id:'u2-incident', year:'May 1960', scene:'radio', accent:'#2c3a4a',
+ headline:"SOVIETS SHOOT DOWN U.S. SPY PLANE; PILOT CAPTURED ALIVE",
+ dialogue:"Washington's official story was a weather plane blown off course. Then Khrushchev produced the wreckage — and pilot Francis Gary Powers, very much alive. The State Department's denial is unraveling in real time, and your editor wants tomorrow's angle by six.",
+ choices:[
+   {text:"Defend the secrecy — espionage flights are a necessary evil, don't dwell on the cover story.", style:'sensational', delta:{security:8,liberties:-7,trust:-2,career:4}, outcome:"Your piece treats the lie as a footnote to necessary intelligence work. Security-minded readers agree. Others ask why lying to the public was ever the plan."},
+   {text:"Press hard on the fact that the government lied to its own people.", style:'cautious', delta:{security:-3,liberties:8,trust:4,career:-2}, outcome:"Your column draws a bright line: officials knowingly misled the country for days. It's an uncomfortable read for the administration — and a widely quoted one."},
+   {text:"Explain both the intelligence rationale and the credibility cost.", style:'balanced', delta:{security:1,liberties:1,trust:3,career:-3}, outcome:"A measured piece that satisfies no one looking for a villain, but holds up well against the facts as they later emerge."}
+ ],
+ whatHappened:"The U-2 incident forced Eisenhower to publicly admit the U.S. had been conducting secret overflights of Soviet territory for years — and that his administration had lied about it, badly, before the truth came out. It torpedoed a planned Paris summit and became an early, stark lesson in what came to be called the 'credibility gap.'"},
+
+{id:'bay-of-pigs', year:'April 1961', scene:'map', accent:'#2c3a4a',
+ headline:"CIA-BACKED INVASION OF CUBA COLLAPSES AT BAY OF PIGS",
+ dialogue:"A CIA-trained force of Cuban exiles has landed at the Bay of Pigs to topple Fidel Castro — and been crushed within three days. The White House first denies any U.S. involvement at all, even as evidence mounts that Washington planned the whole operation.",
+ choices:[
+   {text:"Report the official denial at face value — deniability protects ongoing operations.", style:'sensational', delta:{security:8,liberties:-6,trust:-3,career:3}, outcome:"You run the administration's line largely unquestioned. It won't age well once the CIA's role becomes impossible to deny."},
+   {text:"Push past the denial and report what sources say really happened.", style:'cautious', delta:{security:-3,liberties:8,trust:5,career:-2}, outcome:"Your sources — quietly, nervously — confirm CIA planning and training camps in Guatemala. It's a hard story to place, but a true one."},
+   {text:"Report the failure and the conflicting accounts without declaring a winner.", style:'balanced', delta:{security:1,liberties:1,trust:3,career:-2}, outcome:"You lay out what's known and what's still murky. Readers appreciate not being told what to think before you know for sure."}
+ ],
+ whatHappened:"The Bay of Pigs invasion was planned under Eisenhower and approved by Kennedy, and the U.S. role was an open secret in Washington well before the White House formally acknowledged it. The episode badly damaged Kennedy's early credibility and pushed Castro further toward the Soviet Union — setting the stage directly for the Cuban Missile Crisis eighteen months later."},
+
+{id:'berlin-wall-built', year:'August 1961', scene:'map', accent:'#2c3a4a',
+ headline:"OVERNIGHT, A WALL DIVIDES BERLIN",
+ dialogue:"East German troops strung barbed wire across Berlin while the city slept, and now concrete and guard towers are going up in its place. East Berlin's government calls it an 'anti-fascist protection barrier.' Families on both sides wake up unable to reach each other.",
+ choices:[
+   {text:"Frame it purely as proof of Soviet tyranny — no complexity needed.", style:'sensational', delta:{security:7,liberties:-6,trust:-1,career:4}, outcome:"Your column is a rallying cry against Communist oppression. It's not wrong, exactly — but it skips past why East Germans were fleeing in the first place, and what that says about the system on both sides of the wall."},
+   {text:"Explain why East Germany built it — a mass exodus it couldn't stop any other way.", style:'cautious', delta:{security:-2,liberties:6,trust:4,career:-2}, outcome:"Your piece adds real context — over 2.5 million East Germans had already fled west. Some readers find it too sympathetic to the other side; most find it more honest."},
+   {text:"Cover the human stories of divided families alongside the geopolitics.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-2}, outcome:"Your feature on split families becomes one of the most-discussed pieces of the year, without needing to editorialize at all."}
+ ],
+ whatHappened:"The Berlin Wall went up almost overnight on August 13, 1961, after East Germany lost roughly 20% of its population to westward defection through Berlin. It stood for 28 years as the Cold War's most visible symbol — proof, depending on who you asked, either of Western freedom's pull or of a system that had to imprison its own citizens to survive."},
+
+{id:'fbi-mlk', year:'1962–63', scene:'evidence', accent:'#3d2f1a',
+ headline:"FBI EXPANDS SURVEILLANCE OF CIVIL RIGHTS LEADERS, CITING COMMUNIST TIES",
+ dialogue:"Director J. Edgar Hoover has authorized wiretaps on Martin Luther King Jr., citing a single close adviser's past ties to the Communist Party as grounds to monitor the entire civil rights movement's leadership. Attorney General Robert Kennedy has signed off on it, reluctantly.",
+ choices:[
+   {text:"Report the wiretaps as a justified response to potential Communist influence.", style:'sensational', delta:{security:8,liberties:-9,trust:-3,career:3}, outcome:"Your piece treats the surveillance as prudent. It reads, in hindsight, as a chapter in one of the FBI's most notorious abuses of civil liberties."},
+   {text:"Question whether one adviser's past is grounds to surveil an entire movement.", style:'cautious', delta:{security:-3,liberties:9,trust:5,career:-3}, outcome:"You push back hard on the logic of guilt by association — a pattern you recognize from a decade earlier. It's an unpopular argument with Hoover's allies."},
+   {text:"Report what's known about the wiretap order without taking a side.", style:'balanced', delta:{security:0,liberties:2,trust:3,career:-3}, outcome:"A careful, sourced account — though even reporting the story at all draws unwelcome FBI attention to your own phone lines."}
+ ],
+ whatHappened:"The FBI's surveillance of Martin Luther King Jr. expanded for years beyond any Communist-influence pretext into a sweeping campaign of wiretaps, blackmail attempts, and harassment, later exposed by the Church Committee in the 1970s. It stands as one of the clearest examples in American history of national-security justification used to target a movement the government simply found threatening."},
+
+{id:'cuban-missile-crisis', year:'October 1962', scene:'map', accent:'#2c3a4a',
+ headline:"SOVIET MISSILES DISCOVERED IN CUBA; NATION ON BRINK OF NUCLEAR WAR",
+ dialogue:"U-2 photos show Soviet nuclear missile sites under construction in Cuba, ninety miles from Florida. President Kennedy announces a naval 'quarantine.' For thirteen days, the country waits to learn whether this ends in negotiation or annihilation — and your editor wants calm, accurate reporting, not panic.",
+ choices:[
+   {text:"Report military options and troop movements in dramatic detail.", style:'sensational', delta:{security:9,liberties:-5,trust:-3,career:4}, outcome:"Your detailed coverage of invasion planning makes for gripping reading — and draws a quiet call from a Pentagon contact asking you to be more careful about what you print during an active crisis."},
+   {text:"Focus on diplomatic back-channels and the case for restraint.", style:'cautious', delta:{security:-3,liberties:6,trust:5,career:-2}, outcome:"You highlight the quiet diplomacy alongside the brinkmanship. It's a harder story to make thrilling — and a more responsible one, given what's at stake."},
+   {text:"Report developments factually as they're confirmed, resisting speculation.", style:'balanced', delta:{security:2,liberties:1,trust:5,career:-1}, outcome:"Your steady, fact-checked coverage becomes what nervous readers turn to first each morning — precisely because it doesn't try to scare them."}
+ ],
+ whatHappened:"The Cuban Missile Crisis (October 16-28, 1962) is widely considered the closest the world has come to nuclear war. It was resolved through a secret deal — a public Soviet missile withdrawal from Cuba in exchange for a private U.S. pledge to remove missiles from Turkey — that wasn't fully known to the public for decades. Both leaders, and much of the free press, exercised real restraint under extraordinary pressure."},
+
+{id:'jfk-assassination', year:'November 1963', scene:'podium', accent:'#4a2020',
+ headline:"PRESIDENT KENNEDY ASSASSINATED IN DALLAS",
+ dialogue:"President Kennedy is dead, shot while riding in a motorcade through Dallas. Lee Harvey Oswald is arrested within hours — then shot dead himself on live television two days later by a nightclub owner, before ever standing trial. Rumors of conspiracy are spreading faster than confirmed facts.",
+ choices:[
+   {text:"Run with the most compelling conspiracy theory circulating in the newsroom.", style:'sensational', delta:{security:6,liberties:-7,trust:-4,career:2}, outcome:"Your conspiracy angle draws huge readership. It also can't be substantiated, and contributes to a fog of half-truths that will outlive the decade."},
+   {text:"Report only what investigators can confirm, however unsatisfying that is.", style:'cautious', delta:{security:-2,liberties:7,trust:6,career:-3}, outcome:"Your restraint frustrates readers hungry for answers. It also means your name isn't attached to any of the wilder claims that later collapse under scrutiny."},
+   {text:"Cover the official investigation while noting the public's justified skepticism.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-2}, outcome:"You give voice to real doubts about how thoroughly Oswald's shooting was investigated, without asserting a conspiracy you can't prove."}
+ ],
+ whatHappened:"The Warren Commission concluded in 1964 that Oswald acted alone, but the swift killing of the only suspect — on live television, in police custody — badly damaged public confidence in the official account. Polls since have consistently shown a majority of Americans doubt the lone-gunman conclusion, making the assassination one of the twentieth century's defining case studies in institutional distrust."},
+
+{id:'gulf-of-tonkin', year:'August 1964', scene:'map', accent:'#2c3a4a',
+ headline:"REPORTED NORTH VIETNAMESE ATTACK ON U.S. SHIPS PROMPTS CONGRESSIONAL ACTION",
+ dialogue:"The Pentagon reports that North Vietnamese torpedo boats attacked U.S. destroyers in the Gulf of Tonkin — a second attack, two days after a first, murkier one. Congress is moving fast on a resolution granting the President broad war powers. Some officers aboard the ships privately aren't sure the second attack happened at all.",
+ choices:[
+   {text:"Report the second attack as confirmed fact — the Pentagon said so.", style:'sensational', delta:{security:9,liberties:-8,trust:-3,career:5}, outcome:"Your story treats the Pentagon's account as settled. It will not hold up — years later, declassified records suggest the second 'attack' likely never happened."},
+   {text:"Note the conflicting accounts before running with a war-powers story this big.", style:'cautious', skepticAchievement:true, delta:{security:-4,liberties:9,trust:5,career:-3}, outcome:"You flag the uncertainty explicitly, even as nearly every other paper runs the attack as fact. It's a lonely, unpopular position — and, it turns out, the correct one."},
+   {text:"Report the Pentagon's account alongside the resolution's stakes.", style:'balanced', delta:{security:2,liberties:0,trust:2,career:-2}, outcome:"You cover the news of the day accurately as reported to you, while noting the resolution's unusually broad language."}
+ ],
+ whatHappened:"Declassified NSA documents released decades later concluded the second Gulf of Tonkin incident almost certainly did not occur as reported — the product of confused radar readings and nervous sonar operators, not an actual attack. The resulting Gulf of Tonkin Resolution, passed nearly unanimously on the strength of that account, became the legal basis for massive escalation of the Vietnam War."},
+
+{id:'credibility-gap', year:'1966–67', scene:'hearingroom', accent:'#3e2f20',
+ headline:"OFFICIAL PROGRESS REPORTS AND WHAT REPORTERS SEE IN VIETNAM DON'T MATCH",
+ dialogue:"Military briefings in Saigon describe steady progress and favorable body counts. Reporters who've actually been in the field — including some of your own colleagues — are describing a war that looks nothing like the official picture. The gap between the two has earned its own name: 'the credibility gap.'",
+ choices:[
+   {text:"Trust the official briefings — reporters in the field may be missing the bigger picture.", style:'sensational', delta:{security:7,liberties:-6,trust:-4,career:3}, outcome:"You side with the Pentagon's numbers. Your own field correspondents privately think you're wrong, and history will largely agree with them."},
+   {text:"Trust your correspondents' firsthand accounts over the official briefings.", style:'cautious', delta:{security:-3,liberties:7,trust:6,career:-2}, outcome:"You back the reporters who've actually been there. It puts you at odds with the administration — and ahead of most of the American press corps."},
+   {text:"Report both the official numbers and the ground-level doubts, letting readers weigh them.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-2}, outcome:"Your side-by-side comparison of claim and observation becomes a template other papers start to copy."}
+ ],
+ whatHappened:"The term 'credibility gap' entered American political language specifically because of Vietnam-era discrepancies between official statements and observable reality. It marked a fundamental shift: for the first time in a major war, American reporters in significant numbers began actively distrusting their own government's public statements — a shift that would only deepen after the events of early 1968."}
+],
+  epilogue: {id:'tet-offensive', year:'January–February 1968', scene:'map', accent:'#2c3a4a',
+ headline:"SURPRISE OFFENSIVE ACROSS VIETNAM STUNS A NATION TOLD VICTORY WAS NEAR",
+ dialogue:"Viet Cong and North Vietnamese forces have launched coordinated surprise attacks across dozens of South Vietnamese cities — even briefly breaching the U.S. embassy compound in Saigon. Militarily, the offensive will be repelled and costly for the attackers. But for a public repeatedly told the enemy was nearly finished, the images alone are shattering. You sit down to write your last column of a decade that started with a wall going up in Berlin. What do you want history to remember?",
+ choices:[
+   {text:"That the war was winnable, and doubt itself was the real danger.", style:'sensational', delta:{security:5,liberties:-3,trust:-3,career:2}},
+   {text:"That believing official reassurances without question cost the country dearly.", style:'cautious', delta:{security:-2,liberties:6,trust:3,career:0}},
+   {text:"That trust, once broken between a government and its people, is brutally hard to rebuild.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-1}}
+ ],
+ whatHappened:"The Tet Offensive was, by most military measures, a severe defeat for North Vietnam and the Viet Cong. But it definitively broke the Johnson administration's narrative of steady progress, and is widely credited with turning American public and media opinion decisively against the war — commonly (if apocryphally) crystallized in Walter Cronkite's on-air doubt that the war could still be won. It's a fitting close to a decade that began with a literal wall dividing a city and ended with the wall between official Washington and the American public looking almost as real."},
+  rumors: [
+ {id:'e2r1', text:"A neighbor swears he's tracking a Soviet submarine off the coast using a shortwave radio — it's almost certainly a fishing trawler's engine noise picked up on the wrong frequency.", investigate:{delta:{trust:4,liberties:2,career:-1}, result:"A call to the Coast Guard confirms it: fishing boat, not a submarine. You quietly drop it."}, ignore:{delta:{career:1,trust:-2}, result:"You let it go. The rumor circulates at the diner for a week before it fizzles out on its own."}},
+ {id:'e2r2', text:"A tip claims a local professor was seen meeting 'a known Cuban agent' downtown — it turns out to be his cousin, visiting from Miami for a wedding.", investigate:{delta:{trust:4,liberties:3,career:-1}, result:"One phone call to the professor clears it up entirely. You don't run it, and you're glad you checked first."}, ignore:{delta:{career:1,trust:-3}, result:"You skip verifying. The professor is quietly questioned by campus security based on the rumor alone."}},
+ {id:'e2r3', text:"A caller insists yesterday's civil defense siren test means an attack is imminent — it was the same scheduled monthly test as always.", investigate:{delta:{trust:3,liberties:1,security:1}, result:"You confirm with the civil defense office: routine test, same as the first Saturday of every month. No story."}, ignore:{delta:{career:1,security:-1}, result:"You don't check. A small, unnecessary panic spreads through two apartment blocks by evening."}},
+ {id:'e2r4', text:"A source says a local peace-march organizer has 'ties to Hanoi' — with no evidence beyond the fact that he opposes the war.", investigate:{delta:{liberties:5,trust:4,career:-1}, result:"You find nothing beyond an anti-war pamphlet and a strong opinion. You decline to run an insinuation with no substance behind it."}, ignore:{delta:{career:1,trust:-3,liberties:-2}, result:"You pass on it, but the label follows the organizer anyway, repeated by people who never checked either."}},
+ {id:'e2r5', text:"A rumor spreads that a downed reconnaissance pilot's family has been visited by 'suspicious men in suits' — they're benefits officers from the Air Force, not government agents.", investigate:{delta:{trust:3,liberties:2,career:-1}, result:"A quick call confirms it: standard survivor-benefits paperwork, nothing more. You leave the grieving family alone."}, ignore:{delta:{career:1,trust:-2}, result:"You don't check. The family gets an unwelcome knock from a competing paper chasing the same unverified rumor."}}
+],
+  checkpointAnchors: ['berlin-wall-built','cuban-missile-crisis','gulf-of-tonkin'],
+  minigames: { factcheck: MG_FACTCHECK, propaganda: MG_PROPAGANDA, evidence: MG_EVIDENCE, timeline: MG_TIMELINE_ERA2 },
+  endings: {
+ hardliner:{title:"The Cold Warrior", text:"You spent the decade backing official narratives — Powers' cover story, the Bay of Pigs denial, the Tonkin account — and it built you a loyal readership among those who wanted certainty. But when the credibility gap became undeniable by 1968, so much of what you'd defended in print had to be quietly walked back. History remembers you as reliably on the government's side — for better and for worse."},
+ conscience:{title:"The Skeptic's Byline", text:"From the U-2 lie through the credibility gap, you made a habit of doubting official accounts until they were proven — and you were right more often than most of your colleagues. It cost you access and easy scoops for years. By 1968, when the whole country caught up to the skepticism you'd practiced since 1960, your reporting looked less like cynicism and more like foresight."},
+ careerist:{title:"The Insider", text:"You built real relationships with officials who fed you access in exchange for favorable coverage, and it paid off — bigger bylines, better assignments. But readers who once trusted you implicitly started reading you the way they read a press release: useful, but never quite neutral."},
+ blacklisted:{title:"Frozen Out", text:"Somewhere in this decade of surveillance and secrecy, you asked one question too many, of one agency too powerful, and found your sources drying up, your assignments shrinking, your byline appearing less and less. It's an uncomfortable irony: an era defined by government watching its own citizens also had room to quietly sideline reporters who watched back too closely."},
+ balanced:{title:"The Steady Hand", text:"Through a U-2 incident, a wall, a missile crisis, and an assassination, you never became the loudest voice in the room — and you never fully trusted anyone's version of events without checking. It wasn't a flashy decade for your byline. It was a credible one, which by 1968 had become the rarer and more valuable thing."}
+},
+  reflectionQuestions: [
+ "How did the gap between official statements and observable reality — the 'credibility gap' — change the relationship between the American press and the government during this decade?",
+ "The Cuban Missile Crisis was resolved partly through a secret deal not disclosed to the public for years. Should there be limits on how much a free press insists on knowing in real time during a crisis like this?",
+ "FBI surveillance of Martin Luther King Jr. was justified using the same 'guilt by association' logic seen in the 1947-1954 Red Scare. What does that continuity suggest about how governments use national-security justifications?",
+ "Reporters who trusted the Gulf of Tonkin incident as reported helped enable a war that expanded far beyond its original justification. What obligation does a journalist have to double-check even official, on-the-record government claims?",
+ "Kennedy's assassination produced immediate, lasting public doubt about the official investigation. What conditions make people trust — or distrust — an official explanation of a shocking event?"
+],
+  keyRisk: ['bay-of-pigs','jfk-assassination','gulf-of-tonkin'],
+  keyDefense: ['u2-incident','fbi-mlk','cuban-missile-crisis','credibility-gap','berlin-wall-built'],
+  fateGuesses: {
+ hardliner:"Best guess: comfortable through the mid-1960s, then increasingly uncomfortable as Tet made your trust in official Vietnam briefings look naive in print, for anyone to see. Probably a quiet pivot to a less politically exposed beat by the early 1970s.",
+ conscience:"Best guess: professionally undervalued for most of the decade, then suddenly in demand once editors realized which reporters had actually been right about the credibility gap. A late-career reputation as someone who saw clearly what others missed.",
+ careerist:"Best guess: real advancement through official access and well-placed sources — and a body of work that, read again after the Pentagon Papers came out in 1971, would need some uncomfortable re-examination.",
+ blacklisted:"Best guess: a forced beat change, or an early exit from national reporting altogether, likely following one too many stories that made a powerful agency uncomfortable. Possibly vindicated much later, when programs like COINTELPRO were formally exposed in the 1970s.",
+ balanced:"Best guess: a durable, respected career built on being right more often than wrong, in an era when that was a genuinely rare trait. The kind of journalist whose 1960s clippings still hold up when historians go looking."
+}
+ },
+ longtwilight: {
+  id:'longtwilight', label:'The Long Twilight', years:'1979–1989', accent:'#4a3b25', icon:'podium',
+  tagline:'Evil empires, a wrongly-downed airliner, and a wall that finally falls.',
+  scenarios: [
+{id:'afghanistan-invasion', year:'December 1979', scene:'map', accent:'#2c3a4a',
+ headline:"SOVIET TROOPS INVADE AFGHANISTAN",
+ dialogue:"Soviet forces have poured across the border into Afghanistan to prop up a faltering Communist government, ending a decade of relative Cold War thaw. Washington is quietly moving to arm Afghan resistance fighters, though officials won't confirm it on the record.",
+ choices:[
+   {text:"Report Soviet aggression in stark terms — a naked land grab.", style:'sensational', delta:{security:8,liberties:-5,trust:-1,career:4}, outcome:"Your framing matches the administration's own language closely. It's popular — and it leaves little room for the more complicated regional politics driving the invasion."},
+   {text:"Investigate the unconfirmed U.S. arms program before taking sides too firmly.", style:'cautious', delta:{security:-3,liberties:7,trust:4,career:-2}, outcome:"You report on Washington's own covert involvement — a story officials would clearly prefer stayed buried. It complicates the simple good-versus-evil framing considerably."},
+   {text:"Cover the invasion's regional context and the global reaction, including the Olympic boycott.", style:'balanced', delta:{security:1,liberties:1,trust:3,career:-2}, outcome:"A wide-lens piece that resists picking a single hero — appropriate for a story that will take a decade to fully play out."}
+ ],
+ whatHappened:"The Soviet-Afghan War (1979-1989) ended a decade of U.S.-Soviet detente and became, in effect, the USSR's Vietnam — a costly, decade-long occupation. The United States covertly funded and armed Afghan mujahideen fighters through the CIA's Operation Cyclone, assistance whose long-term consequences would become clear only much later."},
+
+{id:'evil-empire', year:'March 1983', scene:'podium', accent:'#4a2020',
+ headline:"REAGAN CALLS SOVIET UNION AN 'EVIL EMPIRE'",
+ dialogue:"In a speech to religious broadcasters, President Reagan has called the Soviet Union 'an evil empire' and 'the focus of evil in the modern world.' Supporters call it moral clarity. Critics — including some of Reagan's own diplomats — worry it will make already-tense relations even more dangerous.",
+ choices:[
+   {text:"Praise the speech as overdue moral honesty about a genuine threat.", style:'sensational', delta:{security:8,liberties:-5,trust:-2,career:4}, outcome:"Your column matches the speech's confidence beat for beat. Soviet state media quotes it back as proof of American hostility — exactly the kind of escalation critics feared."},
+   {text:"Report concerns from career diplomats that the rhetoric raises real risks.", style:'cautious', delta:{security:-3,liberties:6,trust:4,career:-2}, outcome:"You give real space to quiet alarm inside the State Department. It's an unfashionable angle in a moment of public applause for the speech."},
+   {text:"Cover both the speech's popular reception and its diplomatic risks.", style:'balanced', delta:{security:1,liberties:1,trust:3,career:-2}, outcome:"Your even-handed piece doesn't try to resolve the debate — just to show readers both sides are making a real argument."}
+ ],
+ whatHappened:"Reagan's 'Evil Empire' speech was deeply controversial at the time, seen by supporters as clarifying and by critics — including many career diplomats — as needlessly provocative. Later that same year, the KAL 007 shootdown and the Able Archer nuclear scare would show just how dangerously high tensions had actually climbed."},
+
+{id:'kal-007', year:'September 1983', scene:'map', accent:'#2c3a4a',
+ headline:"SOVIETS SHOOT DOWN KOREAN AIRLINER, KILLING 269",
+ dialogue:"A Soviet fighter jet has shot down Korean Air Lines Flight 007 after it strayed into restricted Soviet airspace, killing all 269 people aboard, including a sitting U.S. congressman. Moscow denies responsibility for hours, then admits the shootdown while insisting the plane was on a spy mission.",
+ choices:[
+   {text:"Report it as a deliberate, cold-blooded act of murder.", style:'sensational', delta:{security:8,liberties:-6,trust:-2,career:4}, outcome:"Your framing matches the national mood exactly. It will later prove only half right: the shootdown was real and horrifying, but evidence suggests confused Soviet operators genuinely believed they were downing a spy plane, not knowingly murdering civilians."},
+   {text:"Report the tragedy while noting investigators haven't yet established Soviet intent.", style:'cautious', delta:{security:-3,liberties:7,trust:5,career:-2}, outcome:"You resist declaring premeditated murder before the facts are in — a harder sell than outrage, and it holds up far better once the full picture emerges."},
+   {text:"Report the confirmed facts and Moscow's shifting explanations without assuming motive.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-2}, outcome:"Your careful account of what's actually known becomes a reference point once the fuller, murkier truth starts to surface."}
+ ],
+ whatHappened:"KAL 007's downing was a genuine tragedy caused by a combination of Korean Air's own navigational error and a Soviet military that, amid real Cold War paranoia, misidentified the airliner as an American reconnaissance plane. Soviet secrecy and lying about the incident made it look far more calculated than it likely was — a case study in how a closed, distrustful system's instinct to cover up made a tragic mistake look like a deliberate atrocity."},
+
+{id:'able-archer', year:'November 1983', scene:'map', accent:'#2c3a4a',
+ headline:"NATO WAR GAMES PUSH SOVIET LEADERSHIP TO THE BRINK",
+ dialogue:"NATO is running Able Archer 83, a realistic exercise simulating a coordinated nuclear release. Unbeknownst to almost anyone in the West at the time, Soviet intelligence — already primed by Reagan's rhetoric, the KAL 007 shootdown, and the SDI announcement — believes the exercise might be cover for a real first strike, and is quietly moving its own forces toward genuine readiness.",
+ choices:[
+   {text:"Report NATO's exercises as routine — Soviet nervousness is their problem, not ours.", style:'sensational', delta:{security:7,liberties:-4,trust:-2,career:3}, outcome:"You dismiss Soviet anxiety as paranoid theater. Years later, declassified intelligence will confirm the fear was dead serious — and that the world came closer to accidental nuclear war than almost anyone realized at the time."},
+   {text:"Consider seriously how the exercise might look from Moscow's side.", style:'cautious', skepticAchievement:true, delta:{security:-2,liberties:6,trust:5,career:-2}, outcome:"Few colleagues share your instinct to take Soviet fear seriously rather than dismiss it. It turns out to be exactly the right instinct."},
+   {text:"Report the exercise as scheduled, noting rising tensions without speculating on Soviet intentions.", style:'balanced', delta:{security:1,liberties:1,trust:3,career:-2}, outcome:"A routine-seeming story about a routine-seeming exercise — which is, in its own way, part of how close the world came to disaster without the public ever quite noticing."}
+ ],
+ whatHappened:"Able Archer 83 is now understood by historians as one of the most dangerous moments of the entire Cold War — arguably closer to accidental nuclear war than the Cuban Missile Crisis, because almost no one in the West grasped at the time just how seriously Soviet leadership took the threat. It wasn't declassified and widely understood until years later, a sobering lesson in how mutual distrust alone, with no actual attack planned by either side, nearly caused catastrophe."},
+
+{id:'star-wars', year:'March 1983', scene:'satellite', accent:'#1f2c3a',
+ headline:"REAGAN UNVEILS 'STAR WARS' MISSILE DEFENSE PLAN",
+ dialogue:"President Reagan has proposed the Strategic Defense Initiative — a space-based system meant to shoot down incoming Soviet missiles before they hit American soil. Scientists are sharply divided on whether the technology is remotely feasible. Soviet leadership calls it a dangerous escalation that could enable a first strike by neutralizing their ability to retaliate.",
+ choices:[
+   {text:"Report SDI as a bold, achievable shield that will make America safe.", style:'sensational', delta:{security:8,liberties:-4,trust:-3,career:4}, outcome:"Your enthusiastic coverage matches the administration's pitch. Most physicists who've actually run the numbers think you're describing science fiction, not policy."},
+   {text:"Report the serious scientific doubts about whether the system could ever work.", style:'cautious', delta:{security:-3,liberties:6,trust:5,career:-2}, outcome:"You take the skeptical scientists seriously rather than dismissing them as unpatriotic. History — SDI is never deployed as promised — largely vindicates you."},
+   {text:"Cover both the strategic ambition and the technical skepticism.", style:'balanced', delta:{security:1,liberties:1,trust:4,career:-2}, outcome:"Your piece captures a genuinely unresolved debate rather than pretending either side has already won it."}
+ ],
+ whatHappened:"SDI, quickly nicknamed 'Star Wars' by critics and the press, was never successfully deployed, and most scientists at the time considered its goals technically implausible with existing or near-future technology. Regardless of feasibility, it had real strategic effects: it alarmed Soviet leadership and became a significant bargaining chip in later arms-reduction talks with Gorbachev."},
+
+{id:'chernobyl', year:'April 1986', scene:'factory', accent:'#3d3320',
+ headline:"NUCLEAR DISASTER AT CHERNOBYL; SOVIETS SLOW TO DISCLOSE",
+ dialogue:"A reactor has exploded at the Chernobyl nuclear plant in Soviet Ukraine. Moscow says nothing publicly for two days — until elevated radiation levels are detected in Sweden, over 700 miles away, and Swedish scientists start asking pointed questions the Kremlin can no longer avoid.",
+ choices:[
+   {text:"Frame it as proof positive that closed societies can't be trusted with anything.", style:'sensational', delta:{security:6,liberties:-3,trust:-1,career:3}, outcome:"Your sweeping conclusion plays well but oversimplifies — Western nuclear safety and disclosure records aren't spotless either, a point your piece skips entirely."},
+   {text:"Report the disaster and the cover-up while resisting a broader ideological lesson.", style:'cautious', delta:{security:-2,liberties:6,trust:5,career:-1}, outcome:"You stick to what's documented — real information suppression, real casualties, real consequences — without overreaching into a tidier moral than the facts support."},
+   {text:"Cover the scale of the disaster and the information gap that let it worsen.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-1}, outcome:"Your piece on secrecy compounding a technical failure becomes widely cited as the story develops over the following weeks."}
+ ],
+ whatHappened:"Soviet authorities didn't publicly acknowledge the Chernobyl disaster until Swedish monitoring stations detected the radiation cloud and demanded answers — a delay historians believe cost lives and worsened the response. The disaster became a pivotal moment for Mikhail Gorbachev, who later cited it as a key argument for his policy of glasnost, or openness."},
+
+{id:'iran-contra', year:'1986–87', scene:'evidence', accent:'#3d2f1a',
+ headline:"SECRET ARMS-FOR-HOSTAGES DEAL TIED TO CONTRA FUNDING EXPOSED",
+ dialogue:"A Lebanese magazine has revealed that the Reagan administration secretly sold weapons to Iran — nominally under embargo — in a bid to free American hostages, and that proceeds were illegally diverted to fund Nicaraguan Contra rebels, circumventing an explicit congressional ban. The White House initially denies most of it.",
+ choices:[
+   {text:"Give the administration's denials the benefit of the doubt while the story develops.", style:'sensational', delta:{security:7,liberties:-6,trust:-3,career:3}, outcome:"Your cautious deference to official denial ages badly fast — congressional hearings soon confirm most of the story your sources had already told you."},
+   {text:"Push hard on your sources' account despite the White House's denials.", style:'cautious', delta:{security:-3,liberties:8,trust:5,career:-3}, outcome:"You back your reporting over the official line, and it holds up — congressional hearings substantiate nearly everything within months."},
+   {text:"Report confirmed facts as they emerge, updating as the investigation proceeds.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:-2}, outcome:"Your careful, incremental coverage becomes the most-cited timeline of the scandal as it unfolds."}
+ ],
+ whatHappened:"The Iran-Contra affair confirmed that senior Reagan administration officials had secretly violated an arms embargo and an explicit congressional funding ban simultaneously, then tried to cover it up. Congressional hearings in 1987 exposed much of the operation, though questions about exactly what President Reagan personally knew were never fully resolved — a genuine, homegrown American case study in the same kind of government secrecy the press had spent the whole Cold War scrutinizing abroad."},
+
+{id:'reykjavik-inf', year:'1986–87', scene:'podium', accent:'#4a3b25',
+ headline:"REAGAN AND GORBACHEV NEARLY AGREE TO ABOLISH NUCLEAR WEAPONS",
+ dialogue:"At a summit in Reykjavik, Reagan and Gorbachev came startlingly close to agreeing to eliminate all ballistic missiles — before the talks collapsed over Reagan's refusal to limit SDI testing. Months later, the two sides sign the INF Treaty, eliminating an entire class of nuclear missiles for the first time in the Cold War. The unthinkable — real disarmament — suddenly looks possible.",
+ choices:[
+   {text:"Frame the summit's collapse as proof Gorbachev can't be trusted.", style:'sensational', delta:{security:7,liberties:-4,trust:-2,career:3}, outcome:"Your skeptical framing matches old Cold War instincts. It undersells just how close the two leaders actually came, and how much had genuinely changed in Moscow."},
+   {text:"Report the summit as a real, historic near-breakthrough despite its collapse.", style:'cautious', delta:{security:-2,liberties:6,trust:5,career:-1}, outcome:"You take Gorbachev's sincerity seriously rather than reflexively doubting it — a read that the subsequent INF Treaty largely vindicates."},
+   {text:"Cover both the summit's near-miss and the treaty that follows months later.", style:'balanced', delta:{security:2,liberties:2,trust:5,career:0}, outcome:"Your piece captures a genuinely hopeful turn without pretending the Cold War is simply over."}
+ ],
+ whatHappened:"The Reykjavik Summit's collapse looked like failure at the time, but many historians now view it as a crucial turning point that paved the way for the INF Treaty of December 1987 — the first agreement to actually eliminate an entire category of nuclear weapons. It reflected genuine change under Gorbachev's new leadership, complicating any simple narrative of an unchanging, permanently hostile Soviet Union."}
+],
+  epilogue: {id:'berlin-wall-falls', year:'November 1989', scene:'map', accent:'#2c3a4a',
+ headline:"THE BERLIN WALL FALLS",
+ dialogue:"Crowds are tearing down the Berlin Wall with hammers and bare hands while East German border guards, given no clear orders, simply stand aside. Twenty-eight years after it went up, families are crossing freely for the first time in a generation. You sit down to write the column that will close out this decade — and, it's starting to feel like, an entire era. What do you want history to remember?",
+ choices:[
+   {text:"That American strength and resolve brought the wall down.", style:'sensational', delta:{security:4,liberties:-1,trust:-1,career:2}},
+   {text:"That it was ordinary people on both sides who brought it down, not any one government.", style:'cautious', delta:{security:-1,liberties:5,trust:3,career:0}},
+   {text:"That the decades of secrecy and distrust you covered made this moment feel almost impossible — until it wasn't.", style:'balanced', delta:{security:1,liberties:2,trust:4,career:0}}
+ ],
+ whatHappened:"The fall of the Berlin Wall on November 9, 1989 was triggered partly by a bureaucratic mistake — an East German official misspoke at a press conference, implying new travel rules took effect immediately, and crowds acted on it before authorities could clarify. It's a strangely fitting final note for a decade, and a Cold War, defined again and again by the gap between official information and lived reality — closed, this time, not by force but by ordinary people simply walking through."},
+  rumors: [
+ {id:'e3r1', text:"A tip claims a local Soviet exchange student is 'definitely KGB' — she's a 19-year-old chemistry major mostly hoping to see Disneyland before she flies home.", investigate:{delta:{trust:4,liberties:3,career:-1}, result:"A conversation with her host family clears it up fast. You don't run a story built on nothing but her accent and her nationality."}, ignore:{delta:{career:1,trust:-3,liberties:-1}, result:"You skip it, but the rumor still gets her quietly disinvited from a school event."}},
+ {id:'e3r2', text:"A caller says a nearby Air Force base is secretly relocating nuclear weapons ahead of an attack — it's a routine, publicly scheduled equipment rotation.", investigate:{delta:{trust:3,security:1}, result:"The base's public affairs office confirms it was announced in the local paper's own classifieds two weeks ago. No story."}, ignore:{delta:{career:1,security:-1}, result:"You don't check. A small, avoidable panic spreads through town for a night."}},
+ {id:'e3r3', text:"A source insists a local church group raising money for Polish Solidarity activists is 'a Soviet front designed to embarrass them' — nearly the opposite of true, and easy to check.", investigate:{delta:{liberties:5,trust:4,career:-1}, result:"One call to the diocese confirms the obvious: it's a genuine solidarity effort, named for the very movement Moscow opposes."}, ignore:{delta:{career:1,trust:-3,liberties:-2}, result:"You pass without checking, and the accusation still costs the church group a few nervous donors."}},
+ {id:'e3r4', text:"A neighbor swears the static on their TV during a thunderstorm is Soviet jamming of American broadcasts — it's just a thunderstorm.", investigate:{delta:{trust:3}, result:"You check the weather report. Severe storm warning, same night, same hours. Nothing more mysterious than that."}, ignore:{delta:{career:1,trust:-2}, result:"You don't bother checking, and a slightly wilder version of the rumor is still going around a week later."}},
+ {id:'e3r5', text:"A rumor spreads that a local Chernobyl-relief fundraiser is 'secretly funding the Soviet military' — it's raising money for iodine tablets and medical supplies for affected children.", investigate:{delta:{trust:4,liberties:2,career:-1}, result:"You verify the fundraiser's paperwork and beneficiary hospital directly. The rumor doesn't survive five minutes of checking."}, ignore:{delta:{career:1,trust:-3}, result:"You skip it, and the fundraiser has to spend its own time publicly debunking the claim instead of raising money."}}
+],
+  checkpointAnchors: ['kal-007','chernobyl','reykjavik-inf'],
+  minigames: { factcheck: MG_FACTCHECK, propaganda: MG_PROPAGANDA, evidence: MG_EVIDENCE, timeline: MG_TIMELINE_ERA3 },
+  endings: {
+ hardliner:{title:"The True Believer", text:"You backed Washington's toughest rhetoric and boldest claims all decade — the Evil Empire framing, SDI's promise, the presumption of Soviet malice at KAL 007 and Able Archer. It read as strength for years. Once Gorbachev's reforms and the Wall's fall complicated the picture, some of your most confident columns required real explaining."},
+ conscience:{title:"The Patient Skeptic", text:"You kept asking whether the other side's fear was as real as our own, from Able Archer through Reykjavik — an instinct that was unpopular in a decade that preferred certainty. When the Wall came down largely peacefully, your years of resisting easy villains looked less like softness and more like clear sight."},
+ careerist:{title:"The Access Journalist", text:"Cultivating administration sources paid off in bigger stories and better placement all decade. But readers increasingly noticed how closely your coverage tracked the White House's preferred framing, and by the time Iran-Contra broke, some wondered how much you'd known and chosen not to print."},
+ blacklisted:{title:"Pushed Out", text:"Somewhere between Iran-Contra and one too many skeptical pieces about official claims, your sources went quiet and your assignments thinned out. Real accountability reporting during this decade came with real professional costs — costs that, in your case, caught up with you before the decade did."},
+ balanced:{title:"The Careful Chronicler", text:"Through an invasion, a shootdown, a near-nuclear-miss nobody even knew about at the time, a meltdown, a scandal, and finally a wall coming down, you kept doing the unglamorous work of checking claims before printing them. It wasn't the loudest byline of the 1980s. By 1989, it was one of the most trusted."}
+},
+  reflectionQuestions: [
+ "Able Archer 83 nearly triggered a Soviet nuclear response, and almost no one in the West understood the danger until years later. What does that suggest about the risks of two sides misreading each other's intentions, even with no actual attack planned?",
+ "Chernobyl and Iran-Contra both involved governments — one closed, one open — concealing serious problems from their own publics. Does the type of political system change how, or how long, secrecy like that can be sustained?",
+ "KAL 007 was initially reported by many outlets as a deliberate act of murder, though the fuller picture was more accidental and tragic. What responsibility does a journalist have when the emotionally satisfying story and the fully accurate one don't match?",
+ "The Berlin Wall fell partly because of a bureaucratic miscommunication, not a grand plan by either side. What does that suggest about how much of history is shaped by human error rather than deliberate design?",
+ "By the end of this decade, do you think the American press had gotten better or worse at maintaining healthy skepticism of official claims, compared to the 1947-1954 era? What evidence would you look for either way?"
+],
+  keyRisk: ['kal-007','able-archer','star-wars'],
+  keyDefense: ['afghanistan-invasion','evil-empire','chernobyl','iran-contra','reykjavik-inf'],
+  fateGuesses: {
+ hardliner:"Best guess: comfortable and well-placed through most of the decade, with a few columns — especially on SDI's promised capabilities and KAL 007's presumed intent — that aged into minor professional embarrassments once the fuller record came out in the 1990s.",
+ conscience:"Best guess: overlooked for flashier assignments for years, then increasingly respected once declassified material (especially on Able Archer) confirmed just how seriously wrong the confident consensus had been. A quiet, lasting reputation for getting the hard calls right.",
+ careerist:"Best guess: genuine career success through the decade, followed by uncomfortable questions once Iran-Contra hearings revealed how much administration officials had been managing the press. A career that needs a footnote.",
+ blacklisted:"Best guess: an involuntary beat change or an outright exit from national reporting, likely not long after Iran-Contra, when asking the wrong question of the wrong official stopped being survivable. Possibly a second act once the full scandal became public and vindicated the reporting you'd been doing.",
+ balanced:"Best guess: a durable, well-respected career, the kind built one accurate story at a time rather than one big scoop. When historians go back to write the real account of the 1980s, careful reporters like this are disproportionately the ones they cite."
+}
+ }
+};
+
+
+ERAS.redscare.scenarios[1].minigameAfter = 'factcheck';
+ERAS.redscare.scenarios[4].minigameAfter = 'propaganda';
+ERAS.redscare.scenarios[6].minigameAfter = 'evidence';
+ERAS.redscare.scenarios[8].minigameAfter = 'timeline';
+
+ERAS.brinkofwar.scenarios[0].minigameAfter = 'factcheck';
+ERAS.brinkofwar.scenarios[4].minigameAfter = 'propaganda';
+ERAS.brinkofwar.scenarios[5].minigameAfter = 'evidence';
+ERAS.brinkofwar.scenarios[7].minigameAfter = 'timeline';
+
+ERAS.longtwilight.scenarios[1].minigameAfter = 'factcheck';
+ERAS.longtwilight.scenarios[2].minigameAfter = 'propaganda';
+ERAS.longtwilight.scenarios[6].minigameAfter = 'evidence';
+ERAS.longtwilight.scenarios[7].minigameAfter = 'timeline';
+
+/* ---------- STATE ---------- */
+const SAVE_KEY = 'coldwar_correspondent_save_v1';
+function defaultState(){
+ return {
+  achievements:[],
+  settings:{colorblind:false, subtitles:false, reduceMotion:false, textSize:'md', sound:true},
+  seenIntro:false,
+  seenTutorial:false,
+  teacherUnlocked:false,
+  currentEraId:null,
+  eraCompletions:{redscare:false, brinkofwar:false, longtwilight:false},
+  eraSaves:{redscare:null, brinkofwar:null, longtwilight:null},
+  resources:{security:50, liberties:50, trust:50, career:50},
+  playlist:null,
+  pos:0,
+  tally:{sensational:0, cautious:0, balanced:0},
+  choiceLog:[],
+  checkpointBaseline:{security:50, liberties:50, trust:50, career:50},
+  minigameScores:{},
+  started:false,
+  finished:false
+ };
+}
+let State = loadState() || defaultState();
+
+function syncEraSave(){
+ if(!State.currentEraId) return;
+ State.eraSaves[State.currentEraId] = {
+  resources: Object.assign({}, State.resources),
+  playlist: State.playlist,
+  pos: State.pos,
+  tally: Object.assign({}, State.tally),
+  choiceLog: (State.choiceLog||[]).slice(),
+  checkpointBaseline: Object.assign({}, State.checkpointBaseline),
+  minigameScores: Object.assign({}, State.minigameScores),
+  started: State.started,
+  finished: State.finished
+ };
+}
+function saveState(){
+ syncEraSave();
+ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(State)); }catch(e){}
+}
+function loadState(){
+ try{
+  const raw = localStorage.getItem(SAVE_KEY);
+  if(!raw) return null;
+  const parsed = JSON.parse(raw);
+  const d = defaultState();
+  return Object.assign(d, parsed, {
+   resources:Object.assign(d.resources,parsed.resources||{}),
+   settings:Object.assign(d.settings,parsed.settings||{}),
+   tally:Object.assign(d.tally,parsed.tally||{}),
+   eraCompletions:Object.assign(d.eraCompletions,parsed.eraCompletions||{}),
+   eraSaves:Object.assign(d.eraSaves,parsed.eraSaves||{}),
+   choiceLog:parsed.choiceLog||[]
+  });
+ }catch(e){ return null; }
+}
+
+/* ---------- PLAYLIST ---------- */
+function shuffle(arr){
+ const a = arr.slice();
+ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+ return a;
+}
+function generatePlaylist(era){
+ let pl = [];
+ era.scenarios.forEach(sc=>{
+  pl.push({type:'scenario', id:sc.id});
+  if(sc.minigameAfter) pl.push({type:'minigame', id:sc.minigameAfter});
+  if(era.checkpointAnchors.includes(sc.id)) pl.push({type:'checkpoint', id:'cp_'+sc.id});
+ });
+ pl.push({type:'scenario', id:era.epilogue.id});
+ const rumorPool = shuffle(era.rumors).slice(0,3);
+ rumorPool.forEach(r=>{
+  const maxIdx = Math.max(2, pl.length-3);
+  const idx = 2 + Math.floor(Math.random()*(maxIdx-2));
+  pl.splice(idx,0,{type:'rumor', id:r.id});
+ });
+ return pl;
+}
+function getScenarioById(era, id){
+ if(era.epilogue.id===id) return era.epilogue;
+ return era.scenarios.find(s=>s.id===id);
+}
+function getRumorById(era, id){ return era.rumors.find(r=>r.id===id); }
+
+/* ---------- UTILS ---------- */
+function clamp(n){ return Math.max(0, Math.min(100, n)); }
+function $(sel){ return document.querySelector(sel); }
+function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
+function showScreen(id){
+ $all('.screen').forEach(s=>s.classList.remove('active'));
+ $('#'+id).classList.add('active');
+ window.scrollTo(0,0);
+}
+function applySettingsToDOM(){
+ document.body.classList.toggle('colorblind', State.settings.colorblind);
+ document.body.classList.toggle('reduce-motion', State.settings.reduceMotion);
+ document.body.classList.remove('text-md','text-lg','text-xl');
+ document.body.classList.add('text-'+State.settings.textSize);
+ $('#toggle-colorblind').classList.toggle('on', State.settings.colorblind);
+ $('#toggle-subtitles').classList.toggle('on', State.settings.subtitles);
+ $('#toggle-motion').classList.toggle('on', State.settings.reduceMotion);
+ $('#toggle-sound').classList.toggle('on', State.settings.sound);
+ $all('#seg-textsize button').forEach(b=>b.classList.toggle('active', b.dataset.size===State.settings.textSize));
+}
+function subtitle(text){
+ if(!State.settings.subtitles) return '';
+ return '<div class="subtitle-cue">🔊 '+text+'</div>';
+}
+
+/* ---------- TYPEWRITER ---------- */
+function typewrite(el, text, done){
+ el.innerHTML = '';
+ const span = document.createElement('span');
+ el.appendChild(span);
+ const caret = document.createElement('span');
+ caret.className='caret';
+ el.appendChild(caret);
+ let i = 0;
+ const speed = State.settings.reduceMotion ? 0 : 14;
+ function step(){
+  if(i < text.length){
+   span.textContent += text[i];
+   if(text[i] !== ' ' && Math.random()<0.6) Sound.type();
+   i++;
+   if(speed===0){ span.textContent = text; i=text.length; caret.remove(); Sound.carriageReturn(); if(done)done(); return; }
+   setTimeout(step, speed);
+  } else {
+   caret.remove();
+   Sound.carriageReturn();
+   if(done) done();
+  }
+ }
+ step();
+}
+
+/* ---------- RESOURCE RENDERING ---------- */
+const RES_KEYS = ['security','liberties','trust','career'];
+const RES_LABELS = {security:'🛡 Security', liberties:'⚖ Liberties', trust:'🤝 Trust', career:'💼 Career'};
+function capWord(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function renderResources(animate){
+ RES_KEYS.forEach(k=>{
+  const val = clamp(State.resources[k]);
+  const bar = $('#bar-'+k);
+  const valEl = $('#val-'+k);
+  if(bar){ bar.style.width = val+'%'; }
+  if(valEl){ valEl.textContent = val; }
+ });
+}
+function applyDelta(delta){
+ const changed = {};
+ RES_KEYS.forEach(k=>{
+  if(delta[k]){
+   const before = State.resources[k];
+   State.resources[k] = clamp(State.resources[k] + delta[k]);
+   changed[k] = State.resources[k]-before;
+  }
+ });
+ return changed;
+}
+function buildResourceHUD(idPrefix){
+ return '<div class="hud">' + RES_KEYS.map(k=>
+  '<div class="res" data-res="'+k+'"><div class="res-label">'+RES_LABELS[k]+'</div><div class="res-bar-track"><div class="res-bar-fill" id="'+idPrefix+'-bar-'+k+'" style="width:0%;"></div></div><div class="res-val" id="'+idPrefix+'-val-'+k+'">0</div></div>'
+ ).join('') + '</div>';
+}
+function animateResourceHUD(idPrefix, delay){
+ setTimeout(()=>{
+  RES_KEYS.forEach(k=>{
+   const val = clamp(State.resources[k]);
+   const bar = document.getElementById(idPrefix+'-bar-'+k);
+   const valEl = document.getElementById(idPrefix+'-val-'+k);
+   if(bar) bar.style.width = val+'%';
+   if(valEl) valEl.textContent = val;
+  });
+ }, delay||150);
+}
+
+/* ---------- ACHIEVEMENTS ---------- */
+function unlockAchievement(id){
+ if(State.achievements.includes(id)) return;
+ State.achievements.push(id);
+ saveState();
+ const a = ACHIEVEMENTS.find(x=>x.id===id);
+ if(!a) return;
+ Sound.badge();
+ const toast = $('#toast');
+ toast.innerHTML = '<div class="badge-icon">'+a.icon+'</div><div><b>Badge Earned:</b> '+a.title+'<br><small>'+a.desc+'</small></div>';
+ toast.classList.add('show');
+ setTimeout(()=>toast.classList.remove('show'), 3600);
+}
+
+/* ---------- GAME FLOW ---------- */
+function startNewGame(eraId){
+ const era = ERAS[eraId];
+ State.currentEraId = eraId;
+ State.resources = {security:50,liberties:50,trust:50,career:50};
+ State.playlist = generatePlaylist(era);
+ State.pos = 0;
+ State.tally = {sensational:0,cautious:0,balanced:0};
+ State.choiceLog = [];
+ State.checkpointBaseline = {security:50,liberties:50,trust:50,career:50};
+ State.minigameScores = {};
+ State.started = true;
+ State.finished = false;
+ unlockAchievement('firstbyline');
+ saveState();
+ showScreen('screen-game');
+ renderCurrentStep();
+}
+function resumeGame(eraId){
+ const save = State.eraSaves[eraId];
+ if(!save || save.finished || !save.playlist){ startNewGame(eraId); return; }
+ State.currentEraId = eraId;
+ State.resources = Object.assign({security:50,liberties:50,trust:50,career:50}, save.resources);
+ State.playlist = save.playlist;
+ State.pos = save.pos||0;
+ State.tally = Object.assign({sensational:0,cautious:0,balanced:0}, save.tally);
+ State.choiceLog = (save.choiceLog||[]).slice();
+ State.checkpointBaseline = Object.assign({}, save.checkpointBaseline||State.resources);
+ State.minigameScores = Object.assign({}, save.minigameScores||{});
+ State.started = true;
+ State.finished = false;
+ saveState();
+ showScreen('screen-game');
+ renderCurrentStep();
+}
+function beginEra(eraId){
+ if(!State.seenTutorial){
+  pendingEraId = eraId;
+  showScreen('screen-tutorial');
+ } else {
+  startNewGame(eraId);
+ }
+}
+function updateProgress(){
+ const pct = State.playlist ? Math.min(100, Math.round((State.pos/State.playlist.length)*100)) : 0;
+ $('#progress-fill').style.width = pct+'%';
+}
+function renderCurrentStep(){
+ updateProgress();
+ const era = ERAS[State.currentEraId];
+ if(!era || !State.playlist || State.pos >= State.playlist.length){
+  renderEnding(era);
+  return;
+ }
+ const step = State.playlist[State.pos];
+ if(step.type==='scenario') renderScenario(era, getScenarioById(era, step.id));
+ else if(step.type==='rumor') renderRumor(era, getRumorById(era, step.id));
+ else if(step.type==='minigame') renderMinigame(era, step.id);
+ else if(step.type==='checkpoint') renderCheckpoint(era, step);
+}
+function advance(){
+ State.pos++;
+ saveState();
+ renderCurrentStep();
+}
+
+/* ----- Scenario rendering ----- */
+function renderScenario(era, sc){
+ const content = $('#game-content');
+ content.innerHTML =
+  '<div class="year-flag">'+sc.year+'</div>'+
+  sceneSVG(sc.scene, sc.accent, sc.year)+
+  '<h2 class="headline">'+sc.headline+'</h2>'+
+  '<div class="byline">By Our Special Correspondent</div>'+
+  subtitle('typewriter clacking, distant newsroom murmur')+
+  '<div class="dialogue-box" id="dlg"></div>'+
+  '<div class="choices" id="choices-wrap" style="display:none;"></div>';
+ const order = shuffle(sc.choices.map((c,i)=>i));
+ typewrite($('#dlg'), sc.dialogue, ()=>{
+  const wrap = $('#choices-wrap');
+  wrap.style.display='flex';
+  wrap.innerHTML = order.map((origIdx,pos)=>
+   '<button class="choice-btn" data-idx="'+origIdx+'"><span class="num">'+(pos+1)+'</span><span>'+sc.choices[origIdx].text+'</span></button>'
+  ).join('');
+  $all('#choices-wrap .choice-btn').forEach(btn=>{
+   btn.addEventListener('click', ()=>{
+    Sound.click();
+    chooseScenarioOption(era, sc, parseInt(btn.dataset.idx,10));
+   });
+  });
+ });
+}
+function chooseScenarioOption(era, sc, idx){
+ const choice = sc.choices[idx];
+ $all('#choices-wrap .choice-btn').forEach(b=>b.disabled=true);
+ State.tally[choice.style] = (State.tally[choice.style]||0)+1;
+ applyDelta(choice.delta);
+ State.choiceLog.push({id:sc.id, style:choice.style});
+ if(choice.skepticAchievement) unlockAchievement('skeptic');
+
+ const isEpilogue = sc.id===era.epilogue.id;
+ const outcomeText = choice.outcome || '';
+
+ const content = $('#game-content');
+ content.innerHTML =
+  '<div class="year-flag">'+sc.year+'</div>'+
+  sceneSVG(sc.scene, sc.accent, sc.year)+
+  '<h2 class="headline">'+sc.headline+'</h2>'+
+  '<div class="outcome-panel">'+
+   (outcomeText ? '<h3>Your Story Runs...</h3><p>'+outcomeText+'</p>' : '') +
+   '<div class="what-really"><h4>What Really Happened</h4><p>'+sc.whatHappened+'</p></div>'+
+  '</div>'+
+  '<div class="btn-row"><button class="btn accent" id="btn-next">'+(isEpilogue?'See Your Final Edition':'Continue')+'</button></div>';
+ Sound.pageTurn();
+ $('#btn-next').addEventListener('click', ()=>{ Sound.click(); advance(); });
+ $('#btn-next').focus();
+}
+
+/* ----- Rumor rendering ----- */
+function renderRumor(era, r){
+ const content = $('#game-content');
+ content.innerHTML =
+  '<div class="rumor-card">'+
+   '<span class="rumor-tag">Whisper on the Wire</span>'+
+   '<p>'+r.text+'</p>'+
+   '<div class="choices">'+
+    '<button class="choice-btn" id="rumor-investigate"><span class="num">1</span><span>Investigate before doing anything with it</span></button>'+
+    '<button class="choice-btn" id="rumor-ignore"><span class="num">2</span><span>Ignore it — you have bigger stories today</span></button>'+
+   '</div>'+
+  '</div>';
+ $('#rumor-investigate').addEventListener('click', ()=>{ Sound.click(); resolveRumor(r,'investigate'); });
+ $('#rumor-ignore').addEventListener('click', ()=>{ Sound.click(); resolveRumor(r,'ignore'); });
+}
+function resolveRumor(r, path){
+ const outcome = r[path];
+ applyDelta(outcome.delta);
+ const content = $('#game-content');
+ content.innerHTML =
+  '<div class="rumor-card">'+
+   '<span class="rumor-tag">Result</span>'+
+   '<p>'+outcome.result+'</p>'+
+  '</div>'+
+  '<div class="btn-row"><button class="btn accent" id="btn-next">Continue</button></div>';
+ Sound.pageTurn();
+ $('#btn-next').addEventListener('click', ()=>{ Sound.click(); advance(); });
+ $('#btn-next').focus();
+}
+
+/* ----- Checkpoint rendering ----- */
+function resTier(v){ return v>=65?'high':(v<=35?'low':'mid'); }
+const CHECKPOINT_LINES = {
+ security:{high:"Officials and readers alike now see you as a reliable voice on security matters — maybe too reliable.", low:"Some are starting to call your coverage naive about real threats.", mid:"Your security coverage reads as measured — neither alarmist nor dismissive."},
+ liberties:{high:"Civil liberties advocates quote your column approvingly. It's also starting to make you a target.", low:"Your reporting has done little to slow the erosion of due process this year.", mid:"You've pushed back on overreach here and there, without making it your signature."},
+ trust:{high:"Readers increasingly trust your byline over flashier competitors.", low:"Cancelled subscriptions and angry letters are becoming a pattern.", mid:"Your readership is steady, if unspectacular."},
+ career:{high:"Your editor has started mentioning you for a promotion to the masthead.", low:"You've heard whispers that your job may not be safe much longer.", mid:"Your career is neither rising nor falling dramatically."}
+};
+function checkpointBlurb(){
+ return RES_KEYS.map(k=>CHECKPOINT_LINES[k][resTier(State.resources[k])]).join(' ');
+}
+function renderCheckpoint(era, step){
+ const content = $('#game-content');
+ const base = State.checkpointBaseline || {security:50,liberties:50,trust:50,career:50};
+ const diffRows = RES_KEYS.map(k=>{
+  const v = State.resources[k]-base[k];
+  const label = RES_LABELS[k].replace(/^\S+\s/,'');
+  const arrow = v>0?'▲':(v<0?'▼':'—');
+  const cls = v>0?'pos':(v<0?'neg':'');
+  return '<span class="delta-chip '+cls+'">'+label+' '+arrow+' '+(v>0?'+':'')+v+'</span>';
+ }).join('');
+ content.innerHTML =
+  '<div class="year-flag">Editor\'s Desk — Field Report</div>'+
+  '<h2 class="headline">How Your Reporting Has Shaped the Story So Far</h2>'+
+  '<div class="dialogue-box">'+checkpointBlurb()+'</div>'+
+  buildResourceHUD('cp')+
+  '<h3 style="margin-top:14px;">Change Since Your Last Field Report</h3>'+
+  '<div class="delta-row">'+diffRows+'</div>'+
+  '<div class="btn-row"><button class="btn accent" id="btn-next">Back to the Newsroom</button></div>';
+ Sound.stamp();
+ animateResourceHUD('cp', 250);
+ State.checkpointBaseline = Object.assign({}, State.resources);
+ saveState();
+ $('#btn-next').addEventListener('click', ()=>{ Sound.click(); advance(); });
+ $('#btn-next').focus();
+}
+
+/* ----- Minigame rendering dispatcher ----- */
+function renderMinigame(era, id){
+ const data = era.minigames[id];
+ if(id==='factcheck') renderFactCheck(data);
+ else if(id==='propaganda') renderPropaganda(data);
+ else if(id==='timeline') renderTimelineGame(data);
+ else if(id==='evidence') renderEvidenceGame(data);
+}
+
+/* -- Fact Check -- */
+function renderFactCheck(data){
+ const items = shuffle(data.items);
+ let selected = null;
+ const results = new Array(items.length).fill(null);
+ const content = $('#game-content');
+ content.innerHTML =
+  '<h2 class="headline">Minigame: '+data.title+'</h2>'+
+  '<p class="mg-instructions">'+data.instructions+'</p>'+
+  '<div class="mg-grid" id="fc-items"></div>'+
+  '<div class="mg-buckets" id="fc-buckets">'+
+   shuffle(['Fact','Opinion','Rumor']).map(b=>'<div class="mg-bucket" data-bucket="'+b+'"><h5>'+b+'</h5></div>').join('')+
+  '</div>'+
+  '<div class="mg-score" id="fc-score"></div>'+
+  '<div class="btn-row" id="fc-continue-wrap" style="display:none;"><button class="btn accent" id="fc-continue">Continue</button></div>';
+ const itemsEl = $('#fc-items');
+ itemsEl.innerHTML = items.map((it,i)=>'<div class="mg-item" data-i="'+i+'">'+it.text+'</div>').join('');
+ $all('.mg-item').forEach(el=>{
+  el.addEventListener('click', ()=>{
+   if(results[el.dataset.i]!==null) return;
+   $all('.mg-item').forEach(x=>x.classList.remove('selected'));
+   el.classList.add('selected');
+   selected = parseInt(el.dataset.i,10);
+   Sound.click();
+  });
+ });
+ $all('#fc-buckets .mg-bucket').forEach(b=>{
+  b.addEventListener('click', ()=>{
+   if(selected===null) return;
+   const el = document.querySelector('.mg-item[data-i="'+selected+'"]');
+   if(!el || results[selected]!==null) return;
+   const correct = items[selected].answer === b.dataset.bucket;
+   results[selected] = correct;
+   el.classList.add(correct ? 'correct':'incorrect');
+   el.textContent += correct ? '  ✔ '+b.dataset.bucket : '  ✘ (was '+items[selected].answer+')';
+   correct ? Sound.success() : Sound.fail();
+   selected = null;
+   checkFactCheckDone();
+  });
+ });
+ function checkFactCheckDone(){
+  if(results.every(r=>r!==null)){
+   const score = results.filter(r=>r).length;
+   $('#fc-score').textContent = 'Score: '+score+' / '+items.length;
+   State.minigameScores.factcheck = score;
+   if(score===items.length) unlockAchievement('factchecker');
+   $('#fc-continue-wrap').style.display='flex';
+   $('#fc-continue').addEventListener('click', ()=>{ Sound.click(); advance(); });
+  }
+ }
+}
+
+/* -- Propaganda Detector -- */
+function renderPropaganda(data){
+ const items = shuffle(data.items);
+ const content = $('#game-content');
+ let idx = 0, correctCount = 0;
+ content.innerHTML =
+  '<h2 class="headline">Minigame: '+data.title+'</h2>'+
+  '<p class="mg-instructions">'+data.instructions+'</p>'+
+  '<div id="prop-area"></div>'+
+  '<div class="mg-score" id="prop-score"></div>';
+ function renderQ(){
+  if(idx>=items.length){
+   $('#prop-area').innerHTML='';
+   $('#prop-score').innerHTML = 'Score: '+correctCount+' / '+items.length+
+    '<div class="btn-row"><button class="btn accent" id="prop-continue">Continue</button></div>';
+   State.minigameScores.propaganda = correctCount;
+   if(correctCount===items.length) unlockAchievement('propspotter');
+   $('#prop-continue').addEventListener('click', ()=>{ Sound.click(); advance(); });
+   return;
+  }
+  const item = items[idx];
+  const shuffledTechniques = shuffle(data.techniques);
+  $('#prop-area').innerHTML =
+   '<div class="dialogue-box">"'+item.text+'"</div>'+
+   '<div class="mg-grid" id="prop-opts">'+
+    shuffledTechniques.map(t=>'<div class="mg-item" data-t="'+t+'">'+t+'</div>').join('')+
+   '</div>';
+  $all('#prop-opts .mg-item').forEach(el=>{
+   el.addEventListener('click', ()=>{
+    if(el.classList.contains('correct')||el.classList.contains('incorrect')) return;
+    const correct = el.dataset.t === item.answer;
+    $all('#prop-opts .mg-item').forEach(x=>x.style.pointerEvents='none');
+    el.classList.add(correct?'correct':'incorrect');
+    if(!correct){
+     const rightEl = document.querySelector('#prop-opts .mg-item[data-t="'+item.answer+'"]');
+     if(rightEl) rightEl.classList.add('correct');
+    } else correctCount++;
+    correct ? Sound.success() : Sound.fail();
+    setTimeout(()=>{ idx++; renderQ(); }, 900);
+   });
+  });
+ }
+ renderQ();
+}
+
+/* -- Timeline Builder -- */
+function renderTimelineGame(data){
+ let order = shuffle(data.events.map((e,i)=>i));
+ const content = $('#game-content');
+ content.innerHTML =
+  '<h2 class="headline">Minigame: '+data.title+'</h2>'+
+  '<p class="mg-instructions">'+data.instructions+'</p>'+
+  '<ul class="timeline-list" id="tl-list"></ul>'+
+  '<div class="btn-row"><button class="btn accent" id="tl-check">Check Order</button></div>'+
+  '<div class="mg-score" id="tl-score"></div>';
+ function draw(){
+  $('#tl-list').innerHTML = order.map((eventIdx,pos)=>
+   '<li data-idx="'+eventIdx+'"><span class="order-badge">'+(pos+1)+'</span><span>'+data.events[eventIdx].text+'</span>'+
+   '<span class="move-btns"><button data-dir="up" aria-label="Move up">▲</button><button data-dir="down" aria-label="Move down">▼</button></span></li>'
+  ).join('');
+  $all('#tl-list button').forEach(btn=>{
+   btn.addEventListener('click', ()=>{
+    Sound.click();
+    const li = btn.closest('li');
+    const pos = Array.from(li.parentNode.children).indexOf(li);
+    const dir = btn.dataset.dir;
+    const swapWith = dir==='up' ? pos-1 : pos+1;
+    if(swapWith<0 || swapWith>=order.length) return;
+    [order[pos], order[swapWith]] = [order[swapWith], order[pos]];
+    draw();
+   });
+  });
+ }
+ draw();
+ $('#tl-check').addEventListener('click', ()=>{
+  Sound.click();
+  let correct = 0;
+  const items = $all('#tl-list li');
+  items.forEach((li,pos)=>{
+   const eventIdx = parseInt(li.dataset.idx,10);
+   const isRight = data.events[eventIdx].order === pos+1;
+   li.classList.remove('correct','incorrect');
+   li.style.background = isRight ? '#c9e3c4' : '#ecc4c0';
+   if(isRight) correct++;
+  });
+  correct===data.events.length ? Sound.success() : Sound.fail();
+  State.minigameScores.timeline = correct;
+  if(correct===data.events.length) unlockAchievement('historian');
+  $('#tl-score').innerHTML = 'Correct positions: '+correct+' / '+data.events.length+
+   '<div class="btn-row"><button class="btn accent" id="tl-continue">Continue</button></div>';
+  $('#tl-continue').addEventListener('click', ()=>{ Sound.click(); advance(); });
+ });
+}
+
+/* -- Evidence Board -- */
+function renderEvidenceGame(data){
+ const pieces = shuffle(data.pieces);
+ const marks = new Array(pieces.length).fill(null);
+ const content = $('#game-content');
+ content.innerHTML =
+  '<h2 class="headline">Minigame: '+data.title+'</h2>'+
+  '<p class="mg-instructions">'+data.instructions+'</p>'+
+  '<div id="ev-list"></div>'+
+  '<div class="btn-row">'+
+   '<button class="btn accent" id="ev-accuse">Enough Evidence — Accuse</button>'+
+   '<button class="btn secondary" id="ev-insufficient">Not Enough Evidence</button>'+
+  '</div>'+
+  '<div class="mg-score" id="ev-score"></div>';
+ const listEl = $('#ev-list');
+ listEl.innerHTML = pieces.map((p,i)=>
+  '<div class="evidence-piece" data-i="'+i+'"><span class="ev-text">'+p.text+'</span>'+
+  '<span class="ev-toggle"><button data-v="reliable">Reliable</button><button data-v="unreliable">Unreliable</button></span></div>'
+ ).join('');
+ $all('.evidence-piece').forEach(piece=>{
+  const i = parseInt(piece.dataset.i,10);
+  piece.querySelectorAll('button').forEach(btn=>{
+   btn.addEventListener('click', ()=>{
+    Sound.click();
+    marks[i] = btn.dataset.v;
+    piece.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+   });
+  });
+ });
+ function finish(decision){
+  let markScore = 0;
+  pieces.forEach((p,i)=>{
+   const guessedReliable = marks[i]==='reliable';
+   if(guessedReliable===p.reliable) markScore++;
+  });
+  const decisionCorrect = decision === data.correctDecision;
+  const total = markScore + (decisionCorrect?1:0);
+  const max = pieces.length+1;
+  State.minigameScores.evidence = total;
+  if(decisionCorrect && markScore>=pieces.length-1) unlockAchievement('carefuljournalist');
+  total>=max-1 ? Sound.success() : Sound.fail();
+  $('#ev-score').innerHTML =
+   '<p>You correctly assessed '+markScore+' / '+pieces.length+' pieces of evidence.</p>'+
+   '<p>Your decision — <b>'+(decision==='accuse'?'Accuse':'Not Enough Evidence')+'</b> — was '+
+    (decisionCorrect?'the historically sound call.':'a riskier call than the evidence supported.')+'</p>'+
+   '<div class="what-really"><h4>What Really Happened</h4><p>Cases like this were common throughout periods of heightened suspicion. Anonymous tips, hostile exes, and circumstantial sightings at public events were frequently treated as sufficient grounds for suspension or dismissal, without the accused ever facing their accuser. Only corroborated, verifiable evidence should meet the bar for serious accusations — a standard often not met.</p></div>'+
+   '<div class="btn-row"><button class="btn accent" id="ev-continue">Continue</button></div>';
+  $('#ev-accuse').disabled = true; $('#ev-insufficient').disabled = true;
+  $('#ev-continue').addEventListener('click', ()=>{ Sound.click(); advance(); });
+ }
+ $('#ev-accuse').addEventListener('click', ()=>finish('accuse'));
+ $('#ev-insufficient').addEventListener('click', ()=>finish('insufficient'));
+}
+
+/* ---------- ENDINGS ---------- */
+function computeEnding(){
+ const r = State.resources;
+ if(r.security>=68 && r.liberties<=38) return 'hardliner';
+ if(r.liberties>=68 && r.trust>=52) return 'conscience';
+ if(r.career>=68 && r.trust<48) return 'careerist';
+ if(r.career<=32) return 'blacklisted';
+ return 'balanced';
+}
+
+/* ---------- ERA SELECT ---------- */
+let pendingEraId = null;
+function renderEraSelect(){
+ const grid = $('#era-grid');
+ grid.innerHTML = Object.values(ERAS).map(era=>{
+  const save = State.eraSaves[era.id];
+  const resumable = save && !save.finished && save.playlist;
+  const completed = !!State.eraCompletions[era.id];
+  return '<div class="era-card" style="--era-accent:'+era.accent+'">'+
+   sceneSVG(era.icon, era.accent, era.years) +
+   '<h3>'+era.label+'</h3>' +
+   '<div class="era-years">'+era.years+'</div>' +
+   '<p class="era-tagline">'+era.tagline+'</p>' +
+   (completed?'<div class="era-badge">✓ Completed</div>':'') +
+   '<div class="btn-row" style="margin-top:10px;">' +
+    (resumable ?
+     '<button class="btn accent era-continue" data-era="'+era.id+'">Continue</button><button class="btn small secondary era-restart" data-era="'+era.id+'">Start Over</button>'
+     : '<button class="btn accent era-new" data-era="'+era.id+'">'+(completed?'Play Again':'Begin Assignment')+'</button>') +
+   '</div>' +
+  '</div>';
+ }).join('');
+ $all('.era-continue').forEach(b=>b.addEventListener('click', ()=>{ Sound.click(); resumeGame(b.dataset.era); }));
+ $all('.era-restart').forEach(b=>b.addEventListener('click', ()=>{
+  Sound.click();
+  showConfirm('Starting over will erase your progress in this decade. Continue?', ()=>{ beginEra(b.dataset.era); });
+ }));
+ $all('.era-new').forEach(b=>b.addEventListener('click', ()=>{ Sound.click(); beginEra(b.dataset.era); }));
+}
+
+function computeCareerSummary(era){
+ const log = State.choiceLog || [];
+ const riskHits = log.filter(c=>era.keyRisk.includes(c.id) && c.style==='sensational').length;
+ const defenseHits = log.filter(c=>era.keyDefense.includes(c.id) && c.style==='cautious').length;
+ const sensationalTotal = State.tally.sensational||0;
+ const cautiousTotal = State.tally.cautious||0;
+ const r = State.resources;
+
+ let lieVerdict, lieText;
+ if(riskHits>=3){
+  lieVerdict = "Yes — more than once.";
+  lieText = "You printed claims — an unverified list of accused Communists, a case declared 'closed' before the evidence was in, allegations given prominent play with little behind them — that you had real reason to doubt. It made for better copy. It also means, by any honest standard, you knowingly put unverified and sometimes false information into print, more than once.";
+ } else if(riskHits>=1){
+  lieVerdict = "At least once.";
+  lieText = "Most of the time you tried to check your sources before running with a claim. But at least once, deadline pressure or a good story won out over caution, and you printed something you couldn't fully back up.";
+ } else {
+  lieVerdict = "Not that the record shows.";
+  lieText = "Across every major flashpoint of the era, you consistently declined to print claims you couldn't verify — even when it cost you the scoop, the front page, or your editor's patience.";
+ }
+
+ let arrestVerdict, arrestText;
+ if(defenseHits>=3 && cautiousTotal>=9){
+  arrestVerdict = "Possible, though not likely.";
+  arrestText = "American journalists were rarely jailed outright for their reporting — the First Amendment offered real, if imperfect, protection. But reporters who repeatedly defended the accused, questioned committees publicly, and stood by sympathetic sources sometimes found themselves subpoenaed. Had a committee decided to make an example of you, a contempt-of-Congress citation — a fate several uncooperative witnesses of the era actually suffered — isn't far-fetched. More likely, though: you'd have simply been watched, an FBI file kept quietly on you for years, and sources grown too nervous to call you back.";
+ } else if(sensationalTotal>=9 && r.liberties<=35){
+  arrestVerdict = "Unlikely — but you helped build the machine that caught others.";
+  arrestText = "You were probably never in personal danger yourself; reporters who ran with loyalty-board leaks and blacklist names were, if anything, useful to the people running the investigations. But it's worth sitting with: the loose evidentiary standards you helped normalize in print were the same ones that could just as easily have been turned on a colleague, a source, or eventually — in the fevered final years of the era — almost anyone, including you.";
+ } else {
+  arrestVerdict = "No real indication of it.";
+  arrestText = "Nothing in your record suggests you'd have drawn serious legal jeopardy. For most working journalists, the real cost of this era wasn't criminal — it was professional and social: lost assignments, wary colleagues, years of being quietly, unofficially suspect.";
+ }
+ return {lieVerdict, lieText, arrestVerdict, arrestText};
+}
+
+function renderEnding(era){
+ State.finished = true;
+ State.eraCompletions[era.id] = true;
+ saveState();
+ unlockAchievement('survivor');
+ const r = State.resources;
+ if(r.security>=40&&r.security<=60&&r.liberties>=40&&r.liberties<=60&&r.trust>=40&&r.trust<=60&&r.career>=40&&r.career<=60){
+  unlockAchievement('balanced');
+ }
+ if(State.eraCompletions.redscare && State.eraCompletions.brinkofwar && State.eraCompletions.longtwilight){
+  unlockAchievement('coldwarveteran');
+ }
+ const endingKey = computeEnding();
+ const ending = era.endings[endingKey];
+ const score = Math.round((r.security+r.liberties+r.trust+r.career)/4);
+ const dominant = Object.entries(State.tally).sort((a,b)=>b[1]-a[1])[0];
+ const styleNames = {sensational:'sensational, security-forward', cautious:'cautious, liberty-forward', balanced:'measured, balanced'};
+ const earnedBadges = ACHIEVEMENTS.filter(a=>State.achievements.includes(a.id));
+ const fate = computeCareerSummary(era);
+
+ showScreen('screen-ending');
+ const el = $('#ending-content');
+ el.innerHTML =
+  '<div class="year-flag">'+era.label+' · '+era.years+'</div>'+
+  '<h2 class="ending-title">'+ending.title+'</h2>'+
+  '<div class="score-circle"><div class="num">'+score+'</div><div class="lbl">Legacy Score</div></div>'+
+  '<div class="dialogue-box">'+ending.text+'</div>'+
+  '<h3 style="font-family:\'Playfair Display\',serif;">Your Final Record</h3>'+
+  buildResourceHUD('end')+
+  '<p>Across '+(era.scenarios.length+1)+' major decisions, your reporting style was most often <b>'+(styleNames[dominant[0]]||'measured')+'</b> ('+dominant[1]+' of your choices).</p>'+
+  '<h3 style="font-family:\'Playfair Display\',serif;">An Educated Guess: What Would Have Happened to You</h3>'+
+  '<p><small>This isn\'t a real historical record — it\'s a speculative exercise, built from the pattern of your choices, in the spirit of the era\'s own uncertainty. Historians can rarely know for certain what any one person would have done, or what would have happened to them.</small></p>'+
+  '<div class="what-really"><h4>Did you knowingly print something false or unverified?</h4><p><b>'+fate.lieVerdict+'</b> '+fate.lieText+'</p></div>'+
+  '<div class="what-really"><h4>Could you have been arrested, subpoenaed, or blacklisted yourself?</h4><p><b>'+fate.arrestVerdict+'</b> '+fate.arrestText+'</p></div>'+
+  '<div class="what-really"><h4>So — what likely became of you?</h4><p>'+era.fateGuesses[endingKey]+'</p></div>'+
+  '<h3 style="font-family:\'Playfair Display\',serif;">Badges Earned ('+earnedBadges.length+' / '+ACHIEVEMENTS.length+')</h3>'+
+  '<div class="badge-row">'+earnedBadges.map(a=>'<div class="badge"><div class="badge-icon">'+a.icon+'</div>'+a.title+'</div>').join('')+'</div>'+
+  '<h3 style="font-family:\'Playfair Display\',serif;">For Classroom Discussion</h3>'+
+  era.reflectionQuestions.map(q=>'<div class="reflect-q">'+q+'</div>').join('')+
+  '<div class="btn-row"><button class="btn accent" id="end-restart">Choose Another Decade</button><button class="btn secondary" id="end-replay">Replay This Decade</button><button class="btn secondary" id="end-menu">Main Menu</button><button class="btn secondary" id="end-badges">All Badges</button></div>';
+ Sound.success();
+ animateResourceHUD('end', 300);
+ $('#end-restart').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-era-select'); renderEraSelect(); });
+ $('#end-replay').addEventListener('click', ()=>{ Sound.click(); startNewGame(era.id); });
+ $('#end-menu').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-menu'); refreshMenuButtons(); });
+ $('#end-badges').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-badges'); renderBadgesScreen(); });
+}
+
+/* ---------- MENU / TUTORIAL / A11Y / BADGES SCREENS ---------- */
+function refreshMenuButtons(){
+ const eraId = State.currentEraId;
+ const save = eraId ? State.eraSaves[eraId] : null;
+ $('#menu-continue').disabled = !(eraId && save && !save.finished && save.playlist);
+}
+function renderBadgesScreen(){
+ $('#badge-display').innerHTML = ACHIEVEMENTS.map(a=>{
+  const unlocked = State.achievements.includes(a.id);
+  return '<div class="badge'+(unlocked?'':' locked')+'"><div class="badge-icon">'+(unlocked?a.icon:'?')+'</div>'+a.title+'</div>';
+ }).join('');
+}
+
+/* ---------- INTRO CINEMATIC ---------- */
+const INTRO_LINES = [
+ "The Cold War lasted over four decades — a struggle fought as much with headlines, hearings, and hidden fears as with weapons.",
+ "You are a newspaper reporter. Across different decades, the same questions keep returning: what do we believe, who do we trust, and what do we do with doubt?",
+ "Every story you file will shift the balance between National Security, Civil Liberties, Public Trust, and your own Career.",
+ "Choose an assignment — a decade to live through — and find out what kind of reporter you'd have been."
+];
+let introIdx = 0;
+function playIntroLine(){
+ const stamp = $('#intro-stamp');
+ stamp.textContent = introIdx===0?'CLASSIFIED':(introIdx===INTRO_LINES.length-1?'ON THE RECORD':'DEVELOPING');
+ typewrite($('#intro-text'), INTRO_LINES[introIdx], ()=>{});
+}
+function advanceIntro(){
+ introIdx++;
+ if(introIdx>=INTRO_LINES.length){ finishIntro(); return; }
+ playIntroLine();
+}
+function finishIntro(){
+ State.seenIntro = true; saveState();
+ showScreen('screen-menu');
+ refreshMenuButtons();
+}
+
+/* ---------- TEACHER MODE ---------- */
+function openTeacherMode(){
+ State.teacherUnlocked = true;
+ saveState();
+ const list = $('#teacher-scene-list');
+ list.innerHTML = Object.values(ERAS).map(era=>
+  '<div style="font-weight:bold;margin-top:10px;color:var(--accent);">'+era.label+' ('+era.years+')</div>' +
+  era.scenarios.concat([era.epilogue]).map(sc=>
+   '<button data-era="'+era.id+'" data-id="'+sc.id+'">'+sc.year+' — '+sc.headline+'</button>'
+  ).join('')
+ ).join('');
+ $all('#teacher-scene-list button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+   const eraId = btn.dataset.era;
+   const era = ERAS[eraId];
+   const save = State.eraSaves[eraId];
+   if(save && !save.finished && save.playlist){
+    State.currentEraId = eraId;
+    State.resources = Object.assign({security:50,liberties:50,trust:50,career:50}, save.resources);
+    State.playlist = save.playlist;
+    State.tally = Object.assign({sensational:0,cautious:0,balanced:0}, save.tally);
+    State.choiceLog = (save.choiceLog||[]).slice();
+    State.checkpointBaseline = Object.assign({}, save.checkpointBaseline||State.resources);
+    State.minigameScores = Object.assign({}, save.minigameScores||{});
+   } else {
+    State.currentEraId = eraId;
+    State.resources = {security:50,liberties:50,trust:50,career:50};
+    State.playlist = generatePlaylist(era);
+    State.tally = {sensational:0,cautious:0,balanced:0};
+    State.choiceLog = [];
+    State.checkpointBaseline = {security:50,liberties:50,trust:50,career:50};
+    State.minigameScores = {};
+   }
+   const idx = State.playlist.findIndex(p=>p.type==='scenario' && p.id===btn.dataset.id);
+   if(idx>=0){
+    State.pos = idx;
+    State.started = true;
+    State.finished = false;
+    saveState();
+    $('#overlay-teacher').classList.remove('active');
+    showScreen('screen-game');
+    renderCurrentStep();
+   }
+  });
+ });
+ $('#teacher-subpanel').innerHTML='';
+ $('#overlay-teacher').classList.add('active');
+}
+function teacherViewEndings(){
+ $('#teacher-subpanel').innerHTML = '<h4>All Endings</h4>'+
+  Object.values(ERAS).map(era=>
+   '<div style="font-weight:bold;margin-top:10px;">'+era.label+'</div>' +
+   Object.values(era.endings).map(e=>'<div class="dialogue-box"><b>'+e.title+'</b><br>'+e.text+'</div>').join('')
+  ).join('');
+}
+function teacherViewNotes(){
+ $('#teacher-subpanel').innerHTML = '<h4>All Historical Notes</h4>'+
+  Object.values(ERAS).map(era=>
+   '<div style="font-weight:bold;margin-top:10px;">'+era.label+'</div>' +
+   era.scenarios.concat([era.epilogue]).map(sc=>'<div class="what-really"><h4>'+sc.year+' — '+sc.headline+'</h4><p>'+sc.whatHappened+'</p></div>').join('')
+  ).join('');
+}
+
+/* ---------- EVENT WIRING ---------- */
+window.addEventListener('DOMContentLoaded', ()=>{
+ applySettingsToDOM();
+
+ // Intro
+ $('#intro-continue').addEventListener('click', ()=>{ Sound.click(); advanceIntro(); });
+ $('#intro-skip').addEventListener('click', ()=>{ Sound.click(); finishIntro(); });
+ if(State.seenIntro){
+  showScreen('screen-menu');
+  refreshMenuButtons();
+ } else {
+  playIntroLine();
+ }
+
+ // Menu
+ $('#menu-new').addEventListener('click', ()=>{
+  Sound.click();
+  showScreen('screen-era-select');
+  renderEraSelect();
+ });
+ $('#era-select-back').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-menu'); refreshMenuButtons(); });
+ $('#menu-continue').addEventListener('click', ()=>{ Sound.click(); if(State.currentEraId) resumeGame(State.currentEraId); });
+ $('#menu-tutorial').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-tutorial'); });
+ $('#menu-a11y').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-a11y'); });
+ $('#menu-badges').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-badges'); renderBadgesScreen(); });
+ $('#tutorial-done').addEventListener('click', ()=>{
+  Sound.click();
+  State.seenTutorial = true;
+  saveState();
+  startNewGame(pendingEraId || Object.keys(ERAS)[0]);
+ });
+ $('#a11y-back').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-menu'); refreshMenuButtons(); });
+ $('#badges-back').addEventListener('click', ()=>{ Sound.click(); showScreen('screen-menu'); refreshMenuButtons(); });
+
+ // Accessibility toggles
+ $('#toggle-colorblind').addEventListener('click', ()=>{ State.settings.colorblind=!State.settings.colorblind; applySettingsToDOM(); saveState(); Sound.click(); });
+ $('#toggle-subtitles').addEventListener('click', ()=>{ State.settings.subtitles=!State.settings.subtitles; applySettingsToDOM(); saveState(); Sound.click(); });
+ $('#toggle-motion').addEventListener('click', ()=>{ State.settings.reduceMotion=!State.settings.reduceMotion; applySettingsToDOM(); saveState(); Sound.click(); });
+ $('#toggle-sound').addEventListener('click', ()=>{ State.settings.sound=!State.settings.sound; applySettingsToDOM(); saveState(); });
+ $all('#seg-textsize button').forEach(b=>{
+  b.addEventListener('click', ()=>{ State.settings.textSize=b.dataset.size; applySettingsToDOM(); saveState(); Sound.click(); });
+ });
+
+ // Pause menu
+ $('#btn-pause').addEventListener('click', ()=>{ Sound.open(); $('#overlay-pause').classList.add('active'); });
+ $('#pause-resume').addEventListener('click', ()=>{ Sound.click(); $('#overlay-pause').classList.remove('active'); });
+ $('#pause-a11y').addEventListener('click', ()=>{ Sound.click(); $('#overlay-pause').classList.remove('active'); showScreen('screen-a11y'); });
+ $('#pause-restart').addEventListener('click', ()=>{
+  Sound.click();
+  showConfirm("Restart this decade from the beginning? Progress will be lost.", ()=>{ $('#overlay-pause').classList.remove('active'); startNewGame(State.currentEraId); });
+ });
+ $('#pause-menu').addEventListener('click', ()=>{ Sound.click(); $('#overlay-pause').classList.remove('active'); showScreen('screen-menu'); refreshMenuButtons(); });
+
+ // Confirm dialog wiring done via showConfirm()
+
+ // Teacher mode
+ $('#teacher-close').addEventListener('click', ()=>{ Sound.click(); $('#overlay-teacher').classList.remove('active'); });
+ $('#teacher-endings').addEventListener('click', ()=>{ Sound.click(); teacherViewEndings(); });
+ $('#teacher-notes').addEventListener('click', ()=>{ Sound.click(); teacherViewNotes(); });
+ $('#teacher-reset').addEventListener('click', ()=>{
+  Sound.click();
+  showConfirm("Erase all saved progress and settings? This cannot be undone.", ()=>{
+   localStorage.removeItem(SAVE_KEY);
+   State = defaultState();
+   applySettingsToDOM();
+   $('#overlay-teacher').classList.remove('active');
+   showScreen('screen-menu');
+   refreshMenuButtons();
+  });
+ });
+
+ document.addEventListener('keydown', (e)=>{
+  if(e.ctrlKey && e.shiftKey && (e.key==='T'||e.key==='t')){
+   e.preventDefault();
+   openTeacherMode();
+   return;
+  }
+  const gameActive = $('#screen-game').classList.contains('active');
+  if(gameActive){
+   if(e.key==='Escape'){
+    e.preventDefault();
+    const pauseOpen = $('#overlay-pause').classList.contains('active');
+    pauseOpen ? $('#overlay-pause').classList.remove('active') : $('#overlay-pause').classList.add('active');
+    return;
+   }
+   if(['1','2','3'].includes(e.key)){
+    const btns = $all('#choices-wrap .choice-btn');
+    const btn = btns[parseInt(e.key,10)-1];
+    if(btn && !btn.disabled){ btn.click(); }
+    return;
+   }
+   if(e.key==='Enter' || e.key===' '){
+    const nextBtn = document.getElementById('btn-next') || document.getElementById('fc-continue') || document.getElementById('prop-continue') || document.getElementById('tl-continue') || document.getElementById('ev-continue');
+    if(nextBtn){ e.preventDefault(); nextBtn.click(); }
+   }
+  }
+ });
+});
+
+function showConfirm(text, onYes){
+ $('#confirm-text').textContent = text;
+ $('#overlay-confirm').classList.add('active');
+ const yesBtn = $('#confirm-yes');
+ const noBtn = $('#confirm-no');
+ const yesHandler = ()=>{ cleanup(); onYes(); };
+ const noHandler = ()=>{ cleanup(); };
+ function cleanup(){
+  $('#overlay-confirm').classList.remove('active');
+  yesBtn.removeEventListener('click', yesHandler);
+  noBtn.removeEventListener('click', noHandler);
+ }
+ yesBtn.addEventListener('click', yesHandler);
+ noBtn.addEventListener('click', noHandler);
+}
+</script>
+</body>
+</html>
