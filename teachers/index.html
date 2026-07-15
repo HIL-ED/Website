@@ -74,6 +74,27 @@
   }
   .benefits .item p { margin: 0; font-size: 14px; opacity: .8; line-height: 1.6; }
 
+  .section-title {
+    font-family: 'Caprasimo', serif; font-weight: 400; font-size: 22px;
+    margin: 0 0 8px; text-align: center;
+  }
+  .section-sub { font-size: 14px; opacity: .8; margin: 0 0 20px; text-align: center; }
+  .spectrum { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 16px; }
+  .form-card { border-radius: 18px; padding: 22px 24px; background: #e8f6f4; }
+  .form-card:nth-child(2) { background: #ffe1d0; }
+  .form-card.long {
+    background: #16305c; color: #fff2eb;
+    box-shadow: 0 6px 16px rgba(22,48,92,0.3);
+  }
+  .form-card .badge {
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: #9ed7d0; margin-bottom: 6px;
+  }
+  .form-card .length { font-family: 'Caprasimo', serif; font-size: 16px; margin-bottom: 2px; }
+  .form-card .span { font-size: 12px; font-weight: 700; opacity: .7; margin-bottom: 8px; }
+  .form-card p { margin: 0; font-size: 13px; line-height: 1.6; opacity: .85; }
+  .form-card.long p { opacity: .92; }
+
   .tpt-cta {
     margin: 0 48px; padding: 36px 40px; border-radius: 24px;
     background: #16305c; display: flex; align-items: center;
@@ -141,6 +162,7 @@
     .intro { padding: 32px 24px 8px; }
     section { padding: 24px 24px; }
     .benefits { grid-template-columns: 1fr; padding: 24px; }
+    .spectrum { grid-template-columns: 1fr; }
     .tpt-cta { margin: 0 24px; flex-direction: column; text-align: center; }
     .testimonial-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
@@ -178,6 +200,30 @@
         <p>Printable discussion sheets and reflection prompts help you turn play into a graded, gradeable lesson.</p>
       </div>
     </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">One Game, Three Ways to Run It</h2>
+    <p class="section-sub">Our games flex to whatever time you actually have — from a single period to a full-semester campaign.</p>
+    <div class="spectrum">
+      <div class="form-card">
+        <div class="length">Short-Form</div>
+        <div class="span">1–3 class periods</div>
+        <p>A self-contained session — play a round, debrief, and connect it to the day's content.</p>
+      </div>
+      <div class="form-card">
+        <div class="length">Medium-Form</div>
+        <div class="span">1–2 weeks</div>
+        <p>The story unfolds across lessons, a few minutes at a time, building anticipation between classes.</p>
+      </div>
+      <div class="form-card long">
+        <div class="badge">Our specialty</div>
+        <div class="length">Long-Form Campaign</div>
+        <div class="span">A full unit or semester</div>
+        <p>Students return to the same roles and consequences as the story compounds — the narratives students still talk about years later. Running simulations, we've seen average absences drop from 6.3 to 4.1 per day.</p>
+      </div>
+    </div>
+    <p class="section-sub" style="margin-top:16px;"><a href="../blog/how-much-time-does-ene-take/">Read more about how narrative length works →</a></p>
   </section>
 
   <div class="tpt-cta">
@@ -235,6 +281,7 @@
     <div>© 2026 Humanities Immersed Learning LLC</div>
     <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
       <a href="../">Back to Home</a>
+      <a href="../about/">About</a>
       <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
     </div>
