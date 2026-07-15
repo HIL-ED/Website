@@ -255,13 +255,100 @@ const player = {
   safeX:80, safeY:400, anim:0, squash:0
 };
 
+// ---------- AUDIO ----------
+// Tiny Web Audio chiptune engine: synthesized square-wave SFX plus a looping
+// "Yankee Doodle" melody — no audio files. The context unlocks on first tap/keypress.
+const AudioSys = (function(){
+  let ac=null, master=null, musicGain=null, sfxGain=null;
+  let muted=false, musicPlaying=false, lookahead=null;
+  let tempo=110, mIdx=0, beatCount=0, nextTime=0;
+
+  const midiF = n => 440*Math.pow(2,(n-69)/12);
+  // Yankee Doodle verse as [midi note (-1 = rest), beats]; loops seamlessly
+  const MELODY = [
+    [60,1],[60,1],[62,1],[64,1], [60,1],[64,1],[62,1],[55,1],
+    [60,1],[60,1],[62,1],[64,1], [60,2],[59,2],
+    [60,1],[60,1],[62,1],[64,1], [65,1],[64,1],[62,1],[60,1],
+    [59,1],[55,1],[57,1],[59,1], [60,2],[-1,1],[60,1],
+  ];
+
+  function ensure(){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return false;
+    if(!ac){
+      ac=new AC();
+      master=ac.createGain(); master.gain.value=muted?0:0.5; master.connect(ac.destination);
+      musicGain=ac.createGain(); musicGain.gain.value=0.4; musicGain.connect(master);
+      sfxGain=ac.createGain(); sfxGain.gain.value=0.85; sfxGain.connect(master);
+    }
+    if(ac.state==='suspended') ac.resume();
+    return true;
+  }
+  function tone(freq,t0,dur,type,vol,dest,slideTo){
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t0);
+    if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo,t0+dur);
+    g.gain.setValueAtTime(vol,t0);
+    g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+    o.connect(g); g.connect(dest);
+    o.start(t0); o.stop(t0+dur+0.03);
+  }
+  function sfx(fn){ if(ensure()) fn(ac.currentTime); }
+
+  function schedule(){
+    if(!musicPlaying||!ac) return;
+    const spb=60/tempo;
+    while(nextTime < ac.currentTime+0.2){
+      const [note,beats]=MELODY[mIdx];
+      if(note>0) tone(midiF(note+12), nextTime, beats*spb*0.85, 'square', 0.14, musicGain);
+      for(let b=0;b<beats;b++){ // oom-pah triangle bass under the tune
+        tone(midiF((beatCount+b)%2===0?48:43), nextTime+b*spb, spb*0.8, 'triangle', 0.2, musicGain);
+      }
+      beatCount+=beats; nextTime+=beats*spb;
+      mIdx=(mIdx+1)%MELODY.length;
+    }
+  }
+  function startMusic(bpm){
+    if(!ensure()) return;
+    tempo=bpm||110; mIdx=0; beatCount=0; musicPlaying=true;
+    nextTime=ac.currentTime+0.12;
+    if(!lookahead) lookahead=setInterval(schedule,30);
+  }
+  // called every frame: full volume in play, ducked under overlays, silent on menus
+  function tick(st){
+    if(!ac||!musicGain) return;
+    if(st==='play') musicGain.gain.setTargetAtTime(0.4, ac.currentTime, 0.15);
+    else if(st==='question'||st==='levelclear') musicGain.gain.setTargetAtTime(0.12, ac.currentTime, 0.15);
+    else musicPlaying=false;
+  }
+  function toggleMute(){ muted=!muted; if(master) master.gain.value=muted?0:0.5; }
+
+  return {
+    ensure, startMusic, tick, toggleMute,
+    isMuted:()=>muted,
+    jump(){ sfx(t=>tone(230,t,0.16,'square',0.4,sfxGain,680)); },
+    coin(){ sfx(t=>{ tone(988,t,0.07,'square',0.4,sfxGain); tone(1319,t+0.07,0.2,'square',0.4,sfxGain); }); },
+    correct(){ sfx(t=>{ [523,659,784,1047].forEach((f,i)=>tone(f,t+i*0.09,0.14,'square',0.38,sfxGain)); }); },
+    wrong(){ sfx(t=>{ tone(233,t,0.18,'sawtooth',0.35,sfxGain,175); tone(175,t+0.18,0.3,'sawtooth',0.35,sfxGain,110); }); },
+    stomp(){ sfx(t=>tone(320,t,0.12,'square',0.4,sfxGain,80)); },
+    hurt(){ sfx(t=>tone(200,t,0.22,'sawtooth',0.4,sfxGain,70)); },
+    spring(){ sfx(t=>tone(330,t,0.32,'square',0.38,sfxGain,1100)); },
+    star(){ sfx(t=>{ [659,784,988,1319,1568].forEach((f,i)=>tone(f,t+i*0.07,0.12,'square',0.32,sfxGain)); }); },
+    flag(){ sfx(t=>{ [523,587,659,784,880,1047].forEach((f,i)=>tone(f,t+i*0.11,0.2,'triangle',0.42,sfxGain)); }); },
+    gameover(){ sfx(t=>{ [392,330,262,196].forEach((f,i)=>tone(f,t+i*0.18,0.26,'triangle',0.42,sfxGain)); }); },
+    select(){ sfx(t=>tone(880,t,0.06,'square',0.3,sfxGain)); },
+  };
+})();
+
 // ---------- INPUT ----------
 const keys = {};
 const pressed = {};
 window.addEventListener('keydown', e=>{
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Space'].includes(e.key)) e.preventDefault();
+  if((e.key==='m'||e.key==='M') && !keys[e.key]) AudioSys.toggleMute();
   if(!keys[e.key]) pressed[e.key]=true;
   keys[e.key]=true;
+  AudioSys.ensure();
   handleMenuKey(e.key);
 });
 window.addEventListener('keyup', e=>{ keys[e.key]=false; });
@@ -289,6 +376,7 @@ function onMouseMove(e){
 }
 
 function handlePointer(x,y){
+  AudioSys.ensure();
   if(state==='title'){ startSelect(); return; }
   if(state==='select'){
     // character cards
@@ -299,7 +387,9 @@ function handlePointer(x,y){
     if(x>W/2-120 && x<W/2+120 && y>450 && y<510){ beginGame(); }
     return;
   }
+  if(state==='play' && x<40 && y>44 && y<64){ AudioSys.toggleMute(); return; } // speaker icon
   if(state==='question'){
+    if(questionData && questionData.reveal!=null){ resolveWrong(); return; }
     const idx = hitAnswer(x,y);
     if(idx>=0 && !(questionData && idx===questionData.elim)) answerQuestion(idx);
     return;
@@ -314,8 +404,12 @@ function handleMenuKey(k){
     else if(k==='ArrowRight') selIndex=(selIndex+1)%CHARS.length;
     else if(k==='Enter'||k===' '||k==='Space') beginGame();
   } else if(state==='question'){
-    const map={'1':0,'2':1,'3':2,'4':3};
-    if(k in map && map[k]!==(questionData&&questionData.elim)) answerQuestion(map[k]);
+    if(questionData && questionData.reveal!=null){
+      if(k==='Enter'||k===' '||k==='Space') resolveWrong();
+    } else {
+      const map={'1':0,'2':1,'3':2,'4':3};
+      if(k in map && map[k]!==(questionData&&questionData.elim)) answerQuestion(map[k]);
+    }
   } else if(state==='levelclear' && (k==='Enter'||k===' '||k==='Space')) nextLevel();
   else if((state==='win'||state==='gameover') && (k==='Enter'||k===' '||k==='Space')) state='title';
 }
@@ -330,7 +424,7 @@ function hitAnswer(x,y){
 // touch move buttons
 function bindHold(id,key){
   const el=document.getElementById(id);
-  const on=e=>{ e.preventDefault(); keys[key]=true; if(key==='ArrowUp') pressed[key]=true; };
+  const on=e=>{ e.preventDefault(); AudioSys.ensure(); keys[key]=true; if(key==='ArrowUp') pressed[key]=true; };
   const off=e=>{ e.preventDefault(); keys[key]=false; };
   el.addEventListener('touchstart',on,{passive:false});
   el.addEventListener('touchend',off,{passive:false});
@@ -359,6 +453,7 @@ function loadLevel(i){
   player.x=80; player.y=level.groundY-player.h; player.vx=0; player.vy=0;
   player.canSuper=false; player.invuln=60; player.safeX=80; player.safeY=level.groundY-player.h;
   camX=0; starTimer=0; floaters=[]; particles=[];
+  AudioSys.startMusic(104 + i*8);
 }
 function nextLevel(){
   if(levelIdx+1 < LEVELS.length){ loadLevel(levelIdx+1); state='play'; }
@@ -421,6 +516,7 @@ function update(dt){
   if(p.jumpBuf>0 && (p.onGround||p.coyote>0)){
     p.vy=-jumpVel; p.onGround=false; p.coyote=0; p.jumpBuf=0;
     burst(p.x+p.w/2,p.y+p.h,'#f2c14e');
+    AudioSys.jump();
   }
   // variable jump height (full height once you have the Spring, so gaps stay clearable)
   if(!jumpKey && p.vy<-4 && !p.canSuper) p.vy=-4;
@@ -494,8 +590,10 @@ function update(dt){
       const stomping = p.vy>0 && (p.y+p.h) < e.y+18;
       if(starTimer>0){
         e.alive=false; score+=150; burst(e.x,e.y,'#f2c14e'); addFloat(e.x,e.y-10,'+150','#f2c14e');
+        AudioSys.stomp();
       } else if(e.type==='redcoat' && stomping){
         e.alive=false; score+=100; p.vy=-8; burst(e.x,e.y,'#c0392b'); addFloat(e.x,e.y-10,'+100','#fff');
+        AudioSys.stomp();
       } else if(e.type==='tyrant' && stomping){
         // can't stomp a tyrant without a star -> bounce + damage
         p.vy=-6; damage(false);
@@ -523,7 +621,7 @@ function update(dt){
   }
 
   // goal
-  if(p.x > level.goalX){ score+=500; state='levelclear'; }
+  if(p.x > level.goalX){ score+=500; state='levelclear'; AudioSys.flag(); }
 
   // camera
   camX = p.x + p.w/2 - W*0.4;
@@ -553,7 +651,8 @@ function damage(fell){
   if(p.invuln>0 && !fell) return;
   hearts--; p.invuln=90;
   burst(p.x+p.w/2,p.y+p.h/2,'#c0392b');
-  if(hearts<=0){ state='gameover'; return; }
+  if(hearts<=0){ state='gameover'; AudioSys.gameover(); return; }
+  AudioSys.hurt();
   if(fell){
     p.x=p.safeX; p.y=p.safeY-4; p.vx=0; p.vy=0;
   } else {
@@ -572,8 +671,9 @@ function triggerBlock(b){
     const wrong = [0,1,2,3].filter(i=>i!==q.a);
     elim = wrong[Math.floor(Math.random()*wrong.length)];
   }
-  questionData = { block:b, q, elim };
+  questionData = { block:b, q, elim, reveal:null };
   qHover=-1;
+  AudioSys.select();
   state='question';
 }
 function pickQuestion(doc){
@@ -596,6 +696,7 @@ function answerQuestion(idx){
   if(idx===q.a){
     b.used=true; b.asked=true;
     answeredCount++; score+=200;
+    AudioSys.correct();
     addFloat(b.x, b.y+ (b.gate?120:-20), 'CORRECT!', '#7bd47b');
     burst(b.x+b.w/2, b.gate?400:b.y, '#7bd47b');
     if(hearts<charData.maxHearts){
@@ -603,13 +704,23 @@ function answerQuestion(idx){
       addFloat(b.x, b.y+(b.gate?150:8), '+1 HEART', '#e0364e');
     }
     grantReward(b.reward, b);
-  } else if(b.gate){
+    questionData=null;
+    state='play';
+  } else {
+    // teaching moment: reveal the correct answer; consequences wait for resolveWrong()
+    AudioSys.wrong();
+    questionData.reveal = idx;
+  }
+}
+function resolveWrong(){
+  const b=questionData.block;
+  if(b.gate){
     // mastery gate: costs a heart, knock back, and try again
     hearts--; player.invuln=70;
     player.vx=-6; player.x-=10; player.vy=-5;
     b.asked=false; // re-triggerable
-    addFloat(b.x, b.y+120, 'WRONG - TRY AGAIN', '#e06666');
-    if(hearts<=0){ state='gameover'; questionData=null; return; }
+    addFloat(b.x, b.y+120, 'TRY AGAIN', '#e06666');
+    if(hearts<=0){ state='gameover'; AudioSys.gameover(); questionData=null; return; }
   } else {
     b.used=true; // optional coin block is consumed
     addFloat(b.x, b.y-20, 'MISSED', '#e06666');
@@ -619,9 +730,9 @@ function answerQuestion(idx){
 }
 function grantReward(type,b){
   const fy = b.gate ? 360 : b.y-42;
-  if(type==='spring'){ player.canSuper=true; addFloat(b.x,fy,'LIBERTY SPRING!','#8ab0e6'); }
-  else if(type==='star'){ starTimer=STAR_TIME; addFloat(b.x,fy,'LIBERTY STAR!','#f2c14e'); }
-  else { score+=100; addFloat(b.x,fy,'+100 COIN','#f2c14e'); }
+  if(type==='spring'){ player.canSuper=true; AudioSys.spring(); addFloat(b.x,fy,'LIBERTY SPRING!','#8ab0e6'); }
+  else if(type==='star'){ starTimer=STAR_TIME; AudioSys.star(); addFloat(b.x,fy,'LIBERTY STAR!','#f2c14e'); }
+  else { score+=100; AudioSys.coin(); addFloat(b.x,fy,'+100 COIN','#f2c14e'); }
 }
 
 // ---------- PIXEL DRAW HELPERS ----------
@@ -1045,6 +1156,39 @@ function drawHUD(){
   if(starTimer>0){ ctx.fillStyle='#f2c14e'; ctx.fillText('★STAR '+Math.ceil(starTimer/1000), px2, 27); }
   else if(player.canSuper){ ctx.fillStyle='#8ab0e6'; ctx.fillText('⬆ SPRING', px2, 27); }
   ctx.textAlign='left';
+
+  // ---- progress strip (level map: gates, goal flag, player marker) ----
+  ctx.fillStyle='rgba(10,14,26,.55)'; ctx.fillRect(0,44,W,20);
+  const tx=52, tw=W-104, ty=51, th=6;
+  ctx.fillStyle='#1c2742'; ctx.fillRect(tx-2,ty-2,tw+4,th+4);
+  ctx.fillStyle='#33456e'; ctx.fillRect(tx,ty,tw,th);
+  const frac=Math.max(0,Math.min(1,player.x/level.goalX));
+  ctx.fillStyle='#f2c14e'; ctx.fillRect(tx,ty,Math.round(tw*frac),th);
+  // question-gate markers (colored by reward; dim green once answered)
+  for(const b of level.blocks){
+    if(!b.gate) continue;
+    const gx=tx+tw*Math.min(1,b.x/level.goalX);
+    ctx.fillStyle = b.used ? '#4a5a34' : (b.reward==='star'?'#b48fe0':(b.reward==='spring'?'#7aa6e6':'#fff'));
+    ctx.fillRect(Math.round(gx)-2,ty-2,4,th+4);
+  }
+  // goal flag at the end of the track
+  ctx.fillStyle='#d8d2c0'; ctx.fillRect(tx+tw,ty-5,2,th+10);
+  ctx.fillStyle='#c0392b';
+  ctx.beginPath(); ctx.moveTo(tx+tw+2,ty-5); ctx.lineTo(tx+tw+12,ty-1); ctx.lineTo(tx+tw+2,ty+3); ctx.closePath(); ctx.fill();
+  // player marker in the character's coat color
+  const mx=Math.round(tx+tw*frac);
+  ctx.fillStyle='#20160e'; ctx.fillRect(mx-4,ty-4,8,th+8);
+  ctx.fillStyle=charData.coat; ctx.fillRect(mx-3,ty-3,6,th+6);
+  // speaker icon (click, or press M, to mute)
+  ctx.fillStyle='#9fb0d0';
+  ctx.fillRect(11,50,4,6);
+  ctx.beginPath(); ctx.moveTo(15,50); ctx.lineTo(21,45); ctx.lineTo(21,61); ctx.lineTo(15,56); ctx.closePath(); ctx.fill();
+  if(AudioSys.isMuted()){
+    ctx.strokeStyle='#e0364e'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(25,47); ctx.lineTo(34,59); ctx.moveTo(34,47); ctx.lineTo(25,59); ctx.stroke();
+  } else {
+    ctx.fillRect(25,50,2,6); ctx.fillRect(29,47,2,12);
+  }
 }
 
 function drawQuestion(){
@@ -1060,11 +1204,12 @@ function drawQuestion(){
   ctx.fillStyle='#fff'; ctx.font='13px "Press Start 2P"';
   wrapText(q.q, W/2, 180, 720, 22);
   // answers
+  const reveal = questionData.reveal;
   for(let i=0;i<4;i++){
     const by=300+i*52;
     const eliminated = (questionData.elim===i);
-    const hovered = qHover===i && !eliminated;
-    if(eliminated){
+    const hovered = qHover===i && !eliminated && reveal==null;
+    if(eliminated && reveal==null){
       ctx.fillStyle='#171d2e';
       ctx.fillRect(140,by-22,680,44);
       ctx.strokeStyle='#2a3348'; ctx.lineWidth=2; ctx.strokeRect(140,by-22,680,44);
@@ -1074,16 +1219,39 @@ function drawQuestion(){
       ctx.beginPath(); ctx.moveTo(156,by+1); ctx.lineTo(804,by+1); ctx.stroke();
       continue;
     }
-    ctx.fillStyle = hovered ? '#2f4a7a' : '#233458';
+    // teaching reveal: correct answer glows green, the wrong pick turns red, rest dim
+    let bg, border, numCol='#f2c14e', txtCol='#fff';
+    if(reveal!=null){
+      if(i===q.a){ bg='#1d4a2b'; border='#7bd47b'; numCol='#7bd47b'; }
+      else if(i===reveal){ bg='#4a1d22'; border='#e06666'; numCol='#e06666'; txtCol='#d0a0a8'; }
+      else { bg='#171d2e'; border='#2a3348'; numCol='#4a5570'; txtCol='#4a5570'; }
+    } else {
+      bg = hovered ? '#2f4a7a' : '#233458';
+      border = hovered ? '#f2c14e' : '#3f5688';
+    }
+    ctx.fillStyle=bg;
     ctx.fillRect(140,by-22,680,44);
-    ctx.strokeStyle = hovered ? '#f2c14e' : '#3f5688'; ctx.lineWidth=2; ctx.strokeRect(140,by-22,680,44);
-    ctx.fillStyle='#f2c14e'; ctx.font='12px "Press Start 2P"'; ctx.textAlign='left';
+    ctx.strokeStyle=border; ctx.lineWidth = (reveal!=null && i===q.a) ? 4 : 2;
+    ctx.strokeRect(140,by-22,680,44);
+    ctx.fillStyle=numCol; ctx.font='12px "Press Start 2P"'; ctx.textAlign='left';
     ctx.fillText((i+1)+'.', 156, by+5);
-    ctx.fillStyle='#fff'; ctx.font='11px "Press Start 2P"';
+    ctx.fillStyle=txtCol; ctx.font='11px "Press Start 2P"';
     ctx.fillText(q.o[i], 190, by+5);
+    if(reveal!=null && i===q.a){
+      ctx.fillStyle='#7bd47b'; ctx.font='9px "Press Start 2P"'; ctx.textAlign='right';
+      ctx.fillText('CORRECT', 808, by+5);
+      ctx.textAlign='left';
+    }
   }
-  ctx.textAlign='center'; ctx.fillStyle='#9fb0d0'; ctx.font='9px "Press Start 2P"';
-  ctx.fillText('CLICK / TAP  •  OR PRESS 1-4', W/2, 470);
+  ctx.textAlign='center'; ctx.font='9px "Press Start 2P"';
+  if(reveal!=null){
+    ctx.fillStyle='#7bd47b';
+    const hint = questionData.block.gate ? 'REMEMBER IT!  TAP / SPACE TO TRY AGAIN (-1 HEART)' : 'REMEMBER IT!  TAP / SPACE TO CONTINUE';
+    ctx.fillText(hint, W/2, 516);
+  } else {
+    ctx.fillStyle='#9fb0d0';
+    ctx.fillText('CLICK / TAP  •  OR PRESS 1-4', W/2, 516);
+  }
   ctx.textAlign='left';
 }
 function wrapText(text,cx,y,maxW,lh){
@@ -1130,6 +1298,7 @@ function drawTitle(){
   ctx.font='13px "Press Start 2P"';
   ctx.fillText('PRESS SPACE / TAP TO START', W/2, 430);
   ctx.fillStyle='#5f7099'; ctx.font='9px "Press Start 2P"';
+  ctx.fillText('M = SOUND ON / OFF', W/2, 462);
   ctx.fillText('Humanities Immersed Learning', W/2, 500);
   ctx.textAlign='left';
 }
@@ -1198,6 +1367,7 @@ let last=performance.now();
 function loop(now){
   const dt=Math.min(48, now-last); last=now;
   update(dt);
+  AudioSys.tick(state);
   render();
   requestAnimationFrame(loop);
 }
