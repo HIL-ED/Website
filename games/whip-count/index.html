@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Whip Count — A Lobbying Simulation</title>
+<title>The Whip Count: A Lobbying Simulation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -371,32 +371,32 @@
   <div class="masthead">
     <span class="eyebrow">A Civics Simulation</span>
     <h1>The Whip Count</h1>
-    <p class="sub">You run an interest group with one goal: get your bill through <b>both</b> chambers of Congress before the session ends. Persuasion costs Political Capital — and a rival interest group is spending theirs to stop you.</p>
+    <p class="sub">You run an interest group with one goal: get your bill through <b>both</b> chambers of Congress before the session ends. Persuasion costs Political Capital, and a rival interest group is spending theirs to stop you.</p>
   </div>
 
   <div class="instructions-card">
     <h4>The goal</h4>
-    <p>Congress needs a majority in the <b>House</b> (218 of 435) and the <b>Senate</b> (51 of 100) to send a bill to become law. Every representative belongs to an ideological bloc that starts <b>undecided</b> — you and a rival interest group both compete to win them over before the session's rounds run out.</p>
+    <p>Congress needs a majority in the <b>House</b> (218 of 435) and the <b>Senate</b> (51 of 100) to send a bill to become law. Every representative belongs to an ideological bloc that starts <b>undecided</b>. You and a rival interest group both compete to win them over before the session's rounds run out.</p>
     <h4>Natural allies</h4>
-    <p>Some reps already agree with you (or the rival) before a single meeting happens — a bill that fits an ideology strongly enough locks in automatic day-one support on both sides.</p>
+    <p>Some reps already agree with you (or the rival) before a single meeting happens: a bill that fits an ideology strongly enough locks in automatic day-one support on both sides.</p>
     <h4>Political Capital (PC)</h4>
-    <p>Each round you receive PC from dues, fundraising, and momentum. Spend it on lobbying tactics — the further a bloc is from your cause, the more it costs to move them.</p>
+    <p>Each round you receive PC from dues, fundraising, and momentum. Spend it on lobbying tactics: the further a bloc is from your cause, the more it costs to move them.</p>
     <h4>Tactics</h4>
     <ul>
-      <li><b>Coffee Meeting</b> — cheap, low-key, modest results.</li>
-      <li><b>Campaign Contribution</b> — costlier, more persuasive.</li>
-      <li><b>Grassroots Rally</b> — doesn't flip votes directly, but makes a bloc more receptive to your next move this round.</li>
-      <li><b>Media Ad Buy</b> — airs nationally, nudging that ideology in <i>both</i> chambers at once.</li>
-      <li><b>Backdoor Deal</b> — unlocked round 3+. Guarantees results almost regardless of ideology, but risks a watchdog story that costs you later. This is how real influence-buying can backfire.</li>
+      <li><b>Coffee Meeting</b>: cheap, low-key, modest results.</li>
+      <li><b>Campaign Contribution</b>: costlier, more persuasive.</li>
+      <li><b>Grassroots Rally</b>: doesn't flip votes directly, but makes a bloc more receptive to your next move this round.</li>
+      <li><b>Media Ad Buy</b>: airs nationally, nudging that ideology in <i>both</i> chambers at once.</li>
+      <li><b>Backdoor Deal</b>: unlocked round 3+. Guarantees results almost regardless of ideology, but risks a watchdog story that costs you later. This is how real influence-buying can backfire.</li>
     </ul>
     <h4>The Hill Herald</h4>
-    <p>At the start of each week (round), a newspaper pops up with that week's headlines — endorsements, scandals, polls, and ad campaigns that can swing blocs your way or against you. You'll need to read it before you can act.</p>
+    <p>At the start of each week (round), a newspaper pops up with that week's headlines: endorsements, scandals, polls, and ad campaigns that can swing blocs your way or against you. You'll need to read it before you can act.</p>
     <h4>Winning &amp; losing</h4>
     <p>A chamber is <b>passed</b> once you reach its majority. It's <b>blocked</b> if the rival locks up enough votes that you can no longer mathematically reach majority. Pass both chambers to sign your bill into law.</p>
   </div>
 
   <div class="instructions-continue-bar">
-    <button class="end-round-btn" id="instructionsContinueBtn">I Understand — Choose My Bill →</button>
+    <button class="end-round-btn" id="instructionsContinueBtn">I Understand: Choose My Bill →</button>
   </div>
 </section>
 
@@ -478,7 +478,7 @@
       </div>
       <div class="tactics-key-item">
         <div class="tk-name">📣 Grassroots Rally</div>
-        <div class="tk-desc">No direct flips — makes a bloc more receptive to your next move this round.</div>
+        <div class="tk-desc">No direct flips: makes a bloc more receptive to your next move this round.</div>
       </div>
       <div class="tactics-key-item">
         <div class="tk-name">📺 Media Ad Buy</div>
@@ -495,7 +495,7 @@
     <div class="panel newspaper-panel">
       <div class="paper-masthead">
         <span class="paper-name">The Hill Herald</span>
-        <span class="paper-date">Session Dispatch — Round <span id="paperRound">1</span></span>
+        <span class="paper-date">Session Dispatch: Round <span id="paperRound">1</span></span>
       </div>
       <div class="seal-rule"></div>
       <div id="paperHeadlines" class="paper-headlines"></div>
@@ -507,7 +507,7 @@
   </div>
 
   <div class="end-round-bar">
-    <button class="end-round-btn" id="endRoundBtn">Whip the Vote — End Round →</button>
+    <button class="end-round-btn" id="endRoundBtn">Whip the Vote: End Round →</button>
   </div>
 </section>
 
@@ -534,7 +534,7 @@
 
   <div class="end-actions">
     <button class="btn-primary" id="playAgainBtn">Choose a New Bill</button>
-    <button class="btn-secondary" id="replayBtn">Run It Back — Same Bill</button>
+    <button class="btn-secondary" id="replayBtn">Run It Back With the Same Bill</button>
   </div>
 </section>
 
@@ -556,7 +556,7 @@
 "use strict";
 
 /* =========================================================================
-   CONFIG — every tunable number for the simulation lives here. Adjust
+   CONFIG: every tunable number for the simulation lives here. Adjust
    freely to change difficulty without touching the game logic below.
 ========================================================================= */
 const CONFIG = {
@@ -571,7 +571,7 @@ const CONFIG = {
   EVENT_CHANCE: 0.75,
 
   // Reps whose ideology strongly (or somewhat) aligns with a bill start
-  // already decided on day one — "safe votes" who need no convincing.
+  // already decided on day one: "safe votes" who need no convincing.
   NATURAL_ALLY_STRONG: 0.20,   // receptiveness >= NATURAL_ALLY_STRONG_THRESHOLD
   NATURAL_ALLY_LEAN: 0.10,     // receptiveness >= NATURAL_ALLY_LEAN_THRESHOLD
   NATURAL_ALLY_STRONG_THRESHOLD: 75,
@@ -713,7 +713,7 @@ const CONFIG = {
     { text: "A viral op-ed puts your cause in the national spotlight.", apply: (s)=>{ s.pcBonusNextRound += 20; return "You gain +20 Political Capital next round."; } },
     { text: "A respected caucus leader publicly endorses your bill.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "you", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} commit to you on the spot.` : "No effect."; } },
     { text: "Grassroots petitions flood a swing district's offices.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "you", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} switch to your side.` : "No effect."; } },
-    { text: "Investigators publish a critical report on the opposition's biggest donor.", apply: (s)=>{ const b = pickRivalHeldBloc(); if(!b) return "No effect."; const n = reclaimFromRival(s, b.chamber, b.id, swingAmt(b.chamber)); return n>0 ? `${n} ${idName(b.id)} member(s) in the ${chamberLabel(b.chamber)} publicly reconsider — they're undecided again.` : "No effect."; } },
+    { text: "Investigators publish a critical report on the opposition's biggest donor.", apply: (s)=>{ const b = pickRivalHeldBloc(); if(!b) return "No effect."; const n = reclaimFromRival(s, b.chamber, b.id, swingAmt(b.chamber)); return n>0 ? `${n} ${idName(b.id)} member(s) in the ${chamberLabel(b.chamber)} publicly reconsider. They're undecided again.` : "No effect."; } },
     { text: "A friendly committee hearing goes your way.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} grows +15 receptive this round.`; } },
     { text: "The rival group runs a slick national ad campaign.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; const n = rivalFlip(s, b.chamber, b.id, 5); return n>0 ? `${n} more members of ${idName(b.id)} in the ${chamberLabel(b.chamber)} side with ${s.rivalName}.` : "No effect."; } },
     { text: "The rival airs a sharp attack ad questioning your motives.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; const n = directFlip(s, b.chamber, b.id, "rival", swingAmt(b.chamber)); return n>0 ? `${n} member(s) of ${idName(b.id)} in the ${chamberLabel(b.chamber)} publicly side with ${s.rivalName}.` : "No effect."; } },
@@ -726,10 +726,10 @@ const CONFIG = {
     { text: "A nervous incumbent worries about a primary challenge.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, -8); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} gets skittish (-8 receptive) this round.`; } },
     { text: "A trusted economist's analysis backs your position.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 12); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} takes notice (+12 receptive).`; } },
     { text: "Your coalition partners host a fly-in advocacy day.", apply: (s)=>{ const b = pickFriendlyBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 10); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} gets an extra push (+10 receptive), no PC spent.`; } },
-    { text: "A surprise celebrity post about the bill goes viral overnight.", apply: (s)=>{ const options = ["house","senate"].flatMap(ch=>CONFIG.IDEOLOGIES.map(i=>({chamber:ch,id:i.id}))); const b = options[randInt(0,options.length-1)]; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} reacts (+15 receptive) — nobody saw that coming.`; } },
+    { text: "A surprise celebrity post about the bill goes viral overnight.", apply: (s)=>{ const options = ["house","senate"].flatMap(ch=>CONFIG.IDEOLOGIES.map(i=>({chamber:ch,id:i.id}))); const b = options[randInt(0,options.length-1)]; giveMomentum(s, b.chamber, b.id, 15); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} reacts (+15 receptive). Nobody saw that coming.`; } },
     { text: "A town hall back home turns tense and unpredictable.", apply: (s)=>{ const b = pickModerateBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, -12); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} pulls back (-12 receptive) this round.`; } },
     { text: "The rival's spokesperson stumbles badly in a live interview.", apply: (s)=>{ const b = pickHostileBloc(s); if(!b) return "No effect."; giveMomentum(s, b.chamber, b.id, 10); return `${idName(b.id)} in the ${chamberLabel(b.chamber)} takes a second look at you (+10 receptive).`; } },
-    { text: "A key staffer leaks favorable internal polling.", apply: (s)=>{ s.pcBonusNextRound += 12; return "The story builds momentum — +12 Political Capital next round."; } }
+    { text: "A key staffer leaks favorable internal polling.", apply: (s)=>{ s.pcBonusNextRound += 12; return "The story builds momentum: +12 Political Capital next round."; } }
   ],
 
   SCANDAL_EVENT_TEXT: "A watchdog group runs a story questioning your recent backdoor deal.",
@@ -764,7 +764,7 @@ function newChamberState(chamberKey, bill){
     const recept = bill.receptiveness[ideo.id];
     let you = 0, rival = 0;
     // Natural allies: some reps already agree with the cause before a single
-    // meeting happens — a bill "deal" that fits an ideology hard enough
+    // meeting happens: a bill "deal" that fits an ideology hard enough
     // wins automatic day-one support (and costs you automatic opposition).
     if(recept >= CONFIG.NATURAL_ALLY_STRONG_THRESHOLD) you = Math.round(total * CONFIG.NATURAL_ALLY_STRONG);
     else if(recept >= CONFIG.NATURAL_ALLY_LEAN_THRESHOLD) you = Math.round(total * CONFIG.NATURAL_ALLY_LEAN);
@@ -880,7 +880,7 @@ function doAction(actionType, chamber, ideoId){
     flip = Math.min(undecided, randInt(lo,hi));
     S.backdoorUsedThisSession = true;
     S.backdoorFlagRound = S.round;
-    successText = `Round ${S.round}: A closed-door deal locks in ${flip} member(s) of ${idName(ideoId)} in the ${chamberLabel(chamber)}. No cameras. No questions — yet.`;
+    successText = `Round ${S.round}: A closed-door deal locks in ${flip} member(s) of ${idName(ideoId)} in the ${chamberLabel(chamber)}. No cameras. No questions yet.`;
   } else {
     const successBonus = actionType === "contribution" ? 8 : (actionType === "media" ? 4 : 18);
     const successChance = clamp(recept + successBonus, 12, 95);
@@ -919,7 +919,7 @@ function doAction(actionType, chamber, ideoId){
         const scaled = rand(lo,hi) * (0.55 + otherRecept/180);
         const otherFlip = Math.min(otherUndecided, Math.max(1, Math.round(scaled)));
         S[otherChamber][ideoId].you += otherFlip;
-        addLog(`Round ${S.round}: The same ad buy also reaches ${idName(ideoId)} in the ${chamberLabel(otherChamber)} — ${otherFlip} more on board.`, "self");
+        addLog(`Round ${S.round}: The same ad buy also reaches ${idName(ideoId)} in the ${chamberLabel(otherChamber)}: ${otherFlip} more on board.`, "self");
       }
     }
   }
@@ -936,7 +936,7 @@ function rivalFlip(state, chamber, ideoId, forceMax){
   const conf = CONFIG.CHAMBERS[chamber];
   const [lo,hi] = conf.flip.contribution;
   const recept = rivalReceptivenessOf(ideoId);
-  // Rival lobbying can whiff too — same odds shape the player faces on a
+  // Rival lobbying can whiff too. Same odds shape the player faces on a
   // Campaign Contribution, so neither side is guaranteed results.
   const successChance = clamp(recept + 8, 12, 90);
   if(rand(0,100) >= successChance) return 0;
@@ -985,7 +985,7 @@ function runRivalTurn(){
     budget -= cost; spent += cost;
     const n = rivalFlip(S, target.chamber, target.id);
     if(n>0){
-      addLog(`Round ${S.round}: ${S.rivalName} courts ${idName(target.id)} in the ${chamberLabel(target.chamber)} — ${n} more sign on against your bill.`, "rival");
+      addLog(`Round ${S.round}: ${S.rivalName} courts ${idName(target.id)} in the ${chamberLabel(target.chamber)}: ${n} more sign on against your bill.`, "rival");
     }
     if(spent > 120) break; // keep it from steamrolling every single round
   }
@@ -1235,7 +1235,7 @@ function renderNewspaper(){
   const items = S.log.filter(e=>e.kind === "news");
   const wrap = document.getElementById("paperHeadlines");
   if(items.length === 0){
-    wrap.innerHTML = `<div class="paper-empty">No dispatches yet — the wire is quiet. Check back after Round 1.</div>`;
+    wrap.innerHTML = `<div class="paper-empty">No dispatches yet. The wire is quiet. Check back after Round 1.</div>`;
     return;
   }
   const ordered = items.slice().reverse();
@@ -1302,7 +1302,7 @@ function openHerald(roundNum, continueLabel, onContinue){
       html += `</div>`;
     }
   } else {
-    html += `<div class="paper-empty">A quiet week on Capitol Hill — no major headlines.</div>`;
+    html += `<div class="paper-empty">A quiet week on Capitol Hill: no major headlines.</div>`;
   }
 
   if(activityEntries.length){
@@ -1358,7 +1358,7 @@ function renderEndScreen(){
   function fillChamber(prefix, status, t){
     const resEl = document.getElementById(prefix+"Result");
     resEl.className = "result " + (status === "active" ? "failed" : status);
-    resEl.textContent = status === "passed" ? "PASSED ✓" : status === "blocked" ? "BLOCKED BY OPPOSITION ✕" : "TIME EXPIRED — DID NOT PASS ✕";
+    resEl.textContent = status === "passed" ? "PASSED ✓" : status === "blocked" ? "BLOCKED BY OPPOSITION ✕" : "TIME EXPIRED: DID NOT PASS ✕";
     document.getElementById(prefix+"Table").innerHTML = `
       <tr><td>Convinced (you)</td><td>${t.you} / ${t.total}</td></tr>
       <tr><td>Convinced (${S.rivalName})</td><td>${t.rival}</td></tr>
@@ -1369,7 +1369,7 @@ function renderEndScreen(){
   fillChamber("endHouse", S.houseStatus, houseT);
   fillChamber("endSenate", S.senateStatus, senateT);
 
-  document.getElementById("civicsNote").innerHTML = `<b>Civics corner:</b> Real interest groups use these exact tools — lobbying meetings, PAC contributions, grassroots organizing, and issue ads — to compete for lawmakers' support. Bills must clear a majority in <b>both</b> the House and Senate before they can be signed into law, which is exactly why rival interest groups so often cancel each other out on Capitol Hill.`;
+  document.getElementById("civicsNote").innerHTML = `<b>Civics corner:</b> Real interest groups use these exact tools (lobbying meetings, PAC contributions, grassroots organizing, and issue ads) to compete for lawmakers' support. Bills must clear a majority in <b>both</b> the House and Senate before they can be signed into law, which is exactly why rival interest groups so often cancel each other out on Capitol Hill.`;
 }
 
 /* =========================================================================

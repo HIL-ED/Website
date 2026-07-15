@@ -257,7 +257,7 @@ const player = {
 
 // ---------- AUDIO ----------
 // Tiny Web Audio chiptune engine: synthesized square-wave SFX plus a looping
-// "Yankee Doodle" melody — no audio files. The context unlocks on first tap/keypress.
+// "Yankee Doodle" melody, no audio files. The context unlocks on first tap/keypress.
 const AudioSys = (function(){
   let ac=null, master=null, musicGain=null, sfxGain=null;
   let muted=false, musicPlaying=false, lookahead=null;
@@ -603,11 +603,11 @@ function update(dt){
     }
   }
 
-  // spikes (static hazard) — cost a heart + knockback
+  // spikes (static hazard): cost a heart + knockback
   for(const sp of level.spikes){
     if(rectsOverlap(p, sp)) damage(false);
   }
-  // falling blocks — only dangerous while actually falling
+  // falling blocks: only dangerous while actually falling
   for(const f of level.fallers){
     if(f.state==='fall' && rectsOverlap(p, {x:f.x,y:f.cy,w:f.w,h:f.h})) damage(false);
   }
@@ -739,7 +739,7 @@ function grantReward(type,b){
 function px(x,y,w,h,color){ ctx.fillStyle=color; ctx.fillRect(Math.round(x),Math.round(y),w,h); }
 
 function drawFounder(sx,sy,cd,face,walkFrame,flash,squash){
-  // 26x34 stylized 8-bit colonial figure, drawn larger (visual only — hitbox unchanged)
+  // 26x34 stylized 8-bit colonial figure, drawn larger (visual only, hitbox unchanged)
   const SPRITE_SCALE = 1.5;
   // Mario/Kirby-style squash-and-stretch: briefly wide+flat on a hard landing, anchored at the feet
   const sqz = squash>0 ? squash/9 : 0;
@@ -752,10 +752,10 @@ function drawFounder(sx,sy,cd,face,walkFrame,flash,squash){
   if(face<0){ ctx.translate(26,0); ctx.scale(-1,1); }
   const skin='#e8b98f', skinSh='#cf9d73', wig='#f3f0e6', wigSh='#d3cfc0', coat=cd.coat, coatSh=shade(coat,-18), acc=cd.accent, boot='#2a2320', breech='#d9cdae', ol='#20160e';
   if(flash){ ctx.globalAlpha=0.5; }
-  // boots / legs (walk anim) — 4-phase gait: neutral, forward, neutral, back
+  // boots / legs (walk anim), 4-phase gait: neutral, forward, neutral, back
   const phase = walkFrame % 4;
   const swing = (phase===1) ? 3 : (phase===3) ? -3 : 0;
-  // outline pass — slightly-larger dark backings behind each mass (clean 1px edge)
+  // outline pass: slightly-larger dark backings behind each mass (clean 1px edge)
   px(5,2,15,13,ol);                                 // head/wig
   px(2,13,22,14,ol);                                // coat + arms
   px(3+swing,23,9,12,ol); px(14-swing,23,9,12,ol);  // legs
@@ -872,8 +872,8 @@ function drawBlock(b){
 
 // ---------- RENDER ----------
 // Rolling hill silhouette that anchors a skyline row to the horizon. Drawn full-width and
-// independent of level.gaps, so buildings always sit on continuous ground — even when a
-// foreground pit passes underneath them — instead of appearing to float over the gap.
+// independent of level.gaps, so buildings always sit on continuous ground, even when a
+// foreground pit passes underneath them, instead of appearing to float over the gap.
 function drawHillBand(scroll, baseY, color){
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -881,7 +881,7 @@ function drawHillBand(scroll, baseY, color){
   const step = 20;
   for(let x=0; x<=W; x+=step){
     const wx = x + scroll;
-    // bump is always >=0 so the fill top never dips below baseY — guarantees the band
+    // bump is always >=0 so the fill top never dips below baseY, guarantees the band
     // always fully covers the strip under the buildings, gap or no gap, with no seam.
     const bump = Math.abs(Math.sin(wx*0.010))*10 + Math.abs(Math.sin(wx*0.027 + 1.4))*6;
     ctx.lineTo(x, baseY - bump);
@@ -1009,7 +1009,7 @@ function render(){
 }
 
 function drawWorld(){
-  // daytime sky — tinted per-level so each document world reads as its own place
+  // daytime sky: tinted per-level so each document world reads as its own place
   const skyBase = level.sky || '#243b6b';
   const g=ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,shade(skyBase,44)); g.addColorStop(0.5,shade(skyBase,58)); g.addColorStop(1,shade(skyBase,68));
@@ -1020,7 +1020,7 @@ function drawWorld(){
   sg.addColorStop(0,'rgba(255,250,220,.9)'); sg.addColorStop(1,'rgba(255,250,220,0)');
   ctx.fillStyle=sg; ctx.fillRect(sunx-160,suny-160,320,320);
   ctx.fillStyle='#fff7dc'; ctx.beginPath(); ctx.arc(sunx,suny,26,0,7); ctx.fill();
-  // drifting clouds — poofy Kirby-style puffs (overlapping circles) instead of flat bars
+  // drifting clouds: poofy Kirby-style puffs (overlapping circles) instead of flat bars
   ctx.fillStyle='rgba(255,255,255,.8)';
   for(let i=0;i<6;i++){
     const cw=90+ (i%3)*26;
@@ -1033,13 +1033,13 @@ function drawWorld(){
     ctx.arc(cx+cw*0.5,  cy+10, 15, 0, 7);
     ctx.fill();
   }
-  // distant rolling hills — continuous horizon band that grounds the far skyline even over gaps
+  // distant rolling hills: continuous horizon band that grounds the far skyline even over gaps
   drawHillBand(camX*0.22, level.groundY-70, shade(level.hills||'#1a2a4d', -4));
-  // colonial Philadelphia skyline — far row (hazy blue-grey, slow parallax, sits high)
+  // colonial Philadelphia skyline, far row (hazy blue-grey, slow parallax, sits high)
   drawColonialSkyline(camX*0.22, level.groundY-70, '#7f95ad', false);
-  // near hill/foundation band — grounds the near skyline row the same way
+  // near hill/foundation band: grounds the near skyline row the same way
   drawHillBand(camX*0.42, level.groundY-6, shade('#9a5a3c', -32));
-  // colonial Philadelphia skyline — near row (warm brick, extends down right behind the characters)
+  // colonial Philadelphia skyline, near row (warm brick, extends down right behind the characters)
   drawColonialSkyline(camX*0.42, level.groundY-6, '#9a5a3c', true);
   // ground with gaps
   const gy=level.groundY;
@@ -1053,7 +1053,7 @@ function drawWorld(){
     if(x0+w<0||x0>W) continue;
     drawGround(x0, gy, w, H-gy);
   }
-  // raised ground steps (Mario-style rolling terrain — hills, staircases, dips)
+  // raised ground steps (Mario-style rolling terrain: hills, staircases, dips)
   if(level.steps){
     for(const st of level.steps){
       const x0=st.x0-camX, w=st.x1-st.x0;

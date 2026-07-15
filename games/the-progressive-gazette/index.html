@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>The Progressive Gazette — Humanities Immersed Learning</title>
+<title>The Progressive Gazette: Humanities Immersed Learning</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Special+Elite&family=UnifrakturMaguntia&display=swap');
 
@@ -174,7 +174,7 @@ body{
 .paper{border-right:2px solid #1a0f05;display:flex;flex-direction:column;}
 .paper:last-child{border-right:none;}
 
-/* Each paper gets a distinct aged-ink masthead — no stance color coding */
+/* Each paper gets a distinct aged-ink masthead (no stance color coding) */
 .paper-masthead{
   padding:0.65rem 0.85rem 0.5rem;
   border-bottom:3px double #b8922a;
@@ -406,7 +406,7 @@ body{
   <div class="papers-grid">
     <div class="empty-state">
       <h3>Select a topic &amp; reading level</h3>
-      <p>Click "Run the Presses" to display three perspectives simultaneously —<br>pro, anti, and neutral — each from a different American city.</p>
+      <p>Click "Run the Presses" to display three perspectives simultaneously:<br>pro, anti, and neutral, each from a different American city.</p>
     </div>
   </div>
 </div>
@@ -424,7 +424,7 @@ const TOPIC_DATA = {
   trust_busting:{label:"Trust Busting & Monopolies",cities:{
     pro:{city:"Washington, D.C.",paper:"The Republic Dispatch",tagline:"Champion of the Common Citizen",reason:"President Roosevelt waged his antitrust campaign from Washington, filing suits against Standard Oil and dozens of other trusts."},
     anti:{city:"New York City, NY",paper:"The Wall Street Courier",tagline:"Commerce, Capital & Civilization",reason:"Wall Street financiers viewed antitrust action as a radical assault on private property and the nation's economic engine."},
-    neutral:{city:"Toledo, OH",paper:"The Toledo Evening Bee",tagline:"All the News, Plainly Told",reason:"Toledo, under reform Mayor 'Golden Rule' Jones, occupied a middle ground — concerned about monopolies but reliant on nearby industrial prosperity."}
+    neutral:{city:"Toledo, OH",paper:"The Toledo Evening Bee",tagline:"All the News, Plainly Told",reason:"Toledo, under reform Mayor 'Golden Rule' Jones, occupied a middle ground, concerned about monopolies but reliant on nearby industrial prosperity."}
   }},
   meat_inspection:{label:"Meat Inspection Act",cities:{
     pro:{city:"Chicago, IL",paper:"The Stockyards Expositor",tagline:"Truth From the Killing Floor",reason:"Upton Sinclair set 'The Jungle' in Chicago's meatpacking district. Chicago was ground zero for meat inspection reform."},
@@ -434,16 +434,16 @@ const TOPIC_DATA = {
   womens_suffrage:{label:"Women's Suffrage",cities:{
     pro:{city:"Washington, D.C.",paper:"The Suffragette Standard",tagline:"No Taxation Without Representation",reason:"Washington D.C. was the center of the national suffrage movement, hosting the famous 1913 parade down Pennsylvania Avenue."},
     anti:{city:"New York City, NY",paper:"The Gotham Gentleman's Journal",tagline:"Preserving Order & Tradition",reason:"Tammany Hall and conservative business interests actively opposed women's suffrage, fearing disruption of their political control."},
-    neutral:{city:"San Francisco, CA",paper:"The Bay Chronicle",tagline:"Western Voices, Western Facts",reason:"California granted women the right to vote in 1911, nine years before the 19th Amendment — already living the experiment."}
+    neutral:{city:"San Francisco, CA",paper:"The Bay Chronicle",tagline:"Western Voices, Western Facts",reason:"California granted women the right to vote in 1911, nine years before the 19th Amendment, already living the experiment."}
   }},
   income_tax:{label:"Federal Income Tax (16th Amendment)",cities:{
     pro:{city:"Toledo, OH",paper:"The Toledo Labor Voice",tagline:"Justice for the Working Man",reason:"Mayor Jones's Toledo was the progressive laboratory for fair taxation. Working-class voters overwhelmingly supported taxing the wealthy."},
-    anti:{city:"New York City, NY",paper:"The Fifth Avenue Financier",tagline:"Guarding Property & Liberty",reason:"New York's millionaire class — Vanderbilts, Morgans, Rockefellers — had the most to lose from a progressive income tax."},
+    anti:{city:"New York City, NY",paper:"The Fifth Avenue Financier",tagline:"Guarding Property & Liberty",reason:"New York's millionaire class (Vanderbilts, Morgans, Rockefellers) had the most to lose from a progressive income tax."},
     neutral:{city:"Washington, D.C.",paper:"The Treasury Gazette",tagline:"The Public Record, Plainly Stated",reason:"The 16th Amendment was ratified in 1913 after years of congressional debate in the nation's capital."}
   }},
   direct_senators:{label:"Direct Election of Senators (17th Amendment)",cities:{
     pro:{city:"San Francisco, CA",paper:"The Pacific Democrat",tagline:"Power to the People of the West",reason:"Western progressives were furious at corporate-controlled state legislatures buying Senate seats."},
-    anti:{city:"New York City, NY",paper:"The Empire State Conservative",tagline:"Defending Constitutional Order",reason:"Tammany Hall depended on controlling state legislatures to seat friendly senators — direct elections threatened their machine."},
+    anti:{city:"New York City, NY",paper:"The Empire State Conservative",tagline:"Defending Constitutional Order",reason:"Tammany Hall depended on controlling state legislatures to seat friendly senators: direct elections threatened their machine."},
     neutral:{city:"Washington, D.C.",paper:"The Senate Record",tagline:"Chronicling the Nation's Laws",reason:"The 17th Amendment debate played out in the Senate itself, making Washington the only fitting neutral location."}
   }},
   prohibition:{label:"Prohibition (18th Amendment)",cities:{
@@ -452,19 +452,19 @@ const TOPIC_DATA = {
     neutral:{city:"Chicago, IL",paper:"The Midwestern Record",tagline:"Reporting the Nation's Choices",reason:"Chicago sat at the crossroads: a strong temperance movement on one side, a thriving immigrant saloon culture on the other."}
   }},
   hull_house:{label:"Hull Houses & Settlement Houses",cities:{
-    pro:{city:"Chicago, IL",paper:"The Hull House Bulletin",tagline:"Neighbor Helping Neighbor",reason:"Hull House itself was in Chicago's Near West Side, founded by Jane Addams in 1889 — the birthplace of the settlement house movement."},
+    pro:{city:"Chicago, IL",paper:"The Hull House Bulletin",tagline:"Neighbor Helping Neighbor",reason:"Hull House itself was in Chicago's Near West Side, founded by Jane Addams in 1889, the birthplace of the settlement house movement."},
     anti:{city:"Detroit, MI",paper:"The Detroit Property Owner",tagline:"Self-Reliance, Not Charity",reason:"Detroit's industrialists argued settlement houses bred dependency and were run by 'radical socialists' like Jane Addams."},
-    neutral:{city:"New York City, NY",paper:"The Manhattan Survey",tagline:"Examining Urban Life Fairly",reason:"New York had 38 settlement houses by 1910, second only to Chicago — ideal to objectively document the settlement house impact."}
+    neutral:{city:"New York City, NY",paper:"The Manhattan Survey",tagline:"Examining Urban Life Fairly",reason:"New York had 38 settlement houses by 1910, second only to Chicago, ideal to objectively document the settlement house impact."}
   }},
   national_parks:{label:"National Parks & Conservation",cities:{
     pro:{city:"San Francisco, CA",paper:"The Sierra Sentinel",tagline:"Wild Places Worth Saving",reason:"John Muir co-founded the Sierra Club in San Francisco. The Hetch Hetchy debate made SF the emotional center of conservation."},
     anti:{city:"Detroit, MI",paper:"The Michigan Commercial Advocate",tagline:"Resources for Progress, Not Preservation",reason:"Detroit's lumber and mining interests, supplying the auto industry, fiercely opposed locking up millions of acres from development."},
-    neutral:{city:"Washington, D.C.",paper:"The Federal Reporter",tagline:"Government in the Public Interest",reason:"Roosevelt signed the Antiquities Act in D.C. — the legal engine of conservation. All park designations came from Congress."}
+    neutral:{city:"Washington, D.C.",paper:"The Federal Reporter",tagline:"Government in the Public Interest",reason:"Roosevelt signed the Antiquities Act in D.C., the legal engine of conservation. All park designations came from Congress."}
   }},
   workplace_safety:{label:"Workplace Safety Laws",cities:{
     pro:{city:"New York City, NY",paper:"The Workers' Tribune",tagline:"No More Triangle Fires",reason:"The Triangle Shirtwaist Factory Fire of 1911 killed 146 garment workers in lower Manhattan, galvanizing workplace safety reform."},
     anti:{city:"Detroit, MI",paper:"The Motor City Manufacturer",tagline:"Production Cannot Wait",reason:"Detroit's auto plant owners argued safety regulations would slow production, raise costs, and harm American workers."},
-    neutral:{city:"Chicago, IL",paper:"The Illinois Labor Record",tagline:"Documenting the Workplace Fairly",reason:"Chicago's stockyards and steel mills had some of the nation's worst safety records — ideal for neutral documentation."}
+    neutral:{city:"Chicago, IL",paper:"The Illinois Labor Record",tagline:"Documenting the Workplace Fairly",reason:"Chicago's stockyards and steel mills had some of the nation's worst safety records, ideal for neutral documentation."}
   }},
   pure_food:{label:"Pure Food & Drug Act",cities:{
     pro:{city:"Washington, D.C.",paper:"The Public Health Advocate",tagline:"Safe Food Is a Right",reason:"Harvey Wiley waged a 25-year campaign from Washington for food purity. The Act was signed by Roosevelt in June 1906."},
@@ -472,9 +472,9 @@ const TOPIC_DATA = {
     neutral:{city:"Chicago, IL",paper:"The Great Lakes Gazette",tagline:"The Middle of America Speaks",reason:"'The Jungle' exposed food safety horrors in Chicago, and the city's meatpacking industries were directly affected by the law."}
   }},
   civil_service:{label:"Civil Service Reform",cities:{
-    pro:{city:"Washington, D.C.",paper:"The Merit System Monitor",tagline:"Hire the Best, Not the Boss's Best",reason:"Civil service reform was a Washington story — the Pendleton Act began the process and progressives continued expanding merit-based hiring."},
+    pro:{city:"Washington, D.C.",paper:"The Merit System Monitor",tagline:"Hire the Best, Not the Boss's Best",reason:"Civil service reform was a Washington story: the Pendleton Act began the process and progressives continued expanding merit-based hiring."},
     anti:{city:"New York City, NY",paper:"The Tammany Clarion",tagline:"Loyalty Builds Strong Government",reason:"Tammany Hall was the nation's most notorious spoils system machine, entirely dependent on political patronage for power."},
-    neutral:{city:"Toledo, OH",paper:"The Toledo City Record",tagline:"Municipal Government, Plainly Reported",reason:"Toledo's 'Golden Rule' Jones pioneered merit-based city hiring — a perfect lens for examining civil service reform's practical effects."}
+    neutral:{city:"Toledo, OH",paper:"The Toledo City Record",tagline:"Municipal Government, Plainly Reported",reason:"Toledo's 'Golden Rule' Jones pioneered merit-based city hiring, a perfect lens for examining civil service reform's practical effects."}
   }},
   initiative_referendum:{label:"Initiatives & Referendums",cities:{
     pro:{city:"San Francisco, CA",paper:"The Pacific Direct Democracy Review",tagline:"The Citizen Is the Legislature",reason:"Oregon pioneered the initiative and referendum in 1902, and California followed. San Francisco championed direct democracy tools."},
@@ -483,7 +483,7 @@ const TOPIC_DATA = {
   }},
   secret_ballot:{label:"The Secret (Australian) Ballot",cities:{
     pro:{city:"Toledo, OH",paper:"The Toledo Reform Gazette",tagline:"Your Vote Belongs to You Alone",reason:"Mayor Jones was elected partly because secret ballots protected workers from employer intimidation."},
-    anti:{city:"New York City, NY",paper:"The Party Organization News",tagline:"Accountability in the Voting Booth",reason:"Tammany Hall bosses hated secret ballots — they couldn't verify that their 'bought' voters actually voted as instructed."},
+    anti:{city:"New York City, NY",paper:"The Party Organization News",tagline:"Accountability in the Voting Booth",reason:"Tammany Hall bosses hated secret ballots: they couldn't verify that their 'bought' voters actually voted as instructed."},
     neutral:{city:"Washington, D.C.",paper:"The Election Law Quarterly",tagline:"How Americans Choose Their Leaders",reason:"By 1910 most states had adopted secret ballots. Washington's academics and Congress documented the national impact."}
   }}
 };
@@ -578,8 +578,8 @@ function showArticles() {
   const levelLabel = readingLevel === 'elementary' ? 'Elementary School' : readingLevel === 'middle' ? 'Middle School' : 'High School';
 
   area.innerHTML = `
-    <div class="wire">✦ WIRE SERVICE — ${td.label.toUpperCase()} — ${levelLabel.toUpperCase()} LEVEL ✦ Three cities, three perspectives ✦ Compare what each paper includes, omits, and emphasizes ✦</div>
-    <div class="compare-strip"><strong>Media Literacy Prompt:</strong> After reading all three articles — What does each paper <em>include</em> that the others leave out? What <em>loaded words</em> does each use? Which sources or people does each paper quote? Does each paper treat the <em>other side</em> as reasonable or foolish?</div>
+    <div class="wire">✦ WIRE SERVICE: ${td.label.toUpperCase()}, ${levelLabel.toUpperCase()} LEVEL ✦ Three cities, three perspectives ✦ Compare what each paper includes, omits, and emphasizes ✦</div>
+    <div class="compare-strip"><strong>Media Literacy Prompt:</strong> After reading all three articles, consider: What does each paper <em>include</em> that the others leave out? What <em>loaded words</em> does each use? Which sources or people does each paper quote? Does each paper treat the <em>other side</em> as reasonable or foolish?</div>
     <div class="papers-grid">${cols}</div>`;
 }
 </script>

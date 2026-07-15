@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Passed! — A Policy Simulation</title>
+<title>Passed! A Policy Simulation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -294,13 +294,13 @@
       <div class="masthead">
         <div class="eyebrow">A Civic Engagement Simulation</div>
         <h1>Passed!</h1>
-        <p>Grow public support and move a policy idea through the structures of American government — from public opinion, to city hall, to the statehouse, to Congress.</p>
+        <p>Grow public support and move a policy idea through the structures of American government: from public opinion, to city hall, to the statehouse, to Congress.</p>
         <div class="standard-box">
           <b>Standard:</b> Opportunities for civic engagement within the structures of government are made possible through political and public policy processes.
         </div>
       </div>
 
-      <div class="section-label">Step 1 — Choose your type of legislation</div>
+      <div class="section-label">Step 1: Choose your type of legislation</div>
       <div class="role-grid policy-grid" id="policyGrid"></div>
 
       <div class="name-picker" id="namePicker" style="display:none;">
@@ -308,7 +308,7 @@
         <div class="name-pill-row" id="nameGrid"></div>
       </div>
 
-      <div class="section-label">Step 2 — Choose your starting position</div>
+      <div class="section-label">Step 2: Choose your starting position</div>
       <div class="role-grid" id="roleGrid"></div>
 
       <div class="start-cta-row">
@@ -419,7 +419,7 @@
 
 <script>
 /* =========================================================================
-   CONFIG — teachers can tune these numbers to change game length/difficulty
+   CONFIG: teachers can tune these numbers to change game length/difficulty
    ========================================================================= */
 const WEEK_LIMIT = 40;
 const WIN_THRESHOLDS = { opinion:40, local:60, state:60, federal:60 };
@@ -480,7 +480,7 @@ const ROLES = [
 ];
 
 /* =========================================================================
-   POLICY TYPES — what kind of legislation the campaign is pushing. This
+   POLICY TYPES: what kind of legislation the campaign is pushing. This
    changes starting stats, starting Influence Points, weekly IP income, and
    how strong (and fast-growing) the opposition is.
    ========================================================================= */
@@ -530,7 +530,7 @@ const POLICY_TYPES = [
 ];
 
 /* =========================================================================
-   NAME OPTIONS — pre-written, school-appropriate campaign names students
+   NAME OPTIONS: pre-written, school-appropriate campaign names students
    choose from per legislation type (no free-text naming).
    ========================================================================= */
 const NAME_OPTIONS = {
@@ -602,7 +602,7 @@ const UPGRADES = [
     desc:'An official endorsement adds credibility and local legitimacy.',
     note:'Endorsements from elected officials signal legitimacy to higher levels of government.'},
   {id:'lo5', track:'local', requires:'lo4', name:'Local Ordinance Passed', cost:100, type:'once', amount:15, bonus:{state:8},
-    desc:'The policy becomes local law — and the win builds momentum statewide.',
+    desc:'The policy becomes local law, and the win builds momentum statewide.',
     note:'Success at the local level often creates pressure and precedent for state action.'},
 
   // --- State Government ---
@@ -619,7 +619,7 @@ const UPGRADES = [
     desc:'Lawmakers from both parties agree to formally back the bill.',
     note:'Bipartisan co-sponsorship makes a bill far more likely to survive votes and vetoes.'},
   {id:'st5', track:'state', requires:'st4', name:'State Bill Signed Into Law', cost:135, type:'once', amount:15, bonus:{federal:8},
-    desc:'The governor signs the bill — and other states, and Congress, take notice.',
+    desc:'The governor signs the bill, and other states and Congress take notice.',
     note:'State-level wins create real precedent that federal lawmakers often point to.'},
 
   // --- Federal Government ---
@@ -659,7 +659,7 @@ const UPGRADES = [
 ];
 
 /* =========================================================================
-   QUICK ACTIONS — small, repeatable purchases (unlike the track upgrades
+   QUICK ACTIONS: small, repeatable purchases (unlike the track upgrades
    above, these can be bought over and over, cost a little more each time,
    and cap out after a few uses).
    ========================================================================= */
@@ -684,7 +684,7 @@ const QUICK_ACTIONS = [
     run:s=>{ const amt=randInt(4,8); s.stats.opinion=clamp(s.stats.opinion+amt); return `+${amt} Public Opinion`; } },
   { id:'qa_oppresearch', name:'Opposition Research Report', tag:'counter', track:'coalition', baseCost:15, costGrowth:1.2, cap:5,
     desc:'Compile public records on the opposing campaign\u2019s funding and claims.',
-    note:'Opposition research is legal and common — it involves gathering public information, not fabricating claims.',
+    note:'Opposition research is legal and common: it involves gathering public information, not fabricating claims.',
     run:s=>{ const amt=randInt(4,8); s.opposition=clamp(s.opposition-amt); return `\u2212${amt} Opposition`; } },
   { id:'qa_factcheck', name:'Rapid Response Fact-Check', tag:'counter', track:'coalition', baseCost:12, costGrowth:1.15, cap:6,
     desc:'Quickly publish a correction to a misleading opposition claim.',
@@ -705,14 +705,14 @@ const EVENTS = [
   // ---- Media & public opinion swings ----
   { note:'Media framing shapes how the public understands an issue.',
     run:s=>{ const a=randInt(3,8); s.stats.opinion=clamp(s.stats.opinion+a); return `📰 A local newspaper op-ed gushes about your policy. Someone's grandma clips it and mails it to twelve people. (+${a} Public Opinion)`; } },
-  { note:'Coverage can cut both ways — critical stories reach the same audience as favorable ones.',
+  { note:'Coverage can cut both ways: critical stories reach the same audience as favorable ones.',
     run:s=>{ const a=randInt(3,9); s.stats.opinion=clamp(s.stats.opinion-a); return `🗞️ A columnist rips the policy apart in 800 spicy words. A strongly-worded reply letter is already being drafted. (\u2212${a} Public Opinion)`; } },
   { note:'Digital reach can spread a message far beyond its original audience.',
     run:s=>{ const a=randInt(4,10); const ip=randInt(2,6); s.stats.opinion=clamp(s.stats.opinion+a); s.ip+=ip; return `📱 A supporter's meme about the campaign goes viral overnight. You wake up to 400 notifications and zero sleep. (+${a} Public Opinion, +${ip} Influence Points)`; } },
 
   // ---- Donations & funding (IP swings) ----
   { note:'Advocacy campaigns often rely on unpredictable individual donations.',
-    run:s=>{ const a=randInt(10,25); s.ip+=a; return `💰 A mystery donor drops off a large contribution — no note, just cash and good vibes. (+${a} Influence Points)`; } },
+    run:s=>{ const a=randInt(10,25); s.ip+=a; return `💰 A mystery donor drops off a large contribution, no note, just cash and good vibes. (+${a} Influence Points)`; } },
   { note:'Matching challenges are a common fundraising tactic to multiply small donations.',
     run:s=>{ const a=randInt(12,22); s.ip+=a; return `🤝 A matching-donation challenge doubles a wave of small contributions. Nice. (+${a} Influence Points)`; } },
   { note:'Grant funding is competitive, and rejections are a normal part of advocacy work.',
@@ -726,8 +726,8 @@ const EVENTS = [
 
   // ---- Endorsements (can help you or the opposition) ----
   { note:'Endorsements signal to officials and voters that a policy has credible backing.',
-    run:s=>{ const a=randInt(4,10); s.stats.opinion=clamp(s.stats.opinion+a); return `🎤 A well-known community leader endorses the policy at a press conference — mostly because the coffee there was excellent. (+${a} Public Opinion)`; } },
-  { note:'Endorsements are contested — supporters and opponents both compete for high-profile backers.',
+    run:s=>{ const a=randInt(4,10); s.stats.opinion=clamp(s.stats.opinion+a); return `🎤 A well-known community leader endorses the policy at a press conference, mostly because the coffee there was excellent. (+${a} Public Opinion)`; } },
+  { note:'Endorsements are contested: supporters and opponents both compete for high-profile backers.',
     run:s=>{ const a=randInt(5,12); s.opposition=clamp(s.opposition+a); return `🙃 A prominent local figure endorses the opposition instead. Betrayal. Absolute betrayal. (+${a} Opposition)`; } },
   { note:'Interest group and industry endorsements can matter more to legislators than public opinion alone.',
     requires:s=>isTrackUnlocked(s,'local') || isTrackUnlocked(s,'state'),
@@ -776,15 +776,15 @@ const EVENTS = [
     } },
   { note:'High turnout at public hearings signals real constituent demand.',
     run:s=>{ const a=randInt(5,10); s.stats.opinion=clamp(s.stats.opinion+a);
-      if(isTrackUnlocked(s,'local')){ const b=randInt(2,6); s.stats.local=clamp(s.stats.local+b); return `🎟️ A public hearing draws record attendance — mostly because free pizza was advertised. (+${a} Public Opinion, +${b} Local Support)`; }
-      return `🎟️ A public hearing draws record attendance — mostly because free pizza was advertised. (+${a} Public Opinion)`; } },
+      if(isTrackUnlocked(s,'local')){ const b=randInt(2,6); s.stats.local=clamp(s.stats.local+b); return `🎟️ A public hearing draws record attendance, mostly because free pizza was advertised. (+${a} Public Opinion, +${b} Local Support)`; }
+      return `🎟️ A public hearing draws record attendance, mostly because free pizza was advertised. (+${a} Public Opinion)`; } },
   { note:'Policy ideas often spread between states before reaching Congress.',
     requires:s=>isTrackUnlocked(s,'state') && isTrackUnlocked(s,'federal'),
     run:s=>{ const a=randInt(3,8); const b=randInt(2,6); s.stats.state=clamp(s.stats.state+a); s.stats.federal=clamp(s.stats.federal+b); return `🌎 Momentum builds as other states quietly copy your homework. (+${a} State Support, +${b} Federal Support)`; } },
 
   // ---- More Influence Point swings (funding, favors, and dumb bad luck) ----
   { note:'Small in-kind donations add up and free cash up for other priorities.',
-    run:s=>{ const a=randInt(5,12); s.ip+=a; return `🥐 A local bakery donates snacks for volunteers all week. Morale — and blood sugar — soar. (+${a} Influence Points)`; } },
+    run:s=>{ const a=randInt(5,12); s.ip+=a; return `🥐 A local bakery donates snacks for volunteers all week. Morale and blood sugar both soar. (+${a} Influence Points)`; } },
   { note:'Parking tickets are a classic, unglamorous campaign expense.',
     run:s=>{ const a=randInt(3,8); s.ip=Math.max(0,s.ip-a); return `🚗 The campaign van gets a parking ticket outside a rally. In its defense, the spot was extremely convenient. (\u2212${a} Influence Points)`; } },
   { note:'A single viral moment can outperform months of planned fundraising.',
@@ -956,7 +956,7 @@ function checkEnd(){
   if(game.week>WEEK_LIMIT){ endGame('lose','time'); return; }
 }
 
-/* ---- Final Vote: passing isn't automatic once thresholds are hit — real
+/* ---- Final Vote: passing isn't automatic once thresholds are hit. Real
    floor votes are unpredictable, so success is a weighted random roll the
    player can retry, at the cost of a week and a boost to opposition on
    a failed attempt. This keeps a single strong playthrough from being a
@@ -989,7 +989,7 @@ function attemptFinalVote(){
   } else {
     const bump = randInt(10,20);
     game.opposition = clamp(game.opposition + bump);
-    pushLog('event', `😬 The floor vote fails by a narrow margin. Opponents celebrate — for now. (${chance}% odds, +${bump} Opposition)`, 'Close votes fail in real legislatures all the time; sponsors often regroup and try again.');
+    pushLog('event', `😬 The floor vote fails by a narrow margin. Opponents celebrate. For now. (${chance}% odds, +${bump} Opposition)`, 'Close votes fail in real legislatures all the time; sponsors often regroup and try again.');
   }
   checkEnd();
   renderGame();
@@ -1198,7 +1198,7 @@ function renderTracker(){
     const chance = computePassChance();
     banner.style.display = 'flex';
     banner.innerHTML = `
-      <div class="final-vote-text">Local, state, and public support have cleared the bar. Congress can now vote — but floor votes are never a sure thing.<br><b>Estimated odds of passing: ${chance}%</b></div>
+      <div class="final-vote-text">Local, state, and public support have cleared the bar. Congress can now vote, but floor votes are never a sure thing.<br><b>Estimated odds of passing: ${chance}%</b></div>
       <button class="btn-final-vote" id="finalVoteBtn">📯 Call the Final Vote</button>
     `;
     document.getElementById('finalVoteBtn').addEventListener('click', attemptFinalVote);
@@ -1293,7 +1293,7 @@ function renderUpgrades(){
 function renderQuickActions(){
   document.getElementById('trackLockedNote').innerHTML = '';
   const host = document.getElementById('upgradeList');
-  const intro = `<div class="quick-intro">Small, repeatable moves. Each gets a little more expensive the more you use it, and most run out after a handful of uses — real campaigns eventually exhaust the easy wins too.</div>`;
+  const intro = `<div class="quick-intro">Small, repeatable moves. Each gets a little more expensive the more you use it, and most run out after a handful of uses. Real campaigns eventually exhaust the easy wins too.</div>`;
 
   host.innerHTML = intro + QUICK_ACTIONS.map(qa=>{
     const count = game.quickCounts[qa.id] || 0;
@@ -1376,7 +1376,7 @@ function renderEnd(){
   } else {
     badge.textContent = 'Time Expired';
     title.textContent = 'The legislative session ended before the bill passed.';
-    text.textContent = `"${game.policyName}" made real progress, but ran out of time before winning a floor vote. Many real bills take multiple sessions — or years, and several failed votes — to become law.`;
+    text.textContent = `"${game.policyName}" made real progress, but ran out of time before winning a floor vote. Many real bills take multiple sessions (or years, and several failed votes) to become law.`;
   }
 
   document.getElementById('endStats').innerHTML = `
@@ -1386,7 +1386,7 @@ function renderEnd(){
     <div class="end-stat"><div class="n" style="color:var(--federal)">${Math.round(s.federal)}</div><div class="l">Federal</div></div>
   `;
 
-  reflection.innerHTML = `<b>Civics connection:</b> This simulation modeled how a policy idea can move through public opinion, local government, state government, and federal government — the layered "structures of government" that make civic engagement possible. As a ${role.name} pushing ${getPolicy(game.policyId).name.toLowerCase()}, which action type (organizing, lobbying, coalition-building, testimony) felt most powerful? Would a different starting role or policy type have needed a different strategy?`;
+  reflection.innerHTML = `<b>Civics connection:</b> This simulation modeled how a policy idea can move through public opinion, local government, state government, and federal government: the layered "structures of government" that make civic engagement possible. As a ${role.name} pushing ${getPolicy(game.policyId).name.toLowerCase()}, which action type (organizing, lobbying, coalition-building, testimony) felt most powerful? Would a different starting role or policy type have needed a different strategy?`;
 }
 
 /* =========================================================================

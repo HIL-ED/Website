@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manchester Rising — Industrial City Builder</title>
+<title>Manchester Rising: Industrial City Builder</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -275,7 +275,7 @@ body {
     <button class="build-btn" data-type="forest" onclick="selectTool('forest')"><span class="icon">🌳</span><div><div class="bname">Forest / Trees</div><div class="bdesc">Green space</div></div></button>
     <button class="build-btn" data-type="road" onclick="selectTool('road')"><span class="icon">🛤️</span><div><div class="bname">Road</div><div class="bdesc">Extend streets</div></div></button>
 
-    <div class="pal-era-label" id="era2-label" style="opacity:0.35">Era 2 — Unlocks 1780</div>
+    <div class="pal-era-label" id="era2-label" style="opacity:0.35">Era 2: Unlocks 1780</div>
     <button class="build-btn locked" data-type="factory" data-era="2" onclick="selectTool('factory')"><span class="icon">🏭</span><div><div class="bname">Factory</div><div class="bdesc">Cotton / steam mill</div></div></button>
     <button class="build-btn locked" data-type="canal" data-era="2" onclick="selectTool('canal')"><span class="icon">🚤</span><div><div class="bname">Canal</div><div class="bdesc">Goods transport</div></div></button>
     <button class="build-btn locked" data-type="tenement" data-era="2" onclick="selectTool('tenement')"><span class="icon">🏢</span><div><div class="bname">Tenement</div><div class="bdesc">Dense worker housing</div></div></button>
@@ -283,7 +283,7 @@ body {
     <button class="build-btn locked" data-type="pub" data-era="2" onclick="selectTool('pub')"><span class="icon">🍺</span><div><div class="bname">Pub</div><div class="bdesc">Working class refuge</div></div></button>
     <button class="build-btn locked" data-type="warehouse" data-era="2" onclick="selectTool('warehouse')"><span class="icon">🏗️</span><div><div class="bname">Warehouse</div><div class="bdesc">Storage & goods</div></div></button>
 
-    <div class="pal-era-label" id="era3-label" style="opacity:0.35">Era 3 — Unlocks 1820</div>
+    <div class="pal-era-label" id="era3-label" style="opacity:0.35">Era 3: Unlocks 1820</div>
     <button class="build-btn locked" data-type="railway" data-era="3" onclick="selectTool('railway')"><span class="icon">🚂</span><div><div class="bname">Railway</div><div class="bdesc">Steam locomotive</div></div></button>
     <button class="build-btn locked" data-type="hospital" data-era="3" onclick="selectTool('hospital')"><span class="icon">🏥</span><div><div class="bname">Hospital</div><div class="bdesc">Public health</div></div></button>
     <button class="build-btn locked" data-type="graveyard" data-era="3" onclick="selectTool('graveyard')"><span class="icon">⚰️</span><div><div class="bname">Graveyard</div><div class="bdesc">Burial overflow</div></div></button>
@@ -299,7 +299,7 @@ body {
   <!-- PROMPT COLUMN -->
   <div id="prompt-col">
     <div id="prompt-header">
-      <div id="prompt-era-tag">Era 1 — Pre-Industrial</div>
+      <div id="prompt-era-tag">Era 1: Pre-Industrial</div>
       <div id="prompt-year-display">It is 1760.</div>
       <div id="prompt-context">You are the mayor of a small English market town on the River Irwell. Two roads cross at the town centre. The land around you is forest and farmland.</div>
       <div id="prompt-directive">→ Begin building your town near the roads. Think about where families would want to live.</div>
@@ -401,7 +401,7 @@ const ERA_PROMPTS = [
   [
     {
       year: 'It is 1760.',
-      eraTag: 'Era 1 — Pre-Industrial',
+      eraTag: 'Era 1: Pre-Industrial',
       context: 'You are the mayor of a small English market town on the River Irwell. Two roads cross at the town centre. The land around you is forest and farmland. Most people farm or trade at market.',
       directive: '→ Begin building your town near the road intersection. Connect new buildings with roads as your town spreads.',
       tasks: [
@@ -413,8 +413,8 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1765.',
-      eraTag: 'Era 1 — Pre-Industrial',
-      context: 'Wealthy landlords are buying up surrounding farmland and fencing it off — a process called enclosure. Families who farmed that land for generations are being pushed into town, looking for work.',
+      eraTag: 'Era 1: Pre-Industrial',
+      context: 'Wealthy landlords are buying up surrounding farmland and fencing it off, a process called enclosure. Families who farmed that land for generations are being pushed into town, looking for work.',
       directive: '→ The town is growing. Add farms on the outskirts and more housing. Use roads to connect outlying buildings back to the centre.',
       tasks: [
         { type:'house', count:5,  label:'Houses (incoming families)' },
@@ -424,8 +424,8 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1770.',
-      eraTag: 'Era 1 — Pre-Industrial',
-      context: 'A merchant has proposed building a canal parallel to the river. Canals allow heavy goods — coal, cotton, iron — to move cheaply across the country. Space is already getting tight.',
+      eraTag: 'Era 1: Pre-Industrial',
+      context: 'A merchant has proposed building a canal parallel to the river. Canals allow heavy goods (coal, cotton, iron) to move cheaply across the country. Space is already getting tight.',
       directive: '→ Add a canal along the river. Clear forest tiles if you need space. Notice what disappears when the town expands.',
       tasks: [
         { type:'house',  count:5,  label:'Houses (total growing)' },
@@ -435,9 +435,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1775.',
-      eraTag: 'Era 1 — Pre-Industrial',
-      context: 'The town has a church, homes, a market — but no plan. Nobody is in charge of where buildings go. Growth is happening wherever there is space. The forest is shrinking.',
-      directive: '→ Fill in the gaps. Look at your map — is your town organized or already getting messy? The next era will demand far more space.',
+      eraTag: 'Era 1: Pre-Industrial',
+      context: 'The town has a church, homes, a market, but no plan. Nobody is in charge of where buildings go. Growth is happening wherever there is space. The forest is shrinking.',
+      directive: '→ Fill in the gaps. Look at your map: is your town organized or already getting messy? The next era will demand far more space.',
       tasks: [
         { type:'house',  count:5,  label:'Houses (total now 20+)' },
         { type:'farm',   count:2,  label:'Farms (food for growing town)' },
@@ -450,9 +450,9 @@ const ERA_PROMPTS = [
   [
     {
       year: 'It is 1780.',
-      eraTag: 'Era 2 — Industrial Surge',
-      context: 'Steam engines are transforming Manchester. Factory owners — men who call themselves capitalists — now have the technology to build mills powered by steam, not just water. Thousands are arriving from the countryside.',
-      directive: '→ Build your first factories. Connect them to the road network. Workers need housing nearby — where will you put them?',
+      eraTag: 'Era 2: Industrial Surge',
+      context: 'Steam engines are transforming Manchester. Factory owners, men who call themselves capitalists, now have the technology to build mills powered by steam, not just water. Thousands are arriving from the countryside.',
+      directive: '→ Build your first factories. Connect them to the road network. Workers need housing nearby: where will you put them?',
       tasks: [
         { type:'factory',  count:2,  label:'Factories (steam-powered mills)' },
         { type:'house',    count:5,  label:'Houses (workers need homes)' },
@@ -462,9 +462,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1790.',
-      eraTag: 'Era 2 — Industrial Surge',
+      eraTag: 'Era 2: Industrial Surge',
       context: 'Hundreds of workers arrive every month. Landlords throw up cheap, cramped tenement blocks overnight. Children as young as eight work in the mills. Factory owners call themselves "self-made men."',
-      directive: '→ The city is growing faster than you can plan. Add more factories and housing — clear forest if you must. Watch what happens near the river.',
+      directive: '→ The city is growing faster than you can plan. Add more factories and housing. Clear forest if you must. Watch what happens near the river.',
       tasks: [
         { type:'factory',   count:3,  label:'Factories (more mills needed)' },
         { type:'tenement',  count:3,  label:'Tenements (overcrowded housing)' },
@@ -474,9 +474,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1800.',
-      eraTag: 'Era 2 — Industrial Surge',
-      context: 'Coal fuels the steam engines that power the factories. A coal mine on the edge of town can supply fuel — but it needs to be connected to the factories. The river is turning brown from factory waste.',
-      directive: '→ Add a coal mine and connect it to your factories with roads. Add a warehouse for storing goods. The river is becoming dangerous — consider where your housing sits.',
+      eraTag: 'Era 2: Industrial Surge',
+      context: 'Coal fuels the steam engines that power the factories. A coal mine on the edge of town can supply fuel, but it needs to be connected to the factories. The river is turning brown from factory waste.',
+      directive: '→ Add a coal mine and connect it to your factories with roads. Add a warehouse for storing goods. The river is becoming dangerous. Consider where your housing sits.',
       tasks: [
         { type:'mine',      count:1,  label:'Coal mine (fuel for factories)' },
         { type:'warehouse', count:2,  label:'Warehouses (goods storage)' },
@@ -486,9 +486,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1808.',
-      eraTag: 'Era 2 — Industrial Surge',
-      context: 'Textile workers whose livelihoods are threatened by machines begin smashing power looms — the Luddite uprisings. The army is called in. Meanwhile, factory owners grow richer. The city is deeply divided.',
-      directive: '→ The city is splitting between rich and poor. Add more factories and tenements. Look at your map — where do the wealthy live versus the workers?',
+      eraTag: 'Era 2: Industrial Surge',
+      context: 'Textile workers whose livelihoods are threatened by machines begin smashing power looms (the Luddite uprisings). The army is called in. Meanwhile, factory owners grow richer. The city is deeply divided.',
+      directive: '→ The city is splitting between rich and poor. Add more factories and tenements. Look at your map: where do the wealthy live versus the workers?',
       tasks: [
         { type:'factory',  count:3,  label:'Factories (industry expanding)' },
         { type:'tenement', count:4,  label:'Tenements (workers crammed in)' },
@@ -498,8 +498,8 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1815.',
-      eraTag: 'Era 2 — Industrial Surge',
-      context: 'Manchester is now one of the largest cities in Britain. It produces more cotton than anywhere on earth — but it has no sewers, no clean water, and no plan. The next era will bring railways and new crises.',
+      eraTag: 'Era 2: Industrial Surge',
+      context: 'Manchester is now one of the largest cities in Britain. It produces more cotton than anywhere on earth, but it has no sewers, no clean water, and no plan. The next era will bring railways and new crises.',
       directive: '→ Final push before the railway age. Fill your map. You may need to clear forest or demolish old buildings to make room. The city does not wait.',
       tasks: [
         { type:'factory',   count:3,  label:'Factories (keep building)' },
@@ -513,9 +513,9 @@ const ERA_PROMPTS = [
   [
     {
       year: 'It is 1820.',
-      eraTag: 'Era 3 — Peak Industry',
+      eraTag: 'Era 3: Peak Industry',
       context: 'The Liverpool and Manchester Railway opens. For the first time, people and goods move faster than a horse can run. Land near the railway immediately rises in value. Everything is about to change again.',
-      directive: '→ Lay railway lines through your city connecting factories and mines. Add a railway station. Every factory owner wants to be on the line — what gets displaced to make room?',
+      directive: '→ Lay railway lines through your city connecting factories and mines. Add a railway station. Every factory owner wants to be on the line: what gets displaced to make room?',
       tasks: [
         { type:'railway',  count:5,  label:'Railway tiles (connect factories & mines)' },
         { type:'house',    count:5,  label:'Houses (railway builders need homes)' },
@@ -524,9 +524,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1827.',
-      eraTag: 'Era 3 — Peak Industry',
-      context: 'Cholera has arrived in Manchester. It spreads through contaminated water — but nobody knows that yet. Doctors blame "bad air" near the river and the slums. Thousands die. The city has no hospital.',
-      directive: '→ Build hospitals now — Manchester has none. Add graveyards for the dead. Look at where your tenements sit near the river. That is where cholera spreads first.',
+      eraTag: 'Era 3: Peak Industry',
+      context: 'Cholera has arrived in Manchester. It spreads through contaminated water, but nobody knows that yet. Doctors blame "bad air" near the river and the slums. Thousands die. The city has no hospital.',
+      directive: '→ Build hospitals now: Manchester has none. Add graveyards for the dead. Look at where your tenements sit near the river. That is where cholera spreads first.',
       tasks: [
         { type:'hospital',  count:2,  label:'Hospitals (the city desperately needs them)' },
         { type:'graveyard', count:1,  label:'Graveyard (burial for the dead)' },
@@ -536,9 +536,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1833.',
-      eraTag: 'Era 3 — Peak Industry',
-      context: 'Parliament passes the Factory Act — the first law limiting child labour. Factory owners call it an attack on their property. Meanwhile the Poor Law forces the destitute into workhouses where they labour for food and shelter.',
-      directive: '→ Add workhouses on the edges of the city — away from wealthy areas. Add more housing and a public park if you can find the space. Can you?',
+      eraTag: 'Era 3: Peak Industry',
+      context: 'Parliament passes the Factory Act, the first law limiting child labour. Factory owners call it an attack on their property. Meanwhile the Poor Law forces the destitute into workhouses where they labour for food and shelter.',
+      directive: '→ Add workhouses on the edges of the city, away from wealthy areas. Add more housing and a public park if you can find the space. Can you?',
       tasks: [
         { type:'workhouse', count:2,  label:'Workhouses (last resort for the poor)' },
         { type:'hospital',  count:1,  label:'Hospital (public health expanding)' },
@@ -548,9 +548,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1839.',
-      eraTag: 'Era 3 — Peak Industry',
-      context: 'Working-class Manchunians march to Parliament demanding the right to vote — the Chartist movement. Their petition carries over a million signatures. Parliament rejects it. Manchester has no elected MPs despite being the largest industrial city in Britain.',
-      directive: '→ Add more railways to expand the network. Build a public park — reformers say workers need green space to stay healthy and peaceful. Where can you fit one?',
+      eraTag: 'Era 3: Peak Industry',
+      context: 'Working-class Manchunians march to Parliament demanding the right to vote, the Chartist movement. Their petition carries over a million signatures. Parliament rejects it. Manchester has no elected MPs despite being the largest industrial city in Britain.',
+      directive: '→ Add more railways to expand the network. Build a public park: reformers say workers need green space to stay healthy and peaceful. Where can you fit one?',
       tasks: [
         { type:'railway',   count:4,  label:'Railway tiles (network expanding)' },
         { type:'park',      count:1,  label:'Public park (reformers demand green space)' },
@@ -560,9 +560,9 @@ const ERA_PROMPTS = [
     },
     {
       year: 'It is 1845.',
-      eraTag: 'Era 3 — Peak Industry',
-      context: 'Friedrich Engels walks Manchester\'s streets and writes that it shows "how little space a human being needs to live." The city you built from a market town in 1760 is now one of the most important — and most dangerous — cities on earth.',
-      directive: '→ Final round. Fill every remaining space. Add whatever your city still desperately needs. Look at what you have built — and what it cost.',
+      eraTag: 'Era 3: Peak Industry',
+      context: 'Friedrich Engels walks Manchester\'s streets and writes that it shows "how little space a human being needs to live." The city you built from a market town in 1760 is now one of the most important (and most dangerous) cities on earth.',
+      directive: '→ Final round. Fill every remaining space. Add whatever your city still desperately needs. Look at what you have built, and what it cost.',
       tasks: [
         { type:'hospital',  count:2,  label:'Hospitals (death rate still climbing)' },
         { type:'tenement',  count:4,  label:'Tenements (workers keep arriving)' },
@@ -584,12 +584,12 @@ const ERA_TRANSITIONS = [
   null,
   {
     year:'1780', title:'The Machines Arrive',
-    body:'Steam engines begin appearing across Manchester. Factories replace cottage industries. Thousands pour in from the countryside — faster than the city can house them.',
+    body:'Steam engines begin appearing across Manchester. Factories replace cottage industries. Thousands pour in from the countryside, faster than the city can house them.',
     unlocks:['factory','canal','tenement','mine','pub','warehouse'],
   },
   {
     year:'1820', title:"The World's Workshop",
-    body:"Manchester produces more cotton than any city on earth. But the cost is visible on its streets — overcrowding, disease, and unrest. Railways are about to transform everything again.",
+    body:"Manchester produces more cotton than any city on earth. But the cost is visible on its streets: overcrowding, disease, and unrest. Railways are about to transform everything again.",
     unlocks:['railway','hospital','graveyard','workhouse','park'],
   },
 ];
@@ -598,30 +598,30 @@ const EVENTS = [
   { era:2, type:'chronicle', title:'Workers Pour In',           body:'Thousands of migrants arrive from rural England and Ireland. There is no plan for where they will live. Housing goes wherever space remains.' },
   { era:2, type:'spatial',   title:'River Contamination',       body:'Factory waste flows into the Irwell daily. Buildings near the river are now at risk. Consider where you place housing relative to the water.', spatial:'river-warn' },
   { era:2, type:'chronicle', title:'The Luddite Uprisings',     body:'Textile workers smash power looms across the Midlands. They fear the machines will end their livelihoods. Troops are called in.' },
-  { era:2, type:'chronicle', title:'Child Labour in the Mills', body:'A reformer reports children as young as 7 working 14-hour shifts in cotton mills. Parliament debates — factory owners resist. The city keeps producing.' },
-  { era:3, type:'spatial',   title:'Cholera Spreads',           body:'Cholera has broken out near the river. Contaminated water is the cause — though no one understands it yet. River-adjacent housing is now affected.', spatial:'cholera' },
+  { era:2, type:'chronicle', title:'Child Labour in the Mills', body:'A reformer reports children as young as 7 working 14-hour shifts in cotton mills. Parliament debates. Factory owners resist. The city keeps producing.' },
+  { era:3, type:'spatial',   title:'Cholera Spreads',           body:'Cholera has broken out near the river. Contaminated water is the cause, though no one understands it yet. River-adjacent housing is now affected.', spatial:'cholera' },
   { era:3, type:'spatial',   title:'Fire in the Factory District', body:'A fire breaks out in a densely packed industrial block. Crowded streets with no firebreaks allow it to spread quickly.', spatial:'fire' },
   { era:3, type:'chronicle', title:'The Chartist March',        body:'Working-class Manchunians march on Parliament demanding the vote. Over a million signatures on their petition. Parliament rejects it.' },
-  { era:3, type:'chronicle', title:'The Great Stink',           body:"Manchester's rivers reek from industrial waste and raw sewage. Engineers propose a sewer system — but the cost is enormous. People keep dying." },
+  { era:3, type:'chronicle', title:'The Great Stink',           body:"Manchester's rivers reek from industrial waste and raw sewage. Engineers propose a sewer system, but the cost is enormous. People keep dying." },
 ];
 
 const DEMOLISH_TEXTS = {
   house:'A family\'s home is torn down. Neighbours watch in silence as their street narrows to make way for what comes next.',
-  church:'The old parish church is demolished. Its graveyard is paved over — the dead quietly forgotten as the city rushes forward.',
+  church:'The old parish church is demolished. Its graveyard is paved over, the dead quietly forgotten as the city rushes forward.',
   market:'The market square is cleared. Merchants who traded here for generations are displaced. Commerce moves elsewhere.',
   farm:'The last farmland at the city\'s edge is claimed. The farmer takes a factory job. The fields become foundations.',
   forest:'Trees that sheltered the town for centuries are felled in an afternoon. Children who played here will find only cobblestones.',
   road:'The road is torn up to make way for a new building. The street that once connected a neighbourhood is severed.',
-  factory:'An old mill is pulled down — once the pride of the district, now obsolete. A newer, larger one will take its place.',
+  factory:'An old mill is pulled down, once the pride of the district, now obsolete. A newer, larger one will take its place.',
   canal:'The canal is drained and filled. Railways have made it redundant. The bargemen move on.',
   tenement:'An overcrowded tenement is cleared. Its hundreds of residents scatter across the city with nowhere promised to them.',
   mine:'The exhausted mine shaft is sealed. The men who worked it search for new work in a city that may not have any.',
   pub:'The pub is shuttered. For many workers it was the only warm room they knew outside their own.',
   warehouse:'The warehouse is demolished to make room for the new railway cutting through the district.',
-  railway:'A rail line is ripped up — an early investment that proved unprofitable. The money is lost.',
+  railway:'A rail line is ripped up, an early investment that proved unprofitable. The money is lost.',
   hospital:'The infirmary closes. The sick will have to travel farther, or not at all.',
   graveyard:'The graveyard is built over. Bones are moved hastily or not at all. The ground remembers.',
-  workhouse:'The workhouse is torn down — few mourn it. Its former inmates hope for something better.',
+  workhouse:'The workhouse is torn down. Few mourn it. Its former inmates hope for something better.',
   park:'The park is built over. What little green space remained in this district is gone.',
 };
 
@@ -667,7 +667,7 @@ function initGrid() {
     builtCount++;
   });
 
-  // Pre-placed forest — upper right, rows 1-6, cols 13-19
+  // Pre-placed forest: upper right, rows 1-6, cols 13-19
   [{r:1,c:13},{r:1,c:14},{r:1,c:15},{r:1,c:16},{r:1,c:17},{r:1,c:18},{r:1,c:19},
    {r:2,c:13},{r:2,c:14},{r:2,c:15},{r:2,c:16},{r:2,c:17},{r:2,c:18},{r:2,c:19},
    {r:3,c:14},{r:3,c:15},{r:3,c:16},{r:3,c:17},{r:3,c:18},{r:3,c:19},
@@ -750,7 +750,7 @@ function handleCellClick(r,c) {
     return;
   }
 
-  // Road placement — can go on empty cells or extend existing road network
+  // Road placement: can go on empty cells or extend existing road network
   if(selectedTool==='road') {
     if(isRiver) { addLog('Cannot build a road on the river.',''); return; }
     if(cell.type==='road'||isRoad) { addLog('Already a road here.',''); return; }
@@ -783,7 +783,7 @@ function handleCellClick(r,c) {
 
 // ═══════════════════ PROMPT SYSTEM ═══════════════════
 function calculateCarryovers() {
-  // Called before switching to a new prompt — computes unmet targets from current prompt
+  // Called before switching to a new prompt: computes unmet targets from current prompt
   if(!currentPrompt||!currentPrompt.tasks) return;
   currentPrompt.tasks.forEach(task=>{
     const built=promptCounts[task.type]||0;
@@ -795,7 +795,7 @@ function calculateCarryovers() {
   // Also reduce debts for any carryover types that were built this round beyond the task requirement
   Object.keys(carryoverDebts).forEach(type=>{
     if(!currentPrompt.tasks.find(t=>t.type===type)) {
-      // type was a carryover-only item — credit builds against it
+      // type was a carryover-only item: credit builds against it
       const built=promptCounts[type]||0;
       carryoverDebts[type]=Math.max(0,(carryoverDebts[type]||0)-built);
       if(carryoverDebts[type]===0) delete carryoverDebts[type];
@@ -953,7 +953,7 @@ function advanceEra() {
     document.getElementById('t-unlocks').innerHTML=transition.unlocks.map(u=>
       `<div class="ul-item"><span>${BUILDINGS[u].icon}</span> ${BUILDINGS[u].label}</div>`).join('');
     document.getElementById('transition-modal').classList.add('show');
-    addLog(`— ${transition.title} —`,'era');
+    addLog(`New Era: ${transition.title}`,'era');
   }
 }
 
@@ -1081,11 +1081,11 @@ function endGame() {
   document.getElementById('rs-events').textContent=eventsTriggered;
 
   const questions=[
-    {type:'Observation', q:'Look at your completed map. Describe what you see — where did most buildings end up? Do you notice any patterns in how the city grew?'},
+    {type:'Observation', q:'Look at your completed map. Describe what you see: where did most buildings end up? Do you notice any patterns in how the city grew?'},
     {type:'Observation', q:'How did it feel different to build in Era 1 versus Era 3? What changed about the pace and pressure of your decision-making as the years advanced?'},
-    {type:'Analysis', q:'As mayor of Manchester, name and explain at least THREE serious problems your city now faces. For each one, point to a specific decision you made — or didn\'t make — that contributed to it.'},
+    {type:'Analysis', q:'As mayor of Manchester, name and explain at least THREE serious problems your city now faces. For each one, point to a specific decision you made (or didn\'t make) that contributed to it.'},
     {type:'Analysis', q:'You may have had to demolish older buildings, clear forest, or remove farms to make room for industrial growth. Who benefited from those decisions? Who paid the cost? Use your map as evidence.'},
-    {type:'Analysis', q:'A historian once said industrialization was "progress for some and disaster for others." Based on the city you built, do you agree? What would you have done differently — and what would have made that difficult?'},
+    {type:'Analysis', q:'A historian once said industrialization was "progress for some and disaster for others." Based on the city you built, do you agree? What would you have done differently, and what would have made that difficult?'},
   ];
   const qc=document.getElementById('refl-questions');
   qc.innerHTML='';

@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en" class="fs-md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evidence Mystery: Who Caused World War I?</title>
+<meta name="description" content="A historical investigation game. Examine 28 primary sources, weigh evidence, and build your own argument about the causes of World War I.">
+<style>
+/* ============================= RESET & THEME ============================= */
+*, *::before, *::after { box-sizing: border-box; }
+:root{
+  --wood-dark:#241609;
+  --wood:#3a2414;
+  --wood-light:#4d3018;
+  --paper:#f2e6c8;
+  --paper-dark:#e6d5a8;
+  --paper-edge:#d8c290;
+  --ink:#2a2016;
+  --ink-soft:#4a4030;
+  --accent:#8c2a1e;
+  --accent-light:#b5453a;
+  --string:#a5271b;
+  --gold:#a97d2f;
+  --gold-light:#c9a256;
+  --cork:#7d5a37;
+  --cork-dark:#664826;
+  --panel-shadow: 0 10px 30px rgba(0,0,0,.45);
+  --font-head: Georgia, 'Times New Roman', serif;
+  --font-body: Georgia, 'Times New Roman', serif;
+  --font-mono: 'Courier New', Courier, monospace;
+  --focus: #2f7fd1;
+  --green: #2e6b3e;
+  --amber: #a5720f;
+  --red: #a5271b;
+}
+html.fs-sm{ font-size:14px; }
+html.fs-md{ font-size:16px; }
+html.fs-lg{ font-size:19px; }
+html,body{ margin:0; padding:0; height:100%; }
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:
+    radial-gradient(ellipse at top, var(--wood-light), var(--wood-dark) 70%);
+  min-height:100vh;
+  line-height:1.5;
+}
+a{ color:var(--accent-light); }
+button{ font-family:inherit; }
+img{ max-width:100%; }
+.visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+
+/* ============================= LAYOUT SHELL ============================= */
+#app{ max-width:1180px; margin:0 auto; padding:14px 14px 40px; }
+
+header.top{
+  background:linear-gradient(180deg, var(--wood-light), var(--wood));
+  border:4px solid var(--wood-dark);
+  border-radius:10px;
+  padding:14px 20px;
+  box-shadow:var(--panel-shadow);
+  color:#f2e6c8;
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between;
+}
+.brandblock{ display:flex; align-items:center; gap:12px; }
+.seal{
+  width:46px; height:46px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 60%, #6b4c1c 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-weight:700; color:#3a2408; font-size:15px;
+  box-shadow:inset 0 0 6px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.5);
+  flex:none;
+}
+.brandblock h1{ font-family:var(--font-head); font-size:1.15rem; margin:0; letter-spacing:.02em; }
+.brandblock .sub{ font-size:.72rem; opacity:.75; text-transform:uppercase; letter-spacing:.12em; }
+.progresswrap{ display:flex; align-items:center; gap:8px; font-size:.78rem; }
+.progressbar{ width:120px; height:8px; border-radius:5px; background:rgba(0,0,0,.4); overflow:hidden; }
+.progressbar > span{ display:block; height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-light)); transition:width .4s ease; }
+
+.controls{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.iconbtn{
+  background:rgba(242,230,200,.08); border:1px solid rgba(242,230,200,.35); color:#f2e6c8;
+  border-radius:7px; padding:6px 10px; font-size:.82rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px;
+}
+.iconbtn:hover{ background:rgba(242,230,200,.18); }
+.iconbtn.on{ background:var(--gold); color:#2a1a05; border-color:var(--gold-light); font-weight:700; }
+
+nav.tabs{
+  display:flex; flex-wrap:wrap; gap:6px; margin:14px 0;
+}
+nav.tabs button{
+  flex:1 1 auto; min-width:118px;
+  background:var(--paper-dark); color:var(--ink);
+  border:2px solid var(--paper-edge); border-bottom:4px solid var(--paper-edge);
+  border-radius:8px 8px 4px 4px; padding:9px 8px; font-size:.78rem; font-weight:700;
+  cursor:pointer; text-align:center; letter-spacing:.02em;
+}
+nav.tabs button.active{ background:var(--paper); border-color:var(--accent); color:var(--accent); }
+nav.tabs button:hover{ filter:brightness(1.05); }
+
+main{
+  background:var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.02) 0px, transparent 2px, transparent 4px);
+  border:1px solid var(--paper-edge);
+  border-radius:10px;
+  padding:22px;
+  box-shadow:var(--panel-shadow);
+  min-height:60vh;
+}
+.screen{ display:none; animation:fadein .25s ease; }
+.screen.active{ display:block; }
+@keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+h2.screen-title{ font-family:var(--font-head); font-size:1.5rem; margin:0 0 4px; color:var(--accent); }
+p.screen-sub{ margin:0 0 20px; color:var(--ink-soft); font-size:.92rem; }
+
+/* Locked panel */
+.locked{
+  border:2px dashed var(--gold); border-radius:10px; padding:28px; text-align:center; background:var(--paper-dark);
+}
+.locked h3{ margin-top:0; font-family:var(--font-head); color:var(--accent); }
+
+/* Buttons */
+.btn{
+  background:var(--accent); color:#f7ecd8; border:none; border-radius:7px;
+  padding:10px 18px; font-size:.9rem; font-weight:700; cursor:pointer;
+  box-shadow:0 3px 0 #5c1710;
+}
+.btn:hover{ background:var(--accent-light); }
+.btn:active{ transform:translateY(2px); box-shadow:0 1px 0 #5c1710; }
+.btn.secondary{ background:var(--paper-dark); color:var(--ink); box-shadow:0 3px 0 var(--paper-edge); border:1px solid var(--paper-edge); }
+.btn.secondary:hover{ filter:brightness(0.97); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+.btn.small{ padding:5px 10px; font-size:.75rem; }
+
+/* ============================= BRIEFING ============================= */
+.briefing-card{
+  background:var(--paper-dark); border:1px solid var(--paper-edge); border-radius:10px;
+  padding:20px 24px; margin-bottom:16px;
+}
+.briefing-card h3{ font-family:var(--font-head); color:var(--accent); margin-top:0; }
+.objectives{ columns:2; gap:24px; }
+.objectives li{ break-inside:avoid; margin-bottom:6px; font-size:.9rem; }
+@media (max-width:680px){ .objectives{ columns:1; } }
+.causegrid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-top:10px; }
+.causechip{ background:var(--paper); border:1px solid var(--paper-edge); border-radius:8px; padding:10px; font-size:.8rem; }
+.causechip .ic{ font-size:1.3rem; }
+.causechip b{ display:block; margin:2px 0; font-family:var(--font-head); color:var(--ink); }
+
+/* ============================= LOCKER ============================= */
+.filterbar{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+.filterbar button{
+  background:var(--paper-dark); border:1px solid var(--paper-edge); border-radius:20px;
+  padding:6px 13px; font-size:.75rem; cursor:pointer; color:var(--ink);
+}
+.filterbar button.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+
+.lockergrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:24px 14px; }
+.evcard{
+  background:linear-gradient(180deg, var(--paper-dark), var(--paper-edge) 140%);
+  border:1px solid var(--paper-edge);
+  border-radius:2px 10px 10px 10px;
+  padding:26px 14px 14px;
+  cursor:pointer;
+  position:relative;
+  transition:transform .12s ease, box-shadow .12s ease;
+  text-align:left;
+  color:var(--ink);
+  font-family:inherit;
+  width:100%;
+  box-shadow:0 3px 7px rgba(0,0,0,.22);
+}
+.evcard:hover{ transform:translateY(-3px); box-shadow:0 8px 16px rgba(0,0,0,.3); }
+.evcard.examined{ border-color:var(--green); }
+.evcard .badgeRow{ position:absolute; top:-13px; left:12px; margin:0; display:flex; }
+.evcard .badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700;
+  background:var(--gold); color:#2a1a05; border:1px solid var(--gold-light);
+  border-radius:5px 8px 2px 2px; padding:5px 10px 4px;
+  box-shadow:0 -2px 3px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.evcard.examined .badge{ background:var(--green); border-color:var(--green); color:#fff; }
+.evcard h4{ margin:0 0 4px; font-family:var(--font-head); font-size:1rem; }
+.evcard .meta{ font-size:.72rem; color:var(--ink-soft); }
+.evcard .stamp{
+  position:absolute; top:8px; right:8px; color:var(--green); font-weight:700; font-size:.85rem;
+  border:2px solid var(--green); border-radius:5px; padding:0 4px; transform:rotate(-8deg); opacity:.85;
+}
+
+/* ============================= MODAL ============================= */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(10,6,2,.72); display:none;
+  align-items:flex-start; justify-content:center; padding:26px 12px; overflow-y:auto; z-index:200;
+}
+.modal-backdrop.open{ display:flex; }
+.modal{
+  background:var(--paper); color:var(--ink);
+  border-radius:10px; border:1px solid var(--paper-edge);
+  max-width:760px; width:100%; padding:22px 24px 26px; box-shadow:var(--panel-shadow); position:relative;
+}
+.modal .closeX{ position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink); }
+.modal h3{ font-family:var(--font-head); font-size:1.3rem; margin:2px 30px 6px 0; color:var(--accent); }
+.badges{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.badges .b{ font-size:.68rem; text-transform:uppercase; letter-spacing:.04em; background:var(--paper-dark); border:1px solid var(--paper-edge); padding:3px 8px; border-radius:4px; }
+.modal section.block{ margin-bottom:18px; }
+.modal section.block h4{ font-family:var(--font-head); font-size:.95rem; margin:0 0 6px; color:var(--ink); border-bottom:1px solid var(--paper-edge); padding-bottom:3px; }
+.evtext{ font-style:italic; background:var(--paper-dark); border-left:4px solid var(--gold); padding:12px 14px; border-radius:0 6px 6px 0; font-size:.95rem; }
+.evtext .hl{ cursor:pointer; border-radius:2px; padding:0 1px; }
+.evtext .hl:hover{ background:rgba(169,125,47,.25); }
+.evtext .hl.active{ background:#f2d477; box-shadow:inset 0 0 0 999px rgba(242,212,119,.55); }
+.hint{ font-size:.75rem; color:var(--ink-soft); margin:4px 0 8px; }
+
+.qrow{ margin-bottom:10px; }
+.qrow label{ display:block; font-size:.82rem; font-weight:700; margin-bottom:4px; }
+select, textarea, input[type=range]{
+  font-family:inherit; font-size:.88rem; padding:7px 9px; border-radius:6px; border:1px solid var(--paper-edge);
+  background:var(--paper); color:var(--ink); width:100%;
+}
+textarea{ min-height:70px; resize:vertical; }
+.tagrow{ display:flex; flex-wrap:wrap; gap:6px; }
+.tagbtn{
+  background:var(--paper); border:1px solid var(--paper-edge); border-radius:16px; padding:5px 11px; font-size:.76rem; cursor:pointer; color:var(--ink);
+}
+.tagbtn.on{ background:var(--gold); border-color:var(--gold-light); color:#2a1a05; font-weight:700; }
+.biasrow{ display:flex; gap:8px; }
+.biasrow label{ flex:1; text-align:center; border:1px solid var(--paper-edge); border-radius:6px; padding:6px; font-size:.78rem; cursor:pointer; background:var(--paper); font-weight:normal; }
+.biasrow input{ margin-right:4px; }
+.sliderval{ font-weight:700; color:var(--accent); }
+
+.insight{
+  background:var(--paper-dark); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; margin-top:6px;
+}
+.insight h4{ margin:0 0 6px; color:var(--accent); font-family:var(--font-head); }
+.insight p{ margin:0 0 8px; font-size:.86rem; }
+.corro{ background:#e3ecd8; border:1px solid var(--green); color:#204225; border-radius:8px; padding:9px 12px; font-size:.82rem; margin-top:8px; }
+.tension{ background:#f3e0cf; border:1px solid var(--amber); color:#5c3d0c; border-radius:8px; padding:9px 12px; font-size:.82rem; margin-top:8px; }
+
+/* ============================= BOARD ============================= */
+.board-toolbar{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
+.board-wrap{ position:relative; display:grid; grid-template-columns:260px 1fr; gap:16px; }
+@media (max-width:760px){ .board-wrap{ grid-template-columns:1fr; } }
+.pool{
+  background:var(--cork); border:6px solid var(--wood); border-radius:8px; padding:12px;
+  max-height:640px; overflow-y:auto; position:relative;
+}
+.pin-card{
+  background:var(--paper); border:1px solid var(--paper-edge); border-radius:5px; padding:8px 9px; margin-bottom:10px;
+  font-size:.74rem; cursor:grab; position:relative; box-shadow:0 3px 6px rgba(0,0,0,.35);
+}
+.pin-card::before{
+  content:''; position:absolute; top:-7px; left:50%; transform:translateX(-50%);
+  width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e6a5a5, var(--accent));
+  box-shadow:0 2px 3px rgba(0,0,0,.5);
+}
+.pin-card b{ display:block; font-family:var(--font-head); font-size:.82rem; margin-bottom:2px; }
+.pin-card.selected{ outline:3px solid var(--gold-light); }
+.pin-card .cc{ font-size:.66rem; color:var(--ink-soft); }
+.zones{ position:relative; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; }
+.zone{
+  background:var(--paper-dark); border:2px dashed var(--paper-edge); border-radius:9px; padding:10px; min-height:120px;
+}
+.zone.draghover{ border-color:var(--accent); background:var(--paper); }
+.zone h5{ margin:0 0 6px; font-family:var(--font-head); font-size:.9rem; color:var(--accent); display:flex; gap:6px; align-items:center; }
+.zonechips{ display:flex; flex-wrap:wrap; gap:5px; }
+.zonechip{ background:var(--paper); border:1px solid var(--paper-edge); border-radius:5px; padding:3px 7px; font-size:.68rem; display:flex; gap:5px; align-items:center; }
+.zonechip button{ background:none; border:none; cursor:pointer; color:var(--red); font-weight:700; padding:0; }
+svg.strings{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+svg.strings line{ stroke:var(--string); stroke-width:1.6; opacity:.75; }
+
+/* ============================= RANK ============================= */
+.ranklist{ list-style:none; margin:0; padding:0; max-width:560px; }
+.ranklist li{
+  background:var(--paper-dark); border:1px solid var(--paper-edge); border-radius:8px; padding:10px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:10px; cursor:grab;
+}
+.ranklist li .num{ font-family:var(--font-head); font-weight:700; font-size:1.1rem; color:var(--accent); width:24px; }
+.ranklist li .name{ flex:1; font-weight:700; }
+.ranklist li .updown{ display:flex; gap:3px; }
+.ranklist li .updown button{ background:var(--paper); border:1px solid var(--paper-edge); border-radius:4px; cursor:pointer; padding:2px 7px; }
+.ranklist li.dragging{ opacity:.4; }
+
+/* ============================= ARGUMENT ============================= */
+.argrid{ display:grid; grid-template-columns:1fr; gap:16px; max-width:760px; }
+.evidencepicker{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; max-height:280px; overflow-y:auto; border:1px solid var(--paper-edge); border-radius:8px; padding:10px; background:var(--paper-dark); }
+.evpick{ font-size:.76rem; display:flex; gap:6px; align-items:flex-start; }
+
+/* ============================= VERDICT ============================= */
+.ratebox{ text-align:center; margin-bottom:22px; }
+.ratebox .title{ font-family:var(--font-head); font-size:1.7rem; color:var(--accent); }
+.scorebars{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+.scoreitem{ background:var(--paper-dark); border:1px solid var(--paper-edge); border-radius:8px; padding:10px 12px; }
+.scoreitem .lbl{ display:flex; justify-content:space-between; font-size:.8rem; font-weight:700; margin-bottom:5px; }
+.bar{ height:9px; border-radius:5px; background:rgba(0,0,0,.15); overflow:hidden; }
+.bar > span{ display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--accent-light)); }
+
+/* ============================= REFLECTION ============================= */
+.reflectq{ margin-bottom:16px; }
+.reflectq label{ display:block; font-weight:700; margin-bottom:5px; font-size:.9rem; }
+
+/* ============================= TEACHER ============================= */
+.ttable{ width:100%; border-collapse:collapse; font-size:.75rem; }
+.ttable th, .ttable td{ border:1px solid var(--paper-edge); padding:5px 7px; text-align:left; }
+.ttable th{ background:var(--paper-dark); }
+.tt-acc{ border:1px solid var(--paper-edge); border-radius:6px; margin-bottom:6px; }
+.tt-acc summary{ cursor:pointer; padding:7px 10px; font-weight:700; font-size:.85rem; background:var(--paper-dark); border-radius:6px; }
+.tt-acc div{ padding:8px 12px; font-size:.8rem; }
+
+footer.sitefoot{ text-align:center; color:#d8c9a3; font-size:.75rem; padding:16px 0 4px; opacity:.8; }
+footer.sitefoot button.linklike{ background:none; border:none; color:#d8c9a3; text-decoration:underline; cursor:pointer; font-size:.75rem; padding:0; }
+
+#printArea{ display:none; }
+@media print{
+  body *{ visibility:hidden; }
+  #printArea, #printArea *{ visibility:visible; }
+  #printArea{ display:block; position:absolute; top:0; left:0; width:100%; padding:20px; color:#000; background:#fff; }
+}
+.toast{
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  background:var(--wood-dark); color:#f2e6c8; padding:10px 18px; border-radius:20px; font-size:.85rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.5); z-index:400; opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="brandblock">
+      <div class="seal" aria-hidden="true">IHC</div>
+      <div>
+        <h1>Evidence Mystery</h1>
+        <div class="sub">Who Caused World War I? · International Historical Commission</div>
+      </div>
+    </div>
+    <div class="progresswrap" aria-live="polite">
+      <span id="progressLabel">Evidence Examined: 0/28</span>
+      <div class="progressbar"><span id="progressFill" style="width:0%"></span></div>
+    </div>
+    <div class="controls">
+      <button class="iconbtn" id="btnFontDown" aria-label="Decrease text size">A−</button>
+      <button class="iconbtn" id="btnFontUp" aria-label="Increase text size">A+</button>
+      <button class="iconbtn" id="btnAccuracy" aria-pressed="false">🎓 Historical Accuracy Mode</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Investigation stages">
+    <button data-tab="briefing">📋 Briefing</button>
+    <button data-tab="locker">🗂 Evidence Locker</button>
+    <button data-tab="board">📌 Case Board</button>
+    <button data-tab="rank">⚖ Rank Causes</button>
+    <button data-tab="argument">✍ Build Argument</button>
+    <button data-tab="verdict">🏅 Verdict</button>
+    <button data-tab="reflection">💭 Reflection</button>
+  </nav>
+
+  <main id="main">
+    <!-- ===================== BRIEFING ===================== -->
+    <section class="screen" id="screen-briefing">
+      <h2 class="screen-title">Case Briefing</h2>
+      <p class="screen-sub">International Historical Commission — Case File WWI-1914</p>
+      <div class="briefing-card">
+        <h3>Your Assignment</h3>
+        <p>You have been retained by an international historical commission, ninety years after the guns fell silent, to help settle one of history's most argued-over questions: <strong>who — or what — caused the First World War?</strong></p>
+        <p>You will not find a single confession, a single villain, or a single correct answer. Instead you will examine 28 primary and secondary sources — telegrams, treaties, mobilization plans, cartoons, posters, newspapers, and diaries — evaluate each one as a real historian would, and build your own evidence-based argument about which causes mattered most. Two careful investigators can examine the same evidence and reach different, equally defensible conclusions. That is not a flaw in this case file. That is how history actually works.</p>
+      </div>
+      <div class="briefing-card">
+        <h3>What You Will Practice</h3>
+        <ul class="objectives">
+          <li>Sourcing — who made this, and why?</li>
+          <li>Corroboration — do other sources agree?</li>
+          <li>Contextualization — what was happening around this document?</li>
+          <li>Evaluating reliability and recognizing bias</li>
+          <li>Weighing long-term causes against a single triggering event</li>
+          <li>Building a claim-evidence-reasoning argument a historian would respect</li>
+        </ul>
+      </div>
+      <div class="briefing-card">
+        <h3>Eight Categories of Cause</h3>
+        <p>Every piece of evidence in this case relates to one or more of these categories. Keep them in mind as you investigate — you will eventually have to rank them.</p>
+        <div class="causegrid" id="causeGridBriefing"></div>
+      </div>
+      <div class="briefing-card">
+        <h3>How the Investigation Works</h3>
+        <ol style="font-size:.9rem;">
+          <li>Open files in the <strong>Evidence Locker</strong>. Read each source, analyze who made it and why, rate its importance and reliability, tag it, and take notes.</li>
+          <li>Pin examined evidence to the <strong>Case Board</strong> and connect it to the cause(s) you believe it supports.</li>
+          <li><strong>Rank</strong> the eight causes from most to least significant, in your own judgment.</li>
+          <li><strong>Build your argument</strong>: a claim, supporting evidence, reasoning, a counterargument, and a rebuttal.</li>
+          <li>Receive your <strong>Investigation Rating</strong> and reflect on what changed your mind.</li>
+        </ol>
+        <button class="btn" id="btnStartInvestigation">Begin Investigation →</button>
+      </div>
+    </section>
+
+    <!-- ===================== LOCKER ===================== -->
+    <section class="screen" id="screen-locker">
+      <h2 class="screen-title">Evidence Locker</h2>
+      <p class="screen-sub">28 documents. Open a file to begin your analysis. Filter by suspected cause below.</p>
+      <div class="filterbar" id="filterBar"></div>
+      <div class="lockergrid" id="lockerGrid"></div>
+    </section>
+
+    <!-- ===================== BOARD ===================== -->
+    <section class="screen" id="screen-board">
+      <h2 class="screen-title">Case Board</h2>
+      <p class="screen-sub" id="boardSub">Drag an examined document onto a cause category to pin it there. On a keyboard: select a document, then activate a category to connect it. A red string appears once a document is pinned to two or more categories, linking them together.</p>
+      <div id="boardLockedMsg"></div>
+      <div id="boardContent" style="display:none;">
+        <div class="board-toolbar">
+          <span id="boardSelHint" class="hint">No document selected.</span>
+          <button class="btn secondary small" id="btnClearSel">Clear Selection</button>
+        </div>
+        <div class="board-wrap" id="boardWrap">
+          <div class="pool" id="boardPool" aria-label="Examined evidence pool"></div>
+          <div class="zones" id="boardZones"></div>
+          <svg class="strings" id="boardSvg" aria-hidden="true"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RANK ===================== -->
+    <section class="screen" id="screen-rank">
+      <h2 class="screen-title">Rank the Causes</h2>
+      <p class="screen-sub" id="rankSub">Order these eight causes from most significant (1) to least significant (8), based on your own analysis. There is no single correct order — your ranking will be judged on how well you can defend it.</p>
+      <div id="rankLockedMsg"></div>
+      <div id="rankContent" style="display:none;">
+        <ol class="ranklist" id="rankList"></ol>
+        <button class="btn" id="btnLockRank">Lock In Ranking →</button>
+        <span id="rankLockedNote" class="hint"></span>
+      </div>
+    </section>
+
+    <!-- ===================== ARGUMENT ===================== -->
+    <section class="screen" id="screen-argument">
+      <h2 class="screen-title">Build Your Argument</h2>
+      <p class="screen-sub">Construct a Claim–Evidence–Reasoning case, then confront the strongest opposing view.</p>
+      <div id="argLockedMsg"></div>
+      <div id="argContent" style="display:none;">
+        <div class="argrid">
+          <div class="qrow">
+            <label for="claimCause">Claim: which cause do you argue mattered most?</label>
+            <select id="claimCause"></select>
+          </div>
+          <div class="qrow">
+            <label for="claimText">State your claim in your own words.</label>
+            <textarea id="claimText" placeholder="e.g., The alliance system was the most significant cause of WWI because..."></textarea>
+          </div>
+          <div class="qrow">
+            <label>Evidence: select at least 3 documents that support your claim.</label>
+            <div class="evidencepicker" id="evidencePicker"></div>
+          </div>
+          <div class="qrow">
+            <label for="reasoningText">Reasoning: explain HOW your evidence supports your claim.</label>
+            <textarea id="reasoningText" placeholder="Connect the dots between your evidence and your claim..."></textarea>
+          </div>
+          <div class="qrow">
+            <label for="counterCause">Counterargument: which cause would a rival historian argue instead?</label>
+            <select id="counterCause"></select>
+          </div>
+          <div class="qrow">
+            <label for="counterText">State that opposing argument as fairly as you can (steelman it).</label>
+            <textarea id="counterText" placeholder="A historian who disagrees might argue..."></textarea>
+          </div>
+          <div class="qrow">
+            <label for="rebuttalText">Rebuttal: why does your argument still hold up?</label>
+            <textarea id="rebuttalText" placeholder="Even so, the evidence still shows..."></textarea>
+          </div>
+          <button class="btn" id="btnSubmitArgument">Submit Argument →</button>
+          <span id="argNote" class="hint"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VERDICT ===================== -->
+    <section class="screen" id="screen-verdict">
+      <h2 class="screen-title">Investigation Rating</h2>
+      <p class="screen-sub">This is not a pass/fail grade. It reflects the depth and rigor of your investigation, not whether you picked the "right" cause.</p>
+      <div id="verdictLockedMsg"></div>
+      <div id="verdictContent" style="display:none;">
+        <div class="ratebox">
+          <div class="title" id="verdictTitle">—</div>
+          <p id="verdictBlurb"></p>
+        </div>
+        <div class="scorebars" id="scoreBars"></div>
+      </div>
+    </section>
+
+    <!-- ===================== REFLECTION ===================== -->
+    <section class="screen" id="screen-reflection">
+      <h2 class="screen-title">Investigator's Reflection</h2>
+      <p class="screen-sub">Every good historical investigation ends by turning the lens on yourself.</p>
+      <div id="reflectionForm"></div>
+      <button class="btn" id="btnSaveReflection">Save Reflection</button>
+      <button class="btn secondary" id="btnPrintReflection">🖨 Print My Reflection</button>
+      <span id="reflectionNote" class="hint"></span>
+    </section>
+  </main>
+
+  <footer class="sitefoot">
+    <div>A classroom investigation game · No single nation caused this war. Historians still debate the balance of causes — now you will too.</div>
+    <button class="linklike" id="btnTeacher">Teacher Tools</button>
+  </footer>
+</div>
+
+<!-- ===================== EVIDENCE MODAL ===================== -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modalBox">
+    <button class="closeX" id="modalClose" aria-label="Close evidence file">✕</button>
+    <h3 id="modalTitle"></h3>
+    <div class="badges" id="modalBadges"></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===================== TEACHER MODAL ===================== -->
+<div class="modal-backdrop" id="teacherBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="teacherTitle" style="max-width:920px;">
+    <button class="closeX" id="teacherClose" aria-label="Close teacher tools">✕</button>
+    <h3 id="teacherTitle">Teacher Tools</h3>
+    <p class="hint">This panel is intended for educators facilitating the investigation.</p>
+    <div id="teacherBody"></div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   DATA
+   ====================================================================== */
+var CAUSES = [
+  {id:'militarism',   name:'Militarism',                        icon:'⚔️', blurb:'The arms race and the glorification of military strength and readiness for war.'},
+  {id:'alliances',     name:'The Alliance System',                icon:'🤝', blurb:'A web of defensive treaties that could turn a local war into a continental one.'},
+  {id:'imperialism',   name:'Imperialism',                        icon:'🌍', blurb:'Competition among the great powers for colonies, resources, and global prestige.'},
+  {id:'nationalism',   name:'Nationalism',                        icon:'🚩', blurb:'Ethnic pride, unification movements, and long-held territorial grievances.'},
+  {id:'mobilization',  name:'Mobilization Plans',                 icon:'🚂', blurb:'Rigid military timetables that made rapid diplomacy nearly impossible once triggered.'},
+  {id:'leaders',       name:'Individual Leaders',                 icon:'👑', blurb:'The choices, personalities, and miscalculations of monarchs, ministers, and generals.'},
+  {id:'assassination', name:'Assassination at Sarajevo',          icon:'🔫', blurb:'The killing of Archduke Franz Ferdinand — the spark of the July Crisis.'},
+  {id:'timeframe',     name:'Immediate vs. Long-Term Causes',     icon:'⏳', blurb:'How one event and decades of tension combined to cause a world war.'}
+];
+function causeName(id){ var c=CAUSES.find(function(x){return x.id===id;}); return c?c.name:id; }
+function causeIcon(id){ var c=CAUSES.find(function(x){return x.id===id;}); return c?c.icon:''; }
+
+var CREATOR_D = [
+  "A professional historian writing a textbook decades after the events",
+  "An ordinary citizen with no connection to government, military, or press",
+  "A schoolteacher summarizing the event for young children"
+];
+var PURPOSE_D = [
+  "To give a neutral, balanced account for future historians",
+  "To entertain readers with no persuasive goal in mind",
+  "To record the event privately with no intended audience"
+];
+var AUDIENCE_D = [
+  "Future museum visitors with no stake in the outcome",
+  "Children learning basic geography",
+  "Readers in a country with no connection to the events described"
+];
+function rotate(arr, n){ n = ((n % arr.length) + arr.length) % arr.length; return arr.slice(n).concat(arr.slice(0, n)); }
+function opts(correct, i){ return rotate([correct, CREATOR_D[i%3], CREATOR_D[(i+1)%3]], i); }
+function optsP(correct, i){ return rotate([correct, PURPOSE_D[i%3], PURPOSE_D[(i+1)%3]], i+1); }
+function optsA(correct, i){ return rotate([correct, AUDIENCE_D[i%3], AUDIENCE_D[(i+1)%3]], i+2); }
+
+var TAG_OPTIONS = ["Primary Source","Government Document","Propaganda","Eyewitness Account","Statistical Evidence","Visual Evidence","Elite Perspective","Popular Perspective"];
+var FOLDER_ICON = '📁';
+
+/* Evidence fields:
+   id, title, date, country, type (badge label), icon,
+   causes[], background, text, significance,
+   creator, purpose, audience (short correct strings),
+   biasLevel (Low/Medium/High) [historian], reliability(1-5)[historian, hidden],
+   importanceHistorian(1-5),
+   why, interpretations, limitations, furtherReading
+*/
+var EVIDENCE = [
+{ id:'naval-cartoon', title:"Political Cartoon: The Naval Race", date:'March 1909', country:'Britain', type:'Political Cartoon', icon:'🎭',
+  causes:['militarism','nationalism'],
+  background:"In 1906 Britain launched HMS Dreadnought, a revolutionary battleship so powerful it made every existing warship obsolete overnight. Germany immediately began building its own dreadnoughts under Admiral Tirpitz's naval program, and the British public panicked that Germany would out-build the Royal Navy.",
+  text:"[Cartoon] Two enormous battleships labeled BRITANNIA and GERMANIA race neck-and-neck across open water while anxious citizens on the shore shout the popular 1909 slogan of the day: \"We want eight, and we won't wait!\" — a public demand that Parliament fund eight new dreadnoughts rather than the four the government had proposed.",
+  significance:"Shows militarism was not only a government policy but a mass public movement, with newspapers and citizens pressuring elected leaders to keep building warships.",
+  creator:"A British newspaper cartoonist responding to public anxiety about the naval race",
+  purpose:"To pressure the British government into approving more warships than it had planned",
+  audience:"The British voting public and Members of Parliament",
+  biasLevel:'High', reliability:2, importanceHistorian:3,
+  why:"Cartoons like this reveal public opinion and press pressure, which historians treat as a real political force alongside official policy.",
+  interpretations:"Some historians see the naval race as proof Germany sought to challenge British supremacy; others argue Britain's own shipbuilding pace was just as aggressive and self-reinforcing.",
+  limitations:"A cartoon simplifies a complex arms race into a two-nation contest and cannot show the more nuanced private diplomacy happening behind the scenes.",
+  furtherReading:"Compare with the actual dreadnought production figures: by 1914, Britain had 29 dreadnoughts to Germany's 17 — the race never truly evened out." },
+
+{ id:'army-bill-1913', title:"German Army Bill Summary, 1913", date:'July 1913', country:'Germany', type:'Government Memo', icon:'📋',
+  causes:['militarism','mobilization'],
+  background:"Following the tense Second Moroccan (Agadir) Crisis of 1911 and the Balkan Wars of 1912–13, the German Reichstag passed the largest peacetime military expansion in German history, adding roughly 170,000 soldiers and funding it with a one-time special defense tax.",
+  text:"This ministry memo summarizes the 1913 Army Bill: army strength to rise from roughly 544,000 to over 700,000 men by 1914; an extraordinary one-time 'Wehrbeitrag' (defense contribution) tax to be levied on wealth and property to fund immediate rearmament, in addition to new field artillery and machine-gun units.",
+  significance:"Demonstrates the accelerating pace of the arms race in the final years before the war and the belief among German planners that a European war was becoming likely, if not desirable, to prepare for.",
+  creator:"An official in the German War Ministry drafting policy for the Reichstag",
+  purpose:"To justify and record a major, costly increase in Germany's standing army",
+  audience:"Reichstag legislators who would need to approve the funding",
+  biasLevel:'Low', reliability:5, importanceHistorian:4,
+  why:"Government funding memos are considered highly reliable evidence of actual state capacity and intent, since budgets require real votes and real money.",
+  interpretations:"Fischer-school historians cite this bill as evidence of deliberate German war preparation; other historians note France and Russia expanded their armies just as sharply in the same years.",
+  limitations:"A budget shows capability, not intention — it cannot by itself prove Germany's leaders wanted war rather than simply deterrence.",
+  furtherReading:"France passed its own major military expansion, the Three-Year Law, only weeks later that same summer." },
+
+{ id:'military-budgets', title:"Military Budgets of the Great Powers, 1870–1914", date:'Compiled 1914', country:'Multiple (comparative)', type:'Military Budget Record', icon:'💰',
+  causes:['militarism'],
+  background:"This statistical table, compiled by the commission's economic historians from national treasury records, tracks combined military spending by Germany, Britain, France, Russia, and Austria-Hungary across four decades.",
+  text:"Combined military expenditure of the six great powers rose from roughly £94 million in 1870 to over £397 million by 1914 — more than a fourfold increase, with the sharpest jump occurring after 1908, once the naval race and the Balkan Wars accelerated spending across every major capital simultaneously.",
+  significance:"Provides continent-wide, multi-nation numeric evidence that militarism was not the policy of one country but a shared, reinforcing pattern across the entire alliance system.",
+  creator:"Government treasury departments, compiled later into a single comparative table",
+  purpose:"To provide an objective statistical record of military spending trends for policymakers and later historians",
+  audience:"Government officials, economists, and historians analyzing long-term trends",
+  biasLevel:'Low', reliability:5, importanceHistorian:4,
+  why:"Aggregated statistics let historians see structural, continent-wide patterns that no single document from one country could reveal.",
+  interpretations:"The data supports the 'action-reaction' model of militarism, where every power's buildup justified its rivals' buildups in turn.",
+  limitations:"Raw spending totals do not show which decisions were defensive and which were aggressive, or how the money was actually used.",
+  furtherReading:"Historian David Stevenson's research on the pre-1914 arms race remains a standard reference for these figures." },
+
+{ id:'three-year-law', title:"French 'Three-Year Law' Recruitment Poster", date:'August 1913', country:'France', type:'Recruitment Poster', icon:'📢',
+  causes:['militarism','nationalism','mobilization'],
+  background:"To keep pace with Germany's larger population and its 1913 Army Bill, the French government extended compulsory military service from two years to three — a deeply controversial law that Socialist leader Jean Jaurès opposed right up until his assassination on the eve of the war in 1914.",
+  text:"[Poster] A determined young French soldier in blue-and-red uniform stands before the tricolor flag beneath bold lettering: 'THREE YEARS FOR FRANCE' — beside smaller text reminding citizens that a strong army is the only guarantee of French independence against a more populous neighbor.",
+  significance:"Shows that militarism was a two-way action-reaction cycle: France's extension of service directly answered Germany's army expansion, and vice versa, each justified as defensive by its own government.",
+  creator:"The French Ministry of War, distributed nationally to build public support",
+  purpose:"To convince a skeptical public that extending compulsory service was necessary for national defense",
+  audience:"French citizens and conscripts, especially young men and their families",
+  biasLevel:'High', reliability:2, importanceHistorian:3,
+  why:"Recruitment posters reveal how governments framed military buildups to the public — as necessary defense, never as aggression.",
+  interpretations:"The law's domestic controversy shows militarism was contested even within nations, not simply embraced uniformly by every citizen.",
+  limitations:"A poster promotes a policy; it does not tell us how effective the persuasion actually was or how many French citizens still opposed the law.",
+  furtherReading:"Jean Jaurès's campaign against the Three-Year Law was cut short by his assassination on July 31, 1914, days before general mobilization." },
+
+{ id:'dual-alliance', title:"Treaty Excerpt: The Dual Alliance, 1879", date:'October 7, 1879', country:'Germany & Austria-Hungary', type:'Treaty Excerpt', icon:'📜',
+  causes:['alliances'],
+  background:"Negotiated by German Chancellor Otto von Bismarck after Germany's unification, this defensive pact bound Germany and Austria-Hungary together and became the foundation of the alliance bloc that later expanded into the Triple Alliance with Italy in 1882.",
+  text:"Article I: 'Should, contrary to their hope... one of the two Empires be attacked by Russia, the High Contracting Parties are bound to come to the assistance of one another with the whole war strength of their Empires.' Article II promises benevolent neutrality if either is attacked by any other power.",
+  significance:"Marks the founding link in the chain of alliances that historians describe as turning a regional Balkan dispute into a continental war in 1914.",
+  creator:"Chancellor Otto von Bismarck and Austro-Hungarian diplomats, as an official state treaty",
+  purpose:"To bind Germany and Austria-Hungary to mutual military defense, primarily against Russia",
+  audience:"The signing governments and, eventually, other European powers who needed to know the alliance existed",
+  biasLevel:'Low', reliability:5, importanceHistorian:5,
+  why:"As a founding legal treaty, this document is considered a cornerstone primary source for understanding how binding commitments accumulated across Europe.",
+  interpretations:"Bismarck intended the alliance system defensively, to isolate France; historians debate whether his successors used the same system more recklessly after his dismissal in 1890.",
+  limitations:"A treaty text shows formal obligations but not how leaders actually behaved under pressure — promises on paper are not the same as promises kept in a crisis.",
+  furtherReading:"Bismarck himself later worried aloud that a 'wretched foolish thing in the Balkans' might one day trigger the very war his alliances were meant to prevent." },
+
+{ id:'alliance-map', title:"Alliance Map of Europe, 1914", date:'Published 1914', country:'Europe (composite)', type:'Alliance Map', icon:'🗺️',
+  causes:['alliances','mobilization'],
+  background:"By 1914, decades of treaty-making had sorted Europe's great powers into two armed camps: the Triple Alliance (Germany, Austria-Hungary, and Italy) and the Triple Entente (France, Russia, and Britain).",
+  text:"[Map] Shaded blocs show the Triple Alliance in one color and the Triple Entente in another, with connecting lines marking formal treaties, military conventions, and informal ententes — plus a small red circle over Sarajevo, marking where the coming crisis would begin.",
+  significance:"Visually demonstrates how a localized dispute in the Balkans could pull in every major European power through a chain of overlapping commitments — exactly what happened in the summer of 1914.",
+  creator:"A commission cartographer, compiling public treaty information into a single reference map",
+  purpose:"To give investigators (and students) a clear visual reference for the diplomatic structure of pre-war Europe",
+  audience:"Historians, students, and this commission's investigators",
+  biasLevel:'Low', reliability:4, importanceHistorian:5,
+  why:"Maps like this let historians see structure at a glance — something no single telegram or treaty text can show alone.",
+  interpretations:"Some historians emphasize that alliances made a wider war more likely once fighting started; others argue the alliances actually kept peace for decades before 1914 by deterring aggression.",
+  limitations:"A map cannot show the informal, non-binding nature of some 'ententes' — Britain, for example, was never formally obligated to fight for France before 1914.",
+  furtherReading:"Historian Christopher Clark's 'The Sleepwalkers' argues the alliance blocs were less rigid, and leaders had more choice, than this map alone suggests." },
+
+{ id:'franco-russian', title:"Franco-Russian Military Convention, 1892", date:'Signed 1892, ratified 1894', country:'France & Russia', type:'Treaty Excerpt', icon:'📜',
+  causes:['alliances','mobilization'],
+  background:"Fearing isolation after Bismarck's alliance system excluded them, France and Russia signed a military convention promising mutual support against Germany, forming the second half of what became the Triple Entente.",
+  text:"'If France is attacked by Germany, or by Italy supported by Germany, Russia shall employ all her available forces to attack Germany. If Russia is attacked by Germany, or by Austria supported by Germany, France shall employ all her available forces to attack Germany... These forces shall be fully mobilized with the utmost speed.'",
+  significance:"Shows that alliances were not just promises of help but included joint mobilization coordination, directly linking the alliance system to the rigid mobilization plans that later removed room for diplomacy in 1914.",
+  creator:"French and Russian general staffs and diplomats, as a formal military convention",
+  purpose:"To guarantee mutual military support against a shared rival, Germany",
+  audience:"The two governments, and — once revealed — Germany and Austria-Hungary as a deterrent",
+  biasLevel:'Low', reliability:5, importanceHistorian:5,
+  why:"This convention is a key primary source for understanding why Russian mobilization in 1914 automatically raised the stakes for France as well.",
+  interpretations:"Historians note this convention explicitly required 'utmost speed' mobilization — a clause that helped make the 1914 crisis move faster than diplomats could keep up with.",
+  limitations:"A military convention only tells us what was promised on paper, not how enthusiastically either government actually wanted to honor it in 1914.",
+  furtherReading:"This convention is often paired by historians with Germany's Schlieffen Plan to explain why a war against Russia meant, in practice, a war against France too." },
+
+{ id:'powder-keg', title:"Political Cartoon: The Powder Keg of Europe", date:'c. 1912–1913', country:'International Press', type:'Political Cartoon', icon:'🎭',
+  causes:['alliances','nationalism'],
+  background:"After two Balkan Wars (1912–13) redrew borders and inflamed nationalist tempers in southeastern Europe, cartoonists across the continent depicted the region as a dangerous fuse waiting to be lit.",
+  text:"[Cartoon] A barrel labeled 'BALKANS' sits at the center of the frame, packed with gunpowder and stamped with the flags of Serbia, Bulgaria, and the Ottoman Empire, while great-power figures representing Austria-Hungary, Russia, Germany, France, and Britain stand around it, each holding a lit cigar dangerously close.",
+  significance:"Shows that contemporary observers already recognized, well before the assassination, that the alliance system made any Balkan spark dangerous for the whole continent — this cartoon predates the July Crisis by roughly a year.",
+  creator:"An international newspaper cartoonist commenting on Balkan instability",
+  purpose:"To warn the public that a regional Balkan conflict could ignite a much larger European war",
+  audience:"Newspaper readers across Europe following Balkan politics",
+  biasLevel:'Medium', reliability:2, importanceHistorian:4,
+  why:"This is powerful evidence that the danger of alliance entanglement was widely predicted, not a surprise realized only in hindsight.",
+  interpretations:"Some historians use images like this to argue the war was 'foreseeable and preventable'; others caution that predicting a general war and predicting THIS specific war are not the same thing.",
+  limitations:"A single cartoon cannot prove how seriously political leaders themselves took this exact warning, only that the metaphor was already in public circulation.",
+  furtherReading:"The phrase 'powder keg of Europe' remains one of the most common shorthand descriptions of the pre-war Balkans in textbooks today." },
+
+{ id:'colonial-map', title:"Map: European Colonial Holdings in Africa, 1914", date:'1914', country:'Europe (composite)', type:'Map', icon:'🗺️',
+  causes:['imperialism','nationalism'],
+  background:"Following the 1884–85 Berlin Conference, European powers partitioned nearly the entire African continent among themselves with little regard for existing ethnic or political boundaries.",
+  text:"[Map] By 1914, only Ethiopia and Liberia remain outside direct European colonial control. Britain and France hold the largest shares; Germany, a late-unifying and late-colonizing power, holds a comparatively small handful of territories and repeatedly presses for more, including in Morocco.",
+  significance:"Shows the scale of imperial competition that bred rivalry and resentment between the powers — particularly Germany's sense that it had arrived too late to the colonial contest for a 'place in the sun.'",
+  creator:"A commission cartographer compiling public colonial records from 1914",
+  purpose:"To give investigators a visual reference for the scale of imperial competition before the war",
+  audience:"Historians and students studying the causes of global rivalry",
+  biasLevel:'Low', reliability:4, importanceHistorian:3,
+  why:"Colonial maps let historians see at a glance why Germany in particular felt shut out of a competition it had joined only recently.",
+  interpretations:"Some historians treat imperial rivalry as a major driver of pre-war tension; others note that most colonial disputes before 1914 were actually resolved through negotiation, not war.",
+  limitations:"A static map from 1914 cannot show the years of shifting negotiations and near-conflicts that produced these borders.",
+  furtherReading:"Compare this map with the Agadir Crisis and Tangier Crisis documents, which show imperial rivalry almost tipping into open war twice." },
+
+{ id:'agadir-crisis', title:"Newspaper Report: The Agadir Crisis", date:'July 1911', country:'Germany / France', type:'Newspaper Article', icon:'📰',
+  causes:['imperialism','alliances','leaders'],
+  background:"When France moved troops into Morocco to put down a local rebellion, Germany saw an opportunity to challenge French colonial control and sent a gunboat, the SMS Panther, to the port of Agadir.",
+  text:"'PARIS, July 1911 — Germany has dispatched the gunboat Panther to Agadir, ostensibly to protect German commercial interests, in what Paris and London view as a direct challenge to the French protectorate over Morocco. War fever grips both capitals as diplomats scramble to avert a wider conflict...' The crisis was eventually defused when Germany accepted territory in the French Congo in exchange for recognizing French control of Morocco.",
+  significance:"Shows how colonial rivalry repeatedly brought Germany, France, and Britain to the brink of war years before 1914, and hardened British suspicion of German ambitions — strengthening ties within the Triple Entente.",
+  creator:"A European newspaper correspondent reporting live on the unfolding diplomatic crisis",
+  purpose:"To inform the public of a fast-moving international crisis as it happened",
+  audience:"Newspaper readers in France, Germany, and Britain following the crisis",
+  biasLevel:'Medium', reliability:3, importanceHistorian:4,
+  why:"Contemporary news coverage shows how a colonial dispute could dominate public attention and pressure governments toward brinkmanship.",
+  interpretations:"Historians often cite Agadir as a turning point that pushed British public and political opinion firmly toward France and against Germany.",
+  limitations:"Newspaper accounts written in the heat of a crisis can exaggerate danger or public sentiment and should be checked against calmer diplomatic records.",
+  furtherReading:"This was the second Moroccan crisis; the first, the Tangier Crisis, had occurred just six years earlier in 1905." },
+
+{ id:'tangier-crisis', title:"Diplomatic Telegram: The Tangier Crisis", date:'March 1905', country:'Germany / France', type:'Diplomatic Telegram', icon:'✉️',
+  causes:['imperialism','leaders','alliances'],
+  background:"In a dramatic and unannounced visit, Kaiser Wilhelm II landed at Tangier, Morocco, to publicly assert German interests against growing French influence there — provoking outrage in Paris and leading to the Algeciras Conference of 1906, which ultimately isolated Germany diplomatically.",
+  text:"Telegram from the German Foreign Office to its ambassador in Paris: 'His Majesty has landed at Tangier and declared before the assembled dignitaries that Germany regards the Sultan of Morocco as a fully independent sovereign and will not recognize any exclusive French claim over Moroccan affairs...' French officials privately describe the visit as a deliberate provocation.",
+  significance:"An earlier colonial flashpoint showing the same pattern that would recur at Agadir six years later — helping investigators corroborate that imperial friction was a recurring driver of tension, not an isolated incident.",
+  creator:"German Foreign Office officials, recording the Kaiser's public diplomatic statement",
+  purpose:"To assert Germany's right to a voice in Moroccan affairs and to test the strength of the new Anglo-French Entente",
+  audience:"European governments, especially France and Britain",
+  biasLevel:'Medium', reliability:4, importanceHistorian:3,
+  why:"Diplomatic telegrams give historians a near-contemporary record of exactly what was said and by whom during a fast-moving crisis.",
+  interpretations:"Some historians argue the Kaiser badly miscalculated, expecting to split Britain from France but instead pushing them closer together.",
+  limitations:"A single telegram captures one side's framing of events and should be cross-checked against French and British diplomatic records for a fuller picture.",
+  furtherReading:"The resulting 1906 Algeciras Conference saw Germany diplomatically isolated, with only Austria-Hungary supporting its position." },
+
+{ id:'black-hand', title:"Founding Document: 'Union or Death' (The Black Hand)", date:'May 1911', country:'Serbia', type:'Founding Document', icon:'📖',
+  causes:['nationalism','assassination'],
+  background:"A secret society of Serbian military officers, including intelligence chief Dragutin Dimitrijević ('Apis'), founded this organization dedicated to uniting all Serbs — including those living under Austro-Hungarian rule in Bosnia — into a single state, by any means necessary.",
+  text:"From the society's oath and founding statutes: members swear absolute secrecy and obedience in pursuit of 'the union of all Serbs,' and pledge to use 'all means' — explicitly including revolutionary and violent action — against any government standing in the way of that unification, above all Austria-Hungary.",
+  significance:"Provides a direct organizational link to the assassination in Sarajevo: the Black Hand trained and armed the young nationalists, including Gavrilo Princip, who carried it out.",
+  creator:"Serbian military officers and nationalist conspirators, writing for their own secret membership",
+  purpose:"To bind members to a shared, uncompromising nationalist mission, including violence",
+  audience:"Fellow Serbian nationalist officers and recruits sworn into the society",
+  biasLevel:'High', reliability:3, importanceHistorian:5,
+  why:"This document is central to understanding why the assassination was not a lone, spontaneous act but connected to an organized nationalist movement with military ties.",
+  interpretations:"Historians still debate how much the civilian Serbian government knew about or controlled the Black Hand's actions — a key question in judging Serbia's responsibility.",
+  limitations:"As a secret internal document, it reveals intent and ideology but cannot by itself prove the full chain of command behind the actual 1914 assassination plot.",
+  furtherReading:"Dimitrijević ('Apis') was later tried and executed by the Serbian government itself in 1917, on charges related to his conspiratorial activities." },
+
+{ id:'narodna-odbrana', title:"Nationalist Newspaper: Narodna Odbrana", date:'1908–1914 (excerpt c. 1909)', country:'Serbia', type:'Newspaper Article', icon:'📰',
+  causes:['nationalism','assassination','imperialism'],
+  background:"Narodna Odbrana ('National Defense') was a Serbian nationalist organization and publication promoting pan-Slavic unity, founded in direct response to Austria-Hungary's 1908 annexation of Bosnia-Herzegovina, a province with a large Serb population that many Serbian nationalists believed belonged with Serbia.",
+  text:"'The annexation of Bosnia and Herzegovina is theft — an act of violence against our brothers who yearn to be united with the motherland. Every Serb, in Belgrade or in Sarajevo, must remember that this occupation is temporary, and that history will one day restore what has been taken...'",
+  significance:"Shows the deep ethnic and nationalist grievance driving Serbian hostility toward Austria-Hungary well before 1914, rooted in the 1908 annexation crisis.",
+  creator:"Serbian nationalist writers and organizers within the Narodna Odbrana movement",
+  purpose:"To keep the grievance over Bosnia-Herzegovina alive in Serbian public consciousness and build support for eventual unification",
+  audience:"Serbian citizens and Serb communities living inside Austria-Hungary",
+  biasLevel:'High', reliability:3, importanceHistorian:4,
+  why:"This kind of nationalist press shows how ordinary readers, not just diplomats, were primed for years to see Austria-Hungary as an occupying enemy.",
+  interpretations:"Historians view the 1908 annexation crisis as a major turning point that hardened Serbian nationalism and Austro-Hungarian distrust of Serbia well ahead of 1914.",
+  limitations:"A nationalist publication is, by design, a persuasive and one-sided source — it cannot tell us how most ordinary Bosnians of any background actually felt.",
+  furtherReading:"Bosnia-Herzegovina had technically been administered by Austria-Hungary since 1878, but the 1908 annexation formally absorbed it, ending any hope of Serbian union with the province through diplomacy." },
+
+{ id:'alsace-lorraine', title:"French Poster: 'N'Oublions Jamais' (Never Forget)", date:'c. 1912', country:'France', type:'Nationalist Propaganda', icon:'📢',
+  causes:['nationalism'],
+  background:"After France's defeat in the Franco-Prussian War (1870–71), the newly formed German Empire annexed the French provinces of Alsace and Lorraine. French schools and popular culture kept the grievance alive for over forty years, a spirit known as 'revanchisme' (the wish for revenge).",
+  text:"[Poster] A map of France shown in mourning black drapes over the outline of Alsace-Lorraine, captioned: 'N'OUBLIONS JAMAIS' ('Let Us Never Forget') — beneath it, a young girl in regional Alsatian dress gazes toward the rest of France, separated by a border drawn in red.",
+  significance:"Shows how a forty-year-old territorial loss remained emotionally alive in French national identity, keeping France primed for a future war of recovery against Germany.",
+  creator:"French nationalist educators and publishers, widely reproduced in schools",
+  purpose:"To keep the loss of Alsace-Lorraine emotionally present in French national memory for future generations",
+  audience:"French schoolchildren and the general public",
+  biasLevel:'High', reliability:2, importanceHistorian:3,
+  why:"This poster illustrates how nationalism was actively taught and reinforced across generations, not simply a spontaneous feeling.",
+  interpretations:"Some historians argue revanchisme made France eager for war in 1914; others note the French government itself did not initiate the crisis and largely followed its ally Russia into war.",
+  limitations:"A poster shows the ideal message intended by its creators, not how deeply every French citizen actually internalized it by 1914.",
+  furtherReading:"French troops that entered Alsace in August 1914 were, briefly, greeted as liberators by some local residents — a rare direct sign of how alive this sentiment still was." },
+
+{ id:'pan-german', title:"Pan-German League Pamphlet", date:'c. 1910', country:'Germany', type:'Nationalist Propaganda', icon:'📖',
+  causes:['nationalism','imperialism','militarism'],
+  background:"The Alldeutscher Verband (Pan-German League) was an influential nationalist pressure group promoting German cultural and racial pride, colonial expansion, and a stronger military to match Germany's growing industrial power.",
+  text:"'Germany's industry and population have outgrown her borders and her modest colonies. It is the sacred duty of every German to demand for the Fatherland a 'place in the sun' equal to her strength — for a great people cannot be confined by the jealous limits drawn by older empires...'",
+  significance:"Illustrates aggressive nationalist ideology inside Germany that pushed for military readiness and imperial expansion — a pattern paralleled by nationalist movements in France, Serbia, and elsewhere, not unique to Germany alone.",
+  creator:"Leaders and members of the Pan-German League, a private nationalist pressure group",
+  purpose:"To pressure the German government toward more aggressive colonial and military policy",
+  audience:"German citizens, journalists, and sympathetic politicians",
+  biasLevel:'High', reliability:2, importanceHistorian:3,
+  why:"Pressure-group pamphlets like this reveal how much public nationalist sentiment could push governments toward more assertive foreign policy than cautious diplomats might prefer.",
+  interpretations:"Some historians treat this as evidence of a uniquely aggressive German nationalism; comparative historians point out nearly identical rhetoric appeared in French, British, and Russian nationalist movements too.",
+  limitations:"The Pan-German League was influential but never held formal governing power — its pamphlets show public pressure, not official state policy.",
+  furtherReading:"The phrase 'a place in the sun' was first used publicly by German Chancellor Bernhard von Bülow in a 1897 Reichstag speech." },
+
+{ id:'schlieffen-plan', title:"Military Memo: The Schlieffen Plan", date:'Drafted 1905, revised through 1914', country:'Germany', type:'Military Mobilization Plan', icon:'🚂',
+  causes:['mobilization','militarism','leaders','alliances'],
+  background:"German Chief of the General Staff Alfred von Schlieffen designed a plan to solve Germany's central problem: a likely two-front war against both France and Russia. The plan called for a rapid, decisive strike through neutral Belgium to knock France out of the war within about six weeks, before Russia's slower mobilization could threaten Germany's east.",
+  text:"Summary of the plan's core logic: 'Russia's vast size and poor rail network mean her mobilization will be slow. France must therefore be eliminated first, swiftly, through the plains of Belgium and northern France, before turning the full weight of the army east against Russia. Time is the single greatest factor; the war in the west must be won in weeks, not months.'",
+  significance:"This plan removed political flexibility once war began — a decision to fight Russia effectively meant an automatic invasion of Belgium and France, which in turn was almost certain to draw in Britain, guarantor of Belgian neutrality since an 1839 treaty.",
+  creator:"German General Staff planners, for internal military use",
+  purpose:"To solve Germany's strategic problem of a likely simultaneous war against France and Russia",
+  audience:"The German military high command and, eventually, the Kaiser and civilian government",
+  biasLevel:'Low', reliability:5, importanceHistorian:5,
+  why:"Historians consider this one of the single most important documents in the war's outbreak, because it shows how military planning — not just political choice — dictated the actual shape the war took.",
+  interpretations:"Some historians argue the plan made a wider war almost inevitable once mobilization began; others (notably Terence Zuber) have questioned how rigidly the 'final' 1914 version actually matched Schlieffen's original 1905 draft.",
+  limitations:"A military plan reveals intended strategy but not certainty of execution — real 1914 operations, especially the eventual halt at the Marne, diverged from the plan in important ways.",
+  furtherReading:"Belgium's neutrality, guaranteed by the 1839 Treaty of London, was the legal justification Britain used to declare war on Germany on August 4, 1914." },
+
+{ id:'russian-mobilization', title:"Russian General Mobilization Order", date:'July 30, 1914', country:'Russia', type:'Government Memo', icon:'📋',
+  causes:['mobilization','leaders','alliances'],
+  background:"After Austria-Hungary declared war on Serbia, Russia initially tried a partial mobilization aimed only at Austria-Hungary — but Russian military planners insisted this was logistically impossible without full chaos in the rail network, forcing Tsar Nicholas II to order general mobilization instead.",
+  text:"Order signed by Tsar Nicholas II on July 30, 1914, directing general mobilization of the Russian armed forces against both Austria-Hungary and, by necessary implication, Germany — reversed briefly the day before under pressure from the Kaiser's telegrams, then reinstated after Russian generals warned partial mobilization could not be executed safely.",
+  significance:"Because Russian and German mobilization plans both required weeks of irreversible rail movement, this order made German mobilization look imminent and unavoidable — triggering Germany's own mobilization and its ultimatums to Russia and France within days.",
+  creator:"Tsar Nicholas II, acting on the advice of his general staff",
+  purpose:"To prepare Russia's military for a widening conflict following Austria-Hungary's declaration of war on Serbia",
+  audience:"The Russian military command structure, and — once known — every allied and rival government in Europe",
+  biasLevel:'Low', reliability:5, importanceHistorian:5,
+  why:"Historians treat this order as one of the critical hinge-points of the July Crisis, illustrating how military logistics, not just political will, could force a government's hand.",
+  interpretations:"Some historians emphasize that Russian generals gave the Tsar little real choice once partial mobilization proved technically impossible; others argue Russia bears real responsibility for widening a war that might have stayed local to Serbia and Austria-Hungary.",
+  limitations:"An order tells us what was decided, not the full internal debate and hesitation behind it — private conversations and drafts sometimes tell a messier story.",
+  furtherReading:"The Tsar and Kaiser exchanged the personal 'Willy-Nicky' telegrams during this same week, even as their armies were already mobilizing." },
+
+{ id:'plan-xvii', title:"French Plan XVII Summary", date:'Adopted 1913', country:'France', type:'Military Mobilization Plan', icon:'🚂',
+  causes:['mobilization','militarism','nationalism'],
+  background:"France's pre-war strategic doctrine, shaped by the aggressive 'offensive à outrance' ('all-out offensive') philosophy, called for immediate attack into the lost provinces of Alsace-Lorraine the moment war with Germany began.",
+  text:"Summary of the plan: upon mobilization, French armies are to advance immediately and aggressively into Alsace-Lorraine, trusting in the superior will and spirit ('élan') of the French soldier to overcome numerically comparable German defenses; minimal provision is made for a defensive posture.",
+  significance:"Shows that France, like Germany and Russia, had a rigid pre-set plan ready to launch the instant war began — across Europe, mobilization functioned like a row of dominoes rather than a set of independently reversible political choices.",
+  creator:"The French General Staff, for internal military planning",
+  purpose:"To prepare France's army to reclaim Alsace-Lorraine quickly upon the outbreak of war with Germany",
+  audience:"The French military command",
+  biasLevel:'Low', reliability:5, importanceHistorian:4,
+  why:"Comparing Plan XVII to the Schlieffen Plan lets historians see that every major power entered the crisis already committed to rapid offensive action, not cautious defense.",
+  interpretations:"Historians often cite the doctrine of 'élan' as a case of military planning badly overestimating morale's ability to overcome modern firepower — the disastrous French casualties of August 1914 proved this within weeks.",
+  limitations:"A strategic plan does not capture how badly it would perform in practice; Plan XVII led to catastrophic French losses in the Battle of the Frontiers before the plan was abandoned.",
+  furtherReading:"France suffered roughly 27,000 dead in a single day, August 22, 1914, largely due to Plan XVII's reliance on frontal offensives." },
+
+{ id:'blank-check', title:"The 'Blank Check' Telegram", date:'July 5–6, 1914', country:'Germany', type:'Diplomatic Telegram', icon:'✉️',
+  causes:['leaders','alliances','assassination'],
+  background:"Days after the Sarajevo assassination, an Austro-Hungarian envoy, Count Hoyos, traveled to Berlin to ask what support Germany would offer if Austria-Hungary took military action against Serbia.",
+  text:"Record of the meeting: Kaiser Wilhelm II and Chancellor Bethmann-Hollweg assured the Austro-Hungarian envoy that Germany would support Austria-Hungary 'unconditionally,' even if action against Serbia brought the risk of a wider war with Russia — a pledge historians would later call the 'blank check.'",
+  significance:"Widely cited as critical evidence that German leadership actively encouraged Austro-Hungarian escalation rather than urging restraint, though historians disagree sharply on how much this pledge actually changed Austria-Hungary's own plans.",
+  creator:"German officials recording a private diplomatic assurance to an allied government",
+  purpose:"To reassure Austria-Hungary of German backing and encourage firm action against Serbia",
+  audience:"The Austro-Hungarian government, via its envoy",
+  biasLevel:'Medium', reliability:4, importanceHistorian:5,
+  why:"This document sits at the center of the historiographical 'Fischer thesis' debate over how much responsibility Germany's leadership bears for the war's outbreak.",
+  interpretations:"Fritz Fischer and his followers argue this shows deliberate German war-seeking; Christopher Clark and others argue Austria-Hungary was already determined to act against Serbia regardless of German encouragement.",
+  limitations:"A private assurance recorded by officials may reflect what was said in the room, but not the full range of private doubts individual leaders may have held.",
+  furtherReading:"Compare this telegram directly with the Willy-Nicky telegrams from three weeks later, which show a strikingly different tone from the same Kaiser." },
+
+{ id:'willy-nicky', title:"The Willy-Nicky Telegrams", date:'July 29–31, 1914', country:'Germany & Russia', type:'Diplomatic Telegram', icon:'✉️',
+  causes:['leaders','mobilization'],
+  background:"Kaiser Wilhelm II ('Willy') and Tsar Nicholas II ('Nicky') were first cousins who corresponded personally, in English, even as their governments' military mobilization machinery was already grinding into motion around them.",
+  text:"Nicholas to Wilhelm, July 29: 'I foresee that very soon I shall be overwhelmed by the pressure forced upon me and be forced to take extreme measures which will lead to war... to try and avoid such a calamity as a European war I beg you in the name of our old friendship to do what you can to stop your allies from going too far.' Wilhelm's replies express similar hope for peace even while ordering German mobilization to proceed.",
+  significance:"Shows a striking gap between personal, even well-intentioned, monarchical diplomacy and the impersonal military-bureaucratic momentum that neither cousin ultimately could control — a key piece of evidence for the 'sleepwalkers' interpretation of the war's outbreak.",
+  creator:"Wilhelm II and Nicholas II, writing personally to each other outside official channels",
+  purpose:"To try to de-escalate the crisis through personal appeal, even as official mobilization orders were already being issued",
+  audience:"Each other, as cousins and heads of state — not intended for public release at the time",
+  biasLevel:'Low', reliability:4, importanceHistorian:5,
+  why:"These telegrams are treated as powerful evidence that individual leaders were not simply eager for war — many were frightened by a crisis that had already outrun their control.",
+  interpretations:"Historians who favor the 'sleepwalkers' thesis (Christopher Clark) cite this exchange to argue no single leader wanted a general European war; other historians note that fear did not stop either government from mobilizing anyway.",
+  limitations:"Personal letters can express genuine feeling while still being followed by contradictory official action, as happened here — sincerity in a telegram does not guarantee sincerity in policy.",
+  furtherReading:"Nicholas II and Wilhelm II never met again after 1914; both fell from power before the war's end, in 1917 and 1918 respectively." },
+
+{ id:'conrad-notes', title:"Memo: Conrad von Hötzendorf's War Council Notes", date:'Compiled from records, 1906–1914', country:'Austria-Hungary', type:'Government Memo', icon:'📋',
+  causes:['leaders','nationalism','assassination'],
+  background:"Field Marshal Franz Conrad von Hötzendorf, Chief of the Austro-Hungarian General Staff, had urged a preventive war against Serbia more than twenty-five separate times between 1906 and 1914, viewing rising Serbian nationalism as an existential threat to the multi-ethnic Habsburg Empire.",
+  text:"Compiled from Conrad's own diary and staff notes: 'Serbia must be dealt with before her ambitions grow beyond our ability to contain them... every year we delay strengthens our enemy and weakens the unity of the Empire.' Repeated between 1906 and early 1914, well before any assassination had occurred.",
+  significance:"Demonstrates that some individual leaders actively sought a war against Serbia for years before 1914 — the assassination gave Conrad the political opportunity he had long wanted, rather than being the sole cause of his views.",
+  creator:"Field Marshal Conrad von Hötzendorf, in his own private diary and staff planning notes",
+  purpose:"To argue internally, again and again, for preventive military action against Serbia",
+  audience:"Austro-Hungarian military and political leadership, and Conrad's own private record",
+  biasLevel:'High', reliability:4, importanceHistorian:4,
+  why:"This record is crucial for separating the assassination as an immediate trigger from the deeper long-term Austro-Hungarian anxiety about Serbian nationalism that predated it by nearly a decade.",
+  interpretations:"Some historians argue Conrad's persistence shows Austria-Hungary would likely have gone to war with Serbia eventually regardless of the assassination; others note his repeated proposals were rejected for years, suggesting restraint was possible.",
+  limitations:"A private diary reveals one general's persistent viewpoint, not the full range of opinion within the Austro-Hungarian government, which included more cautious voices for years.",
+  furtherReading:"Foreign Minister Count Berchtold and even Emperor Franz Joseph had resisted Conrad's calls for war for years before 1914 — a reminder that individual leaders did not speak with one voice." },
+
+{ id:'assassination-news', title:"Newspaper Report: Assassination in Sarajevo", date:'June 29, 1914', country:'Austria-Hungary', type:'Newspaper Article', icon:'📰',
+  causes:['assassination','nationalism'],
+  background:"On June 28, 1914, Archduke Franz Ferdinand, heir to the Austro-Hungarian throne, and his wife Sophie, Duchess of Hohenberg, were shot and killed during a state visit to Sarajevo, capital of Bosnia — a province Austria-Hungary had annexed only six years earlier.",
+  text:"'SARAJEVO, June 28 — The Archduke Franz Ferdinand and his consort were shot dead this afternoon by a young assassin as their motorcade, having already survived one bomb attempt earlier in the day, took a wrong turn near the Latin Bridge. The assailant, a Bosnian Serb student, was seized immediately by police...'",
+  significance:"The proximate ('trigger') event of the July Crisis — but historians caution the assassination led to world war only because of the long-term tensions already documented across the alliance, militarism, and nationalism evidence in this case file.",
+  creator:"A newspaper correspondent reporting the assassination on the day it occurred",
+  purpose:"To report a major, fast-breaking news event to the public as quickly as possible",
+  audience:"Newspaper readers across Austria-Hungary and, via wire services, the rest of Europe",
+  biasLevel:'Medium', reliability:3, importanceHistorian:5,
+  why:"This is the foundational event of the July Crisis, but historians insist on treating it as a trigger to be explained by deeper causes rather than a sufficient explanation on its own.",
+  interpretations:"A common historiographical exercise is asking students to imagine whether a similar general war would have broken out even without this specific assassination, given the other tensions already in place.",
+  limitations:"Same-day reporting is often incomplete or inaccurate on small details — some early reports, for instance, got the assassin's name and exact route wrong.",
+  furtherReading:"The motorcade's fatal wrong turn near the Latin Bridge is one of history's most famous examples of contingency — sheer chance placing Princip in position to fire." },
+
+{ id:'princip-interrogation', title:"Interrogation Record: Gavrilo Princip", date:'Recorded July 1914', country:'Austria-Hungary', type:'Government Memo', icon:'📋',
+  causes:['assassination','nationalism','leaders'],
+  background:"Austro-Hungarian investigators questioned 19-year-old Gavrilo Princip and his accomplices after the assassination, tracing the weapons and planning back through the nationalist youth movement 'Young Bosnia' to figures connected with the Black Hand and Serbian military intelligence.",
+  text:"Excerpt from the official investigation record: Princip states he acted 'to free my people from Austria' and confirms the group's weapons and cyanide capsules were supplied via a Serbian military intelligence contact, though he denies the civilian Serbian government had direct knowledge of the plot.",
+  significance:"Central to Austria-Hungary's case against Serbia and the resulting ultimatum — but evaluating the reliability and completeness of an interrogation record obtained by the very government seeking justification for war is itself a classic historiographical challenge.",
+  creator:"Austro-Hungarian government investigators, questioning a captured suspect",
+  purpose:"To establish legal and political responsibility for the assassination, in part to justify action against Serbia",
+  audience:"The Austro-Hungarian government and, eventually, the international diplomatic community",
+  biasLevel:'High', reliability:3, importanceHistorian:4,
+  why:"Historians must weigh this record carefully: it is a primary source, but one produced by an interested party with a strong motive to find Serbian government guilt.",
+  interpretations:"Historians still dispute how much the Serbian civilian government (as opposed to rogue military intelligence figures) actually knew about the assassination plot in advance.",
+  limitations:"An interrogation conducted by a government with an obvious political interest in the outcome is a textbook case for questioning source reliability, even when much of the factual content later proved accurate.",
+  furtherReading:"Princip died of tuberculosis in an Austro-Hungarian prison in 1918, months before the war he helped trigger finally ended." },
+
+{ id:'ultimatum', title:"The Austro-Hungarian Ultimatum to Serbia & Serbia's Reply", date:'July 23 & 25, 1914', country:'Austria-Hungary & Serbia', type:'Treaty/Diplomatic Document', icon:'📜',
+  causes:['assassination','leaders','alliances'],
+  background:"Backed by Germany's 'blank check,' Vienna issued a deliberately harsh 48-hour ultimatum to Serbia with ten demands, including direct Austro-Hungarian participation in the investigation on Serbian soil — a demand that infringed on Serbian sovereignty.",
+  text:"Serbia accepted all but one of the ten demands and requested arbitration on the remaining point at the Hague — an unusually conciliatory reply. Kaiser Wilhelm II, on reading it, privately wrote in the margin: 'A great moral victory for Vienna; but with it every reason for war disappears.' Austria-Hungary declared war on Serbia three days later regardless, on July 28.",
+  significance:"Shows the crucial moment when a diplomatic off-ramp existed and was not taken, illustrating how individual leaders' choices — not only structural forces like alliances and militarism — shaped the outbreak of war.",
+  creator:"The Austro-Hungarian Foreign Ministry (ultimatum) and the Serbian government (reply)",
+  purpose:"Austria-Hungary intended demands severe enough to be difficult for Serbia to fully accept; Serbia intended its reply to avoid war while preserving core sovereignty",
+  audience:"Each other's governments, and the watching capitals of Europe",
+  biasLevel:'Medium', reliability:5, importanceHistorian:5,
+  why:"Historians treat this exchange as the clearest test of whether the war was truly 'inevitable' — Serbia's conciliatory reply suggests real off-ramps existed even at this late stage.",
+  interpretations:"Some historians argue Austria-Hungary's rejection of a near-total capitulation proves it wanted war regardless of Serbia's response; others argue Vienna could not tolerate any risk of future assassination plots and had legitimate security concerns.",
+  limitations:"Diplomatic documents can obscure private intentions behind careful, formal language — the true motives on both sides are still debated using additional private correspondence.",
+  furtherReading:"The Kaiser's marginal note is one of the most quoted 'what if' documents of July 1914, suggesting even key leaders sensed war was avoidable at this stage." },
+
+{ id:'timeline', title:"Historian's Case Timeline: Long-Term Tensions to July Crisis", date:'Compiled by the Commission', country:'Europe (composite)', type:'Analytical Document', icon:'⏳',
+  causes:['timeframe','alliances','militarism','nationalism'],
+  background:"Prepared by the commission's staff historians, this timeline lays out the full chain of events from German unification in 1871 through the outbreak of general war in August 1914.",
+  text:"1871: German Empire founded, Alsace-Lorraine annexed. 1879–94: Dual Alliance and Franco-Russian Alliance formed. 1905–11: Two Moroccan crises. 1908: Bosnian annexation crisis. 1912–13: Balkan Wars. 1913: German Army Bill and French Three-Year Law. June 28, 1914: Assassination at Sarajevo. July 23–28: Ultimatum, rejection, declaration of war. July 30–August 4: Mobilizations cascade; Germany invades Belgium; Britain declares war.",
+  significance:"Frames the case file's central historiographical question directly: did four decades of militarism, alliances, imperialism, and nationalism make general war likely regardless of the exact spark — or did the specific 41-day decisions of the July Crisis determine whether a Balkan quarrel became a world war?",
+  creator:"The commission's own staff historians, synthesizing the wider documentary record",
+  purpose:"To give investigators a clear chronological reference connecting long-term and immediate causes",
+  audience:"This commission's investigators, including you",
+  biasLevel:'Low', reliability:4, importanceHistorian:5,
+  why:"A synthesized timeline lets investigators see, in one place, how immediate and long-term causes actually overlapped rather than replaced one another.",
+  interpretations:"Most professional historians today reject single-cause explanations entirely, instead describing the war's origin as a layered interaction of long-term structural tension and short-term diplomatic failure.",
+  limitations:"Any timeline is a simplification — it selects which events to include and, by doing so, subtly argues for their importance over events left out.",
+  furtherReading:"Compare differing emphases: A.J.P. Taylor stressed mobilization timetables and 'war by timetable'; Fritz Fischer stressed German aims; Christopher Clark stressed shared, distributed responsibility among all the great powers." },
+
+{ id:'reservist-diary', title:"Diary Entry: A German Reservist", date:'August 1–4, 1914', country:'Germany', type:'Diary Entry', icon:'📓',
+  causes:['timeframe','nationalism','militarism'],
+  background:"A young German university student, called up as an army reservist, recorded his impressions of Berlin during the first days of general mobilization — a period historians sometimes call 'the spirit of 1914,' marked by widespread public enthusiasm mixed with private anxiety.",
+  text:"'August 1st — Mobilization has been declared! The streets are a river of people, flags everywhere, and strangers embracing strangers as if we had already won something. My mother wept, but not, I think, from pride alone... August 3rd — We depart for the depot tomorrow. The officers promise we shall be home before the leaves fall. I want so badly to believe them.'",
+  significance:"Captures how, whatever the deep structural causes, the war's actual start felt to ordinary people like a sudden, thrilling, and frightening rupture — a reminder that structural causes and lived human experience are both part of the historical record.",
+  creator:"An anonymous German university student and army reservist, writing privately",
+  purpose:"To privately record personal feelings and experiences, not intended for publication",
+  audience:"Himself, or possibly his family — a private diary, not a public document",
+  biasLevel:'Low', reliability:3, importanceHistorian:2,
+  why:"Diaries provide historians with an intimate, unfiltered view of how large historical forces were experienced by individuals living through them.",
+  interpretations:"Some historians have challenged the older idea of universal 'war enthusiasm' in 1914, pointing to diaries like this that mix celebration with real fear and uncertainty.",
+  limitations:"A single diary reflects one person's specific experience and social class (an educated university student) and cannot be assumed to represent how all Germans, let alone all Europeans, felt.",
+  furtherReading:"The famous promise that soldiers would be 'home before the leaves fall' proved tragically wrong — the war lasted over four more years." },
+
+{ id:'wilhelm-speech', title:"Speech: 'Our Future Lies on the Water'", date:'September 1898', country:'Germany', type:'Political Speech', icon:'🎤',
+  causes:['militarism','leaders','imperialism','nationalism'],
+  background:"Kaiser Wilhelm II delivered a series of speeches in the late 1890s promoting Admiral Alfred von Tirpitz's ambitious naval expansion program, arguing that Germany's future as a world power depended on building a fleet to rival Britain's.",
+  text:"'We have fought for our place in the sun and we have won it. It will now be my policy to see that we retain that place in the sun unchallenged... Our future lies upon the water. The more Germans go out upon the waters, whether it be in journeyings across the ocean, or in the pursuits of a world-wide commerce... the more will Germany flourish.'",
+  significance:"Connects individual leadership rhetoric directly to militarism (the naval race) and imperialism (competition for global influence and colonies), showing how these two cause categories reinforced one another.",
+  creator:"Kaiser Wilhelm II, delivering a public address as German Emperor",
+  purpose:"To build public and political support for Tirpitz's naval expansion program",
+  audience:"The German public, press, and the Reichstag, which needed to approve naval funding",
+  biasLevel:'High', reliability:4, importanceHistorian:4,
+  why:"As a public speech by the head of state, this is strong evidence of the top-level rhetoric that justified the arms race to ordinary Germans.",
+  interpretations:"Historians note this rhetoric alarmed Britain especially, since British security depended entirely on naval supremacy — turning German ambition into a perceived existential threat rather than simple national pride.",
+  limitations:"A public speech is a performance meant to persuade; it does not necessarily reveal the private strategic calculations happening behind closed doors in Berlin.",
+  furtherReading:"By 1914, this rhetoric had helped fund a German navy of 17 dreadnoughts — formidable, but still well short of Britain's 29." },
+
+{ id:'reservists-photo', title:"Photograph: Reservists Departing by Rail", date:'August 1914', country:'Europe (multiple)', type:'Photograph', icon:'📷',
+  causes:['mobilization','militarism','nationalism'],
+  background:"Mobilization across every major European power depended on precise railway timetables — millions of reservists had to be moved to their units and then to the front within days, according to schedules planned years in advance.",
+  text:"[Photograph] A crowded rail platform, soldiers in fresh uniforms lean from train windows as families press close along the platform; chalked on the side of a freight car, a soldier has scrawled a popular, falsely optimistic slogan of the moment about returning home for the autumn harvest. Similar scenes were photographed in Berlin, Paris, and St. Petersburg within the same week.",
+  significance:"Mobilization plans depended on exact railway logistics moving millions of men in a matter of days — this image makes that abstract planning concrete, corroborating the Schlieffen Plan and Russian mobilization order documents by showing their human and logistical scale in practice.",
+  creator:"A press or amateur photographer capturing a mobilization scene at a railway station",
+  purpose:"To document (and, once published, often to celebrate) the mobilization moment for a home audience",
+  audience:"Newspaper readers and, later, historians studying the mobilization period",
+  biasLevel:'Low', reliability:4, importanceHistorian:3,
+  why:"Photographs offer historians visual, literal evidence that is harder to distort than a written account, though they still reflect a photographer's chosen framing.",
+  interpretations:"Images like this are often used to illustrate the (now-debated) idea of universal 'war enthusiasm,' though historians caution that crowds at train stations do not prove uniform public opinion across an entire nation.",
+  limitations:"A photograph captures a single moment and location — it cannot show what was happening at the same time in villages, factories, or the quieter corners of the same cities.",
+  furtherReading:"Historians estimate the great powers moved over 20 million men to their war stations by rail within the first six weeks of mobilization." }
+];
+
+var CORRO_PAIRS = [
+  ['naval-cartoon','army-bill-1913',"Both show Germany and Britain racing to out-build each other's militaries in the years before 1914."],
+  ['army-bill-1913','military-budgets',"The 1913 Army Bill is one concrete data point inside the continent-wide spending trend."],
+  ['schlieffen-plan','russian-mobilization',"German planning assumed slow Russian mobilization — but Russia's 1914 order shows that assumption was already outdated."],
+  ['russian-mobilization','plan-xvii',"Russia and France coordinated mobilization under their 1894 alliance, and both plans activated within days of each other in 1914."],
+  ['schlieffen-plan','plan-xvii',"Germany's plan targeted France first; France's plan aimed straight at the German-held provinces the Schlieffen Plan was built to defend."],
+  ['dual-alliance','franco-russian',"Two separate defensive pacts before 1914 combined to split Europe into two armed camps."],
+  ['dual-alliance','alliance-map',"The alliance map shows the finished result of decades of treaties like the Dual Alliance."],
+  ['colonial-map','agadir-crisis',"The scramble for African territory shown on the map is exactly what triggered the 1911 Agadir gunboat crisis."],
+  ['agadir-crisis','tangier-crisis',"Germany challenged French control of Morocco twice in six years, using strikingly similar tactics both times."],
+  ['black-hand','princip-interrogation',"The Black Hand's 1911 oath to unite Serbs 'by any means' is confirmed by the weapons and training traced to Princip's cell."],
+  ['narodna-odbrana','black-hand',"Two different Serbian nationalist organizations pursued the same goal — union of South Slavic lands — through different methods."],
+  ['blank-check','ultimatum',"Germany's promise of unconditional support gave Austria-Hungary the confidence to issue a deliberately harsh ultimatum."],
+  ['reservists-photo','russian-mobilization',"The photograph shows, in human terms, exactly what a mobilization order like Russia's set into motion."]
+];
+var TENSION_PAIRS = [
+  ['blank-check','willy-nicky',"One shows the Kaiser encouraging escalation; the other shows him personally pleading for peace three weeks later — a real tension historians still debate."],
+  ['ultimatum','willy-nicky',"Serbia's conciliatory reply and the Kaiser's private relief sit uneasily beside Austria-Hungary's decision to declare war anyway."]
+];
+
+var EV_BY_ID = {};
+EVIDENCE.forEach(function(e,i){ e._idx = i; EV_BY_ID[e.id] = e; });
+
+/* ======================================================================
+   STATE
+   ====================================================================== */
+var SAVE_KEY = 'wwi_investigation_v1';
+var state = null;
+
+function defaultState(){
+  return {
+    settings:{ fontSize:'md', accuracy:false, teacherUnlocked:false },
+    examined:{},
+    corroFound:[],
+    tensionFound:[],
+    board:{},          // evidenceId -> [causeId,...]
+    rank: CAUSES.map(function(c){return c.id;}),
+    rankLocked:false,
+    argument:{ claimCause:'', claimText:'', evidenceIds:[], reasoningText:'', counterCause:'', counterText:'', rebuttalText:'', submitted:false },
+    reflection:{ q1:'',q2:'',q3:'',q4:'',q5:'',q6:'' },
+    verdictViewed:false,
+    activeTab:'briefing'
+  };
+}
+function loadState(){
+  try{
+    var raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return defaultState();
+    var parsed = JSON.parse(raw);
+    var d = defaultState();
+    for(var k in d){ if(parsed[k]===undefined) parsed[k]=d[k]; }
+    return parsed;
+  }catch(e){ return defaultState(); }
+}
+function saveState(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ======================================================================
+   UTIL
+   ====================================================================== */
+function $(sel,root){ return (root||document).querySelector(sel); }
+function $all(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+function el(tag, cls, html){ var d=document.createElement(tag); if(cls) d.className=cls; if(html!==undefined) d.innerHTML=html; return d; }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pairKey(a,b){ return [a,b].sort().join('|'); }
+var toastTimer=null;
+function toast(msg){
+  var t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function examinedCount(){ return Object.keys(state.examined).length; }
+
+/* ======================================================================
+   HEADER / SETTINGS
+   ====================================================================== */
+function applySettings(){
+  document.documentElement.className = 'fs-'+state.settings.fontSize;
+}
+function renderHeader(){
+  var n=examinedCount(), total=EVIDENCE.length;
+  $('#progressLabel').textContent='Evidence Examined: '+n+'/'+total;
+  $('#progressFill').style.width=Math.round(n/total*100)+'%';
+  $('#btnAccuracy').classList.toggle('on', state.settings.accuracy);
+  $('#btnAccuracy').setAttribute('aria-pressed', state.settings.accuracy?'true':'false');
+}
+
+/* ======================================================================
+   TABS / SCREENS
+   ====================================================================== */
+var TAB_IDS=['briefing','locker','board','rank','argument','verdict','reflection'];
+function goTab(tab){
+  state.activeTab=tab; saveState();
+  TAB_IDS.forEach(function(t){
+    $('#screen-'+t).classList.toggle('active', t===tab);
+  });
+  $all('#tabs button').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===tab); });
+  if(tab==='locker') renderLocker();
+  if(tab==='board') renderBoard();
+  if(tab==='rank') renderRank();
+  if(tab==='argument') renderArgument();
+  if(tab==='verdict') renderVerdict();
+  if(tab==='reflection') renderReflection();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ======================================================================
+   BRIEFING
+   ====================================================================== */
+function renderBriefing(){
+  var grid=$('#causeGridBriefing'); grid.innerHTML='';
+  CAUSES.forEach(function(c){
+    var d=el('div','causechip');
+    d.innerHTML='<span class="ic" aria-hidden="true">'+c.icon+'</span><b>'+esc(c.name)+'</b>'+esc(c.blurb);
+    grid.appendChild(d);
+  });
+}
+
+/* ======================================================================
+   LOCKER
+   ====================================================================== */
+var lockerFilter='all';
+function renderFilterBar(){
+  var bar=$('#filterBar'); bar.innerHTML='';
+  var allBtn=el('button', lockerFilter==='all'?'active':'', 'All Evidence ('+EVIDENCE.length+')');
+  allBtn.addEventListener('click', function(){ lockerFilter='all'; renderLocker(); });
+  bar.appendChild(allBtn);
+  CAUSES.forEach(function(c){
+    var count=EVIDENCE.filter(function(e){return e.causes.indexOf(c.id)>=0;}).length;
+    var b=el('button', lockerFilter===c.id?'active':'', c.icon+' '+esc(c.name)+' ('+count+')');
+    b.addEventListener('click', function(){ lockerFilter=c.id; renderLocker(); });
+    bar.appendChild(b);
+  });
+}
+function renderLocker(){
+  renderFilterBar();
+  var grid=$('#lockerGrid'); grid.innerHTML='';
+  var list = lockerFilter==='all' ? EVIDENCE : EVIDENCE.filter(function(e){return e.causes.indexOf(lockerFilter)>=0;});
+  list.forEach(function(e){
+    var examined = !!state.examined[e.id];
+    var card=el('button','evcard'+(examined?' examined':''));
+    card.setAttribute('type','button');
+    card.setAttribute('aria-label', (examined?'Examined. ':'Not yet examined. ')+e.title+', '+e.date+', '+e.country);
+    var badges='<span class="badge">'+FOLDER_ICON+' '+esc(e.type)+'</span>';
+    card.innerHTML =
+      '<div class="badgeRow">'+badges+'</div>'+
+      '<h4>'+esc(e.title)+'</h4>'+
+      '<div class="meta">'+esc(e.date)+' · '+esc(e.country)+'</div>'+
+      (examined?'<span class="stamp">EXAMINED</span>':'');
+    card.addEventListener('click', function(){ openEvidence(e.id); });
+    grid.appendChild(card);
+  });
+}
+
+/* ======================================================================
+   EVIDENCE MODAL
+   ====================================================================== */
+var currentEvId=null;
+var draft=null;
+var lastFocused=null;
+
+function freshDraft(e){
+  var saved = state.examined[e.id];
+  if(saved) return JSON.parse(JSON.stringify(saved));
+  return { creator:'', purpose:'', audience:'', importance:3, reliability:3, bias:'', tags:[], notes:'', highlights:[] };
+}
+
+function openEvidence(id){
+  var e = EV_BY_ID[id];
+  if(!e) return;
+  currentEvId=id;
+  draft = freshDraft(e);
+  lastFocused = document.activeElement;
+  var already = !!state.examined[id];
+
+  $('#modalTitle').textContent = e.title;
+  $('#modalBadges').innerHTML =
+    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+FOLDER_ICON+' '+esc(e.type)+'</span>'+
+    (already?'<span class="b" style="background:var(--green);color:#fff;border-color:var(--green);">EXAMINED</span>':'');
+
+  var sentences = e.text.split(/(?<=[.!?])\s+(?=[^a-z])/).filter(function(s){return s.trim().length;});
+  var textHtml = sentences.map(function(s,i){
+    var active = draft.highlights.indexOf(i)>=0;
+    return '<span class="hl'+(active?' active':'')+'" data-idx="'+i+'" tabindex="0" role="button" aria-pressed="'+(active?'true':'false')+'" aria-label="Highlight sentence">'+esc(s)+'</span> ';
+  }).join('');
+
+  var body = ''+
+    '<section class="block"><h4>Background</h4><p>'+esc(e.background)+'</p></section>'+
+    '<section class="block"><h4>Evidence</h4><p class="hint">Click any sentence to highlight it as important.</p><div class="evtext" id="evTextBlock">'+textHtml+'</div></section>'+
+    '<section class="block"><h4>Source Analysis</h4>'+
+      selectRow('creator','Who most likely created this source?', opts(e.creator, e._idx))+
+      selectRow('purpose','What was the creator\'s likely purpose?', optsP(e.purpose, e._idx))+
+      selectRow('audience','Who was the intended audience?', optsA(e.audience, e._idx))+
+      biasRow()+
+    '</section>'+
+    '<section class="block"><h4>Rate This Evidence</h4>'+
+      sliderRow('importance','Importance to the case (1 = minor, 5 = pivotal)')+
+      sliderRow('reliability','Your reliability estimate (1 = shaky, 5 = highly reliable)')+
+    '</section>'+
+    '<section class="block"><h4>Tags</h4><div class="tagrow" id="tagRow"></div></section>'+
+    '<section class="block"><h4>Investigator Notes</h4><textarea id="notesBox" aria-label="Your notes on this evidence" placeholder="What stands out to you about this document?"></textarea></section>'+
+    '<div id="insightZone"></div>'+
+    '<div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">'+
+      '<button class="btn" id="btnSubmitEvidence">'+(already?'Update Analysis':'Submit Analysis')+'</button>'+
+      '<button class="btn secondary" id="btnCloseEvidence">Close File</button>'+
+    '</div>';
+
+  $('#modalBody').innerHTML = body;
+
+  // wire selects
+  ['creator','purpose','audience'].forEach(function(field){
+    var sel=$('#sel_'+field);
+    sel.value = draft[field] || '';
+    sel.addEventListener('change', function(){ draft[field]=sel.value; });
+  });
+  // bias radios
+  $all('input[name=biasRadio]').forEach(function(r){
+    r.checked = (draft.bias===r.value);
+    r.addEventListener('change', function(){ draft.bias=r.value; });
+  });
+  // sliders
+  ['importance','reliability'].forEach(function(field){
+    var s=$('#sl_'+field), out=$('#slval_'+field);
+    s.value = draft[field]; out.textContent=draft[field];
+    s.addEventListener('input', function(){ draft[field]=parseInt(s.value,10); out.textContent=s.value; });
+  });
+  // tags
+  var tagRow=$('#tagRow');
+  TAG_OPTIONS.forEach(function(tag){
+    var b=el('button','tagbtn'+(draft.tags.indexOf(tag)>=0?' on':''), esc(tag));
+    b.type='button';
+    b.addEventListener('click', function(){
+      var i=draft.tags.indexOf(tag);
+      if(i>=0) draft.tags.splice(i,1); else draft.tags.push(tag);
+      b.classList.toggle('on');
+    });
+    tagRow.appendChild(b);
+  });
+  // notes
+  $('#notesBox').value = draft.notes||'';
+  $('#notesBox').addEventListener('input', function(){ draft.notes=this.value; });
+  // highlights
+  $all('.hl', $('#evTextBlock')).forEach(function(sp){
+    function toggle(){
+      var idx=parseInt(sp.dataset.idx,10);
+      var i=draft.highlights.indexOf(idx);
+      if(i>=0) draft.highlights.splice(i,1); else draft.highlights.push(idx);
+      sp.classList.toggle('active');
+      sp.setAttribute('aria-pressed', sp.classList.contains('active')?'true':'false');
+    }
+    sp.addEventListener('click', toggle);
+    sp.addEventListener('keydown', function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); toggle(); } });
+  });
+
+  if(already){ renderInsight(e); }
+
+  $('#btnSubmitEvidence').addEventListener('click', function(){ submitEvidence(e); });
+  $('#btnCloseEvidence').addEventListener('click', closeEvidenceModal);
+
+  var bd=$('#modalBackdrop');
+  bd.classList.add('open');
+  $('#modalClose').focus();
+}
+
+function selectRow(field, label, options){
+  var html='<div class="qrow"><label for="sel_'+field+'">'+esc(label)+'</label><select id="sel_'+field+'">';
+  html+='<option value="">— choose an answer —</option>';
+  options.forEach(function(o){ html+='<option value="'+esc(o)+'">'+esc(o)+'</option>'; });
+  html+='</select></div>';
+  return html;
+}
+function biasRow(){
+  return '<div class="qrow"><label>What level of bias do you suspect in this source?</label>'+
+    '<div class="biasrow">'+
+      ['Low','Medium','High'].map(function(lvl){
+        return '<label><input type="radio" name="biasRadio" value="'+lvl+'"> '+lvl+'</label>';
+      }).join('')+
+    '</div></div>';
+}
+function sliderRow(field, label){
+  return '<div class="qrow"><label for="sl_'+field+'">'+esc(label)+' — <span class="sliderval" id="slval_'+field+'">3</span></label>'+
+    '<input type="range" min="1" max="5" step="1" id="sl_'+field+'"></div>';
+}
+
+function submitEvidence(e){
+  if(!draft.creator||!draft.purpose||!draft.audience||!draft.bias){
+    toast('Please complete the Source Analysis questions before submitting.');
+    return;
+  }
+  var wasNew = !state.examined[e.id];
+  state.examined[e.id] = JSON.parse(JSON.stringify(draft));
+  saveState();
+  renderHeader();
+  renderInsight(e);
+  $('#btnSubmitEvidence').textContent='Update Analysis';
+  $('#modalBadges').innerHTML =
+    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+FOLDER_ICON+' '+esc(e.type)+'</span>'+
+    '<span class="b" style="background:var(--green);color:#fff;border-color:var(--green);">EXAMINED</span>';
+  if(wasNew) toast('Filed to the Evidence Locker. Pin it to the Case Board when ready.');
+}
+
+function renderInsight(e){
+  var zone=$('#insightZone');
+  var corroHtml='', tensionHtml='';
+  CORRO_PAIRS.forEach(function(p){
+    if(p[0]!==e.id && p[1]!==e.id) return;
+    var other = p[0]===e.id?p[1]:p[0];
+    if(state.examined[other]){
+      var key=pairKey(p[0],p[1]);
+      if(state.corroFound.indexOf(key)<0){ state.corroFound.push(key); saveState(); }
+      corroHtml+='<div class="corro">🔗 <strong>Corroboration found</strong> with "'+esc(EV_BY_ID[other].title)+'": '+esc(p[2])+'</div>';
+    }
+  });
+  TENSION_PAIRS.forEach(function(p){
+    if(p[0]!==e.id && p[1]!==e.id) return;
+    var other = p[0]===e.id?p[1]:p[0];
+    if(state.examined[other]){
+      var key=pairKey(p[0],p[1]);
+      if(state.tensionFound.indexOf(key)<0){ state.tensionFound.push(key); saveState(); }
+      tensionHtml+='<div class="tension">⚖️ <strong>Tension with another source</strong>, "'+esc(EV_BY_ID[other].title)+'": '+esc(p[2])+'</div>';
+    }
+  });
+
+  var acc='';
+  if(state.settings.accuracy){
+    acc = '<section class="block" style="margin-top:10px;"><h4>Historical Context (Historical Accuracy Mode)</h4>'+
+      '<p><strong>Created by:</strong> '+esc(e.creator)+'</p>'+
+      '<p><strong>Further reading:</strong> '+esc(e.furtherReading)+'</p></section>';
+  }
+
+  zone.innerHTML =
+    '<div class="insight"><h4>🕵️ Historian Insight</h4>'+
+      '<p><strong>Why it matters:</strong> '+esc(e.why)+'</p>'+
+      '<p><strong>Interpretations:</strong> '+esc(e.interpretations)+'</p>'+
+      '<p><strong>Limitations:</strong> '+esc(e.limitations)+'</p>'+
+    '</div>'+corroHtml+tensionHtml+acc;
+}
+
+function closeEvidenceModal(){
+  $('#modalBackdrop').classList.remove('open');
+  currentEvId=null; draft=null;
+  if(lastFocused && lastFocused.focus) lastFocused.focus();
+  renderLocker();
+}
+$('#modalClose').addEventListener('click', closeEvidenceModal);
+$('#modalBackdrop').addEventListener('click', function(ev){ if(ev.target===this) closeEvidenceModal(); });
+document.addEventListener('keydown', function(ev){
+  if(ev.key==='Escape'){
+    if($('#modalBackdrop').classList.contains('open')) closeEvidenceModal();
+    if($('#teacherBackdrop').classList.contains('open')) closeTeacher();
+  }
+});
+
+/* ======================================================================
+   CASE BOARD
+   ====================================================================== */
+var BOARD_MIN = 6;
+var selectedPin=null;
+function renderBoard(){
+  var n=examinedCount();
+  if(n < BOARD_MIN){
+    $('#boardLockedMsg').innerHTML = '<div class="locked"><h3>Not Enough Evidence Yet</h3><p>Examine at least '+BOARD_MIN+' documents in the Evidence Locker before opening the Case Board. You have examined '+n+' so far.</p><button class="btn" id="goLockerFromBoard">Go to Evidence Locker</button></div>';
+    $('#boardContent').style.display='none';
+    $('#goLockerFromBoard').addEventListener('click', function(){ goTab('locker'); });
+    return;
+  }
+  $('#boardLockedMsg').innerHTML='';
+  $('#boardContent').style.display='';
+
+  var pool=$('#boardPool'); pool.innerHTML='';
+  Object.keys(state.examined).forEach(function(id){
+    var e=EV_BY_ID[id];
+    var connections = state.board[id]||[];
+    var card=el('div','pin-card'+(selectedPin===id?' selected':''));
+    card.setAttribute('draggable','true');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('role','button');
+    card.setAttribute('aria-label', e.title+', connected to '+connections.length+' causes. Press Enter to select, then choose a cause category.');
+    card.innerHTML='<b>'+FOLDER_ICON+' '+esc(e.title)+'</b><span class="cc">'+connections.length+' connection'+(connections.length===1?'':'s')+'</span>';
+    card.dataset.id=id;
+    card.addEventListener('dragstart', function(ev){ ev.dataTransfer.setData('text/plain', id); });
+    card.addEventListener('click', function(){ selectedPin = (selectedPin===id)?null:id; renderBoard(); });
+    card.addEventListener('keydown', function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); selectedPin=(selectedPin===id)?null:id; renderBoard(); } });
+    pool.appendChild(card);
+  });
+
+  $('#boardSelHint').textContent = selectedPin ? ('Selected: '+EV_BY_ID[selectedPin].title+' — now choose a cause category to connect it.') : 'No document selected. Click a document, or drag it directly onto a category.';
+
+  var zones=$('#boardZones'); zones.innerHTML='';
+  CAUSES.forEach(function(c){
+    var zone=el('div','zone');
+    zone.dataset.cause=c.id;
+    zone.setAttribute('tabindex','0');
+    zone.setAttribute('role','button');
+    zone.setAttribute('aria-label','Connect selected evidence to '+c.name);
+    var chips = Object.keys(state.board).filter(function(id){ return (state.board[id]||[]).indexOf(c.id)>=0; });
+    zone.innerHTML='<h5>'+c.icon+' '+esc(c.name)+'</h5><div class="zonechips">'+
+      chips.map(function(id){
+        return '<span class="zonechip">'+esc(EV_BY_ID[id].title)+'<button type="button" data-remove-id="'+id+'" data-remove-cause="'+c.id+'" aria-label="Remove connection">×</button></span>';
+      }).join('')+
+      '</div>';
+    zone.addEventListener('dragover', function(ev){ ev.preventDefault(); zone.classList.add('draghover'); });
+    zone.addEventListener('dragleave', function(){ zone.classList.remove('draghover'); });
+    zone.addEventListener('drop', function(ev){
+      ev.preventDefault(); zone.classList.remove('draghover');
+      var id=ev.dataTransfer.getData('text/plain');
+      if(id) toggleConnection(id, c.id);
+    });
+    zone.addEventListener('click', function(ev){
+      if(ev.target.closest('button[data-remove-id]')) return;
+      if(selectedPin) toggleConnection(selectedPin, c.id);
+      else toast('Select a document from the pool first.');
+    });
+    zone.addEventListener('keydown', function(ev){
+      if(ev.key==='Enter'||ev.key===' '){
+        ev.preventDefault();
+        if(selectedPin) toggleConnection(selectedPin, c.id);
+        else toast('Select a document from the pool first.');
+      }
+    });
+    zones.appendChild(zone);
+  });
+  $all('button[data-remove-id]', zones).forEach(function(btn){
+    btn.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      toggleConnection(btn.dataset.removeId, btn.dataset.removeCause);
+    });
+  });
+
+  drawStrings();
+}
+function toggleConnection(evId, causeId){
+  if(!state.examined[evId]) return;
+  if(!state.board[evId]) state.board[evId]=[];
+  var i=state.board[evId].indexOf(causeId);
+  if(i>=0){ state.board[evId].splice(i,1); toast('Connection removed.'); }
+  else { state.board[evId].push(causeId); toast('Pinned "'+EV_BY_ID[evId].title+'" to '+causeName(causeId)+'.'); }
+  saveState();
+  renderBoard();
+}
+function drawStrings(){
+  var svg=$('#boardSvg');
+  var wrap=$('#boardWrap');
+  if(!wrap) return;
+  var wrapRect=wrap.getBoundingClientRect();
+  svg.setAttribute('width', wrapRect.width);
+  svg.setAttribute('height', wrapRect.height);
+  svg.innerHTML='';
+  Object.keys(state.board).forEach(function(evId){
+    var causesArr=state.board[evId]||[];
+    // Only string up documents that connect to two or more categories --
+    // a single connection is already shown as a chip inside that category.
+    if(causesArr.length < 2) return;
+    var pinEl=document.querySelector('.pin-card[data-id="'+evId+'"]');
+    if(!pinEl) return;
+    var pr=pinEl.getBoundingClientRect();
+    var x1=pr.left-wrapRect.left+pr.width/2;
+    var y1=pr.top-wrapRect.top+pr.height/2;
+    causesArr.forEach(function(causeId){
+      var zoneEl=document.querySelector('.zone[data-cause="'+causeId+'"]');
+      if(!zoneEl) return;
+      var zr=zoneEl.getBoundingClientRect();
+      var x2=zr.left-wrapRect.left+zr.width/2;
+      var y2=zr.top-wrapRect.top+16;
+      var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      svg.appendChild(line);
+      var dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',x2); dot.setAttribute('cy',y2); dot.setAttribute('r',3);
+      dot.setAttribute('fill', 'var(--string)');
+      svg.appendChild(dot);
+    });
+  });
+}
+window.addEventListener('resize', function(){ if($('#screen-board').classList.contains('active')) drawStrings(); });
+
+$('#btnClearSel').addEventListener('click', function(){ selectedPin=null; renderBoard(); });
+
+/* ======================================================================
+   RANK
+   ====================================================================== */
+var RANK_MIN = 14;
+var dragRankId=null;
+function renderRank(){
+  var n=examinedCount();
+  if(n < RANK_MIN){
+    $('#rankLockedMsg').innerHTML = '<div class="locked"><h3>Keep Investigating</h3><p>Examine at least '+RANK_MIN+' documents before ranking the causes — you need a broad base of evidence first. You have examined '+n+' so far.</p><button class="btn" id="goLockerFromRank">Go to Evidence Locker</button></div>';
+    $('#rankContent').style.display='none';
+    $('#goLockerFromRank').addEventListener('click', function(){ goTab('locker'); });
+    return;
+  }
+  $('#rankLockedMsg').innerHTML='';
+  $('#rankContent').style.display='';
+  $('#rankLockedNote').textContent = state.rankLocked ? 'Ranking locked in. You may still adjust it — re-lock when ready.' : '';
+
+  var list=$('#rankList'); list.innerHTML='';
+  state.rank.forEach(function(cid, idx){
+    var c=CAUSES.find(function(x){return x.id===cid;});
+    var li=el('li','');
+    li.setAttribute('draggable','true');
+    li.dataset.id=cid;
+    li.innerHTML='<span class="num">'+(idx+1)+'</span><span class="name">'+c.icon+' '+esc(c.name)+'</span>'+
+      '<div class="updown"><button type="button" data-dir="up" aria-label="Move '+esc(c.name)+' up">▲</button><button type="button" data-dir="down" aria-label="Move '+esc(c.name)+' down">▼</button></div>';
+    li.addEventListener('dragstart', function(){ dragRankId=cid; li.classList.add('dragging'); });
+    li.addEventListener('dragend', function(){ li.classList.remove('dragging'); });
+    li.addEventListener('dragover', function(ev){ ev.preventDefault(); });
+    li.addEventListener('drop', function(ev){
+      ev.preventDefault();
+      if(!dragRankId || dragRankId===cid) return;
+      var arr=state.rank;
+      var from=arr.indexOf(dragRankId), to=arr.indexOf(cid);
+      arr.splice(from,1); arr.splice(to,0,dragRankId);
+      saveState(); renderRank();
+    });
+    $all('button[data-dir]', li).forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var arr=state.rank; var i=arr.indexOf(cid);
+        var j = btn.dataset.dir==='up' ? i-1 : i+1;
+        if(j<0||j>=arr.length) return;
+        var tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp;
+        saveState(); renderRank();
+      });
+    });
+    list.appendChild(li);
+  });
+}
+$('#btnLockRank').addEventListener('click', function(){
+  state.rankLocked=true; saveState();
+  toast('Ranking locked in. On to Build Argument!');
+  renderRank();
+});
+
+/* ======================================================================
+   ARGUMENT
+   ====================================================================== */
+function renderArgument(){
+  if(!state.rankLocked){
+    $('#argLockedMsg').innerHTML = '<div class="locked"><h3>Rank the Causes First</h3><p>Lock in your ranking of the eight causes before building your argument.</p><button class="btn" id="goRankFromArg">Go to Rank Causes</button></div>';
+    $('#argContent').style.display='none';
+    $('#goRankFromArg').addEventListener('click', function(){ goTab('rank'); });
+    return;
+  }
+  $('#argLockedMsg').innerHTML='';
+  $('#argContent').style.display='';
+
+  var claimSel=$('#claimCause'), counterSel=$('#counterCause');
+  claimSel.innerHTML=''; counterSel.innerHTML='';
+  CAUSES.forEach(function(c){
+    claimSel.appendChild(new Option(c.icon+' '+c.name, c.id));
+    counterSel.appendChild(new Option(c.icon+' '+c.name, c.id));
+  });
+  claimSel.value = state.argument.claimCause || state.rank[0];
+  counterSel.value = state.argument.counterCause || state.rank[1];
+  $('#claimText').value = state.argument.claimText;
+  $('#reasoningText').value = state.argument.reasoningText;
+  $('#counterText').value = state.argument.counterText;
+  $('#rebuttalText').value = state.argument.rebuttalText;
+
+  var picker=$('#evidencePicker'); picker.innerHTML='';
+  Object.keys(state.examined).forEach(function(id){
+    var e=EV_BY_ID[id];
+    var label=el('label','evpick');
+    var checked = state.argument.evidenceIds.indexOf(id)>=0;
+    label.innerHTML='<input type="checkbox" value="'+id+'" '+(checked?'checked':'')+'> <span>'+FOLDER_ICON+' '+esc(e.title)+' <em>('+esc(e.type)+')</em></span>';
+    picker.appendChild(label);
+  });
+
+  claimSel.onchange=function(){ state.argument.claimCause=claimSel.value; saveState(); };
+  counterSel.onchange=function(){ state.argument.counterCause=counterSel.value; saveState(); };
+  $('#claimText').oninput=function(){ state.argument.claimText=this.value; saveState(); };
+  $('#reasoningText').oninput=function(){ state.argument.reasoningText=this.value; saveState(); };
+  $('#counterText').oninput=function(){ state.argument.counterText=this.value; saveState(); };
+  $('#rebuttalText').oninput=function(){ state.argument.rebuttalText=this.value; saveState(); };
+  $all('input[type=checkbox]', picker).forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var id=cb.value;
+      var arr=state.argument.evidenceIds;
+      var i=arr.indexOf(id);
+      if(cb.checked && i<0) arr.push(id);
+      if(!cb.checked && i>=0) arr.splice(i,1);
+      saveState();
+    });
+  });
+}
+$('#btnSubmitArgument').addEventListener('click', function(){
+  var a=state.argument;
+  var problems=[];
+  if(!a.claimText || a.claimText.trim().length<15) problems.push('a clearer claim');
+  if(a.evidenceIds.length<3) problems.push('at least 3 pieces of evidence');
+  if(!a.reasoningText || a.reasoningText.trim().length<20) problems.push('more reasoning connecting evidence to your claim');
+  if(!a.counterText || a.counterText.trim().length<15) problems.push('a fuller counterargument');
+  if(!a.rebuttalText || a.rebuttalText.trim().length<15) problems.push('a rebuttal to that counterargument');
+  if(problems.length){
+    $('#argNote').textContent='Your case file needs: '+problems.join(', ')+'.';
+    return;
+  }
+  state.argument.submitted=true; saveState();
+  $('#argNote').textContent='Argument filed with the commission.';
+  toast('Argument submitted. See your Investigation Rating!');
+  goTab('verdict');
+});
+
+/* ======================================================================
+   VERDICT / SCORING
+   ====================================================================== */
+function computeScores(){
+  var total=EVIDENCE.length;
+  var examinedIds=Object.keys(state.examined);
+  var n=examinedIds.length;
+
+  var sEvidence = Math.round(n/total*100);
+
+  var sourceCompleteSum=0;
+  var biasSet={};
+  examinedIds.forEach(function(id){
+    var rec=state.examined[id];
+    var complete=0, parts=6;
+    if(rec.creator) complete++;
+    if(rec.purpose) complete++;
+    if(rec.audience) complete++;
+    if(rec.bias) complete++;
+    if(rec.importance) complete++;
+    if(rec.reliability) complete++;
+    sourceCompleteSum += complete/parts;
+    if(rec.bias) biasSet[rec.bias]=true;
+  });
+  var completionScore = n? (sourceCompleteSum/n*100) : 0;
+  var varietyScore = Object.keys(biasSet).length/3*100;
+  var sSourceEval = n? Math.round(completionScore*0.7 + varietyScore*0.3) : 0;
+
+  var pairTotal = CORRO_PAIRS.length;
+  var sCorroboration = pairTotal? Math.round(state.corroFound.length/pairTotal*100) : 0;
+
+  var reasoningWords = (state.argument.reasoningText||'').trim().split(/\s+/).filter(Boolean).length;
+  var counterWords = (state.argument.counterText||'').trim().split(/\s+/).filter(Boolean).length;
+  var rebuttalWords = (state.argument.rebuttalText||'').trim().split(/\s+/).filter(Boolean).length;
+  var totalWords = reasoningWords+counterWords+rebuttalWords;
+  var sReasoning = Math.min(100, Math.round(totalWords/1.2));
+
+  var checklist=0;
+  var a=state.argument;
+  if(a.claimText && a.claimText.trim().length>=15) checklist++;
+  if(a.evidenceIds.length>=3) checklist++;
+  if(a.reasoningText && a.reasoningText.trim().length>=20) checklist++;
+  if(a.counterText && a.counterText.trim().length>=15) checklist++;
+  if(a.rebuttalText && a.rebuttalText.trim().length>=15) checklist++;
+  var sArgument = Math.round(checklist/5*100);
+
+  var typesUsed={};
+  a.evidenceIds.forEach(function(id){ if(EV_BY_ID[id]) typesUsed[EV_BY_ID[id].type]=true; });
+  var allTypes={}; EVIDENCE.forEach(function(e){ allTypes[e.type]=true; });
+  var totalTypeCount = Object.keys(allTypes).length;
+  var sMultiSource = Math.min(100, Math.round(Object.keys(typesUsed).length/Math.min(5,totalTypeCount)*100));
+
+  var biasMatch=0;
+  examinedIds.forEach(function(id){
+    var rec=state.examined[id], card=EV_BY_ID[id];
+    if(!rec.bias) return;
+    var order=['Low','Medium','High'];
+    var diff=Math.abs(order.indexOf(rec.bias)-order.indexOf(card.biasLevel));
+    if(diff===0) biasMatch+=1; else if(diff===1) biasMatch+=0.5;
+  });
+  var sBias = n? Math.round(biasMatch/n*100) : 0;
+
+  var sFinal = Math.round((sEvidence+sSourceEval+sCorroboration+sReasoning+sArgument+sMultiSource+sBias)/7);
+
+  return {
+    evidence:sEvidence, sourceEval:sSourceEval, corroboration:sCorroboration,
+    reasoning:sReasoning, argument:sArgument, multiSource:sMultiSource, bias:sBias,
+    final:sFinal
+  };
+}
+function ratingTitle(score){
+  if(score>=85) return {title:'Master Historian', blurb:'A rigorous, well-corroborated investigation. Your argument is thoroughly supported and you engaged honestly with evidence that complicated your own view.'};
+  if(score>=70) return {title:'Senior Investigator', blurb:'A strong, evidence-based investigation with clear reasoning. A little more corroboration or source diversity would sharpen it further.'};
+  if(score>=50) return {title:'Field Investigator', blurb:'A solid start with real evidence behind it. Go back and examine more sources, or deepen your reasoning, to strengthen your case.'};
+  return {title:'Apprentice Investigator', blurb:'Every historian starts here. Spend more time in the Evidence Locker and Case Board — the sources are rich and there is a strong argument waiting for you to build.'};
+}
+function renderVerdict(){
+  if(!state.argument.submitted){
+    $('#verdictLockedMsg').innerHTML='<div class="locked"><h3>Finish Your Argument First</h3><p>Submit your argument to receive your Investigation Rating.</p><button class="btn" id="goArgFromVerdict">Go to Build Argument</button></div>';
+    $('#verdictContent').style.display='none';
+    $('#goArgFromVerdict').addEventListener('click', function(){ goTab('argument'); });
+    return;
+  }
+  $('#verdictLockedMsg').innerHTML='';
+  $('#verdictContent').style.display='';
+  state.verdictViewed=true; saveState();
+
+  var s=computeScores();
+  var r=ratingTitle(s.final);
+  $('#verdictTitle').textContent=r.title+' — Overall '+s.final+'/100';
+  $('#verdictBlurb').textContent=r.blurb;
+
+  var items=[
+    ['Evidence Examined', s.evidence],
+    ['Source Evaluation', s.sourceEval],
+    ['Corroboration', s.corroboration],
+    ['Historical Reasoning', s.reasoning],
+    ['Argument Strength', s.argument],
+    ['Use of Multiple Sources', s.multiSource],
+    ['Bias Recognition', s.bias],
+    ['Final Verdict Composite', s.final]
+  ];
+  var wrap=$('#scoreBars'); wrap.innerHTML='';
+  items.forEach(function(it){
+    var box=el('div','scoreitem');
+    box.innerHTML='<div class="lbl"><span>'+esc(it[0])+'</span><span>'+it[1]+'/100</span></div><div class="bar"><span style="width:'+it[1]+'%"></span></div>';
+    wrap.appendChild(box);
+  });
+}
+
+/* ======================================================================
+   REFLECTION
+   ====================================================================== */
+var REFLECTION_QUESTIONS = [
+  ['q1','Did your opinion about the most significant cause of WWI change during this investigation? How?'],
+  ['q2','Which single piece of evidence influenced your thinking the most, and why?'],
+  ['q3','Which source seemed least trustworthy to you, and what made you suspicious of it?'],
+  ['q4','Can any one nation truly be blamed for World War I? Explain your reasoning using evidence.'],
+  ['q5','How did the long-term causes you examined compare in importance to the immediate spark at Sarajevo?'],
+  ['q6','What modern events or conflicts can you think of that also have multiple, interacting causes?']
+];
+function renderReflection(){
+  var wrap=$('#reflectionForm'); wrap.innerHTML='';
+  REFLECTION_QUESTIONS.forEach(function(q){
+    var box=el('div','reflectq');
+    box.innerHTML='<label for="ref_'+q[0]+'">'+esc(q[1])+'</label><textarea id="ref_'+q[0]+'"></textarea>';
+    wrap.appendChild(box);
+  });
+  REFLECTION_QUESTIONS.forEach(function(q){
+    $('#ref_'+q[0]).value = state.reflection[q[0]]||'';
+    $('#ref_'+q[0]).addEventListener('input', function(){ state.reflection[q[0]]=this.value; });
+  });
+}
+$('#btnSaveReflection').addEventListener('click', function(){
+  saveState();
+  $('#reflectionNote').textContent='Reflection saved. Thank you for investigating this case thoughtfully.';
+  toast('Reflection saved.');
+});
+$('#btnPrintReflection').addEventListener('click', function(){
+  var html='<h1>Investigator\'s Reflection — Evidence Mystery: Who Caused World War I?</h1>';
+  REFLECTION_QUESTIONS.forEach(function(q){
+    html+='<h3>'+esc(q[1])+'</h3><p>'+esc(state.reflection[q[0]]||'(not yet answered)')+'</p>';
+  });
+  $('#printArea').innerHTML=html;
+  window.print();
+});
+
+/* ======================================================================
+   TEACHER MODE
+   ====================================================================== */
+function openTeacher(){
+  if(!state.settings.teacherUnlocked){
+    var ok = window.confirm('This area is intended for teachers facilitating the investigation. It reveals hidden reliability scores and answer keys. Continue?');
+    if(!ok) return;
+    state.settings.teacherUnlocked=true; saveState();
+  }
+  renderTeacher();
+  $('#teacherBackdrop').classList.add('open');
+  $('#teacherClose').focus();
+}
+function closeTeacher(){ $('#teacherBackdrop').classList.remove('open'); }
+$('#btnTeacher').addEventListener('click', openTeacher);
+$('#teacherClose').addEventListener('click', closeTeacher);
+$('#teacherBackdrop').addEventListener('click', function(ev){ if(ev.target===this) closeTeacher(); });
+
+function renderTeacher(){
+  var body=$('#teacherBody');
+  var html='<h4>Reliability &amp; Significance Key</h4>'+
+    '<div style="overflow-x:auto;"><table class="ttable"><thead><tr><th>Title</th><th>Hidden Reliability (1–5)</th><th>Bias Level</th><th>Historian Importance (1–5)</th><th>Causes Supported</th></tr></thead><tbody>';
+  EVIDENCE.forEach(function(e){
+    html+='<tr><td>'+esc(e.title)+'</td><td>'+e.reliability+'</td><td>'+esc(e.biasLevel)+'</td><td>'+e.importanceHistorian+'</td><td>'+e.causes.map(causeIcon).join(' ')+' '+e.causes.map(causeName).join(', ')+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+
+  html+='<h4 style="margin-top:16px;">Answer Explanations</h4>';
+  EVIDENCE.forEach(function(e){
+    html+='<details class="tt-acc"><summary>'+esc(e.title)+'</summary><div>'+
+      '<p><strong>Creator:</strong> '+esc(e.creator)+'</p>'+
+      '<p><strong>Purpose:</strong> '+esc(e.purpose)+'</p>'+
+      '<p><strong>Audience:</strong> '+esc(e.audience)+'</p>'+
+      '<p><strong>Why it matters:</strong> '+esc(e.why)+'</p>'+
+      '<p><strong>Interpretations:</strong> '+esc(e.interpretations)+'</p>'+
+      '<p><strong>Limitations:</strong> '+esc(e.limitations)+'</p>'+
+    '</div></details>';
+  });
+
+  html+='<h4 style="margin-top:16px;">Class Tools</h4>'+
+    '<div style="display:flex; gap:10px; flex-wrap:wrap;">'+
+    '<button class="btn secondary" id="tt-reset">Reset This Device\'s Progress</button>'+
+    '<button class="btn secondary" id="tt-printq">Print Reflection Questions (blank)</button>'+
+    '</div>';
+
+  body.innerHTML=html;
+  $('#tt-reset').addEventListener('click', function(){
+    if(window.confirm('This will erase all saved investigation progress on this device. Continue?')){
+      localStorage.removeItem(SAVE_KEY);
+      state=defaultState();
+      applySettings(); renderHeader(); renderBriefing();
+      closeTeacher();
+      goTab('briefing');
+      toast('Progress reset.');
+    }
+  });
+  $('#tt-printq').addEventListener('click', function(){
+    var html2='<h1>Reflection Questions — Evidence Mystery: Who Caused World War I?</h1><ol>';
+    REFLECTION_QUESTIONS.forEach(function(q){ html2+='<li style="margin-bottom:18px;">'+esc(q[1])+'</li>'; });
+    html2+='</ol>';
+    $('#printArea').innerHTML=html2;
+    window.print();
+  });
+}
+
+/* ======================================================================
+   INIT & GLOBAL CONTROLS
+   ====================================================================== */
+function wireHeaderControls(){
+  $('#btnFontDown').addEventListener('click', function(){
+    var order=['sm','md','lg']; var i=order.indexOf(state.settings.fontSize);
+    state.settings.fontSize = order[Math.max(0,i-1)];
+    applySettings(); saveState();
+  });
+  $('#btnFontUp').addEventListener('click', function(){
+    var order=['sm','md','lg']; var i=order.indexOf(state.settings.fontSize);
+    state.settings.fontSize = order[Math.min(order.length-1,i+1)];
+    applySettings(); saveState();
+  });
+  $('#btnAccuracy').addEventListener('click', function(){
+    state.settings.accuracy = !state.settings.accuracy;
+    renderHeader(); saveState();
+    if(currentEvId && state.examined[currentEvId]) renderInsight(EV_BY_ID[currentEvId]);
+  });
+  $all('#tabs button').forEach(function(b){ b.addEventListener('click', function(){ goTab(b.dataset.tab); }); });
+  $('#btnStartInvestigation').addEventListener('click', function(){ goTab('locker'); });
+}
+
+function init(){
+  state = loadState();
+  applySettings();
+  wireHeaderControls();
+  renderHeader();
+  renderBriefing();
+  goTab(state.activeTab || 'briefing');
+}
+document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
