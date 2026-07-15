@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ration Book: An American Homefront Story</title>
+<meta name="description" content="Manage a household through World War I or World War II as rationing, the draft, and hard choices reshape the American homefront.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --olive-deep:#1c2117;
+    --olive:#2c331f;
+    --olive-light:#454f31;
+    --olive-lighter:#5f6c43;
+    --parchment:#f1e8d0;
+    --parchment-dark:#e0d1a8;
+    --brass:#c19a53;
+    --brass-bright:#e6c07a;
+    --ration-red:#8f2e28;
+    --ration-red-bright:#b8433a;
+    --ink:#241f18;
+    --success:#4f7a4f;
+    --warn:#b57a35;
+    --font-display:'Special Elite', 'Courier New', monospace;
+    --font-body:'Nunito', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(1100px 800px at 12% -10%, #3a4326 0%, transparent 55%),
+      radial-gradient(1100px 900px at 110% 8%, #202a17 0%, transparent 55%),
+      var(--olive-deep);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--brass); color:var(--ink);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.42;}
+  a{color:var(--brass-bright);}
+
+  .screen{display:none; min-height:100vh;}
+  .screen.active{display:block;}
+
+  .seal-rule{
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--brass) 15%, var(--brass-bright) 50%, var(--brass) 85%, transparent);
+    opacity:.75;
+  }
+  .eyebrow{
+    font-family:var(--font-display);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--brass-bright);
+    opacity:.9;
+  }
+
+  /* ===== SHARED NARROW SCREENS ===== */
+  #screen-instructions, #screen-campaign, #screen-setup{
+    max-width:960px; margin:0 auto; padding:56px 24px 90px;
+  }
+  .masthead{text-align:center; margin-bottom:8px;}
+  .masthead .eyebrow{display:block; margin-bottom:14px;}
+  .masthead h1{
+    font-family:var(--font-display);
+    font-size:clamp(28px, 5.5vw, 46px);
+    margin:0;
+    font-weight:400;
+    letter-spacing:.01em;
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass) 70%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .masthead p.sub{
+    font-family:var(--font-body);
+    color:#d8cba3;
+    max-width:620px;
+    margin:14px auto 0;
+    font-size:15.5px;
+    line-height:1.6;
+  }
+
+  .instructions-card{
+    max-width:760px; margin:36px auto 0;
+    background:rgba(28,33,23,.55); border:1px solid var(--olive-lighter); border-radius:12px;
+    padding:8px 26px 20px; font-size:14px; line-height:1.65; color:#e6dcc0;
+  }
+  .instructions-card h4{margin:18px 0 5px; color:var(--brass-bright); font-size:14.5px; font-family:var(--font-display); letter-spacing:.02em; font-weight:400;}
+  .instructions-card p{margin:0;}
+  .instructions-card ul{margin:4px 0 0; padding-left:20px;}
+  .instructions-card li{margin-bottom:4px;}
+  .instructions-continue-bar{display:flex; justify-content:center; margin:34px 0 10px;}
+  .review-instructions-bar{display:flex; justify-content:center; margin-top:30px;}
+  .btn-secondary-link{
+    background:transparent; border:none; color:#cfc4a3; font-family:var(--font-display);
+    font-size:12.5px; letter-spacing:.03em; text-decoration:underline; padding:6px;
+  }
+  .btn-secondary-link:hover{color:var(--brass-bright);}
+  .big-btn{
+    padding:15px 40px; border-radius:30px; border:1px solid var(--brass);
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    color:var(--ink); font-weight:700; font-size:15px; letter-spacing:.03em;
+    box-shadow:0 8px 22px rgba(193,154,83,.25);
+  }
+  .big-btn:hover:not(:disabled){filter:brightness(1.06);}
+
+  /* ===== CAMPAIGN SELECT ===== */
+  .campaign-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+    gap:20px; margin-top:38px;
+  }
+  .campaign-card{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink);
+    border-radius:10px;
+    padding:24px 22px 22px;
+    border:1px solid #b79f6e;
+    box-shadow:0 10px 26px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; gap:10px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .campaign-card:hover{transform:translateY(-3px); box-shadow:0 16px 34px rgba(0,0,0,.45);}
+  .campaign-card .tag{
+    align-self:flex-start;
+    font-family:var(--font-display); font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; padding:3px 8px; border-radius:20px;
+    background:var(--olive); color:var(--brass-bright);
+  }
+  .campaign-card h3{font-family:var(--font-display); margin:2px 0 0; font-size:22px; line-height:1.25; font-weight:400;}
+  .campaign-card p{font-size:13.5px; line-height:1.5; margin:2px 0 6px; color:#3c3527;}
+  .campaign-card ul{margin:0 0 8px; padding-left:18px; font-size:12.5px; color:#4a4030;}
+  .campaign-card button{
+    margin-top:8px; padding:11px 12px; border:none; border-radius:6px;
+    background:var(--olive); color:var(--brass-bright); font-weight:600; font-size:14px;
+    letter-spacing:.02em;
+  }
+  .campaign-card button:hover{background:var(--olive-light);}
+
+  /* ===== SETUP SCREEN ===== */
+  .setup-note{
+    max-width:620px; margin:22px auto 0; background:rgba(28,33,23,.55);
+    border:1px solid var(--olive-lighter); border-radius:10px; padding:16px 20px;
+    font-size:13.5px; line-height:1.6; color:#e6dcc0;
+  }
+  .setup-fields{max-width:420px; margin:26px auto 0; display:flex; flex-direction:column; gap:16px;}
+  .setup-fields label{display:block; font-size:12.5px; color:#cfc4a3; margin-bottom:6px; font-family:var(--font-display); letter-spacing:.04em;}
+  .setup-fields input{
+    width:100%; padding:12px 14px; border-radius:6px; border:1px solid var(--olive-lighter);
+    background:var(--olive); color:var(--parchment); font-size:16px; font-family:var(--font-body);
+    text-align:center;
+  }
+  .setup-fields input:focus{outline:2px solid var(--brass); outline-offset:1px;}
+  .setup-start-bar{display:flex; justify-content:center; margin-top:30px;}
+
+  /* ===== GAME SCREEN ===== */
+  #screen-game{padding:18px 18px 40px; max-width:1280px; margin:0 auto;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap;
+    background:linear-gradient(180deg, var(--olive) 0%, var(--olive-deep) 100%);
+    border:1px solid var(--olive-lighter); border-radius:10px;
+    padding:14px 20px; margin-bottom:16px;
+  }
+  .topbar .turn-id{display:flex; flex-direction:column; gap:2px;}
+  .topbar .turn-id .eyebrow{font-size:10px;}
+  .topbar .turn-id h2{font-family:var(--font-display); font-size:19px; margin:0; color:var(--parchment); font-weight:400;}
+  .topbar .stats{display:flex; gap:18px; align-items:center; flex-wrap:wrap;}
+  .stat-chip{text-align:center; min-width:52px;}
+  .stat-chip .num{font-family:var(--font-display); font-size:19px; font-weight:400; color:var(--brass-bright);}
+  .stat-chip .lbl{font-family:var(--font-display); font-size:9px; letter-spacing:.06em; text-transform:uppercase; color:#a89b76;}
+
+  .family-panel{
+    display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px;
+  }
+  .family-card{
+    flex:1; min-width:220px;
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border:1px solid #b79f6e; border-radius:9px;
+    padding:12px 16px;
+  }
+  .family-card .who{font-family:var(--font-display); font-weight:400; font-size:14px; color:var(--ink);}
+  .family-card .status{font-size:12.5px; color:#5a5140; margin-top:3px; line-height:1.4;}
+
+  .section-label{
+    font-family:var(--font-display); font-size:13px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--brass-bright); margin:18px 0 10px;
+  }
+
+  .ration-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:14px;}
+  .ration-card{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border-radius:9px; border:1px solid #b79f6e;
+    padding:14px 16px 15px; display:flex; flex-direction:column; gap:8px;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);
+  }
+  .ration-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .ration-name{display:flex; align-items:center; gap:8px; font-weight:700; font-size:14.5px;}
+  .ration-name .ic{font-size:20px;}
+  .ration-need{font-family:var(--font-display); font-size:11px; color:#5a5140;}
+  .ration-actions{display:flex; flex-direction:column; gap:6px;}
+  .rat-btn{
+    padding:9px 10px; border-radius:6px; border:1px solid #967d4d; background:var(--olive);
+    color:var(--parchment); font-size:12px; font-weight:600; text-align:left;
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+  }
+  .rat-btn small{font-family:var(--font-display); font-weight:400; font-size:10.5px; color:var(--brass-bright); white-space:nowrap;}
+  .rat-btn:hover:not(:disabled):not(.chosen){background:var(--olive-light);}
+  .rat-btn.chosen{background:var(--brass); color:var(--ink); border-color:var(--brass);}
+  .rat-btn.chosen small{color:var(--olive-deep);}
+  .rat-btn.blackmarket{border-color:var(--ration-red-bright);}
+  .rat-btn.blackmarket small{color:var(--ration-red-bright);}
+  .rat-btn.blackmarket.chosen{background:var(--ration-red-bright); border-color:var(--ration-red-bright); color:#fff2eb;}
+  .rat-btn.blackmarket.chosen small{color:#fff2eb;}
+
+  .bonds-panel{
+    margin-top:16px;
+    background:linear-gradient(180deg,var(--olive) 0%, var(--olive-deep) 100%);
+    border:1px solid var(--olive-lighter); border-radius:10px; padding:14px 18px;
+  }
+  .bonds-panel h3{font-family:var(--font-display); margin:0 0 4px; font-size:16px; color:var(--brass-bright); font-weight:400;}
+  .bonds-panel p{margin:0 0 10px; font-size:12.5px; color:#cfc4a3; line-height:1.5;}
+  .bonds-tiers{display:flex; gap:8px; flex-wrap:wrap;}
+  .bond-btn{
+    padding:9px 16px; border-radius:20px; border:1px solid var(--brass); background:transparent;
+    color:var(--brass-bright); font-size:12.5px; font-weight:700;
+  }
+  .bond-btn:hover:not(:disabled):not(.chosen){background:rgba(193,154,83,.15);}
+  .bond-btn.chosen{background:var(--brass); color:var(--ink);}
+
+  .lower-grid{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;}
+  .panel{
+    background:linear-gradient(180deg,var(--olive) 0%, var(--olive-deep) 100%);
+    border:1px solid var(--olive-lighter); border-radius:10px; padding:14px 18px;
+  }
+  .panel h3{font-family:var(--font-display); margin:0 0 10px; font-size:15px; color:var(--brass-bright); font-weight:400;}
+  .log-feed{max-height:220px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:6px; padding-right:4px;}
+  .log-entry{font-size:12.5px; line-height:1.45; padding:7px 10px; border-radius:6px; border-left:3px solid var(--brass); background:rgba(255,255,255,.03);}
+  .log-entry.bad{border-left-color:var(--ration-red-bright);}
+  .log-entry.event{border-left-color:#7a9bd1;}
+  .log-entry .trn{font-family:var(--font-display); color:#a89b76; margin-right:6px;}
+
+  .end-turn-bar{display:flex; justify-content:center; margin-top:20px;}
+
+  /* ===== MODALS ===== */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(8,10,5,.72);
+    align-items:center; justify-content:center; padding:20px; z-index:999;
+    backdrop-filter:blur(2px);
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    max-width:560px; width:100%; max-height:85vh; overflow-y:auto;
+    border-radius:12px; padding:22px 26px 24px;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink);
+  }
+  .paper-masthead{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px;}
+  .paper-name{font-family:var(--font-display); font-weight:400; font-size:22px; letter-spacing:.01em; color:var(--ink);}
+  .paper-date{font-family:var(--font-display); font-size:10.5px; letter-spacing:.03em; color:#6b5f45; text-transform:uppercase;}
+  .modal-card .seal-rule{background:linear-gradient(90deg, transparent, #8a744a 15%, #6b5636 50%, #8a744a 85%, transparent); margin:8px 0 14px; opacity:1;}
+  .headline-item{padding:8px 0; border-bottom:1px dashed #b79f6e; font-size:13.5px; line-height:1.5; color:#3c3527;}
+  .headline-item:last-child{border-bottom:none;}
+  .event-title{font-family:var(--font-display); font-size:18px; margin:0 0 10px; color:var(--ration-red); font-weight:400;}
+  .event-body p{font-size:14px; line-height:1.65; color:#3c3527; margin:0 0 10px;}
+  .event-choices{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+  .event-choice-btn{
+    text-align:left; padding:12px 14px; border-radius:8px; border:1px solid #967d4d;
+    background:var(--olive); color:var(--parchment);
+  }
+  .event-choice-btn:hover{background:var(--olive-light);}
+  .event-choice-btn .lbl{font-weight:700; font-size:13.5px; display:block; margin-bottom:3px;}
+  .event-choice-btn .dsc{font-size:12px; color:#cfc4a3; line-height:1.4;}
+  .modal-continue-btn{width:100%; margin-top:18px;}
+  .caught-banner{
+    background:rgba(143,46,40,.15); border:1px solid var(--ration-red); border-radius:8px;
+    padding:12px 14px; margin-bottom:12px; font-size:13.5px; color:var(--ration-red); font-weight:700;
+  }
+
+  /* ===== END SCREEN ===== */
+  #screen-end{max-width:800px; margin:0 auto; padding:70px 24px 90px; text-align:center;}
+  #screen-end .verdict-eyebrow{font-family:var(--font-display); letter-spacing:.16em; color:var(--brass-bright); font-size:12px;}
+  #screen-end h1{font-family:var(--font-display); font-size:clamp(26px,4.5vw,40px); margin:12px 0 6px; font-weight:400;}
+  #screen-end .rank{font-family:var(--font-display); font-size:14px; color:#cfc4a3; margin-bottom:26px;}
+  .end-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 28px; text-align:left;}
+  @media (max-width:600px){.end-grid{grid-template-columns:1fr;}}
+  .end-card{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark)); color:var(--ink);
+    border-radius:10px; padding:16px; border:1px solid #b79f6e;
+  }
+  .end-card h4{font-family:var(--font-display); margin:0 0 8px; font-size:15px; font-weight:400;}
+  .end-card table{width:100%; font-family:var(--font-display); font-size:12px; border-collapse:collapse;}
+  .end-card td{padding:3px 0;}
+  .end-card td:last-child{text-align:right; font-weight:700;}
+  .end-card p{font-size:13px; line-height:1.5; margin:4px 0; color:#3c3527;}
+  .history-note{
+    text-align:left; background:rgba(28,33,23,.6); border:1px solid var(--olive-lighter);
+    border-radius:10px; padding:16px 20px; font-size:13.5px; line-height:1.6; color:#d8cfb4; margin-bottom:26px;
+  }
+  .history-note b{color:var(--brass-bright);}
+  .end-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .end-actions button{
+    padding:13px 26px; border-radius:26px; border:1px solid var(--brass); font-weight:700; font-size:14px;
+  }
+  .btn-primary{background:linear-gradient(180deg, var(--brass-bright), var(--brass)); color:var(--ink);}
+  .btn-secondary{background:transparent; color:var(--brass-bright);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--olive-lighter); border-radius:8px;}
+
+  /* ===== PRINT SUMMARY (hidden on screen, shown only on print) ===== */
+  #printArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{
+      display:block; position:absolute; top:0; left:0; width:100%;
+      background:#fff; color:#111; padding:24px; font-family:Georgia, serif;
+    }
+    #printArea h1{font-size:22px; margin:0 0 4px;}
+    #printArea h2{font-size:16px; margin:20px 0 8px; border-bottom:1px solid #999; padding-bottom:4px;}
+    #printArea .meta{font-size:12px; color:#444; margin-bottom:14px;}
+    #printArea ol, #printArea ul{padding-left:20px;}
+    #printArea li{font-size:12.5px; line-height:1.5; margin-bottom:4px;}
+    #printArea table{width:100%; border-collapse:collapse; font-size:12px; margin-bottom:10px;}
+    #printArea td{padding:2px 6px 2px 0;}
+    #printArea .refl li{margin-bottom:14px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ INSTRUCTIONS ============ -->
+<section id="screen-instructions" class="screen active">
+  <div class="masthead">
+    <span class="eyebrow">A Homefront Simulation</span>
+    <h1>Ration Book</h1>
+    <p class="sub">You don't run this war from the front. You run it from the kitchen table: stretching ration stamps, keeping a household fed and hopeful, and living with the draft's knock on the door. Every choice you make was made by a real American family, in World War I or World War II.</p>
+  </div>
+
+  <div class="instructions-card">
+    <h4>The goal</h4>
+    <p>Keep your household's <b>Health</b>, <b>Morale</b>, and standing in the community (<b>Trust</b>) as high as you can across the whole war, while managing scarce cash. There's no single "win" state: the point is to feel the trade-offs the homefront actually forced on families, and to see how your choices add up by the end.</p>
+    <h4>The Ration Board</h4>
+    <p>Each turn, your household needs a set of goods: food, fuel, and other essentials that were tightly rationed during both world wars. For each one, you'll choose:</p>
+    <ul>
+      <li><b>Go Without</b> — free, but your family's Health and Morale take the full hit of the shortage.</li>
+      <li><b>Ration Fairly</b> — use your legal stamp allotment and modest cash. This is what the government asked of everyone. It may not fully cover your need once shortages deepen, but it costs you the least in community standing.</li>
+      <li><b>Buy on the Black Market</b> — pay a steep cash premium to get everything you need, no stamps required. It works, but it damages your <b>Trust</b> in the community, and you risk getting caught.</li>
+    </ul>
+    <h4>War Bonds</h4>
+    <p>Each turn you can put spare cash into War Bonds. You won't see that money again until after the war, but it builds Morale and Trust: it's how ordinary families helped finance the war effort.</p>
+    <h4>The Draft, and the rest of the household</h4>
+    <p>Your household includes a spouse and a draft-age son. As the war goes on, you'll face the draft lottery, letters from the front, and a scripted arc where your spouse takes on new work outside the home. These moments carry their own choices and consequences.</p>
+    <h4>Random events</h4>
+    <p>At the start of each turn, a newspaper shows you what's happening nationally. Some turns bring a specific event you'll need to respond to. Not everything is in your control: that's the point.</p>
+    <h4>At the end</h4>
+    <p>You'll get a debrief on how your household fared, and you can print a full record of your choices along with reflection questions for class discussion.</p>
+  </div>
+
+  <div class="instructions-continue-bar">
+    <button class="big-btn" id="instructionsContinueBtn">I Understand: Choose a War →</button>
+  </div>
+</section>
+
+<!-- ============ CAMPAIGN SELECT ============ -->
+<section id="screen-campaign" class="screen">
+  <div class="masthead">
+    <span class="eyebrow">A Homefront Simulation</span>
+    <h1>Choose Your War</h1>
+    <p class="sub">Each war shaped its homefront differently. Pick one to run your household through.</p>
+  </div>
+
+  <div class="campaign-grid" id="campaignGrid"></div>
+
+  <div class="review-instructions-bar">
+    <button class="btn-secondary-link" id="reviewInstructionsBtn">↺ Review the rules again</button>
+  </div>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="screen-setup" class="screen">
+  <div class="masthead">
+    <span class="eyebrow" id="setupEyebrow">—</span>
+    <h1 id="setupHeading">Your Household</h1>
+    <p class="sub" id="setupBlurb">—</p>
+  </div>
+
+  <div class="setup-note" id="setupNote"></div>
+
+  <div class="setup-fields">
+    <div>
+      <label for="spouseNameInput">Your spouse's name</label>
+      <input type="text" id="spouseNameInput" maxlength="20">
+    </div>
+    <div>
+      <label for="sonNameInput">Your son's name (draft age)</label>
+      <input type="text" id="sonNameInput" maxlength="20">
+    </div>
+  </div>
+
+  <div class="setup-start-bar">
+    <button class="big-btn" id="startGameBtn">Begin the War →</button>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="topbar">
+    <div class="turn-id">
+      <span class="eyebrow" id="campaignLabel">—</span>
+      <h2 id="turnDateLabel">—</h2>
+    </div>
+    <div class="stats">
+      <div class="stat-chip"><div class="num" id="statTurn">1/8</div><div class="lbl">Turn</div></div>
+      <div class="stat-chip"><div class="num" id="statCash">$0</div><div class="lbl">Cash</div></div>
+      <div class="stat-chip"><div class="num" id="statHealth">0</div><div class="lbl">Health</div></div>
+      <div class="stat-chip"><div class="num" id="statMorale">0</div><div class="lbl">Morale</div></div>
+      <div class="stat-chip"><div class="num" id="statTrust">0</div><div class="lbl">Trust</div></div>
+      <div class="stat-chip"><div class="num" id="statBonds">$0</div><div class="lbl">War Bonds</div></div>
+    </div>
+  </div>
+
+  <div class="family-panel" id="familyPanel"></div>
+
+  <div class="section-label">This Week's Ration Board</div>
+  <div class="ration-grid" id="rationGrid"></div>
+
+  <div class="bonds-panel">
+    <h3>War Bonds</h3>
+    <p>Spare cash can go toward War Bonds. It won't come back until the war ends, but it helps morale on the block and helps finance the war effort.</p>
+    <div class="bonds-tiers" id="bondsTiers"></div>
+  </div>
+
+  <div class="lower-grid">
+    <div class="panel">
+      <h3>The Household Ledger</h3>
+      <div class="log-feed" id="logFeed"></div>
+    </div>
+  </div>
+
+  <div class="end-turn-bar">
+    <button class="big-btn" id="endTurnBtn">End This Turn →</button>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="verdict-eyebrow">THE WAR IS OVER</div>
+  <h1 id="endHeadline">—</h1>
+  <div class="rank" id="endRank">—</div>
+
+  <div class="end-grid">
+    <div class="end-card">
+      <h4>Final Household Stats</h4>
+      <table id="endStatsTable"></table>
+    </div>
+    <div class="end-card">
+      <h4>What Became of Your Family</h4>
+      <p id="endFamilyNote">—</p>
+    </div>
+  </div>
+
+  <div class="history-note" id="historyNote"></div>
+
+  <div class="end-actions">
+    <button class="btn-primary" id="printBtn">🖨 Print Your Homefront Record</button>
+    <button class="btn-secondary" id="newCampaignBtn">Choose a New War</button>
+    <button class="btn-secondary" id="replayBtn">Run It Back, Same War</button>
+  </div>
+</section>
+
+<!-- ============ HERALD MODAL ============ -->
+<div id="heraldModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="paper-masthead">
+      <span class="paper-name" id="heraldPaperName">The Home Front Bulletin</span>
+      <span class="paper-date" id="heraldDate">—</span>
+    </div>
+    <div class="seal-rule"></div>
+    <div id="heraldBody"></div>
+    <button class="big-btn modal-continue-btn" id="heraldContinueBtn">Continue →</button>
+  </div>
+</div>
+
+<!-- ============ EVENT MODAL ============ -->
+<div id="eventModal" class="modal-overlay">
+  <div class="modal-card">
+    <span class="eyebrow" id="eventDateTag">—</span>
+    <h3 class="event-title" id="eventTitle">—</h3>
+    <div class="event-body" id="eventBody"></div>
+    <div class="event-choices" id="eventChoices"></div>
+    <button class="big-btn modal-continue-btn" id="eventContinueBtn" style="display:none;">Continue →</button>
+  </div>
+</div>
+
+<!-- ============ CAUGHT MODAL ============ -->
+<div id="caughtModal" class="modal-overlay">
+  <div class="modal-card">
+    <span class="eyebrow">RATION BOARD INSPECTOR</span>
+    <h3 class="event-title">Caught!</h3>
+    <div class="caught-banner" id="caughtText">—</div>
+    <button class="big-btn modal-continue-btn" id="caughtContinueBtn">Continue →</button>
+  </div>
+</div>
+
+<!-- ============ PRINTABLE SUMMARY (screen-hidden, print-only) ============ -->
+<div id="printArea"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   CONFIG
+========================================================================= */
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function rand(min,max){ return min + Math.random()*(max-min); }
+function chance(p){ return Math.random() < p; }
+function money(n){ return "$" + Math.round(n).toLocaleString(); }
+
+const CONFIG = {
+  START_STATS: { cash:45, health:80, morale:75, trust:65, bonds:0 },
+  RATION_RISK_CAUGHT: 0.22,
+
+  REFLECTION_QUESTIONS: [
+    "Which rationed good was hardest for your household to do without, and why do you think the government targeted that specific item for rationing?",
+    "Did you ever turn to the black market? What did your household gain, and what did it cost in community standing? In general, who profits from a black market, and who is harmed by it?",
+    "How did the draft affect your household directly? If you faced a choice about a deferment or exemption, what did you decide, and would you decide differently now, knowing what you know about the war?",
+    "How did your household's story reflect the changing role of women during the war? What changed for your spouse, and what happened to that opportunity once the war ended?",
+    "Historians often say war is profitable, for someone. Where in your playthrough did you see profit and hardship existing side by side? Who benefited, and who paid the price?"
+  ],
+
+  CAMPAIGNS: {}
+};
+
+/* ---- Shared resource math ---- */
+function computeRationOption(res, choiceKey, S){
+  const need = Math.max(0, res.baseNeed * (res.seasonalMult||1) - (S.needReduction[res.id]||0));
+  const allot = need * (S.rationMultiplier[res.id]!=null ? S.rationMultiplier[res.id] : 1);
+  if(choiceKey === "without"){
+    const deficit = need;
+    return { buy:0, cost:0, healthD:-Math.round(deficit*1.8), moraleD:-Math.round(deficit*1.4), trustD:1, caughtRisk:0 };
+  }
+  if(choiceKey === "fair"){
+    const buy = Math.min(need, Math.max(0,allot));
+    const deficit = Math.max(0, need - buy);
+    const cost = Math.round(buy * res.basePrice);
+    return { buy, cost, healthD:-Math.round(deficit*1.8*0.35), moraleD:-Math.round(deficit*1.4*0.35), trustD:2, caughtRisk:0 };
+  }
+  // black market
+  const buy = need;
+  const cost = Math.round(buy * res.basePrice * 3);
+  return { buy, cost, healthD:1, moraleD:1, trustD:-4, caughtRisk:CONFIG.RATION_RISK_CAUGHT };
+}
+
+/* =========================================================================
+   CAMPAIGN DATA: WORLD WAR I
+========================================================================= */
+CONFIG.CAMPAIGNS.wwi = {
+  id:"wwi",
+  name:"World War I",
+  years:"1917 – 1918",
+  tag:"US History · The Home Front",
+  blurb:"America enters a European war it swore to stay out of. Herbert Hoover asks families to “Hooverize.” The first modern military draft in a generation reaches into small towns everywhere.",
+  bullets:["8 turns, April 1917 to November 1918","Rationed: wheat, sugar, meat, and coal","Features the Selective Service draft lottery and the 1918 flu"],
+  setupBlurb:"You're past draft age yourself, so the war reaches your household through your family instead of your own service.",
+  setupNote:"You'll run this household as its head: too old for the Selective Service Act's draft age (21 to 30), but not too old to feel every shortage, every headline, and every letter that comes from your son's unit overseas.",
+  paperName:"The Weekly Clarion",
+  defaultSpouseName:"Margaret",
+  defaultSonName:"Thomas",
+  resources:[
+    { id:"wheat", name:"Flour & Wheat", icon:"🌾", baseNeed:6, basePrice:1.0 },
+    { id:"sugar", name:"Sugar", icon:"🍬", baseNeed:3, basePrice:1.5 },
+    { id:"meat",  name:"Meat", icon:"🥩", baseNeed:4, basePrice:2.0 },
+    { id:"coal",  name:"Coal", icon:"⚫", baseNeed:5, basePrice:1.2 }
+  ],
+  incomeBase: 28,
+  incomeVariance: 6,
+  spouseWorkBonus: 15,
+  turns:[
+    { label:"Turn 1", date:"April 1917",
+      headlines:[
+        "Congress declares war on Germany at President Wilson's request.",
+        "Recruiting posters go up on Main Street overnight.",
+        "Local grocers report a run on flour and canned goods."
+      ]
+    },
+    { label:"Turn 2", date:"June 1917",
+      headlines:[
+        "Registration Day: every man aged 21 to 30 must register for the draft.",
+        "Your son registers at the town hall along with hundreds of others.",
+        "The Committee on Public Information papers the town with war posters."
+      ],
+      event: (S)=>({
+        title:"Registration Day",
+        dateTag:"June 5, 1917",
+        body:[
+          `${S.sonName} walks to the town hall with the other young men of the county to register for the draft, as the new Selective Service Act requires. There's no getting around it, and no decision to make yet, only the number he's assigned and the waiting that follows.`
+        ],
+        choices:null,
+        onEnd:(S)=>{ S.flags.sonRegistered = true; S.sonStatus = "registered"; return "Your son is registered for the draft."; }
+      })
+    },
+    { label:"Turn 3", date:"September 1917",
+      headlines:[
+        "Herbert Hoover's Food Administration asks Americans to “Hooverize”: wheatless Wednesdays, meatless Mondays.",
+        "“Food will win the war,” reads the new poster in the grocer's window.",
+        "Liberty Bond drive posters appear alongside the food posters."
+      ],
+      rationCuts:{ wheat:0.7, meat:0.75 }
+    },
+    { label:"Turn 4", date:"December 1917",
+      headlines:[
+        "A hard winter drives up demand for coal across the county.",
+        "Local numbers are drawn as part of the national Selective Service lottery.",
+        "Casualty lists from the front now run in the newspaper every week."
+      ],
+      seasonal:{ coal:1.4 },
+      event: (S)=>({
+        title:"The Draft Lottery",
+        dateTag:"December 1917",
+        body:[
+          `Blindfolded officials in Washington draw capsules from a glass bowl, assigning order numbers to every registered man in the country. It's broadcast nationwide, and by evening the local paper has posted the list outside its office. ${S.sonName}'s number comes up near the top of the list: he will almost certainly be called.`,
+          `Before the notice even arrives, a neighbor pulls you aside. He knows a doctor in the next county who, for a fee, will write up papers claiming a medical condition that would keep a young man out of uniform entirely. It happens more than the papers admit. It is also, plainly, against the law.`
+        ],
+        choices:[
+          { label:"Pay for the exemption papers", desc:"Spend $18. Your son stays home, no matter what the war costs elsewhere. If it's discovered later, your standing in town will suffer for it.",
+            apply:(S)=>{ S.cash-=18; S.flags.exemptionPursued=true; S.sonStatus="exempted"; return `You pay for the papers. ${S.sonName} will not be called. You tell yourself it's for the family.`; } },
+          { label:"Let him be called, like everyone else's son", desc:"No cost now. He'll ship out with his unit when his number comes up, and you'll wait for letters like every other family on the block.",
+            apply:(S)=>{ S.flags.exemptionPursued=false; S.sonStatus="drafted"; S.trust=clamp(S.trust+3,0,100); return `You let the number stand. ${S.sonName} will report when he's called.`; } }
+        ]
+      })
+    },
+    { label:"Turn 5", date:"March 1918",
+      headlines:[
+        "Women take up jobs on the streetcar lines and in the munitions plants as men ship overseas.",
+        "The Liberty Garden campaign urges every family to plant vegetables at home.",
+        "A local steel executive breaks ground on a new house overlooking the river."
+      ],
+      rationCuts:{ sugar:0.6 },
+      event: (S)=>({
+        title:"A New Job",
+        dateTag:"March 1918",
+        body:[
+          `With so many men gone and war orders piling up at the plant downtown, ${S.spouseName} comes home with news: they're hiring women on the production line, and the pay is better than anything available otherwise. It means long hours and a job nobody would have offered a year ago.`,
+          `At the same town meeting, talk turns to a local steel executive whose company has landed a string of fat government contracts. His new house is the largest on the river. Someone mutters that war is good for somebody's business, even if it's hard on everyone else's.`
+        ],
+        choices:null,
+        onEnd:(S)=>{ S.spouseWorking = true; S.spouseEverWorked = true; S.morale = clamp(S.morale+5,0,100); return `${S.spouseName} starts work at the munitions plant. Household income rises, but so does the workload at home.`; }
+      })
+    },
+    { label:"Turn 6", date:"June 1918",
+      headlines:[
+        "American troops see heavy fighting at Belleau Wood and Château-Thierry.",
+        "Mail from the front is heavily censored, but letters still arrive.",
+        "War bond quotas rise again for every county in the state."
+      ],
+      rationCuts:{ wheat:0.55 },
+      event: (S)=>{
+        if(S.flags.exemptionPursued){
+          const caught = chance(0.3);
+          if(caught){
+            return {
+              title:"Word Gets Around",
+              dateTag:"June 1918",
+              body:[
+                `Small towns keep few secrets. Someone at the draft board recognizes the doctor's name on ${S.sonName}'s exemption papers, the same name that's come up twice before for other families with money. Nothing is proven, but the whispering starts at church and doesn't stop.`
+              ],
+              choices:null,
+              onEnd:(S)=>{ S.trust=clamp(S.trust-15,0,100); S.morale=clamp(S.morale-8,0,100); return "The town starts to talk. Your family's standing takes a real hit."; }
+            };
+          }
+          return {
+            title:"A Quiet Spring",
+            dateTag:"June 1918",
+            body:[
+              `${S.sonName} stays home, safe, while the casualty lists in the paper grow longer with other families' sons. You keep telling yourself it was the right call. Some nights, that's harder to believe than others.`
+            ],
+            choices:null,
+            onEnd:(S)=>{ return "Your household is spared the letters other families are receiving."; }
+          };
+        }
+        const roll = Math.random();
+        let outcome, text, hD=0, mD=0, tD=0;
+        if(roll < 0.65){ outcome="serving"; text=`A letter arrives from ${S.sonName}, water-stained and heavily crossed out by the censor. He's alive, exhausted, and asking after home. It's not much, but it's everything.`; mD=5; }
+        else if(roll < 0.90){ outcome="wounded"; text=`A telegram arrives before any letter does: ${S.sonName} was wounded near Château-Thierry and is recovering in a field hospital. He'll live, the telegram says. It doesn't say much else.`; hD=-6; mD=-10; }
+        else { outcome="killed"; text=`The telegram every family on the block dreads finally comes to your door. ${S.sonName} was killed in action near Belleau Wood. A gold star will hang in your window from now on.`; hD=-10; mD=-25; tD=5; }
+        return {
+          title: outcome==="killed" ? "A Telegram" : (outcome==="wounded" ? "A Telegram" : "A Letter From France"),
+          dateTag:"June 1918",
+          body:[text],
+          choices:null,
+          onEnd:(S)=>{ S.sonStatus=outcome; S.health=clamp(S.health+hD,0,100); S.morale=clamp(S.morale+mD,0,100); S.trust=clamp(S.trust+tD,0,100);
+            return outcome==="serving" ? "Relief, for now." : (outcome==="wounded" ? "Your son is alive, but the war has marked him." : "Your household joins the list of Gold Star families."); }
+        };
+      }
+    },
+    { label:"Turn 7", date:"September 1918",
+      headlines:[
+        "Influenza spreads rapidly through military camps and civilian towns alike.",
+        "Sauerkraut is rebranded “liberty cabbage” as anti-German sentiment sweeps the country.",
+        "A German-language church down the street has its windows broken overnight."
+      ],
+      rationCuts:{ coal:0.6 },
+      event: (S)=>({
+        title:"100% Americanism",
+        dateTag:"September 1918",
+        body:[
+          "The influenza sweeping through the camps has reached town, and half the households on your street are down with fever. On top of it, a wave of suspicion toward anything German has turned uglier: the Schmidt family's bakery has had its windows broken twice this month, and a boycott is being organized against them by name.",
+          "You're asked, more than once, whether you'll be joining it."
+        ],
+        choices:[
+          { label:"Keep buying from the Schmidt family's bakery", desc:"Some neighbors will call it disloyal. It's also just decent.",
+            apply:(S)=>{ S.trust=clamp(S.trust-5,0,100); S.morale=clamp(S.morale+4,0,100); return "You keep your business with the Schmidts. A few neighbors notice, and not kindly."; } },
+          { label:"Join the boycott", desc:"It costs you nothing with the crowd that's watching, and the Schmidts lose more than they can afford.",
+            apply:(S)=>{ S.trust=clamp(S.trust+5,0,100); return "You join the boycott. It's the easier choice, and you know it."; } }
+        ],
+        onEnd:(S)=>{ S.health=clamp(S.health-10,0,100); return "The flu hits your household hard regardless of anything else."; }
+      })
+    },
+    { label:"Turn 8", date:"November 1918", isFinal:true,
+      headlines:[
+        "The Armistice is signed at 11:00 AM on the 11th day of the 11th month.",
+        "Church bells ring across the country as the guns fall silent in Europe.",
+        "Returning soldiers are expected home within the year."
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   CAMPAIGN DATA: WORLD WAR II
+========================================================================= */
+CONFIG.CAMPAIGNS.wwii = {
+  id:"wwii",
+  name:"World War II",
+  years:"1941 – 1945",
+  tag:"US History · The Home Front",
+  blurb:"Pearl Harbor pulls America into a war on two oceans. Ration books, victory gardens, and scrap drives become daily life, while a Japanese American family down the street is ordered from their home.",
+  bullets:["10 turns, December 1941 to August 1945","Rationed: sugar, meat, gasoline, and coffee","Features Executive Order 9066, D-Day, and Rosie the Riveter"],
+  setupBlurb:"You're managing the household from home while the war reaches into every part of daily life.",
+  setupNote:"You'll run this household as its head: past the age the draft calls first, but not past the reach of ration books, scrap drives, and a son who will register the moment he turns eighteen.",
+  paperName:"The Home Front Bulletin",
+  defaultSpouseName:"Dorothy",
+  defaultSonName:"James",
+  resources:[
+    { id:"sugar",    name:"Sugar", icon:"🍬", baseNeed:3, basePrice:1.5 },
+    { id:"meat",     name:"Meat", icon:"🥩", baseNeed:4, basePrice:2.0 },
+    { id:"gasoline", name:"Gasoline", icon:"⛽", baseNeed:4, basePrice:1.8 },
+    { id:"coffee",   name:"Coffee", icon:"☕", baseNeed:2, basePrice:2.5 }
+  ],
+  incomeBase: 30,
+  incomeVariance: 6,
+  spouseWorkBonus: 18,
+  turns:[
+    { label:"Turn 1", date:"December 1941",
+      headlines:[
+        "Japan attacks Pearl Harbor; Congress declares war within a day.",
+        "Recruiting stations report lines around the block by morning.",
+        "The Selective Training and Service Act draft is expanded overnight."
+      ]
+    },
+    { label:"Turn 2", date:"February 1942",
+      headlines:[
+        "Executive Order 9066 authorizes the removal of Japanese Americans from the West Coast.",
+        "Sugar becomes the first item formally rationed nationwide.",
+        "“Loose lips sink ships” posters appear in every shop window."
+      ],
+      rationCuts:{ sugar:0.7 },
+      event: (S)=>({
+        title:"Executive Order 9066",
+        dateTag:"February 1942",
+        body:[
+          "Notices go up on telephone poles around town: every family of Japanese descent, citizens and immigrants alike, has ten days to settle their affairs before being sent to a relocation camp. Among them is the Tanaka family, who run the produce stand at the end of your street and have for fifteen years.",
+          "Mr. Tanaka comes by, not to ask for pity, but because he has almost no time and almost no good options for what happens to his store while he's gone."
+        ],
+        choices:[
+          { label:"Offer to look after their store until they return", desc:"It costs you time and a little goodwill capital with neighbors who support the order, but it's the right thing by the Tanakas.",
+            apply:(S)=>{ S.trust=clamp(S.trust+6,0,100); S.morale=clamp(S.morale+4,0,100); S.flags.internmentChoice="helped"; return "You agree to look after the Tanaka family's store while they're gone."; } },
+          { label:"Offer to buy the store from him, at a fair price, before he's forced to sell for nothing", desc:"You'll pay a fair price and hold it in trust for their return; still, some in town will call it profiting from a neighbor's misfortune.",
+            apply:(S)=>{ S.cash=clamp(S.cash-10,0,999); S.trust=clamp(S.trust+2,0,100); S.flags.internmentChoice="bought-fair"; return "You buy the Tanaka store at a fair price, intending to return it when the war ends."; } },
+          { label:"Say nothing, and let the property go to whoever offers first", desc:"It isn't your problem to solve. Somebody else will take the store, likely for far less than it's worth.",
+            apply:(S)=>{ S.trust=clamp(S.trust-4,0,100); S.flags.internmentChoice="ignored"; return "You keep your distance. The Tanaka store is sold within the week, for a fraction of its worth."; } }
+        ]
+      })
+    },
+    { label:"Turn 3", date:"May 1942",
+      headlines:[
+        "The Office of Price Administration issues ration books to every household.",
+        "Meat, gasoline, and coffee join the rationed list this month.",
+        "Scrap metal drives collect old pots, tires, and fencing for the war effort."
+      ],
+      rationCuts:{ meat:0.7, gasoline:0.5 }
+    },
+    { label:"Turn 4", date:"September 1942",
+      headlines:[
+        "A new round of the draft lottery is drawn in Washington.",
+        "Basic training camps expand across the South and Midwest.",
+        "Newsreels show fighting in the Pacific and North Africa."
+      ],
+      rationCuts:{ coffee:0.5 },
+      event: (S)=>({
+        title:"The Draft Lottery",
+        dateTag:"September 1942",
+        body:[
+          `${S.sonName}'s number is drawn early in this round's lottery. His notice will arrive within weeks unless something changes that.`,
+          "A cousin who works at the draft board mentions, carefully, that an essential-industry deferment could be arranged, on paper, if the family were willing to make it worth the board's while. It would keep him home. It would also be a lie."
+        ],
+        choices:[
+          { label:"Arrange the deferment", desc:"Spend $20. Your son stays home, whatever the war costs elsewhere.",
+            apply:(S)=>{ S.cash-=20; S.flags.exemptionPursued=true; S.sonStatus="exempted"; return `You arrange the deferment. ${S.sonName} will not be called.`; } },
+          { label:"Let him be called, like everyone else's son", desc:"No cost now. He reports when ordered, like the rest of his graduating class.",
+            apply:(S)=>{ S.flags.exemptionPursued=false; S.sonStatus="drafted"; S.trust=clamp(S.trust+3,0,100); return `You let the number stand. ${S.sonName} will report when called.`; } }
+        ]
+      })
+    },
+    { label:"Turn 5", date:"January 1943",
+      headlines:[
+        "“Rosie the Riveter” becomes a national symbol as women fill war-plant jobs by the millions.",
+        "Victory Gardens now supply a large share of the vegetables Americans eat.",
+        "Shoe rationing begins: three pairs per person, per year."
+      ],
+      event: (S)=>({
+        title:"A New Job, A New Garden",
+        dateTag:"January 1943",
+        body:[
+          `${S.spouseName} comes home with a job at the aircraft plant across town, riveting wing panels on a line that runs around the clock. It's loud, physical work nobody would have hired a woman to do two years ago, and it pays better than anything available otherwise.`,
+          "At the same time, the backyard is going over to a Victory Garden: tomatoes and beans where the lawn used to be, like millions of other households this year."
+        ],
+        choices:null,
+        onEnd:(S)=>{ S.spouseWorking=true; S.spouseEverWorked=true; S.morale=clamp(S.morale+5,0,100); S.needReduction.sugar=(S.needReduction.sugar||0)+1; S.needReduction.meat=(S.needReduction.meat||0)+1;
+          return `${S.spouseName} starts work at the aircraft plant, and your Victory Garden starts easing the strain on your sugar and meat rations.`; }
+      })
+    },
+    { label:"Turn 6", date:"June 1943",
+      headlines:[
+        "Defense contractors report record profits as war orders keep flowing.",
+        "A local plant owner is seen touring a new lakeside property.",
+        "Tires and gasoline grow scarcer as rubber shortages bite harder."
+      ],
+      rationCuts:{ gasoline:0.35 },
+      event: (S)=>({
+        title:"Who's Getting Rich",
+        dateTag:"June 1943",
+        body:[
+          "At the union hall, someone reads aloud from a newspaper story: the company running the plant across the river has posted its best profits in company history, three years running, on the strength of cost-plus government contracts. Its owner has just bought waterfront property outside town.",
+          "Meanwhile, your own gas ration barely covers getting to work and back. Someone suggests you say something about it, publicly, at the next town meeting."
+        ],
+        choices:[
+          { label:"Speak up at the town meeting", desc:"It might embarrass the wrong people, and wartime dissent isn't always welcomed the way you'd hope.",
+            apply:(S)=>{ if(chance(0.6)){ S.trust=clamp(S.trust+10,0,100); return "Neighbors nod along. It felt good to say out loud, and people are grateful someone did."; } else { S.trust=clamp(S.trust-6,0,100); return "A few neighbors mutter that you sound almost unpatriotic, questioning war production. It doesn't go the way you hoped."; } } },
+          { label:"Stay quiet and keep your head down", desc:"No risk, no reward. Everyone already suspects who's profiting, anyway.",
+            apply:(S)=>{ return "You say nothing. Life goes on, and so does the plant owner's good fortune."; } }
+        ]
+      })
+    },
+    { label:"Turn 7", date:"June 1944",
+      headlines:[
+        "Allied forces land at Normandy on D-Day.",
+        "Newsreels show the scale of the invasion; casualty figures follow slowly.",
+        "Ration books tighten further as the invasion effort consumes supplies."
+      ],
+      rationCuts:{ meat:0.5 },
+      event: (S)=>{
+        if(S.flags.exemptionPursued){
+          const caught = chance(0.3);
+          if(caught){
+            return {
+              title:"Word Gets Around",
+              dateTag:"June 1944",
+              body:[
+                `Someone at the draft board recognizes the pattern in your cousin's paperwork: two other families' sons deferred the same way, the same year. Nothing is proven, but the whispering starts, and it doesn't stop.`
+              ],
+              choices:null,
+              onEnd:(S)=>{ S.trust=clamp(S.trust-15,0,100); S.morale=clamp(S.morale-8,0,100); return "The town starts to talk. Your family's standing takes a real hit."; }
+            };
+          }
+          return {
+            title:"News From Normandy",
+            dateTag:"June 1944",
+            body:[
+              `${S.sonName} stays home while the newsreels show the invasion beaches and the casualty lists grow in the paper. You keep telling yourself it was the right call. Some nights, that's harder to believe than others.`
+            ],
+            choices:null,
+            onEnd:(S)=>{ return "Your household is spared the letters other families are receiving."; }
+          };
+        }
+        const roll = Math.random();
+        let outcome, text, hD=0, mD=0, tD=0;
+        if(roll < 0.65){ outcome="serving"; text=`A V-mail letter arrives from ${S.sonName}, photographed down to a tiny slip of film to save cargo space. He landed in France days after the initial invasion, and he's exhausted but whole. It's not much, but it's everything.`; mD=5; }
+        else if(roll < 0.90){ outcome="wounded"; text=`A telegram arrives before any letter does: ${S.sonName} was wounded in the fighting inland from the beaches and is recovering at a field hospital. He'll live, the telegram says. It doesn't say much else.`; hD=-6; mD=-10; }
+        else { outcome="killed"; text=`The telegram every family on the block dreads finally comes to your door. ${S.sonName} was killed in the fighting in Normandy. A gold star will hang in your window from now on.`; hD=-10; mD=-25; tD=5; }
+        return {
+          title: outcome==="serving" ? "A Letter From France" : "A Telegram",
+          dateTag:"June 1944",
+          body:[text],
+          choices:null,
+          onEnd:(S)=>{ S.sonStatus=outcome; S.health=clamp(S.health+hD,0,100); S.morale=clamp(S.morale+mD,0,100); S.trust=clamp(S.trust+tD,0,100);
+            return outcome==="serving" ? "Relief, for now." : (outcome==="wounded" ? "Your son is alive, but the war has marked him." : "Your household joins the list of Gold Star families."); }
+        };
+      }
+    },
+    { label:"Turn 8", date:"December 1944",
+      headlines:[
+        "Coffee and shoe rations tighten further as the war grinds on into its fourth year.",
+        "The Sixth War Loan Drive asks Americans for record bond purchases.",
+        "Home front fatigue is a common complaint in letters to the editor."
+      ],
+      rationCuts:{ coffee:0.3 },
+      bondDriveBonus:true
+    },
+    { label:"Turn 9", date:"May 1945",
+      headlines:[
+        "Germany surrenders unconditionally: V-E Day is declared in Europe.",
+        "Celebrations break out in the streets, tempered by news that the Pacific war continues.",
+        "Some rationed goods begin to ease as the European front closes."
+      ],
+      rationRelief:0.15,
+      event:(S)=>({
+        title:"V-E Day",
+        dateTag:"May 8, 1945",
+        body:["Church bells and car horns fill the street as word spreads that Germany has surrendered. It's real relief, but it's only half the war: the fighting in the Pacific goes on, and for many families, so does the waiting."],
+        choices:null,
+        onEnd:(S)=>{ S.morale=clamp(S.morale+8,0,100); return "Europe's war ends. Morale lifts, but the Pacific war isn't over yet."; }
+      })
+    },
+    { label:"Turn 10", date:"August 1945", isFinal:true,
+      headlines:[
+        "Japan surrenders after atomic bombs are dropped on Hiroshima and Nagasaki.",
+        "V-J Day celebrations erupt across the country.",
+        "Servicemembers are expected home over the coming months."
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   ENGINE STATE
+========================================================================= */
+let S = null;
+let turnChoices = {}; // {resourceId: 'without'|'fair'|'blackmarket'}
+let bondChoice = 0;
+let awaitingEventChain = [];
+
+function newFamilyStatusText(){
+  const c = S.campaign;
+  const sonLine = (()=>{
+    switch(S.sonStatus){
+      case "not-registered": return `Awaiting registration.`;
+      case "registered": return `Registered for the draft, not yet called.`;
+      case "exempted": return `Home, thanks to an arranged deferment.`;
+      case "drafted": return `Awaiting orders to report.`;
+      case "serving": return `Serving overseas.`;
+      case "wounded": return `Wounded, recovering; expected to survive.`;
+      case "killed": return `Killed in action.`;
+      case "returned": return `Home safe, the war behind him.`;
+      default: return `At home.`;
+    }
+  })();
+  const spouseLine = S.spouseWorking
+    ? `Working outside the home; household income is higher for it.`
+    : `Managing the household.`;
+  return { sonLine, spouseLine };
+}
+
+function initGame(campaignId, spouseName, sonName){
+  const campaign = CONFIG.CAMPAIGNS[campaignId];
+  S = {
+    campaign,
+    campaignId,
+    spouseName: spouseName || campaign.defaultSpouseName,
+    sonName: sonName || campaign.defaultSonName,
+    turnIndex: 0, // 0-based into campaign.turns
+    cash: CONFIG.START_STATS.cash,
+    health: CONFIG.START_STATS.health,
+    morale: CONFIG.START_STATS.morale,
+    trust: CONFIG.START_STATS.trust,
+    bonds: CONFIG.START_STATS.bonds,
+    rationMultiplier: {},
+    needReduction: {},
+    spouseWorking: false,
+    spouseEverWorked: false,
+    sonStatus: "not-registered",
+    flags: {},
+    blackMarketUses: 0,
+    caughtCount: 0,
+    log: [],
+    decisionLog: [], // for print summary
+    gameOver:false
+  };
+  campaign.resources.forEach(r=>{ S.rationMultiplier[r.id]=1; S.needReduction[r.id]=0; });
+  turnChoices = {};
+  bondChoice = 0;
+  renderTopbar();
+  renderFamilyPanel();
+  showScreen("screen-game");
+  beginTurn();
+}
+
+function addLog(text, cls){
+  S.log.push({turn:S.turnIndex+1, text, cls:cls||""});
+  renderLogFeed();
+}
+function addDecision(turnLabel, text){
+  S.decisionLog.push({turn:turnLabel, text});
+}
+
+/* =========================================================================
+   TURN FLOW
+========================================================================= */
+function beginTurn(){
+  const t = S.campaign.turns[S.turnIndex];
+  // apply persisting ration cuts
+  if(t.rationCuts){
+    Object.keys(t.rationCuts).forEach(rid=>{ S.rationMultiplier[rid] = t.rationCuts[rid]; });
+  }
+  if(t.rationRelief){
+    Object.keys(S.rationMultiplier).forEach(rid=>{ S.rationMultiplier[rid] = clamp(S.rationMultiplier[rid]+t.rationRelief,0,1); });
+  }
+  // seasonal need multiplier applies just this turn
+  S.campaign.resources.forEach(r=>{ r.seasonalMult = (t.seasonal && t.seasonal[r.id]) ? t.seasonal[r.id] : 1; });
+
+  openHerald(t);
+}
+
+function openHerald(t){
+  document.getElementById("heraldPaperName").textContent = S.campaign.paperName;
+  document.getElementById("heraldDate").textContent = t.date;
+  const body = document.getElementById("heraldBody");
+  body.innerHTML = t.headlines.map(h=>`<div class="headline-item">${h}</div>`).join("");
+  document.getElementById("heraldModal").classList.add("open");
+  document.getElementById("heraldContinueBtn").onclick = ()=>{
+    document.getElementById("heraldModal").classList.remove("open");
+    afterHerald(t);
+  };
+}
+
+function afterHerald(t){
+  if(t.isFinal){
+    runFinalSequence();
+    return;
+  }
+  if(t.event){
+    const ev = typeof t.event === "function" ? t.event(S) : t.event;
+    runEvent(ev, t, ()=>{ enterMainTurnUI(t); });
+  } else {
+    enterMainTurnUI(t);
+  }
+}
+
+function runEvent(ev, t, onDone){
+  document.getElementById("eventDateTag").textContent = ev.dateTag || t.date;
+  document.getElementById("eventTitle").textContent = ev.title;
+  document.getElementById("eventBody").innerHTML = ev.body.map(p=>`<p>${p}</p>`).join("");
+  const choicesEl = document.getElementById("eventChoices");
+  const continueBtn = document.getElementById("eventContinueBtn");
+  choicesEl.innerHTML = "";
+
+  function finish(resultText){
+    if(resultText) addLog(`${t.date}: ${resultText}`, "event");
+    if(resultText) addDecision(t.label + " (" + t.date + ")", resultText);
+    document.getElementById("eventModal").classList.remove("open");
+    onDone();
+  }
+
+  if(ev.choices && ev.choices.length){
+    continueBtn.style.display = "none";
+    ev.choices.forEach(choice=>{
+      const btn = document.createElement("button");
+      btn.className = "event-choice-btn";
+      btn.innerHTML = `<span class="lbl">${choice.label}</span><span class="dsc">${choice.desc}</span>`;
+      btn.onclick = ()=>{
+        const resultText = choice.apply(S);
+        let extra = "";
+        if(ev.onEnd) extra = ev.onEnd(S);
+        renderTopbar(); renderFamilyPanel();
+        finish([resultText, extra].filter(Boolean).join(" "));
+      };
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    continueBtn.style.display = "block";
+    continueBtn.onclick = ()=>{
+      let resultText = "";
+      if(ev.onEnd) resultText = ev.onEnd(S);
+      renderTopbar(); renderFamilyPanel();
+      finish(resultText);
+    };
+  }
+  document.getElementById("eventModal").classList.add("open");
+}
+
+function enterMainTurnUI(t){
+  turnChoices = {};
+  bondChoice = 0;
+  renderRationGrid(t);
+  renderBondsPanel(t);
+  renderTopbar();
+  renderFamilyPanel();
+  updateEndTurnEnabled();
+}
+
+function updateEndTurnEnabled(){
+  const t = S.campaign.turns[S.turnIndex];
+  const allChosen = S.campaign.resources.every(r=> turnChoices[r.id]);
+  document.getElementById("endTurnBtn").disabled = !allChosen;
+}
+
+/* =========================================================================
+   RATION GRID
+========================================================================= */
+function renderRationGrid(t){
+  const grid = document.getElementById("rationGrid");
+  grid.innerHTML = "";
+  S.campaign.resources.forEach(res=>{
+    const need = Math.max(0, res.baseNeed*(res.seasonalMult||1) - (S.needReduction[res.id]||0));
+    const card = document.createElement("div");
+    card.className = "ration-card";
+    const opts = [
+      { key:"without", label:"Go Without" },
+      { key:"fair", label:"Ration Fairly" },
+      { key:"blackmarket", label:"Black Market" }
+    ];
+    card.innerHTML = `
+      <div class="ration-top">
+        <div class="ration-name"><span class="ic">${res.icon}</span>${res.name}</div>
+      </div>
+      <div class="ration-need">Household needs ~${need.toFixed(1)} units this turn</div>
+      <div class="ration-actions" data-res="${res.id}"></div>
+    `;
+    const actionsEl = card.querySelector(".ration-actions");
+    opts.forEach(o=>{
+      const est = computeRationOption(res, o.key, S);
+      const btn = document.createElement("button");
+      btn.className = "rat-btn" + (o.key==="blackmarket" ? " blackmarket" : "");
+      btn.dataset.key = o.key;
+      const costTxt = est.cost>0 ? money(est.cost) : "Free";
+      btn.innerHTML = `<span>${o.label}</span><small>${costTxt}</small>`;
+      btn.onclick = ()=>{
+        turnChoices[res.id] = o.key;
+        actionsEl.querySelectorAll(".rat-btn").forEach(b=>b.classList.remove("chosen"));
+        btn.classList.add("chosen");
+        updateEndTurnEnabled();
+      };
+      actionsEl.appendChild(btn);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function renderBondsPanel(t){
+  const wrap = document.getElementById("bondsTiers");
+  wrap.innerHTML = "";
+  const tiers = [0,5,10,25];
+  tiers.forEach(amt=>{
+    const btn = document.createElement("button");
+    btn.className = "bond-btn" + (amt===0 ? " chosen" : "");
+    btn.textContent = amt===0 ? "Skip This Turn" : ("$" + amt + (t.bondDriveBonus ? " (Bond Drive: double credit)" : ""));
+    btn.onclick = ()=>{
+      bondChoice = amt;
+      wrap.querySelectorAll(".bond-btn").forEach(b=>b.classList.remove("chosen"));
+      btn.classList.add("chosen");
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* =========================================================================
+   RESOLVE TURN
+========================================================================= */
+function resolveTurn(){
+  const t = S.campaign.turns[S.turnIndex];
+  let turnSummary = [];
+  let caughtEvents = [];
+
+  S.campaign.resources.forEach(res=>{
+    const choiceKey = turnChoices[res.id];
+    const est = computeRationOption(res, choiceKey, S);
+    S.cash -= est.cost;
+    S.health = clamp(S.health + est.healthD, 0, 100);
+    S.morale = clamp(S.morale + est.moraleD, 0, 100);
+    S.trust = clamp(S.trust + est.trustD, 0, 100);
+    if(choiceKey === "blackmarket"){
+      S.blackMarketUses++;
+      if(chance(est.caughtRisk)){
+        const fine = Math.round(est.cost*0.5);
+        S.cash -= fine;
+        S.trust = clamp(S.trust-8,0,100);
+        S.morale = clamp(S.morale-5,0,100);
+        S.caughtCount++;
+        caughtEvents.push(`Caught buying ${res.name.toLowerCase()} on the black market. Fined ${money(fine)}, and word gets around.`);
+      }
+    }
+    const label = choiceKey==="without" ? "went without" : (choiceKey==="fair" ? "rationed fairly" : "bought on the black market");
+    turnSummary.push(`${res.name}: ${label}`);
+  });
+
+  // income
+  let income = S.campaign.incomeBase + rand(-S.campaign.incomeVariance, S.campaign.incomeVariance);
+  if(S.spouseWorking) income += S.campaign.spouseWorkBonus;
+  income = Math.round(income);
+  S.cash += income;
+
+  // bonds
+  if(bondChoice > 0){
+    const mult = t.bondDriveBonus ? 2 : 1;
+    S.cash -= bondChoice;
+    S.bonds += bondChoice;
+    S.trust = clamp(S.trust + (bondChoice/5)*mult, 0, 100);
+    S.morale = clamp(S.morale + (bondChoice/10)*mult, 0, 100);
+    turnSummary.push(`bought ${money(bondChoice)} in war bonds`);
+  }
+
+  S.cash = Math.max(0, Math.round(S.cash));
+
+  addLog(`${t.date}: Income ${money(income)}. ${turnSummary.join("; ")}.`, "");
+  addDecision(t.label + " (" + t.date + ")", `Ration choices: ${turnSummary.join("; ")}.`);
+  caughtEvents.forEach(txt=>{ addLog(`${t.date}: ${txt}`, "bad"); addDecision(t.label + " (" + t.date + ")", txt); });
+
+  renderTopbar();
+
+  if(caughtEvents.length){
+    showCaughtModal(caughtEvents, ()=>advanceTurn());
+  } else {
+    advanceTurn();
+  }
+}
+
+function showCaughtModal(events, onDone){
+  document.getElementById("caughtText").textContent = events.join(" ");
+  document.getElementById("caughtModal").classList.add("open");
+  document.getElementById("caughtContinueBtn").onclick = ()=>{
+    document.getElementById("caughtModal").classList.remove("open");
+    onDone();
+  };
+}
+
+function advanceTurn(){
+  S.turnIndex++;
+  if(S.turnIndex >= S.campaign.turns.length){
+    finishGame();
+    return;
+  }
+  beginTurn();
+}
+
+/* =========================================================================
+   FINAL TURN SEQUENCE (war ends)
+========================================================================= */
+function runFinalSequence(){
+  const t = S.campaign.turns[S.turnIndex];
+  const chain = [];
+
+  chain.push({
+    title: S.campaignId==="wwi" ? "The Armistice" : "V-J Day",
+    dateTag: t.date,
+    body:[ S.campaignId==="wwi"
+      ? "Church bells ring across the country as word spreads: the guns have fallen silent in Europe. After nineteen months of rationing, war bonds, and waiting for the mail, the fighting is over."
+      : "Crowds fill the streets as word spreads that Japan has surrendered. After nearly four years of ration books, scrap drives, and letters from the front, the fighting is finally, entirely over." ],
+    choices:null,
+    onEnd:()=>""
+  });
+
+  // son resolution
+  if(S.sonStatus === "serving" || S.sonStatus === "wounded"){
+    chain.push({
+      title:"Coming Home",
+      dateTag:t.date,
+      body:[ S.sonStatus==="wounded"
+        ? `${S.sonName} comes home carrying the war with him: the wound has healed, but not everything about him has. He's alive, and that is not nothing.`
+        : `${S.sonName} comes home. The war is over for him, and for you, though it will take time before it feels that way.` ],
+      choices:null,
+      onEnd:(S)=>{ S.sonStatus="returned"; S.morale=clamp(S.morale+10,0,100); return ""; }
+    });
+  } else if(S.sonStatus === "exempted"){
+    chain.push({
+      title:"A Quiet Homecoming, of a Kind",
+      dateTag:t.date,
+      body:[`${S.sonName} was never sent, and the war ends with him exactly where he's always been: at home. Whether that was mercy or something else is a question you'll be answering for yourself for a long time.`],
+      choices:null, onEnd:()=>""
+    });
+  } else if(S.sonStatus === "killed"){
+    chain.push({
+      title:"An Empty Chair",
+      dateTag:t.date,
+      body:[`The war ends, and ${S.sonName} does not come home to see it. The gold star in your window stays there.`],
+      choices:null, onEnd:()=>""
+    });
+  }
+
+  // spouse resolution
+  if(S.spouseWorking){
+    chain.push({
+      title:"The Job Ends",
+      dateTag:t.date,
+      body:[`With the war over, ${S.spouseName} is let go from the plant within weeks, the job handed to a returning veteran, as the government and most employers made clear it always would be. It's not really a surprise. It doesn't make it sting less.`],
+      choices:null,
+      onEnd:(S)=>{ S.spouseWorking=false; S.morale=clamp(S.morale-3,0,100); return ""; }
+    });
+  }
+
+  // run the chain sequentially
+  function runNext(){
+    if(chain.length === 0){ finishGame(); return; }
+    const ev = chain.shift();
+    runEvent(ev, t, runNext);
+  }
+  runNext();
+}
+
+/* =========================================================================
+   RENDER: TOPBAR / FAMILY
+========================================================================= */
+function renderTopbar(){
+  const t = S.campaign.turns[S.turnIndex];
+  document.getElementById("campaignLabel").textContent = S.campaign.name.toUpperCase() + " HOMEFRONT";
+  document.getElementById("turnDateLabel").textContent = t ? t.date : "War's End";
+  document.getElementById("statTurn").textContent = (S.turnIndex+1) + "/" + S.campaign.turns.length;
+  document.getElementById("statCash").textContent = money(S.cash);
+  document.getElementById("statHealth").textContent = Math.round(S.health);
+  document.getElementById("statMorale").textContent = Math.round(S.morale);
+  document.getElementById("statTrust").textContent = Math.round(S.trust);
+  document.getElementById("statBonds").textContent = money(S.bonds);
+}
+
+function renderFamilyPanel(){
+  const { sonLine, spouseLine } = newFamilyStatusText();
+  const panel = document.getElementById("familyPanel");
+  panel.innerHTML = `
+    <div class="family-card"><div class="who">${S.spouseName} (spouse)</div><div class="status">${spouseLine}</div></div>
+    <div class="family-card"><div class="who">${S.sonName} (son, draft age)</div><div class="status">${sonLine}</div></div>
+  `;
+}
+
+function renderLogFeed(){
+  const feed = document.getElementById("logFeed");
+  feed.innerHTML = S.log.slice().reverse().map(l=>
+    `<div class="log-entry ${l.cls}"><span class="trn">T${l.turn}</span>${l.text}</div>`
+  ).join("");
+}
+
+/* =========================================================================
+   END SCREEN
+========================================================================= */
+function computeRank(){
+  if(S.caughtCount >= 2 || S.blackMarketUses >= 5){
+    return { title:"The Profiteer", note:"Your household got by, but the community noticed exactly how." };
+  }
+  const avg = (S.health + S.morale + S.trust) / 3;
+  if(avg < 40) return { title:"Homefront in Ruins", note:"The war asked more of your household than it could give." };
+  if(avg < 60) return { title:"Just Scraping By", note:"Your household made it through, bruised but standing." };
+  if(avg < 80) return { title:"Steadfast at Home", note:"Your household carried its share of the war's weight without breaking." };
+  return { title:"Pillar of the Homefront", note:"Few households balanced sacrifice and survival as well as yours." };
+}
+
+function finishGame(){
+  S.gameOver = true;
+  const rank = computeRank();
+  document.getElementById("endHeadline").textContent = rank.title;
+  document.getElementById("endRank").textContent = rank.note;
+
+  const statsTable = document.getElementById("endStatsTable");
+  statsTable.innerHTML = [
+    ["Cash on hand", money(S.cash)],
+    ["Health", Math.round(S.health)],
+    ["Morale", Math.round(S.morale)],
+    ["Community Trust", Math.round(S.trust)],
+    ["War Bonds Purchased", money(S.bonds)],
+    ["Black Market Purchases", S.blackMarketUses],
+    ["Times Caught", S.caughtCount]
+  ].map(row=>`<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`).join("");
+
+  const sonNote = (()=>{
+    switch(S.sonStatus){
+      case "returned": return `${S.sonName} came home when the war ended.`;
+      case "exempted": return `${S.sonName} was never called; he stayed home the whole war.`;
+      case "killed": return `${S.sonName} was killed in action and never came home.`;
+      default: return `${S.sonName}'s story continued past the final turn.`;
+    }
+  })();
+  const spouseNote = S.spouseEverWorked
+    ? `${S.spouseName} took on new work during the war, then lost that job when the war ended and veterans returned.`
+    : `${S.spouseName} kept the household running throughout the war.`;
+  document.getElementById("endFamilyNote").textContent = sonNote + " " + spouseNote;
+
+  document.getElementById("historyNote").innerHTML = `
+    <b>Why this matters:</b> Rationing, the draft, the black market, and women entering war industries weren't background details of these wars, they were the war for most Americans. Historians estimate roughly 6 million American women entered the workforce during World War II alone, and both wars saw defense contractors post record profits even as households went without sugar and gasoline. Your printed record below turns your choices into discussion material: what would you do differently, and why?
+  `;
+
+  buildPrintArea(rank);
+  showScreen("screen-end");
+}
+
+function buildPrintArea(rank){
+  const area = document.getElementById("printArea");
+  const decisions = S.decisionLog.map(d=>`<li><b>${d.turn}:</b> ${d.text}</li>`).join("");
+  const reflections = CONFIG.REFLECTION_QUESTIONS.map(q=>`<li>${q}</li>`).join("");
+  area.innerHTML = `
+    <h1>Ration Book: Homefront Record</h1>
+    <div class="meta">${S.campaign.name} (${S.campaign.years}) — Household of ${S.spouseName} and ${S.sonName} — Final result: ${rank.title}</div>
+    <h2>Final Household Stats</h2>
+    <table>
+      <tr><td>Cash on hand</td><td>${money(S.cash)}</td></tr>
+      <tr><td>Health</td><td>${Math.round(S.health)}</td></tr>
+      <tr><td>Morale</td><td>${Math.round(S.morale)}</td></tr>
+      <tr><td>Community Trust</td><td>${Math.round(S.trust)}</td></tr>
+      <tr><td>War Bonds Purchased</td><td>${money(S.bonds)}</td></tr>
+      <tr><td>Black Market Purchases</td><td>${S.blackMarketUses}</td></tr>
+      <tr><td>Times Caught</td><td>${S.caughtCount}</td></tr>
+    </table>
+    <h2>Turn-by-Turn Decisions</h2>
+    <ol>${decisions}</ol>
+    <h2>Reflection Questions</h2>
+    <ol class="refl">${reflections}</ol>
+  `;
+}
+
+/* =========================================================================
+   SCREEN NAVIGATION / SETUP
+========================================================================= */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function renderCampaignGrid(){
+  const grid = document.getElementById("campaignGrid");
+  grid.innerHTML = "";
+  Object.values(CONFIG.CAMPAIGNS).forEach(c=>{
+    const card = document.createElement("div");
+    card.className = "campaign-card";
+    card.innerHTML = `
+      <span class="tag">${c.tag}</span>
+      <h3>${c.name}</h3>
+      <div style="font-family:var(--font-display); font-size:11px; color:#6b5f45;">${c.years}</div>
+      <p>${c.blurb}</p>
+      <ul>${c.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+      <button data-cid="${c.id}">Run This Household →</button>
+    `;
+    card.querySelector("button").onclick = ()=> goToSetup(c.id);
+    grid.appendChild(card);
+  });
+}
+
+let pendingCampaignId = null;
+function goToSetup(campaignId){
+  pendingCampaignId = campaignId;
+  const c = CONFIG.CAMPAIGNS[campaignId];
+  document.getElementById("setupEyebrow").textContent = c.name + " · " + c.years;
+  document.getElementById("setupBlurb").textContent = c.setupBlurb;
+  document.getElementById("setupNote").textContent = c.setupNote;
+  document.getElementById("spouseNameInput").value = c.defaultSpouseName;
+  document.getElementById("sonNameInput").value = c.defaultSonName;
+  showScreen("screen-setup");
+}
+
+/* =========================================================================
+   WIRE UP UI
+========================================================================= */
+document.getElementById("instructionsContinueBtn").onclick = ()=>{
+  renderCampaignGrid();
+  showScreen("screen-campaign");
+};
+document.getElementById("reviewInstructionsBtn").onclick = ()=> showScreen("screen-instructions");
+document.getElementById("startGameBtn").onclick = ()=>{
+  const spouseName = document.getElementById("spouseNameInput").value.trim() || CONFIG.CAMPAIGNS[pendingCampaignId].defaultSpouseName;
+  const sonName = document.getElementById("sonNameInput").value.trim() || CONFIG.CAMPAIGNS[pendingCampaignId].defaultSonName;
+  initGame(pendingCampaignId, spouseName, sonName);
+};
+document.getElementById("endTurnBtn").onclick = ()=>{
+  if(document.getElementById("endTurnBtn").disabled) return;
+  resolveTurn();
+};
+document.getElementById("printBtn").onclick = ()=> window.print();
+document.getElementById("newCampaignBtn").onclick = ()=>{
+  renderCampaignGrid();
+  showScreen("screen-campaign");
+};
+document.getElementById("replayBtn").onclick = ()=>{
+  initGame(S.campaignId, S.spouseName, S.sonName);
+};
+
+})();
+</script>
+</body>
+</html>
