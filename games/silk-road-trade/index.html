@@ -16,6 +16,7 @@
   --jade:#3f7d63; --jade2:#2e5c48;
   --ink:#2a1d10; --ink-soft:#5a4a36;
   --line:rgba(42,29,16,0.14);
+  --map-sea:#cfe2df; --map-land:#ddc98a; --map-land-edge:#8a6d3b;
 }
 *{box-sizing:border-box;}
 body{
@@ -175,14 +176,22 @@ a{color:var(--terra);}
 
 /* ══ MAP ══ */
 .map-panel{ padding:16px; }
+.trade-banner{
+  background:var(--night); color:#f2e9d8; border-radius:10px; padding:9px 14px;
+  font-size:13px; font-weight:600; margin-bottom:10px; text-align:center;
+}
+.trade-banner.warn{ background:var(--terra2); }
 #map-container{
-  position:relative; width:100%; aspect-ratio:16/9; background:
-    radial-gradient(ellipse at 15% 70%, rgba(181,80,47,0.13), transparent 55%),
-    radial-gradient(ellipse at 80% 25%, rgba(63,125,99,0.13), transparent 55%),
-    var(--sand-dark);
+  position:relative; width:100%; aspect-ratio:16/9;
+  background:var(--map-sea);
   border-radius:12px; border:1px solid var(--line); overflow:hidden;
   min-height:320px;
 }
+#map-world{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+#map-world .land{ fill:var(--map-land); stroke:var(--map-land-edge); stroke-width:0.6; stroke-linejoin:round; }
+#map-world .grat{ stroke:rgba(42,29,16,0.08); stroke-width:0.25; fill:none; }
+#map-world .sea-label{ font-family:'Cinzel',serif; font-size:3px; fill:var(--ink-soft); opacity:.55; letter-spacing:.5px; }
+#map-world .route-static{ stroke:rgba(42,29,16,0.22); stroke-width:0.5; stroke-dasharray:1 1.6; fill:none; }
 #map-lines{ position:absolute; inset:0; width:100%; height:100%; }
 .map-node{
   position:absolute; transform:translate(-50%,-50%); text-align:center;
@@ -195,12 +204,22 @@ a{color:var(--terra);}
 }
 .map-node:hover .node-circle{ transform:scale(1.08); }
 .map-node.player .node-circle{ border-color:var(--terra); box-shadow:0 0 0 4px rgba(181,80,47,0.25); }
-.map-node.disabled{ cursor:not-allowed; opacity:.55; }
+.map-node.disabled{ cursor:not-allowed; opacity:.5; }
+.map-node.disabled .node-circle{ filter:grayscale(70%); }
 .map-node .node-label{
   font-size:11.5px; font-weight:800; color:var(--night); margin-top:4px;
   text-shadow:0 1px 0 #fff9ec;
 }
 .map-node .node-sub{ font-size:9.5px; color:var(--ink-soft); }
+.map-node.locked .node-sub{ color:var(--terra2); font-weight:700; }
+
+/* ══ MISSING GOODS ══ */
+.missing-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.missing-chip{
+  background:var(--sand-dark); border:1px dashed var(--ink-soft); border-radius:8px;
+  padding:4px 8px; font-size:12.5px; opacity:.8;
+}
+.missing-empty{ font-size:12.5px; color:var(--jade2); font-weight:700; }
 
 /* ══ TRADE MODAL ══ */
 .trade-cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0; }
@@ -306,6 +325,11 @@ a{color:var(--terra);}
       <div class="sidebar">
         <div class="panel" id="player-panel"></div>
         <div class="panel">
+          <h3 style="margin-top:0">❓ Goods You're Missing</h3>
+          <p style="font-size:12px;color:var(--ink-soft);margin:0 0 4px">This shows what you still need, not who has it.</p>
+          <div id="missing-goods-panel"></div>
+        </div>
+        <div class="panel">
           <h3 style="margin-top:0">🏆 Achievements</h3>
           <div id="achievements-panel"></div>
         </div>
@@ -325,8 +349,10 @@ a{color:var(--terra);}
         </div>
         <div class="panel map-panel">
           <p style="margin-bottom:10px;font-size:13.5px;color:var(--ink-soft)">Click a region on the map to open trade talks. Your region is marked in gold.</p>
+          <div id="trade-banner" class="trade-banner"></div>
           <div id="map-container">
-            <svg id="map-lines"></svg>
+            <svg id="map-world" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <svg id="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
           </div>
         </div>
       </div>
@@ -515,7 +541,7 @@ const GOODS = {
 
 const REGIONS = {
   china:{
-    name:"Han China", emoji:"🏯", x:80, y:28,
+    name:"Han China", emoji:"🏯", x:82, y:30,
     adjacent:["steppe","india"],
     blurb:"The Han Empire sits at the eastern end of the Silk Road. Its workers guard the secret of making silk, and traders everywhere want it.",
     homeGoods:["silk","paper","tea"],
@@ -525,7 +551,7 @@ const REGIONS = {
       check:s=>regionsGivenGood(s,"silk").length>=4 }
   },
   steppe:{
-    name:"Steppe Nomads", emoji:"⛺", x:52, y:14,
+    name:"Steppe Nomads", emoji:"⛺", x:54, y:16,
     adjacent:["china","persia","india"],
     blurb:"Nomadic herders roam the grasslands of Central Asia. They raise the finest horses in the world and know the safest paths across the mountains.",
     homeGoods:["horses","wool","jade"],
@@ -535,7 +561,7 @@ const REGIONS = {
       check:s=>regionsGivenGood(s,"horses").length>=4 && hasOriginGood(s,"china") && hasOriginGood(s,"mediterranean") }
   },
   india:{
-    name:"India", emoji:"🕌", x:50, y:60,
+    name:"India", emoji:"🕌", x:48, y:58,
     adjacent:["china","steppe","persia","africa"],
     blurb:"Coastal kingdoms of South Asia grow rare spices and cotton. Ships on the Indian Ocean carry these goods to ports on every side of the sea.",
     homeGoods:["cotton","spices","gems"],
@@ -545,7 +571,7 @@ const REGIONS = {
       check:s=>regionsGivenAnyGood(s,["spices","cotton"]).length>=4 }
   },
   persia:{
-    name:"Persia &amp; Arabia", emoji:"🏺", x:30, y:40,
+    name:"Persia &amp; Arabia", emoji:"🏺", x:32, y:42,
     adjacent:["steppe","india","mediterranean","africa"],
     blurb:"The Persian and Arab lands sit at the crossroads of the Silk Road. Nearly every trade route in the network passes through here.",
     homeGoods:["glass","carpets","dates"],
@@ -555,7 +581,7 @@ const REGIONS = {
       check:s=>uniqueTradePartners(s).length>=5 }
   },
   mediterranean:{
-    name:"Rome &amp; Byzantium", emoji:"🏛️", x:8, y:36,
+    name:"Rome &amp; Byzantium", emoji:"🏛️", x:9, y:28,
     adjacent:["persia","africa"],
     blurb:"Rome and Byzantium sit at the far western edge of the network. Their wealthy citizens pay high prices for goods from the distant East.",
     homeGoods:["olive_oil","wine","gold_coins"],
@@ -565,7 +591,7 @@ const REGIONS = {
       check:s=>s.inventory.silk>0 && s.inventory.spices>0 && s.inventory.paper>0 && s.inventory.gold_coins>=5 }
   },
   africa:{
-    name:"Aksum (East Africa)", emoji:"🌍", x:16, y:66,
+    name:"Aksum (East Africa)", emoji:"🌍", x:18, y:72,
     adjacent:["persia","india","mediterranean"],
     blurb:"The kingdom of Aksum controls Red Sea trade. Gold, ivory, and incense flow north and east from its busy ports.",
     homeGoods:["gold","ivory","incense"],
@@ -578,14 +604,34 @@ const REGIONS = {
 
 const REGION_ORDER = ["china","steppe","india","persia","mediterranean","africa"];
 
-const EVENTS = [
-  { season:1, title:"The Routes Open", body:"Word spreads that the roads are safe this season. Caravans from every region are setting out. This is a good time to make your first offers." },
-  { season:2, title:"Papermaking Spreads West", body:"Chinese papermakers' secrets are slipping west along the trade routes, an example of technology diffusion. Any region that trades Paper this season earns a bonus Cooperation Point." },
-  { season:3, title:"Pilgrims and Monks on the Road", body:"Religious travelers move along the Silk Road alongside merchants, carrying beliefs and stories as far as their goods. This is cultural diffusion in action, ideas moving as freely as commodities." },
-  { season:4, title:"New Roads Open Through the Steppe", body:"Safer mountain passes have been found. Distant trades (with non-adjacent regions) are a little easier to complete this season." },
-  { season:5, title:"A Good Harvest", body:"Every region produces one extra unit of each of its home goods this season." },
-  { season:6, title:"The Final Caravans", body:"This is the last trading season. Make your best offers, then see how connected your network has become." }
-];
+const EVENTS = {
+  1: { title:"The Routes Open", body:"Long-distance routes have not been secured yet. This season, you can only reach your two closest neighbors. Start close to home." },
+  2: { title:"Papermaking Spreads West", body:"Chinese papermakers' secrets are slipping west along the trade routes, an example of technology diffusion. Trading Paper this season earns a bonus Cooperation Point. Scouts have also found two more safe routes: you can now reach four of the five other regions." },
+  3: { title:"The Network Fully Opens", body:"Every route in the network is open. You can now trade with any region, near or far, though distant deals still take a better offer. Religious travelers move along the roads too, carrying beliefs and stories as freely as goods, a reminder that cultural diffusion travels the same paths as commodities." },
+  6: { title:"The Final Caravans", body:"This is the last trading season. Every route is open again. Make your best offers, then see how connected your network has become." }
+};
+
+function buildRegimeChangeEvent(){
+  const rid = state.regimeChangeRegion;
+  const isPlayer = rid === state.playerRegion;
+  return {
+    title:"⚠ Regime Change",
+    body: isPlayer
+      ? `Political upheaval has broken out in your own homeland. ${REGIONS[rid].name} is closed to all trade this season, so you cannot trade with anyone until it passes.`
+      : `Political upheaval has broken out in ${REGIONS[rid].name}. The new rulers have closed their borders. No one can trade with ${REGIONS[rid].name} this season.`
+  };
+}
+
+function buildDiseaseEvent(){
+  const rid = state.diseaseRegion;
+  const isPlayer = rid === state.playerRegion;
+  return {
+    title:"☠ Disease Outbreak",
+    body: isPlayer
+      ? `An outbreak has struck your own homeland. ${REGIONS[rid].name} is closed to all trade this season, so you cannot trade with anyone until it passes.`
+      : `An outbreak has struck ${REGIONS[rid].name}. Fearing the sickness will spread, no one can trade with ${REGIONS[rid].name} this season.`
+  };
+}
 
 // ══════════════════════════════════════════════════════════════
 //  STATE
@@ -617,8 +663,37 @@ function freshState(playerRegionId){
     tradeLog: [],
     cooperationPoints: 0,
     earnedAchievements: {},
-    eventLog: []
+    eventLog: [],
+    regimeChangeRegion: null,
+    diseaseRegion: null
   };
+}
+
+// ── geography / trade-access helper functions ──
+function regionDistance(a, b){
+  const dx = REGIONS[a].x - REGIONS[b].x, dy = REGIONS[a].y - REGIONS[b].y;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+function closenessOrder(regionId){
+  return REGION_ORDER.filter(r=>r!==regionId).sort((a,b)=>regionDistance(regionId,a)-regionDistance(regionId,b));
+}
+function tradableRegionsThisSeason(){
+  const player = state.playerRegion;
+  if((state.season===4 && state.regimeChangeRegion===player) || (state.season===5 && state.diseaseRegion===player)){
+    return new Set();
+  }
+  let allowed;
+  if(state.season===1) allowed = closenessOrder(player).slice(0,2);
+  else if(state.season===2) allowed = closenessOrder(player).slice(0,4);
+  else allowed = REGION_ORDER.filter(r=>r!==player);
+
+  if(state.season===4 && state.regimeChangeRegion) allowed = allowed.filter(r=>r!==state.regimeChangeRegion);
+  if(state.season===5 && state.diseaseRegion) allowed = allowed.filter(r=>r!==state.diseaseRegion);
+  return new Set(allowed);
+}
+function playerLockedOutThisSeason(){
+  return (state.season===4 && state.regimeChangeRegion===state.playerRegion) ||
+         (state.season===5 && state.diseaseRegion===state.playerRegion);
 }
 
 // ── achievement helper functions ──
@@ -744,7 +819,7 @@ function startGame(){
   state = freshState(selectedRegion);
   goToScreen('screen-game');
   renderGameScreen();
-  showEvent(EVENTS[0]);
+  showEvent(EVENTS[1]);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -753,10 +828,23 @@ function startGame(){
 
 function renderGameScreen(){
   renderPlayerPanel();
+  renderMissingGoodsPanel();
   renderAchievementsPanel();
   renderLogPanel();
   renderSeasonBar();
   renderMap();
+}
+
+function renderMissingGoodsPanel(){
+  const missing = Object.keys(GOODS).filter(g=>state.inventory[g]===0);
+  const wrap = document.getElementById('missing-goods-panel');
+  if(missing.length===0){
+    wrap.innerHTML = '<div class="missing-empty">You have collected every good in the network!</div>';
+    return;
+  }
+  wrap.innerHTML = `<div class="missing-list">${missing.map(g=>
+    `<div class="missing-chip">${GOODS[g].emoji} ${GOODS[g].name}</div>`
+  ).join('')}</div>`;
 }
 
 function renderPlayerPanel(){
@@ -813,39 +901,104 @@ function renderSeasonBar(){
     d.className = 'season-dot' + (i<state.season?' done':'') + (i===state.season?' current':'');
     dots.appendChild(d);
   }
+
+  const banner = document.getElementById('trade-banner');
+  const tradable = tradableRegionsThisSeason();
+  let msg = '', warn = false;
+  if(playerLockedOutThisSeason()){
+    msg = state.season===4 ? `⚠ Regime change at home! You cannot trade with anyone this season.` : `☠ Outbreak at home! You cannot trade with anyone this season.`;
+    warn = true;
+  } else if(state.season===1){
+    msg = `🗺 You can only reach your 2 closest neighbors this season.`;
+  } else if(state.season===2){
+    msg = `🗺 New routes are open. You can now reach 4 of the 5 other regions.`;
+  } else if(state.season===4 && state.regimeChangeRegion){
+    msg = `⚠ Regime change has closed ${REGIONS[state.regimeChangeRegion].name} to all trade this season.`;
+    warn = true;
+  } else if(state.season===5 && state.diseaseRegion){
+    msg = `☠ A disease outbreak has closed ${REGIONS[state.diseaseRegion].name} to all trade this season.`;
+    warn = true;
+  } else {
+    msg = `🗺 Every route is open. You can trade with any region.`;
+  }
+  banner.textContent = msg;
+  banner.className = 'trade-banner' + (warn ? ' warn' : '');
+}
+
+// Simplified Afro-Eurasia landmass, hand-drawn in a 0-100 x 0-100 coordinate
+// space so it lines up with the region nodes (which use the same % system).
+const WORLD_LAND_PATH = "M6,3 L42,0 L64,3 L100,9 L100,46 L87,57 L74,52 L65,63 L56,80 L46,78 L40,63 L34,50 L40,44 L30,39 L21,50 L21,67 L26,85 L13,97 L1,88 L0,58 L9,47 L17,35 L9,29 L18,23 L9,13 Z";
+
+let mapWorldDrawn = false;
+function drawMapWorld(){
+  if(mapWorldDrawn) return;
+  mapWorldDrawn = true;
+  const svg = document.getElementById('map-world');
+  let html = `<path class="land" d="${WORLD_LAND_PATH}"></path>`;
+  // faint latitude/longitude style graticule
+  for(let gx=10; gx<100; gx+=15){ html += `<line class="grat" x1="${gx}" y1="0" x2="${gx}" y2="100"></line>`; }
+  for(let gy=10; gy<100; gy+=15){ html += `<line class="grat" x1="0" y1="${gy}" x2="100" y2="${gy}"></line>`; }
+  // sea labels
+  html += `<text class="sea-label" x="1" y="26" text-anchor="start" font-size="2">Mediterranean Sea</text>`;
+  html += `<text class="sea-label" x="26" y="45" text-anchor="middle">Red Sea</text>`;
+  html += `<text class="sea-label" x="45" y="93" text-anchor="middle">Indian Ocean</text>`;
+  // faint static lines showing the real geographic network, beneath the dynamic gold trade lines
+  REGION_ORDER.forEach(rid=>{
+    REGIONS[rid].adjacent.forEach(otherId=>{
+      if(rid < otherId){
+        const a = REGIONS[rid], b = REGIONS[otherId];
+        html += `<line class="route-static" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"></line>`;
+      }
+    });
+  });
+  svg.innerHTML = html;
 }
 
 function renderMap(){
+  drawMapWorld();
   const container = document.getElementById('map-container');
   container.querySelectorAll('.map-node').forEach(n=>n.remove());
   const svg = document.getElementById('map-lines');
   svg.innerHTML = '';
 
+  const tradable = tradableRegionsThisSeason();
+
   REGION_ORDER.forEach(rid=>{
     const r = REGIONS[rid];
     const isPlayer = rid===state.playerRegion;
+    const isTradable = tradable.has(rid);
+    const locked = !isPlayer && !isTradable;
+    const disabled = isPlayer || locked || state.actionsLeft<=0;
     const node = document.createElement('div');
-    const disabled = isPlayer || state.actionsLeft<=0;
-    node.className = 'map-node' + (isPlayer?' player':'') + (disabled && !isPlayer?' disabled':'');
+    node.className = 'map-node' + (isPlayer?' player':'') + (disabled && !isPlayer?' disabled':'') + (locked?' locked':'');
     node.style.left = r.x+'%';
     node.style.top = r.y+'%';
-    node.innerHTML = `<div class="node-circle">${r.emoji}</div><div class="node-label">${r.name}</div><div class="node-sub">${isPlayer?'Your Region':(tradedWith(state,rid)?'Trading Partner':'Not yet traded')}</div>`;
-    if(!isPlayer){ node.onclick = ()=>{ if(state.actionsLeft>0) openTrade(rid); }; }
+    node.innerHTML = `<div class="node-circle">${r.emoji}</div><div class="node-label">${r.name}</div><div class="node-sub">${nodeSubText(rid, isPlayer, locked)}</div>`;
+    if(!isPlayer){ node.onclick = ()=>{ if(state.actionsLeft>0 && isTradable) openTrade(rid); }; }
     container.appendChild(node);
   });
 
   // draw route lines for successful trades
-  const w = container.clientWidth, h = container.clientHeight;
-  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   uniqueTradePartners(state).forEach(rid=>{
     const a = REGIONS[state.playerRegion], b = REGIONS[rid];
     const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1', a.x/100*w); line.setAttribute('y1', a.y/100*h);
-    line.setAttribute('x2', b.x/100*w); line.setAttribute('y2', b.y/100*h);
-    line.setAttribute('stroke', '#c9932e'); line.setAttribute('stroke-width', '3');
-    line.setAttribute('stroke-dasharray', '2 6'); line.setAttribute('stroke-linecap','round');
+    line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+    line.setAttribute('stroke', '#c9932e'); line.setAttribute('stroke-width', '0.8');
+    line.setAttribute('stroke-dasharray', '1 1.6'); line.setAttribute('stroke-linecap','round');
     svg.appendChild(line);
   });
+}
+
+function nodeSubText(rid, isPlayer, locked){
+  if(isPlayer) return 'Your Region';
+  if(locked){
+    if(state.season===4 && state.regimeChangeRegion===rid) return '🔒 Regime Change';
+    if(state.season===5 && state.diseaseRegion===rid) return '🔒 Disease Outbreak';
+    if(state.season<=2) return '🔒 Too far this season';
+    return '🔒 Not reachable';
+  }
+  return tradedWith(state,rid) ? 'Trading Partner' : 'Not yet traded';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -857,6 +1010,7 @@ let tradeGive = {};   // goodId -> qty
 let tradeReceive = {}; // goodId -> qty
 
 function openTrade(rid){
+  if(!tradableRegionsThisSeason().has(rid)) return;
   tradeTarget = rid;
   tradeGive = {}; tradeReceive = {};
   Object.keys(GOODS).forEach(g=>{ tradeGive[g]=0; tradeReceive[g]=0; });
@@ -919,14 +1073,17 @@ function computeTradeValues(){
   return {giveValue, receiveValue};
 }
 
+function tradeDistanceFactor(){
+  const isAdjacent = REGIONS[state.playerRegion].adjacent.includes(tradeTarget);
+  return isAdjacent ? 1 : 1.35;
+}
+
 function updateTradeVerdict(){
   const {giveValue, receiveValue} = computeTradeValues();
   document.getElementById('trade-give-value').textContent = giveValue;
   document.getElementById('trade-receive-value').textContent = receiveValue;
 
-  const isAdjacent = REGIONS[state.playerRegion].adjacent.includes(tradeTarget);
-  const distanceFactor = (isAdjacent || eventBonusRound4()) ? 1 : 1.35;
-  const threshold = receiveValue * distanceFactor * 0.9;
+  const threshold = receiveValue * tradeDistanceFactor() * 0.9;
 
   const verdict = document.getElementById('trade-verdict');
   const anythingOffered = giveValue>0 || receiveValue>0;
@@ -947,14 +1104,10 @@ function updateTradeVerdict(){
   }
 }
 
-function eventBonusRound4(){ return state.season===4; }
-
 function proposeTrade(){
   const {giveValue, receiveValue} = computeTradeValues();
   if(receiveValue===0){ return; }
-  const isAdjacent = REGIONS[state.playerRegion].adjacent.includes(tradeTarget);
-  const distanceFactor = (isAdjacent || eventBonusRound4()) ? 1 : 1.35;
-  const threshold = receiveValue * distanceFactor * 0.9;
+  const threshold = receiveValue * tradeDistanceFactor() * 0.9;
   const accepted = giveValue >= threshold;
 
   if(!accepted){
@@ -1022,17 +1175,27 @@ function nextSeason(){
   state.season += 1;
   state.actionsLeft = ACTIONS_PER_SEASON;
 
-  const bonusUnits = state.season===5 ? 3 : 2;
   REGION_ORDER.forEach(rid=>{
     REGIONS[rid].homeGoods.forEach(g=>{
-      if(rid===state.playerRegion) state.inventory[g] += bonusUnits;
-      state.regionInventories[rid][g] += bonusUnits;
+      if(rid===state.playerRegion) state.inventory[g] += 2;
+      state.regionInventories[rid][g] += 2;
     });
   });
 
+  let ev;
+  if(state.season===4){
+    state.regimeChangeRegion = REGION_ORDER[Math.floor(Math.random()*REGION_ORDER.length)];
+    ev = buildRegimeChangeEvent();
+  } else if(state.season===5){
+    const candidates = REGION_ORDER.filter(r=>r!==state.regimeChangeRegion);
+    state.diseaseRegion = candidates[Math.floor(Math.random()*candidates.length)];
+    ev = buildDiseaseEvent();
+  } else {
+    ev = EVENTS[state.season];
+  }
+
   checkNewAchievements();
   renderGameScreen();
-  const ev = EVENTS.find(e=>e.season===state.season);
   if(ev) showEvent(ev);
 
   if(state.season>=MAX_SEASONS){
