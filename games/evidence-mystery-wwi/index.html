@@ -36,19 +36,6 @@
 html.fs-sm{ font-size:14px; }
 html.fs-md{ font-size:16px; }
 html.fs-lg{ font-size:19px; }
-[data-theme="dark"]{
-  --wood-dark:#0f0a06;
-  --wood:#17110a;
-  --wood-light:#20180f;
-  --paper:#2a2418;
-  --paper-dark:#221d13;
-  --paper-edge:#171207;
-  --ink:#ecdfbf;
-  --ink-soft:#c8b98f;
-  --cork:#3a2c1c;
-  --cork-dark:#2b2013;
-  --gold:#c9a256;
-}
 html,body{ margin:0; padding:0; height:100%; }
 body{
   font-family:var(--font-body);
@@ -170,12 +157,12 @@ p.screen-sub{ margin:0 0 20px; color:var(--ink-soft); font-size:.92rem; }
 }
 .filterbar button.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
 
-.lockergrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px; }
+.lockergrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:24px 14px; }
 .evcard{
-  background:var(--paper-dark);
+  background:linear-gradient(180deg, var(--paper-dark), var(--paper-edge) 140%);
   border:1px solid var(--paper-edge);
-  border-radius:9px;
-  padding:13px 14px;
+  border-radius:2px 10px 10px 10px;
+  padding:26px 14px 14px;
   cursor:pointer;
   position:relative;
   transition:transform .12s ease, box-shadow .12s ease;
@@ -183,11 +170,19 @@ p.screen-sub{ margin:0 0 20px; color:var(--ink-soft); font-size:.92rem; }
   color:var(--ink);
   font-family:inherit;
   width:100%;
+  box-shadow:0 3px 7px rgba(0,0,0,.22);
 }
-.evcard:hover{ transform:translateY(-3px); box-shadow:0 6px 14px rgba(0,0,0,.25); }
+.evcard:hover{ transform:translateY(-3px); box-shadow:0 8px 16px rgba(0,0,0,.3); }
 .evcard.examined{ border-color:var(--green); }
-.evcard .badgeRow{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px; }
-.evcard .badge{ font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; background:var(--paper); border:1px solid var(--paper-edge); border-radius:4px; padding:2px 6px; }
+.evcard .badgeRow{ position:absolute; top:-13px; left:12px; margin:0; display:flex; }
+.evcard .badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700;
+  background:var(--gold); color:#2a1a05; border:1px solid var(--gold-light);
+  border-radius:5px 8px 2px 2px; padding:5px 10px 4px;
+  box-shadow:0 -2px 3px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.evcard.examined .badge{ background:var(--green); border-color:var(--green); color:#fff; }
 .evcard h4{ margin:0 0 4px; font-family:var(--font-head); font-size:1rem; }
 .evcard .meta{ font-size:.72rem; color:var(--ink-soft); }
 .evcard .stamp{
@@ -216,7 +211,6 @@ p.screen-sub{ margin:0 0 20px; color:var(--ink-soft); font-size:.92rem; }
 .evtext .hl{ cursor:pointer; border-radius:2px; padding:0 1px; }
 .evtext .hl:hover{ background:rgba(169,125,47,.25); }
 .evtext .hl.active{ background:#f2d477; box-shadow:inset 0 0 0 999px rgba(242,212,119,.55); }
-[data-theme="dark"] .evtext .hl.active{ background:#6b551f; box-shadow:inset 0 0 0 999px rgba(107,85,31,.6); color:#fff; }
 .hint{ font-size:.75rem; color:var(--ink-soft); margin:4px 0 8px; }
 
 .qrow{ margin-bottom:10px; }
@@ -242,9 +236,7 @@ textarea{ min-height:70px; resize:vertical; }
 .insight h4{ margin:0 0 6px; color:var(--accent); font-family:var(--font-head); }
 .insight p{ margin:0 0 8px; font-size:.86rem; }
 .corro{ background:#e3ecd8; border:1px solid var(--green); color:#204225; border-radius:8px; padding:9px 12px; font-size:.82rem; margin-top:8px; }
-[data-theme="dark"] .corro{ background:#1c2a1c; color:#bfe0c2; }
 .tension{ background:#f3e0cf; border:1px solid var(--amber); color:#5c3d0c; border-radius:8px; padding:9px 12px; font-size:.82rem; margin-top:8px; }
-[data-theme="dark"] .tension{ background:#332512; color:#f0d6a8; }
 
 /* ============================= BOARD ============================= */
 .board-toolbar{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; }
@@ -254,7 +246,6 @@ textarea{ min-height:70px; resize:vertical; }
   background:var(--cork); border:6px solid var(--wood); border-radius:8px; padding:12px;
   max-height:640px; overflow-y:auto; position:relative;
 }
-[data-theme="dark"] .pool{ background:var(--cork); }
 .pin-card{
   background:var(--paper); border:1px solid var(--paper-edge); border-radius:5px; padding:8px 9px; margin-bottom:10px;
   font-size:.74rem; cursor:grab; position:relative; box-shadow:0 3px 6px rgba(0,0,0,.35);
@@ -352,8 +343,6 @@ footer.sitefoot button.linklike{ background:none; border:none; color:#d8c9a3; te
     <div class="controls">
       <button class="iconbtn" id="btnFontDown" aria-label="Decrease text size">A−</button>
       <button class="iconbtn" id="btnFontUp" aria-label="Increase text size">A+</button>
-      <button class="iconbtn" id="btnDark" aria-pressed="false">🌙 Dark Mode</button>
-      <button class="iconbtn" id="btnMusic" aria-pressed="false">♪ Music</button>
       <button class="iconbtn" id="btnAccuracy" aria-pressed="false">🎓 Historical Accuracy Mode</button>
     </div>
   </header>
@@ -418,7 +407,7 @@ footer.sitefoot button.linklike{ background:none; border:none; color:#d8c9a3; te
     <!-- ===================== BOARD ===================== -->
     <section class="screen" id="screen-board">
       <h2 class="screen-title">Case Board</h2>
-      <p class="screen-sub" id="boardSub">Drag an examined document onto a cause category to pin it and connect the string. On a keyboard: select a document, then activate a category to connect it.</p>
+      <p class="screen-sub" id="boardSub">Drag an examined document onto a cause category to pin it there. On a keyboard: select a document, then activate a category to connect it. A red string appears once a document is pinned to two or more categories, linking them together.</p>
       <div id="boardLockedMsg"></div>
       <div id="boardContent" style="display:none;">
         <div class="board-toolbar">
@@ -427,10 +416,8 @@ footer.sitefoot button.linklike{ background:none; border:none; color:#d8c9a3; te
         </div>
         <div class="board-wrap" id="boardWrap">
           <div class="pool" id="boardPool" aria-label="Examined evidence pool"></div>
-          <div style="position:relative;">
-            <svg class="strings" id="boardSvg" aria-hidden="true"></svg>
-            <div class="zones" id="boardZones"></div>
-          </div>
+          <div class="zones" id="boardZones"></div>
+          <svg class="strings" id="boardSvg" aria-hidden="true"></svg>
         </div>
       </div>
     </section>
@@ -583,6 +570,7 @@ function optsP(correct, i){ return rotate([correct, PURPOSE_D[i%3], PURPOSE_D[(i
 function optsA(correct, i){ return rotate([correct, AUDIENCE_D[i%3], AUDIENCE_D[(i+1)%3]], i+2); }
 
 var TAG_OPTIONS = ["Primary Source","Government Document","Propaganda","Eyewitness Account","Statistical Evidence","Visual Evidence","Elite Perspective","Popular Perspective"];
+var FOLDER_ICON = '📁';
 
 /* Evidence fields:
    id, title, date, country, type (badge label), icon,
@@ -1017,7 +1005,7 @@ var state = null;
 
 function defaultState(){
   return {
-    settings:{ dark:false, fontSize:'md', music:false, accuracy:false, teacherUnlocked:false },
+    settings:{ fontSize:'md', accuracy:false, teacherUnlocked:false },
     examined:{},
     corroFound:[],
     tensionFound:[],
@@ -1061,61 +1049,15 @@ function toast(msg){
 function examinedCount(){ return Object.keys(state.examined).length; }
 
 /* ======================================================================
-   AUDIO (subtle ambient toggle, procedural, no files)
-   ====================================================================== */
-var audioCtx=null, audioNodes=null;
-function toggleMusic(){
-  state.settings.music = !state.settings.music;
-  if(state.settings.music){ startAudio(); } else { stopAudio(); }
-  saveState(); renderHeader();
-}
-function startAudio(){
-  try{
-    if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    if(audioNodes) return;
-    var master = audioCtx.createGain(); master.gain.value=0.0001; master.connect(audioCtx.destination);
-    master.gain.linearRampToValueAtTime(0.035, audioCtx.currentTime+2);
-    var freqs=[98,146.83,220];
-    var oscs=[];
-    freqs.forEach(function(f,i){
-      var o=audioCtx.createOscillator(); o.type='sine'; o.frequency.value=f;
-      var g=audioCtx.createGain(); g.gain.value = i===0?1:0.5;
-      var lfo=audioCtx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.05+i*0.015;
-      var lfoGain=audioCtx.createGain(); lfoGain.gain.value=0.15;
-      lfo.connect(lfoGain); lfoGain.connect(g.gain);
-      o.connect(g); g.connect(master);
-      o.start(); lfo.start();
-      oscs.push(o,lfo);
-    });
-    audioNodes={ master:master, oscs:oscs };
-  }catch(e){ /* audio unsupported; ignore */ }
-}
-function stopAudio(){
-  if(!audioNodes) return;
-  try{
-    audioNodes.master.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime+1);
-    setTimeout(function(){
-      if(audioNodes){ audioNodes.oscs.forEach(function(o){ try{o.stop();}catch(e){} }); audioNodes=null; }
-    },1100);
-  }catch(e){}
-}
-
-/* ======================================================================
    HEADER / SETTINGS
    ====================================================================== */
 function applySettings(){
   document.documentElement.className = 'fs-'+state.settings.fontSize;
-  document.documentElement.setAttribute('data-theme', state.settings.dark?'dark':'light');
 }
 function renderHeader(){
   var n=examinedCount(), total=EVIDENCE.length;
   $('#progressLabel').textContent='Evidence Examined: '+n+'/'+total;
   $('#progressFill').style.width=Math.round(n/total*100)+'%';
-  $('#btnDark').classList.toggle('on', state.settings.dark);
-  $('#btnDark').setAttribute('aria-pressed', state.settings.dark?'true':'false');
-  $('#btnMusic').classList.toggle('on', state.settings.music);
-  $('#btnMusic').setAttribute('aria-pressed', state.settings.music?'true':'false');
   $('#btnAccuracy').classList.toggle('on', state.settings.accuracy);
   $('#btnAccuracy').setAttribute('aria-pressed', state.settings.accuracy?'true':'false');
 }
@@ -1176,7 +1118,7 @@ function renderLocker(){
     var card=el('button','evcard'+(examined?' examined':''));
     card.setAttribute('type','button');
     card.setAttribute('aria-label', (examined?'Examined. ':'Not yet examined. ')+e.title+', '+e.date+', '+e.country);
-    var badges='<span class="badge">'+e.icon+' '+esc(e.type)+'</span>';
+    var badges='<span class="badge">'+FOLDER_ICON+' '+esc(e.type)+'</span>';
     card.innerHTML =
       '<div class="badgeRow">'+badges+'</div>'+
       '<h4>'+esc(e.title)+'</h4>'+
@@ -1210,7 +1152,7 @@ function openEvidence(id){
 
   $('#modalTitle').textContent = e.title;
   $('#modalBadges').innerHTML =
-    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+e.icon+' '+esc(e.type)+'</span>'+
+    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+FOLDER_ICON+' '+esc(e.type)+'</span>'+
     (already?'<span class="b" style="background:var(--green);color:#fff;border-color:var(--green);">EXAMINED</span>':'');
 
   var sentences = e.text.split(/(?<=[.!?])\s+(?=[^a-z])/).filter(function(s){return s.trim().length;});
@@ -1329,7 +1271,7 @@ function submitEvidence(e){
   renderInsight(e);
   $('#btnSubmitEvidence').textContent='Update Analysis';
   $('#modalBadges').innerHTML =
-    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+e.icon+' '+esc(e.type)+'</span>'+
+    '<span class="b">'+esc(e.date)+'</span><span class="b">'+esc(e.country)+'</span><span class="b">'+FOLDER_ICON+' '+esc(e.type)+'</span>'+
     '<span class="b" style="background:var(--green);color:#fff;border-color:var(--green);">EXAMINED</span>';
   if(wasNew) toast('Filed to the Evidence Locker. Pin it to the Case Board when ready.');
 }
@@ -1411,7 +1353,7 @@ function renderBoard(){
     card.setAttribute('tabindex','0');
     card.setAttribute('role','button');
     card.setAttribute('aria-label', e.title+', connected to '+connections.length+' causes. Press Enter to select, then choose a cause category.');
-    card.innerHTML='<b>'+e.icon+' '+esc(e.title)+'</b><span class="cc">'+connections.length+' connection'+(connections.length===1?'':'s')+'</span>';
+    card.innerHTML='<b>'+FOLDER_ICON+' '+esc(e.title)+'</b><span class="cc">'+connections.length+' connection'+(connections.length===1?'':'s')+'</span>';
     card.dataset.id=id;
     card.addEventListener('dragstart', function(ev){ ev.dataTransfer.setData('text/plain', id); });
     card.addEventListener('click', function(){ selectedPin = (selectedPin===id)?null:id; renderBoard(); });
@@ -1483,7 +1425,9 @@ function drawStrings(){
   svg.innerHTML='';
   Object.keys(state.board).forEach(function(evId){
     var causesArr=state.board[evId]||[];
-    if(!causesArr.length) return;
+    // Only string up documents that connect to two or more categories --
+    // a single connection is already shown as a chip inside that category.
+    if(causesArr.length < 2) return;
     var pinEl=document.querySelector('.pin-card[data-id="'+evId+'"]');
     if(!pinEl) return;
     var pr=pinEl.getBoundingClientRect();
@@ -1493,12 +1437,16 @@ function drawStrings(){
       var zoneEl=document.querySelector('.zone[data-cause="'+causeId+'"]');
       if(!zoneEl) return;
       var zr=zoneEl.getBoundingClientRect();
-      var x2=zr.left-wrapRect.left+18;
-      var y2=zr.top-wrapRect.top+14;
+      var x2=zr.left-wrapRect.left+zr.width/2;
+      var y2=zr.top-wrapRect.top+16;
       var line=document.createElementNS('http://www.w3.org/2000/svg','line');
       line.setAttribute('x1',x1); line.setAttribute('y1',y1);
       line.setAttribute('x2',x2); line.setAttribute('y2',y2);
       svg.appendChild(line);
+      var dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',x2); dot.setAttribute('cy',y2); dot.setAttribute('r',3);
+      dot.setAttribute('fill', 'var(--string)');
+      svg.appendChild(dot);
     });
   });
 }
@@ -1591,7 +1539,7 @@ function renderArgument(){
     var e=EV_BY_ID[id];
     var label=el('label','evpick');
     var checked = state.argument.evidenceIds.indexOf(id)>=0;
-    label.innerHTML='<input type="checkbox" value="'+id+'" '+(checked?'checked':'')+'> <span>'+e.icon+' '+esc(e.title)+' <em>('+esc(e.type)+')</em></span>';
+    label.innerHTML='<input type="checkbox" value="'+id+'" '+(checked?'checked':'')+'> <span>'+FOLDER_ICON+' '+esc(e.title)+' <em>('+esc(e.type)+')</em></span>';
     picker.appendChild(label);
   });
 
@@ -1856,11 +1804,6 @@ function wireHeaderControls(){
     state.settings.fontSize = order[Math.min(order.length-1,i+1)];
     applySettings(); saveState();
   });
-  $('#btnDark').addEventListener('click', function(){
-    state.settings.dark = !state.settings.dark;
-    applySettings(); renderHeader(); saveState();
-  });
-  $('#btnMusic').addEventListener('click', toggleMusic);
   $('#btnAccuracy').addEventListener('click', function(){
     state.settings.accuracy = !state.settings.accuracy;
     renderHeader(); saveState();
@@ -1876,7 +1819,6 @@ function init(){
   wireHeaderControls();
   renderHeader();
   renderBriefing();
-  if(state.settings.music) startAudio();
   goTab(state.activeTab || 'briefing');
 }
 document.addEventListener('DOMContentLoaded', init);
