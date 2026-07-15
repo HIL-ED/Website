@@ -13,7 +13,11 @@
     -webkit-user-select:none; user-select:none;
     display:flex; align-items:center; justify-content:center;
   }
-  #wrap { position:relative; width:100%; max-width:960px; aspect-ratio:16/9; }
+  #wrap {
+    position:relative;
+    width:min(100%, 960px, calc((100vh - 24px) * 16 / 9));
+    aspect-ratio:16/9;
+  }
   canvas {
     width:100%; height:100%; display:block;
     image-rendering:pixelated; image-rendering:crisp-edges;
@@ -56,14 +60,14 @@ const W = 960, H = 540;
 ctx.imageSmoothingEnabled = false;
 
 // ---------- CONFIG ----------
-const GRAV = 0.62, MOVE_ACC = 0.85, FRICTION = 0.80, MAX_VX = 4.4;
+const GRAV = 0.62, MOVE_ACC = 1.10, FRICTION = 0.80, MAX_VX = 6.0;
 const TERM_VY = 16, COYOTE = 6, JUMP_BUFFER = 6, STAR_TIME = 9000;
 
 // ---------- CHARACTERS ----------
 const CHARS = [
-  { id:'jefferson', name:'JEFFERSON', title:'The Author',   coat:'#6b8f3d', accent:'#c9d98a', jump:12.0, speed:4.6, maxHearts:5, perk:'hearts',    blurb:'Starts with 5 hearts. Tougher to defeat.' },
-  { id:'madison',   name:'MADISON',   title:'The Architect', coat:'#3d5a8f', accent:'#8ab0e6', jump:13.4, speed:4.6, maxHearts:3, perk:'jump',      blurb:'Higher jump. Father of the Constitution.' },
-  { id:'hamilton',  name:'HAMILTON',  title:'The Firebrand', coat:'#7a3b2e', accent:'#e0a07a', jump:12.0, speed:4.6, maxHearts:3, perk:'eliminate', blurb:'One wrong answer is removed from every question.' },
+  { id:'jefferson', name:'JEFFERSON', title:'The Author',   coat:'#6b8f3d', accent:'#c9d98a', jump:12.0, speed:6.0, maxHearts:5, perk:'hearts',    blurb:'Starts with 5 hearts. Tougher to defeat.' },
+  { id:'madison',   name:'MADISON',   title:'The Architect', coat:'#3d5a8f', accent:'#8ab0e6', jump:13.4, speed:6.0, maxHearts:3, perk:'jump',      blurb:'Higher jump. Father of the Constitution.' },
+  { id:'hamilton',  name:'HAMILTON',  title:'The Firebrand', coat:'#7a3b2e', accent:'#e0a07a', jump:12.0, speed:6.0, maxHearts:3, perk:'eliminate', blurb:'One wrong answer is removed from every question.' },
 ];
 
 // ---------- QUESTION BANK ----------
@@ -176,7 +180,7 @@ function coin(x,y){ return {x,y,w:40,h:40,reward:'coin'}; }
 
 const LEVELS = [
   {
-    name:"BREAK FROM BRITAIN", doc:"declaration", width:4700, groundY:460, sky:'#243b6b', hills:'#1a2a4d',
+    name:"BREAK FROM BRITAIN", doc:"declaration", width:4700, groundY:460, sky:'#4d5f72', hills:'#3a4536',
     gaps:[[500,640],[1000,1240],[1760,1900],[2600,2740],[3200,3440],[3760,3900],[4360,4500]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:540,y:380,w:70,h:20},{x:1790,y:400,w:70,h:20},{x:2820,y:340,w:60,h:18},{x:3790,y:370,w:70,h:20},{x:4390,y:395,w:70,h:20} ],
     steps:[ {x0:660,x1:800,y:415},{x0:850,x1:950,y:430},{x0:1960,x1:2090,y:405},{x0:2760,x1:2860,y:420},{x0:2860,x1:2970,y:388},{x0:3920,x1:4040,y:405} ],
@@ -193,7 +197,7 @@ const LEVELS = [
     goalX:4560
   },
   {
-    name:"A FRAIL UNION", doc:"articles", width:4800, groundY:460, sky:'#3a2a4d', hills:'#241a35',
+    name:"A FRAIL UNION", doc:"articles", width:4800, groundY:460, sky:'#5c5245', hills:'#3f3830',
     gaps:[[560,700],[1100,1340],[1900,2020],[2700,2840],[3520,3760],[4260,4400]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:590,y:378,w:70,h:20},{x:1930,y:405,w:70,h:20},{x:2760,y:390,w:60,h:18},{x:3850,y:350,w:60,h:18},{x:4290,y:365,w:70,h:20} ],
     steps:[ {x0:830,x1:930,y:420},{x0:2400,x1:2480,y:410},{x0:2580,x1:2665,y:425},{x0:2860,x1:2960,y:420},{x0:2960,x1:3060,y:388},{x0:4185,x1:4245,y:435},{x0:4420,x1:4560,y:410} ],
@@ -211,7 +215,7 @@ const LEVELS = [
     goalX:4640
   },
   {
-    name:"A MORE PERFECT UNION", doc:"constitution", width:5200, groundY:460, sky:'#14324a', hills:'#0d2233',
+    name:"A MORE PERFECT UNION", doc:"constitution", width:5200, groundY:460, sky:'#465a5c', hills:'#33403c',
     gaps:[[520,660],[1080,1320],[1800,1920],[2400,2640],[3050,3190],[3700,3940],[4450,4590]],
     platforms:[ {x:180,y:420,w:60,h:18},{x:550,y:375,w:70,h:20},{x:1830,y:400,w:70,h:20},{x:3070,y:360,w:70,h:20},{x:3100,y:395,w:60,h:18},{x:4470,y:390,w:70,h:20} ],
     steps:[ {x0:940,x1:1050,y:418},{x0:1410,x1:1560,y:420},{x0:1930,x1:1995,y:415},{x0:2060,x1:2180,y:420},{x0:2270,x1:2365,y:430},{x0:2955,x1:3020,y:432},{x0:3210,x1:3320,y:415},{x0:4030,x1:4130,y:425},{x0:4820,x1:4960,y:420} ],
@@ -380,8 +384,9 @@ function handlePointer(x,y){
   if(state==='title'){ startSelect(); return; }
   if(state==='select'){
     // character cards
+    const cardStart = W/2 - ((CHARS.length-1)*240 + 180)/2 + 90;
     for(let i=0;i<CHARS.length;i++){
-      const cx = 140 + i*240;
+      const cx = cardStart + i*240;
       if(x>cx-90 && x<cx+90 && y>150 && y<420){ selIndex=i; }
     }
     if(x>W/2-120 && x<W/2+120 && y>450 && y<510){ beginGame(); }
@@ -890,57 +895,91 @@ function drawHillBand(scroll, baseY, color){
   ctx.closePath();
   ctx.fill();
 }
+// Weathered split-rail fence marking the town's edge fields; purely decorative,
+// drawn just above the horizon line so the ground fill below it stays untouched.
+function drawFence(scroll, y, color){
+  const spacing = 46;
+  const startPost = Math.floor(scroll/spacing) - 1;
+  ctx.fillStyle = color;
+  for(let i=startPost; i<startPost + Math.ceil(W/spacing) + 2; i++){
+    const x = i*spacing - scroll;
+    if(x < -spacing || x > W+spacing) continue;
+    px(x, y-14, 3, 14, color);           // post
+    px(x, y-11, spacing-4, 3, color);    // upper rail
+    px(x, y-4, spacing-4, 3, color);     // lower rail
+  }
+}
 // Parallax colonial-Philadelphia skyline. scroll = already-parallaxed camera offset,
 // baseY = building baseline (buildings extend from here up; kept near the ground so the
 // city sits right behind the characters with no empty filler band), col = building fill.
 function drawColonialSkyline(scroll, baseY, col, landmark){
   const TILE = 620;                       // width of one repeating streetscape
   const roofL = shade(col, 16), win = shade(col, -26), trim = shade(col, 26), litWin = shade(col,-40);
+  const CLAP = '#cfc4a3', CLAP_TRIM = '#5b6b7a';  // weathered white clapboard + slate-blue shutters
   const startTile = Math.floor(scroll / TILE) - 1;
   for(let ti=startTile; ti<startTile + Math.ceil(W/TILE)+2; ti++){
     const ox = ti*TILE - scroll;          // left edge of this tile on screen
     if(ox > W || ox+TILE < 0) continue;
 
-    // helper: a rowhouse with a peaked roof, day-lit window panes, a chimney
-    const house=(x,w,h,peak)=>{
+    // helper: a rowhouse with a peaked roof, day-lit window panes, a chimney.
+    // variant 'clapboard' swaps the brick fill for a white clapboard + slate-blue-shutter look.
+    const house=(x,w,h,peak,variant)=>{
       const top=baseY-h;
-      px(x, top, w, h, col);
-      px(x, top, w, 3, trim);                       // eave line
-      px(x, top, 2, h, shade(col,10));              // sunlit left edge
-      px(x+w-2, top, 2, h, shade(col,-14));         // shaded right edge
+      const bodyCol = variant==='clapboard' ? CLAP : col;
+      const roofCol = variant==='clapboard' ? shade(CLAP,-38) : roofL;
+      const winCol  = variant==='clapboard' ? '#33343a' : win;
+      const trimCol = variant==='clapboard' ? CLAP_TRIM : trim;
+      px(x, top, w, h, bodyCol);
+      px(x, top, w, 3, trimCol);                       // eave line
+      px(x, top, 2, h, shade(bodyCol,10));              // sunlit left edge
+      px(x+w-2, top, 2, h, shade(bodyCol,-14));         // shaded right edge
       if(peak){ // gabled roof
-        ctx.fillStyle=roofL;
+        ctx.fillStyle=roofCol;
         ctx.beginPath(); ctx.moveTo(x-2,top); ctx.lineTo(x+w/2,top-14); ctx.lineTo(x+w+2,top); ctx.closePath(); ctx.fill();
-      } else { px(x-1, top-5, w+2, 5, roofL); }      // flat parapet
-      px(x+w-6, top-10, 4, 12, shade(col,-18));      // chimney
-      // day window panes (dark glass with a light sill)
+      } else { px(x-1, top-5, w+2, 5, roofCol); }      // flat parapet
+      px(x+w-6, top-10, 4, 12, shade(bodyCol,-18));      // chimney
+      // day window panes (dark glass with a light sill); clapboard homes get slate shutters
       for(let wy=top+8; wy<baseY-8; wy+=16){
-        for(let wx=x+5; wx<x+w-6; wx+=13){ px(wx,wy,5,7,win); px(wx,wy+7,5,1,trim); }
+        for(let wx=x+5; wx<x+w-6; wx+=13){
+          px(wx,wy,5,7,winCol); px(wx,wy+7,5,1,trimCol);
+          if(variant==='clapboard'){ px(wx-2,wy,2,7,trimCol); px(wx+5,wy,2,7,trimCol); }
+        }
       }
     };
-    // a church with a tall steeple
+    // a single-canopy oak/elm tree, anchored at the street baseline
+    const tree=(x,scale)=>{
+      const s=scale||1, trunkH=24*s, cy=baseY-trunkH-10*s;
+      px(x-3*s, baseY-trunkH, 6*s, trunkH, '#5a4530');
+      ctx.fillStyle='#4f6b46';
+      ctx.beginPath();
+      ctx.arc(x,cy,15*s,0,7); ctx.arc(x-11*s,cy+5*s,11*s,0,7); ctx.arc(x+11*s,cy+5*s,11*s,0,7);
+      ctx.fill();
+      ctx.fillStyle=shade('#4f6b46',12);
+      ctx.beginPath(); ctx.arc(x-4*s,cy-5*s,7*s,0,7); ctx.fill();
+    };
+    // a meeting house / church with a modest steeple (low colonial proportions, not a modern tower)
     const church=(x)=>{
-      const h=110, top=baseY-h;
+      const h=70, top=baseY-h;
       px(x, top, 34, h, col); px(x,top,34,3,trim);
       px(x,top,2,h,shade(col,10)); px(x+32,top,2,h,shade(col,-14));
       // steeple
-      px(x+12, top-30, 10, 30, col);
-      px(x+13, top-44, 8, 14, roofL);
-      ctx.fillStyle=roofL; ctx.beginPath(); ctx.moveTo(x+11,top-44); ctx.lineTo(x+17,top-62); ctx.lineTo(x+23,top-44); ctx.closePath(); ctx.fill();
-      px(x+16, top-70, 2, 10, trim);                 // spire finial
-      for(let wy=top+12; wy<baseY-12; wy+=20){ px(x+8,wy,6,9,win); px(x+20,wy,6,9,win); }
+      px(x+12, top-22, 10, 22, col);
+      px(x+13, top-33, 8, 11, roofL);
+      ctx.fillStyle=roofL; ctx.beginPath(); ctx.moveTo(x+11,top-33); ctx.lineTo(x+17,top-47); ctx.lineTo(x+23,top-33); ctx.closePath(); ctx.fill();
+      px(x+16, top-53, 2, 8, trim);                 // spire finial
+      for(let wy=top+10; wy<baseY-10; wy+=20){ px(x+8,wy,6,9,win); px(x+20,wy,6,9,win); }
     };
 
-    // lay out one streetscape across the tile (taller now, reaching down near the street)
-    house(ox+10, 70, 118, true);
-    house(ox+90, 54, 150, false);
+    // lay out one streetscape across the tile: low 2-3 story colonial rowhouses along a town street
+    house(ox+10, 70, 68, true, 'clapboard');
+    house(ox+90, 54, 84, false);
     church(ox+160);
-    house(ox+210, 80, 128, true);
-    house(ox+300, 60, 160, false);
+    house(ox+210, 80, 74, true);
+    house(ox+300, 60, 90, false, 'clapboard');
 
     if(landmark){
       // ---- Independence Hall (centerpiece) ----
-      const bx=ox+380, bH=176, bTop=baseY-bH;
+      const bx=ox+380, bH=118, bTop=baseY-bH;
       px(bx, bTop, 150, bH, col);                     // long brick body
       px(bx, bTop, 150, 4, trim);
       px(bx,bTop,2,bH,shade(col,10)); px(bx+148,bTop,2,bH,shade(col,-14));
@@ -958,10 +997,12 @@ function drawColonialSkyline(scroll, baseY, col, landmark){
       ctx.fillStyle=roofL;
       ctx.beginPath(); ctx.moveTo(tx+4,bTop-76); ctx.lineTo(tx+tw/2,bTop-104); ctx.lineTo(tx+tw-4,bTop-76); ctx.closePath(); ctx.fill();
       px(tx+tw/2-1, bTop-116, 2, 12, trim);           // spire
+      tree(ox+358, 0.85); tree(ox+562, 0.95);         // elms flanking the green out front
     } else {
-      house(ox+380, 90, 140, true);
+      house(ox+380, 90, 88, true, 'clapboard');
       church(ox+490);
-      house(ox+540, 60, 120, false);
+      house(ox+540, 60, 76, false);
+      tree(ox+601, 1);
     }
   }
 }
@@ -1010,7 +1051,7 @@ function render(){
 
 function drawWorld(){
   // daytime sky: tinted per-level so each document world reads as its own place
-  const skyBase = level.sky || '#243b6b';
+  const skyBase = level.sky || '#4d5f72';
   const g=ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,shade(skyBase,44)); g.addColorStop(0.5,shade(skyBase,58)); g.addColorStop(1,shade(skyBase,68));
   ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
@@ -1034,13 +1075,22 @@ function drawWorld(){
     ctx.fill();
   }
   // distant rolling hills: continuous horizon band that grounds the far skyline even over gaps
-  drawHillBand(camX*0.22, level.groundY-70, shade(level.hills||'#1a2a4d', -4));
-  // colonial Philadelphia skyline, far row (hazy blue-grey, slow parallax, sits high)
-  drawColonialSkyline(camX*0.22, level.groundY-70, '#7f95ad', false);
+  drawHillBand(camX*0.22, level.groundY-70, shade(level.hills||'#3a4536', -4));
+  // colonial skyline, far row (hazy, muted slate-grey, slow parallax, sits high)
+  drawColonialSkyline(camX*0.22, level.groundY-70, '#8b8f8f', false);
+  // far split-rail fence marking the edge of the town fields, in front of the far skyline
+  drawFence(camX*0.3, level.groundY-70, '#5f5342');
   // near hill/foundation band: grounds the near skyline row the same way
-  drawHillBand(camX*0.42, level.groundY-6, shade('#9a5a3c', -32));
-  // colonial Philadelphia skyline, near row (warm brick, extends down right behind the characters)
-  drawColonialSkyline(camX*0.42, level.groundY-6, '#9a5a3c', true);
+  drawHillBand(camX*0.42, level.groundY-6, shade('#8a6248', -32));
+  // colonial skyline, near row (muted brick/faded-red, extends down right behind the characters)
+  drawColonialSkyline(camX*0.42, level.groundY-6, '#8a6248', true);
+  // near split-rail fence, just above the playable ground line
+  drawFence(camX*0.6, level.groundY, '#6b573c');
+  // atmospheric haze: soft warm fade uniting the background layers so they read
+  // as muted and distant, keeping full contrast for the crisp foreground gameplay
+  const haze = ctx.createLinearGradient(0,0,0,level.groundY);
+  haze.addColorStop(0,'rgba(255,244,224,.04)'); haze.addColorStop(1,'rgba(200,172,132,.16)');
+  ctx.fillStyle=haze; ctx.fillRect(0,0,W,level.groundY);
   // ground with gaps
   const gy=level.groundY;
   let cursor=0;
@@ -1308,8 +1358,9 @@ function drawSelect(){
   ctx.textAlign='center';
   ctx.fillStyle='#f2c14e'; ctx.font='20px "Press Start 2P"';
   ctx.fillText('CHOOSE YOUR FOUNDER', W/2, 90);
+  const cardStart = W/2 - ((CHARS.length-1)*240 + 180)/2 + 90;
   for(let i=0;i<CHARS.length;i++){
-    const cd=CHARS[i], cx=140+i*240, sel=i===selIndex;
+    const cd=CHARS[i], cx=cardStart+i*240, sel=i===selIndex;
     ctx.fillStyle = sel?'#22345c':'#182640';
     ctx.fillRect(cx-90,150,180,270);
     ctx.strokeStyle = sel?'#f2c14e':'#33456e'; ctx.lineWidth=sel?4:2;
