@@ -8,7 +8,6 @@
 :root {
   --gutter: 48px;
   --ink: #201e1d;
-  --sand: #e4d8c2;
   --card: #f5ead8;
   --navbar: #f9f4ed;
   --hairline: rgba(32, 30, 29, 0.08);
@@ -28,13 +27,9 @@
 
 body {
   margin: 0; min-height: 100vh;
-  background: var(--sand); color: var(--ink);
+  background: var(--card); color: var(--ink);
   font-family: 'Figtree', system-ui, sans-serif;
-  display: flex; justify-content: center;
-  padding: 48px 20px;
 }
-@media (max-width: 1024px) { body { padding: 40px 20px; } }
-@media (max-width: 700px) { body { padding: 24px 12px; } }
 
 a { color: var(--orange); }
 a:hover { color: var(--orange-dark); }
@@ -42,11 +37,9 @@ a:hover { color: var(--orange-dark); }
 
 /* ---------- Page shell ---------- */
 .page {
-  width: 100%; max-width: 1000px;
-  background: var(--card); border-radius: 28px; overflow: hidden;
-  box-shadow: 0 12px 32px rgba(46, 43, 37, 0.22);
+  width: 100%; min-height: 100vh;
+  background: var(--card);
 }
-.page--wide { max-width: 1280px; }
 
 /* ---------- Header / navigation ---------- */
 .nav {
@@ -60,15 +53,9 @@ a:hover { color: var(--orange-dark); }
   display: flex; align-items: center;
 }
 .nav .logo img { height: 72px; width: auto; display: block; }
-.nav .brand {
-  grid-column: 2; justify-self: center;
-  text-decoration: none;
-  font-family: 'Caprasimo', serif; font-size: 20px; color: var(--blue);
-}
-.nav .brand:hover { color: var(--blue); opacity: .85; }
 .nav .navlinks {
-  grid-column: 3; justify-self: end;
-  display: flex; flex-wrap: wrap; align-items: center;
+  grid-column: 2; justify-self: center;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   column-gap: 20px; row-gap: 10px;
 }
 .nav a.navlink {
@@ -81,6 +68,14 @@ a:hover { color: var(--orange-dark); }
   color: var(--blue);
   font-weight: 700;
 }
+.nav .cta {
+  grid-column: 3; justify-self: end;
+  text-decoration: none; white-space: nowrap;
+  font-family: 'Caprasimo', serif; font-size: 14px;
+  color: var(--card); background: var(--orange);
+  padding: 9px 20px; border-radius: 999px;
+}
+.nav .cta:hover { filter: brightness(0.94); color: var(--card); }
 
 @media (max-width: 700px) {
   .nav {
@@ -88,8 +83,8 @@ a:hover { color: var(--orange-dark); }
     justify-items: center; row-gap: 12px;
   }
   .nav .logo { grid-column: 1; justify-self: center; }
-  .nav .brand { grid-column: 1; }
-  .nav .navlinks { grid-column: 1; justify-self: center; justify-content: center; }
+  .nav .navlinks { grid-column: 1; justify-self: center; }
+  .nav .cta { grid-column: 1; justify-self: center; }
 }
 
 /* ---------- Footer ---------- */
