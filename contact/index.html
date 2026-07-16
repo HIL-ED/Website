@@ -13,42 +13,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/shared.css">
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh;
-    background: #e4d8c2; color: #201e1d;
-    font-family: 'Figtree', system-ui, sans-serif;
-    display: flex; justify-content: center;
-    padding: 48px 20px;
-  }
-  a { color: #cc6b31; }
-  a:hover { color: #9f3f20; }
-
-  .page {
-    width: 100%; max-width: 1000px;
-    background: #f5ead8; border-radius: 28px; overflow: hidden;
-    box-shadow: 0 12px 32px rgba(46,43,37,0.22);
-  }
-
-  .nav {
-    display: flex; align-items: center; gap: 20px;
-    padding: 20px 48px; background: #f9f4ed;
-    border-bottom: 1px solid rgba(32,30,29,0.08);
-  }
-  .nav .brand {
-    margin-right: auto; text-decoration: none;
-    font-family: 'Caprasimo', serif; font-size: 20px; color: #16305c;
-  }
-  .nav .brand:hover { color: #16305c; opacity: .85; }
-  .nav a.navlink {
-    text-decoration: none; color: #201e1d;
-    font-size: 14px; font-weight: 600;
-  }
-  .nav a.navlink:hover { color: #9f3f20; }
-
   .intro {
-    padding: 48px 48px 8px; text-align: center;
+    padding: 48px var(--gutter) 8px; text-align: center;
   }
   .intro h1 {
     font-family: 'Caprasimo', serif; font-weight: 400;
@@ -60,7 +28,7 @@
 
   .content {
     display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px;
-    padding: 32px 48px 48px;
+    padding: 32px var(--gutter) var(--gutter);
   }
 
   .info {
@@ -101,32 +69,23 @@
   }
   form button:hover { filter: brightness(0.96); }
 
-  footer {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 22px 48px; background: #f9f4ed;
-    border-top: 1px solid rgba(32,30,29,0.08);
-    font-size: 13px; opacity: .7;
-  }
-  footer a { text-decoration: none; }
-
   @media (max-width: 700px) {
-    .nav { flex-wrap: wrap; padding: 16px 24px; }
-    .intro { padding: 32px 24px 8px; }
-    .content { grid-template-columns: 1fr; padding: 24px 24px 32px; }
-    footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
+    .intro { padding: 32px var(--gutter) 8px; }
+    .content { grid-template-columns: 1fr; padding: 24px var(--gutter) 32px; }
   }
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="nav">
+  <nav class="nav" aria-label="Primary">
     <a class="brand" href="../">Humanities Immersed Learning</a>
     <a class="navlink" href="../">Home</a>
-    <a class="navlink" href="../games/">Games</a>
     <a class="navlink" href="../teachers/">Teachers</a>
+    <a class="navlink" href="../games/">Games</a>
     <a class="navlink" href="../blog/">Blog</a>
     <a class="navlink" href="../about/">About</a>
-  </div>
+    <a class="navlink active" href="../contact/" aria-current="page">Contact</a>
+  </nav>
 
   <div class="intro">
     <h1>Get in Touch</h1>
@@ -180,11 +139,15 @@
     </form>
   </div>
 
-  <footer>
+  <footer class="site-footer">
     <div>© 2026 Humanities Immersed Learning LLC</div>
-    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
-      <a href="../">Back to Home</a>
+    <div class="links">
+      <a href="../">Home</a>
+      <a href="../teachers/">Teachers</a>
+      <a href="../games/">Games</a>
+      <a href="../blog/">Blog</a>
       <a href="../about/">About</a>
+      <a href="../contact/">Contact</a>
       <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
     </div>

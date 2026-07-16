@@ -39,9 +39,21 @@
   #tright { left:96px; bottom:16px; }
   #tjump { right:16px; bottom:16px; width:84px; height:84px; }
   @media (hover:none) and (pointer:coarse) { #touch { display:block; } }
+
+  .hil-back-link{
+    position:fixed; top:14px; right:14px; z-index:99999;
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:system-ui,sans-serif; font-size:12px; font-weight:600;
+    color:#fff; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+    padding:8px 14px; border-radius:999px; text-decoration:none;
+    border:1px solid rgba(255,255,255,0.25);
+    transition:background .15s ease;
+  }
+  .hil-back-link:hover{ background:rgba(0,0,0,0.75); color:#fff; }
 </style>
 </head>
 <body>
+<a href="../" class="hil-back-link" aria-label="Back to Games">← Games</a>
 <div id="wrap">
   <canvas id="c" width="960" height="540"></canvas>
   <div id="touch">

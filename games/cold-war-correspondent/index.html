@@ -526,9 +526,24 @@ kbd{background:#333; color:#fff; padding:1px 6px; border-radius:3px; font-size:.
   .headline{font-size:1.3em;}
   .paper{padding:16px 14px 20px;}
 }
+
+.hil-back-link{
+  position:fixed; top:14px; right:14px; z-index:99999;
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:system-ui,sans-serif; font-size:12px; font-weight:600;
+  color:#fff; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+  padding:8px 14px; border-radius:999px; text-decoration:none;
+  border:1px solid rgba(255,255,255,0.25);
+  transition:background .15s ease;
+}
+.hil-back-link:hover{ background:rgba(0,0,0,0.75); color:#fff; }
+@media (max-width:480px){
+  .hil-back-link{ position:static; width:100%; justify-content:center; border-radius:0; border-width:0 0 1px; }
+}
 </style>
 </head>
 <body class="text-md">
+<a href="../" class="hil-back-link" aria-label="Back to Games">← Games</a>
 <div id="app">
 
 <!-- ===================== INTRO ===================== -->

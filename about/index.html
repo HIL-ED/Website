@@ -7,42 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/shared.css">
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh;
-    background: #e4d8c2; color: #201e1d;
-    font-family: 'Figtree', system-ui, sans-serif;
-    display: flex; justify-content: center;
-    padding: 48px 20px;
-  }
-  a { color: #cc6b31; }
-  a:hover { color: #9f3f20; }
-
-  .page {
-    width: 100%; max-width: 1000px;
-    background: #f5ead8; border-radius: 28px; overflow: hidden;
-    box-shadow: 0 12px 32px rgba(46,43,37,0.22);
-  }
-
-  .nav {
-    display: flex; align-items: center; gap: 20px;
-    padding: 20px 48px; background: #f9f4ed;
-    border-bottom: 1px solid rgba(32,30,29,0.08);
-  }
-  .nav .brand {
-    margin-right: auto; text-decoration: none;
-    font-family: 'Caprasimo', serif; font-size: 20px; color: #16305c;
-  }
-  .nav .brand:hover { color: #16305c; opacity: .85; }
-  .nav a.navlink {
-    text-decoration: none; color: #201e1d;
-    font-size: 14px; font-weight: 600;
-  }
-  .nav a.navlink:hover { color: #9f3f20; }
-
   .intro {
-    padding: 48px 48px 8px; text-align: center;
+    padding: 48px var(--gutter) 8px; text-align: center;
   }
   .intro h1 {
     font-family: 'Caprasimo', serif; font-weight: 400;
@@ -53,7 +21,7 @@
   }
 
   .mission {
-    margin: 32px 48px 8px; padding: 32px; border-radius: 24px;
+    margin: 32px var(--gutter) 8px; padding: 32px; border-radius: 24px;
     background: #e8f6f4; text-align: center;
   }
   .mission p {
@@ -61,7 +29,7 @@
   }
 
   .team {
-    padding: 40px 48px 8px;
+    padding: 40px var(--gutter) var(--gutter);
   }
   .team h6 {
     text-align: center;
@@ -89,36 +57,29 @@
   .founder .role {
     font-size: 13px; color: #645c50; font-weight: 600;
   }
-
-  footer {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 40px;
-    padding: 22px 48px; background: #f9f4ed;
-    border-top: 1px solid rgba(32,30,29,0.08);
-    font-size: 13px; opacity: .7;
+  .founder .bio {
+    font-size: 13px; line-height: 1.6; opacity: .8; margin-top: 8px;
   }
-  footer a { text-decoration: none; }
 
   @media (max-width: 700px) {
-    .nav { flex-wrap: wrap; padding: 16px 24px; }
-    .intro { padding: 32px 24px 8px; }
-    .mission { margin: 24px 24px 8px; padding: 24px; }
-    .team { padding: 32px 24px 8px; }
+    .intro { padding: 32px var(--gutter) 8px; }
+    .mission { margin: 24px var(--gutter) 8px; padding: 24px; }
+    .team { padding: 32px var(--gutter) var(--gutter); }
     .team-grid { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 8px; padding: 20px 24px; text-align: center; }
   }
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="nav">
+  <nav class="nav" aria-label="Primary">
     <a class="brand" href="../">Humanities Immersed Learning</a>
     <a class="navlink" href="../">Home</a>
-    <a class="navlink" href="../games/">Games</a>
     <a class="navlink" href="../teachers/">Teachers</a>
+    <a class="navlink" href="../games/">Games</a>
     <a class="navlink" href="../blog/">Blog</a>
+    <a class="navlink active" href="../about/" aria-current="page">About</a>
     <a class="navlink" href="../contact/">Contact</a>
-  </div>
+  </nav>
 
   <div class="intro">
     <h1>About Us</h1>
@@ -136,24 +97,32 @@
         <img class="avatar" src="../images/team/kyle-michl.jpg" alt="Kyle Michl">
         <div class="name">Kyle Michl</div>
         <div class="role">Co-Founder</div>
+        <div class="bio">Kyle Michl is a high school social studies teacher who earned both his B.A. in History and his M.Ed. from The Ohio State University. He has worked in both private and public school settings, with experience teaching World History, U.S. History, U.S. Government, Economics, Sociology, and Humanities. His passion lies in fostering student growth through engaging discussions, immersive simulations, and meaningful analysis of primary sources, helping students develop the critical thinking skills needed to understand the past and navigate the present.</div>
       </div>
       <div class="founder">
         <img class="avatar" src="../images/team/henry-tikkanen.jpg" alt="Henry Tikkanen">
         <div class="name">Henry Tikkanen</div>
         <div class="role">Co-Founder</div>
+        <div class="bio">Henry Tikkanen graduated from Ohio Wesleyan University in 2022 with a degree in History Education and from Dakota Wesleyan University with a Master's degree in Education in 2026. He has been teaching middle school social studies in the state of Ohio since 2022 and is especially passionate about American History.</div>
       </div>
       <div class="founder">
         <img class="avatar" src="../images/team/landon-courville.jpg" alt="Landon Courville">
         <div class="name">Landon Courville</div>
         <div class="role">Co-Founder</div>
+        <div class="bio">Landon Courville has taught in Indiana, Ohio, Tennessee, and Nevada as a Humanities, ELA, and Social Studies teacher since 2019. A graduate of Washington and Lee University for undergrad, he got his Master's in Education from Vanderbilt University specializing in Social Studies Education. Working in public, private, and charter environments, he has done research studying engagement through gamification and roleplaying, particularly how they correlate to standardized academic metrics.</div>
       </div>
     </div>
   </div>
 
-  <footer>
+  <footer class="site-footer">
     <div>© 2026 Humanities Immersed Learning LLC</div>
-    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
-      <a href="../">Back to Home</a>
+    <div class="links">
+      <a href="../">Home</a>
+      <a href="../teachers/">Teachers</a>
+      <a href="../games/">Games</a>
+      <a href="../blog/">Blog</a>
+      <a href="../about/">About</a>
+      <a href="../contact/">Contact</a>
       <a href="https://www.linkedin.com/company/humanities-immersed-learning-llc" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.teacherspayteachers.com/store/humanities-immersed-learning" target="_blank" rel="noopener">TPT Store</a>
     </div>
