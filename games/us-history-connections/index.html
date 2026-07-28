@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>US History Connections | Humanities Immersed Learning</title>
-<meta name="description" content="A US History review game inspired by NYT Connections: sort 16 people, places, and terms into four hidden categories across ten eras of American history, from the Revolution to the Civil Rights Movement.">
+<meta name="description" content="A US History review game inspired by NYT Connections: sort 16 people, places, and terms into four hidden categories across ten eras of American history, from the Revolution to the Civil Rights Movement. Easy and Hard modes.">
 <link rel="icon" type="image/png" href="../../images/favicon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="US History Connections">
-<meta property="og:description" content="Sort 16 clues into four hidden categories across ten eras of American history. Free to play, no install.">
+<meta property="og:description" content="Sort 16 clues into four hidden categories across ten eras of American history. Easy and Hard modes. Free to play, no install.">
 <meta property="og:image" content="../../images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -111,9 +111,22 @@
   }
   .btn-link:hover{color:var(--orange);}
 
+  .diff-toggle-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; margin:30px 0 6px; }
+  .diff-toggle{
+    display:inline-flex; background:var(--cream-dark); border-radius:26px; padding:4px; gap:2px;
+    border:1px solid #d8c6a2;
+  }
+  .diff-btn{
+    padding:9px 22px; border-radius:22px; border:none; background:transparent;
+    font-weight:700; font-size:13.5px; color:var(--muted); letter-spacing:.01em;
+  }
+  .diff-btn.active{ background:var(--navy); color:#fff; }
+  .diff-btn:hover:not(.active){ color:var(--ink); }
+  .diff-desc{ font-size:13px; color:var(--muted); text-align:center; max-width:520px; }
+
   .puzzle-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
-    gap:16px; margin-top:32px;
+    gap:16px; margin-top:22px;
   }
   .puzzle-card{
     text-align:left; display:flex; flex-direction:column; gap:8px;
@@ -138,7 +151,13 @@
   #screen-game{ max-width:680px; margin:0 auto; padding:24px 18px 70px; }
   .game-topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
   .game-eyebrow{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--orange); }
-  .game-topbar h2{ font-family:var(--font-display); font-weight:400; font-size:22px; margin:2px 0 0; color:var(--navy); }
+  .game-topbar h2{ font-family:var(--font-display); font-weight:400; font-size:22px; margin:2px 0 0; color:var(--navy); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .diff-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 10px; border-radius:20px; font-weight:700; vertical-align:middle;
+  }
+  .diff-tag.easy{ background:#cfe3c9; color:#1f3d1f; }
+  .diff-tag.hard{ background:#e3b6b0; color:#4a1a14; }
   .switch-link{ font-family:var(--font-mono); font-size:11px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:4px; white-space:nowrap; }
   .switch-link:hover{ color:var(--orange); }
 
@@ -175,7 +194,7 @@
   .tile{
     background:var(--cream-dark); border:2px solid #d8c6a2; border-radius:10px;
     min-height:78px; padding:8px 6px; display:flex; align-items:center; justify-content:center;
-    text-align:center; font-weight:700; font-size:clamp(11px,2.6vw,13.5px); line-height:1.25;
+    text-align:center; font-weight:700; font-size:clamp(10.5px,2.4vw,13px); line-height:1.25;
     color:var(--ink); user-select:none; transition:transform .1s ease, background .1s ease, border-color .1s ease;
   }
   .tile:hover{ border-color:var(--navy); }
@@ -229,12 +248,14 @@
   <div class="masthead">
     <span class="eyebrow">A US History Review Game</span>
     <h1>US History Connections</h1>
-    <p class="sub">Inspired by the popular puzzle: find groups of four items that share a hidden historical connection. Ten eras to choose from, from the Revolution to the Civil Rights Movement.</p>
+    <p class="sub">Inspired by the popular puzzle: find groups of four items that share a hidden historical connection. Ten eras to choose from, from the Revolution to the Civil Rights Movement, each with an Easy and a Hard version.</p>
   </div>
 
   <div class="rules-card">
     <h4>How to play</h4>
     <p>You'll see 16 people, places, events, and terms in a grid. They secretly belong to <b>four groups of four</b>. Select four tiles you think belong together, then hit Submit.</p>
+    <h4>Easy vs. Hard mode</h4>
+    <p>On the next screen, pick a mode for every puzzle you play. <b>Easy</b> groups are more direct: think "signers," "battles," "amendments." <b>Hard</b> groups cut across categories on purpose, they're built from shared years, nicknames, vocabulary, and specific wording, so a battle, a treaty, and an idea might belong together, and two similar-looking items might belong to different groups entirely.</p>
     <h4>Difficulty colors</h4>
     <p>Once you solve a group, it's revealed in one of four colors, from most straightforward to trickiest:</p>
     <div class="level-key">
@@ -260,6 +281,14 @@
     <span class="eyebrow">A US History Review Game</span>
     <h1>Choose an Era</h1>
     <p class="sub">Each puzzle covers a different stretch of American history. Play them in order as a unit review, or jump to whatever you're studying right now.</p>
+  </div>
+
+  <div class="diff-toggle-wrap">
+    <div class="diff-toggle">
+      <button class="diff-btn active" id="diffEasyBtn" data-diff="easy">Easy Mode</button>
+      <button class="diff-btn" id="diffHardBtn" data-diff="hard">Hard Mode</button>
+    </div>
+    <p class="diff-desc" id="diffDesc"></p>
   </div>
 
   <div class="puzzle-grid" id="puzzleGrid"></div>
@@ -327,120 +356,226 @@ const LEVELS = [
   { label:"Trickiest",       bg:"var(--lvl3-bg)", text:"var(--lvl3-text)" }
 ];
 const MAX_MISTAKES = 4;
+const DIFF_DESC = {
+  easy: "Categories mostly group like with like, people with people, laws with laws. A good first pass.",
+  hard: "Categories cut across types on purpose: a year, a nickname, a bit of vocabulary. Expect more overlap traps."
+};
 
 /* =========================================================================
-   PUZZLES
+   ERAS: each era has an Easy category set and a Hard category set. Hard
+   sets are built from shared years, nicknames, and vocabulary rather than
+   "these are all people" / "these are all laws" groupings.
 ========================================================================= */
-const PUZZLES = [
+const ERAS = [
   {
-    id:"revolution", icon:"🗽", era:"1763–1783",
-    title:"Revolutionary America",
-    blurb:"Signers, resistance leaders, battles, and the words of the Declaration.",
-    categories:[
-      { name:"Declaration of Independence Signers", items:["Thomas Jefferson","Benjamin Franklin","John Hancock","Roger Sherman"] },
-      { name:"Voices of Colonial Resistance", items:["Samuel Adams","Paul Revere","Patrick Henry","James Otis"] },
-      { name:"Revolutionary War Battles", items:["Lexington and Concord","Saratoga","Yorktown","Bunker Hill"] },
-      { name:"Phrases from the Declaration of Independence", items:["unalienable rights","self-evident","consent of the governed","pursuit of happiness"] }
-    ]
+    id:"revolution", icon:"🗽", era:"1763–1783", title:"Revolutionary America",
+    easy:{
+      blurb:"Signers, resistance leaders, battles, and the words of the Declaration.",
+      categories:[
+        { name:"Declaration of Independence Signers", items:["Thomas Jefferson","Benjamin Franklin","John Hancock","Roger Sherman"] },
+        { name:"Voices of Colonial Resistance", items:["Samuel Adams","Paul Revere","Patrick Henry","James Otis"] },
+        { name:"Revolutionary War Battles", items:["Lexington and Concord","Saratoga","Yorktown","Bunker Hill"] },
+        { name:"Phrases from the Declaration of Independence", items:["unalienable rights","self-evident","consent of the governed","pursuit of happiness"] }
+      ]
+    },
+    hard:{
+      blurb:"A shared year, a drafting committee, patriot nicknames, and the era's famous lines.",
+      categories:[
+        { name:"All Happened in 1776", items:["Common Sense Published","British Evacuate Boston","Declaration of Independence Signed","Battle of Trenton"] },
+        { name:"Committee of Five (Declaration Drafters)", items:["Thomas Jefferson","John Adams","Benjamin Franklin","Roger Sherman"] },
+        { name:"Names for Those Who Backed Independence", items:["Patriots","Rebels","Whigs","Continentals"] },
+        { name:"Famous Lines of the Revolutionary Era", items:["The Shot Heard Round the World","Give Me Liberty, or Give Me Death!","These Are the Times That Try Men's Souls","Join, or Die"] }
+      ]
+    }
   },
   {
-    id:"constitution", icon:"📜", era:"1787–1800",
-    title:"The Constitution & Early Republic",
-    blurb:"What the Constitution created, freedoms it protects, and who argued over ratifying it.",
-    categories:[
-      { name:"Structures Created by the Constitution", items:["Congress","The Presidency","Supreme Court","Electoral College"] },
-      { name:"First Amendment Freedoms", items:["Speech","Press","Religion","Assembly"] },
-      { name:"Constitutional Convention Delegates", items:["James Madison","Alexander Hamilton","Benjamin Franklin","George Washington"] },
-      { name:"Pseudonyms Used in the Ratification Debate", items:["Publius","Brutus","Cato","Federal Farmer"] }
-    ]
+    id:"constitution", icon:"📜", era:"1787–1800", title:"The Constitution & Early Republic",
+    easy:{
+      blurb:"What the Constitution created, freedoms it protects, and who argued over ratifying it.",
+      categories:[
+        { name:"Structures Created by the Constitution", items:["Congress","The Presidency","Supreme Court","Electoral College"] },
+        { name:"First Amendment Freedoms", items:["Speech","Press","Religion","Assembly"] },
+        { name:"Constitutional Convention Delegates", items:["James Madison","Alexander Hamilton","Benjamin Franklin","George Washington"] },
+        { name:"Pseudonyms Used in the Ratification Debate", items:["Publius","Brutus","Cato","Federal Farmer"] }
+      ]
+    },
+    hard:{
+      blurb:"The Convention's deals, its loudest critics, ratification order, and the document's own wording.",
+      categories:[
+        { name:"Compromises of the Constitutional Convention", items:["Great Compromise","Three-Fifths Compromise","Commerce Compromise","Electoral College"] },
+        { name:"Leading Anti-Federalist Voices", items:["George Mason","Elbridge Gerry","Patrick Henry","Richard Henry Lee"] },
+        { name:"First Four States to Ratify the Constitution", items:["Delaware","Pennsylvania","New Jersey","Georgia"] },
+        { name:"Phrases Found in the Constitution's Text", items:["Necessary and Proper","Full Faith and Credit","General Welfare","Natural-Born Citizen"] }
+      ]
+    }
   },
   {
-    id:"expansion", icon:"🤠", era:"1803–1853",
-    title:"Westward Expansion",
-    blurb:"Trails, land deals, explorers, and the nations already living on the land.",
-    categories:[
-      { name:"Famous Trails West", items:["Oregon Trail","Santa Fe Trail","California Trail","Mormon Trail"] },
-      { name:"Ways the US Gained Western Territory", items:["Louisiana Purchase","Texas Annexation","Mexican Cession","Gadsden Purchase"] },
-      { name:"Explorers of the American West", items:["Meriwether Lewis","William Clark","Sacagawea","John C. Frémont"] },
-      { name:"Native Nations of the West", items:["Cherokee","Lakota Sioux","Comanche","Nez Perce"] }
-    ]
+    id:"expansion", icon:"🤠", era:"1803–1853", title:"Westward Expansion",
+    easy:{
+      blurb:"Trails, land deals, explorers, and the nations already living on the land.",
+      categories:[
+        { name:"Famous Trails West", items:["Oregon Trail","Santa Fe Trail","California Trail","Mormon Trail"] },
+        { name:"Ways the US Gained Western Territory", items:["Louisiana Purchase","Texas Annexation","Mexican Cession","Gadsden Purchase"] },
+        { name:"Explorers of the American West", items:["Meriwether Lewis","William Clark","Sacagawea","John C. Frémont"] },
+        { name:"Native Nations of the West", items:["Cherokee","Lakota Sioux","Comanche","Nez Perce"] }
+      ]
+    },
+    hard:{
+      blurb:"Where the land came from, the lesser-known members of the Corps of Discovery, and frontier slang.",
+      categories:[
+        { name:"Nations the US Acquired Western Territory From", items:["Mexico","Spain","France","Great Britain"] },
+        { name:"Ideas & Agreements Behind Westward Expansion", items:["Manifest Destiny","Monroe Doctrine","Indian Removal Act","Treaty of Guadalupe Hidalgo"] },
+        { name:"Members of the Lewis & Clark Expedition", items:["York","Sacagawea","John Colter","George Drouillard"] },
+        { name:"Frontier & Gold Rush Vocabulary", items:["Squatter","Prairie Schooner","Boomtown","Forty-Niner"] }
+      ]
+    }
   },
   {
-    id:"civilwar", icon:"⚔️", era:"1820–1865",
-    title:"Causes & Course of the Civil War",
-    blurb:"Battles, leaders, political deals over slavery, and the era's landmark texts.",
-    categories:[
-      { name:"Major Civil War Battles", items:["Gettysburg","Antietam","Bull Run","Vicksburg"] },
-      { name:"Key Figures of the Civil War", items:["Abraham Lincoln","Jefferson Davis","Ulysses S. Grant","Robert E. Lee"] },
-      { name:"Political Deals Over the Expansion of Slavery", items:["Missouri Compromise","Compromise of 1850","Kansas-Nebraska Act","Crittenden Compromise"] },
-      { name:"Landmark Texts & Rulings", items:["Emancipation Proclamation","Gettysburg Address","Dred Scott Decision","Fugitive Slave Act"] }
-    ]
+    id:"civilwar", icon:"⚔️", era:"1820–1865", title:"Causes & Course of the Civil War",
+    easy:{
+      blurb:"Battles, leaders, political deals over slavery, and the era's landmark texts.",
+      categories:[
+        { name:"Major Civil War Battles", items:["Gettysburg","Antietam","Bull Run","Vicksburg"] },
+        { name:"Key Figures of the Civil War", items:["Abraham Lincoln","Jefferson Davis","Ulysses S. Grant","Robert E. Lee"] },
+        { name:"Political Deals Over the Expansion of Slavery", items:["Missouri Compromise","Compromise of 1850","Kansas-Nebraska Act","Crittenden Compromise"] },
+        { name:"Landmark Texts & Rulings", items:["Emancipation Proclamation","Gettysburg Address","Dred Scott Decision","Fugitive Slave Act"] }
+      ]
+    },
+    hard:{
+      blurb:"A single pivotal year, generals' nicknames, army names, and Underground Railroad code words.",
+      categories:[
+        { name:"All Happened in 1863", items:["Emancipation Proclamation Takes Effect","Battle of Gettysburg","Fall of Vicksburg","Gettysburg Address Delivered"] },
+        { name:"Civil War General Nicknames", items:["Stonewall","Unconditional Surrender","Fighting Joe","Little Mac"] },
+        { name:"Union Army Names", items:["Army of the Potomac","Army of the Tennessee","Army of the Cumberland","Army of the James"] },
+        { name:"Underground Railroad Vocabulary", items:["Conductor","Station","Stationmaster","Passenger"] }
+      ]
+    }
   },
   {
-    id:"reconstruction", icon:"🏭", era:"1865–1900",
-    title:"Reconstruction & the Gilded Age",
-    blurb:"Amendments and laws, industrial titans, Reconstruction-era groups, and new technology.",
-    categories:[
-      { name:"Reconstruction-Era Laws & Amendments", items:["13th Amendment","14th Amendment","15th Amendment","Reconstruction Act of 1867"] },
-      { name:"Gilded Age Industrialists", items:["Andrew Carnegie","John D. Rockefeller","J.P. Morgan","Cornelius Vanderbilt"] },
-      { name:"Reconstruction-Era Groups & Terms", items:["Freedmen's Bureau","Ku Klux Klan","Radical Republicans","Carpetbaggers"] },
-      { name:"Innovations of the Gilded Age", items:["Bessemer Process","Transcontinental Railroad","Telephone","Light Bulb"] }
-    ]
+    id:"reconstruction", icon:"🏭", era:"1865–1900", title:"Reconstruction & the Gilded Age",
+    easy:{
+      blurb:"Amendments and laws, industrial titans, Reconstruction-era groups, and new technology.",
+      categories:[
+        { name:"Reconstruction-Era Laws & Amendments", items:["13th Amendment","14th Amendment","15th Amendment","Reconstruction Act of 1867"] },
+        { name:"Gilded Age Industrialists", items:["Andrew Carnegie","John D. Rockefeller","J.P. Morgan","Cornelius Vanderbilt"] },
+        { name:"Reconstruction-Era Groups & Terms", items:["Freedmen's Bureau","Ku Klux Klan","Radical Republicans","Carpetbaggers"] },
+        { name:"Innovations of the Gilded Age", items:["Bessemer Process","Transcontinental Railroad","Telephone","Light Bulb"] }
+      ]
+    },
+    hard:{
+      blurb:"Monopolies by industry (not name), new tech, the South's new order, and machine politics.",
+      categories:[
+        { name:"Industries Dominated by Gilded Age Monopolies", items:["Steel","Oil","Banking","Railroads"] },
+        { name:"Gilded Age Innovations", items:["Phonograph","Skyscraper","Linotype Machine","Elevator"] },
+        { name:"The New Economic & Legal Order in the Reconstruction South", items:["Sharecropping","Tenant Farming","Black Codes","Jim Crow"] },
+        { name:"Gilded Age Political Corruption", items:["Tammany Hall","Boss Tweed","Political Machine","Spoils System"] }
+      ]
+    }
   },
   {
-    id:"progressive", icon:"📢", era:"1890–1919",
-    title:"Progressive Era & World War I",
-    blurb:"Constitutional amendments, reformers, wartime terms, and muckraking books.",
-    categories:[
-      { name:"Progressive Era Amendments (16th–19th)", items:["16th Amendment","17th Amendment","18th Amendment","19th Amendment"] },
-      { name:"Progressive Era Reformers", items:["Theodore Roosevelt","Jane Addams","Robert La Follette","William Jennings Bryan"] },
-      { name:"World War I Events & Terms", items:["Trench Warfare","Zimmermann Telegram","Lusitania","Treaty of Versailles"] },
-      { name:"Progressive Era Muckraking Books", items:["The Jungle","How the Other Half Lives","The Shame of the Cities","History of the Standard Oil Company"] }
-    ]
+    id:"progressive", icon:"📢", era:"1890–1919", title:"Progressive Era & World War I",
+    easy:{
+      blurb:"Constitutional amendments, reformers, wartime terms, and muckraking books.",
+      categories:[
+        { name:"Progressive Era Amendments (16th–19th)", items:["16th Amendment","17th Amendment","18th Amendment","19th Amendment"] },
+        { name:"Progressive Era Reformers", items:["Theodore Roosevelt","Jane Addams","Robert La Follette","William Jennings Bryan"] },
+        { name:"World War I Events & Terms", items:["Trench Warfare","Zimmermann Telegram","Lusitania","Treaty of Versailles"] },
+        { name:"Progressive Era Muckraking Books", items:["The Jungle","How the Other Half Lives","The Shame of the Cities","History of the Standard Oil Company"] }
+      ]
+    },
+    hard:{
+      blurb:"What the amendments actually did, democratic reform tools, WWI alliances, and Wilson's peace.",
+      categories:[
+        { name:"Reforms Enacted by Progressive Era Amendments", items:["Income Tax","Direct Election of Senators","Prohibition","Women's Suffrage"] },
+        { name:"Progressive Era Political Reforms", items:["Trust-Busting","Initiative and Referendum","Recall","Direct Primary"] },
+        { name:"WWI Alliance Systems", items:["Central Powers","Allied Powers","Triple Entente","Triple Alliance"] },
+        { name:"Wilson's Vision & the War's Aftermath", items:["War Guilt Clause","Reparations","League of Nations","Fourteen Points"] }
+      ]
+    }
   },
   {
-    id:"twenties", icon:"🎷", era:"1920–1939",
-    title:"The Roaring Twenties & Great Depression",
-    blurb:"Jazz Age culture, New Deal agencies, causes of the crash, and interwar figures.",
-    categories:[
-      { name:"1920s Culture", items:["Flappers","Jazz","Speakeasies","Prohibition"] },
-      { name:"New Deal Agencies", items:["Civilian Conservation Corps","Works Progress Administration","Tennessee Valley Authority","Social Security Administration"] },
-      { name:"The Great Depression", items:["Stock Market Crash of 1929","Dust Bowl","Bank Runs","Buying on Margin"] },
-      { name:"Figures of the Interwar Era", items:["Franklin D. Roosevelt","Herbert Hoover","Al Capone","Charles Lindbergh"] }
-    ]
+    id:"twenties", icon:"🎷", era:"1920–1939", title:"The Roaring Twenties & Great Depression",
+    easy:{
+      blurb:"Jazz Age culture, New Deal agencies, causes of the crash, and interwar figures.",
+      categories:[
+        { name:"1920s Culture", items:["Flappers","Jazz","Speakeasies","Prohibition"] },
+        { name:"New Deal Agencies", items:["Civilian Conservation Corps","Works Progress Administration","Tennessee Valley Authority","Social Security Administration"] },
+        { name:"The Great Depression", items:["Stock Market Crash of 1929","Dust Bowl","Bank Runs","Buying on Margin"] },
+        { name:"Figures of the Interwar Era", items:["Franklin D. Roosevelt","Herbert Hoover","Al Capone","Charles Lindbergh"] }
+      ]
+    },
+    hard:{
+      blurb:"Lesser-known New Deal agencies, cultural movements, what really caused the crash, and Depression slang.",
+      categories:[
+        { name:"New Deal Alphabet Agencies", items:["FDIC","SEC","NRA","AAA"] },
+        { name:"1920s Cultural Movements", items:["Harlem Renaissance","Lost Generation","Jazz Age","Flapper Culture"] },
+        { name:"Causes & Accelerants of the Great Depression", items:["Overproduction","Bank Failures","Smoot-Hawley Tariff","Farm Crisis"] },
+        { name:"Slang & Nicknames of the Depression Era", items:["Hooverville","Hoover Blanket","Bonus Army","Okies"] }
+      ]
+    }
   },
   {
-    id:"wwii", icon:"🌍", era:"1941–1945",
-    title:"World War II",
-    blurb:"Pacific and European battles, the home front, and Allied leadership.",
-    categories:[
-      { name:"WWII Pacific Battles", items:["Pearl Harbor","Midway","Iwo Jima","Okinawa"] },
-      { name:"WWII European Battles & Operations", items:["D-Day","Battle of the Bulge","Battle of Stalingrad","Battle of Britain"] },
-      { name:"The American Home Front", items:["Rosie the Riveter","Rationing","War Bonds","Japanese American Internment"] },
-      { name:"Allied Leaders of WWII", items:["Franklin D. Roosevelt","Winston Churchill","Joseph Stalin","Dwight D. Eisenhower"] }
-    ]
+    id:"wwii", icon:"🌍", era:"1941–1945", title:"World War II",
+    easy:{
+      blurb:"Pacific and European battles, the home front, and Allied leadership.",
+      categories:[
+        { name:"WWII Pacific Battles", items:["Pearl Harbor","Midway","Iwo Jima","Okinawa"] },
+        { name:"WWII European Battles & Operations", items:["D-Day","Battle of the Bulge","Battle of Stalingrad","Battle of Britain"] },
+        { name:"The American Home Front", items:["Rosie the Riveter","Rationing","War Bonds","Japanese American Internment"] },
+        { name:"Allied Leaders of WWII", items:["Franklin D. Roosevelt","Winston Churchill","Joseph Stalin","Dwight D. Eisenhower"] }
+      ]
+    },
+    hard:{
+      blurb:"One pivotal year across every theater, Allied conferences, operation code names, and home front terms.",
+      categories:[
+        { name:"All Happened in 1944", items:["D-Day","Battle of the Bulge Begins","Liberation of Paris","Battle of Leyte Gulf"] },
+        { name:"WWII Allied Conferences", items:["Tehran Conference","Yalta Conference","Potsdam Conference","Casablanca Conference"] },
+        { name:"Code Names for WWII Military Operations", items:["Operation Overlord","Operation Torch","Operation Barbarossa","Operation Market Garden"] },
+        { name:"The American Home Front (Beyond Rationing)", items:["Victory Gardens","Scrap Drives","Blackout Drills","War Production Board"] }
+      ]
+    }
   },
   {
-    id:"coldwar", icon:"☢️", era:"1947–1991",
-    title:"The Cold War",
-    blurb:"Crises, containment policy, international organizations, and Cold War symbols.",
-    categories:[
-      { name:"Cold War Crises", items:["Cuban Missile Crisis","Berlin Blockade","Korean War","Vietnam War"] },
-      { name:"Cold War Policies & Doctrines", items:["Containment","Truman Doctrine","Marshall Plan","Domino Theory"] },
-      { name:"Cold War-Era Organizations", items:["NATO","Warsaw Pact","CIA","United Nations"] },
-      { name:"Symbols & Struggles of the Cold War", items:["Berlin Wall","Iron Curtain","Space Race","Arms Race"] }
-    ]
+    id:"coldwar", icon:"☢️", era:"1947–1991", title:"The Cold War",
+    easy:{
+      blurb:"Crises, containment policy, international organizations, and Cold War symbols.",
+      categories:[
+        { name:"Cold War Crises", items:["Cuban Missile Crisis","Berlin Blockade","Korean War","Vietnam War"] },
+        { name:"Cold War Policies & Doctrines", items:["Containment","Truman Doctrine","Marshall Plan","Domino Theory"] },
+        { name:"Cold War-Era Organizations", items:["NATO","Warsaw Pact","CIA","United Nations"] },
+        { name:"Symbols & Struggles of the Cold War", items:["Berlin Wall","Iron Curtain","Space Race","Arms Race"] }
+      ]
+    },
+    hard:{
+      blurb:"Doctrines named for presidents, proxy conflicts, spy vocabulary, and Cold War firsts.",
+      categories:[
+        { name:"Presidential Doctrines of the Cold War", items:["Truman Doctrine","Eisenhower Doctrine","Nixon Doctrine","Reagan Doctrine"] },
+        { name:"Cold War Proxy Conflicts", items:["Korean War","Vietnam War","Bay of Pigs Invasion","Soviet-Afghan War"] },
+        { name:"Cold War Espionage Vocabulary", items:["Double Agent","Mole","Defector","Cipher"] },
+        { name:"Cold War Firsts & Milestones", items:["Sputnik","Apollo 11","U-2 Incident","Moscow-Washington Hotline"] }
+      ]
+    }
   },
   {
-    id:"civilrights", icon:"✊", era:"1954–1968",
-    title:"The Civil Rights Movement",
-    blurb:"Leaders, legal milestones, protests, and the organizations behind the movement.",
-    categories:[
-      { name:"Civil Rights Leaders", items:["Martin Luther King Jr.","Rosa Parks","Malcolm X","John Lewis"] },
-      { name:"Civil Rights Legal Milestones", items:["Civil Rights Act of 1964","Voting Rights Act of 1965","Brown v. Board of Education","Fair Housing Act of 1968"] },
-      { name:"Civil Rights Protests & Marches", items:["Montgomery Bus Boycott","March on Washington","Freedom Rides","Selma to Montgomery March"] },
-      { name:"Civil Rights Organizations", items:["NAACP","SNCC","SCLC","CORE"] }
-    ]
+    id:"civilrights", icon:"✊", era:"1954–1968", title:"The Civil Rights Movement",
+    easy:{
+      blurb:"Leaders, legal milestones, protests, and the organizations behind the movement.",
+      categories:[
+        { name:"Civil Rights Leaders", items:["Martin Luther King Jr.","Rosa Parks","Malcolm X","John Lewis"] },
+        { name:"Civil Rights Legal Milestones", items:["Civil Rights Act of 1964","Voting Rights Act of 1965","Brown v. Board of Education","Fair Housing Act of 1968"] },
+        { name:"Civil Rights Protests & Marches", items:["Montgomery Bus Boycott","March on Washington","Freedom Rides","Selma to Montgomery March"] },
+        { name:"Civil Rights Organizations", items:["NAACP","SNCC","SCLC","CORE"] }
+      ]
+    },
+    hard:{
+      blurb:"A single landmark year, lesser-known court cases, full organization names, and movement slang.",
+      categories:[
+        { name:"All Happened in 1963", items:["March on Washington","Birmingham Campaign","Assassination of Medgar Evers","“I Have a Dream” Speech Delivered"] },
+        { name:"Civil Rights Era Supreme Court Cases", items:["Loving v. Virginia","Heart of Atlanta Motel v. United States","Boynton v. Virginia","Cooper v. Aaron"] },
+        { name:"Civil Rights Organizations (Full Names)", items:["National Association for the Advancement of Colored People","Student Nonviolent Coordinating Committee","Southern Christian Leadership Conference","Congress of Racial Equality"] },
+        { name:"Civil Rights Movement Terms & Nicknames", items:["Bloody Sunday","Freedom Summer","Sit-In","Massive Resistance"] }
+      ]
+    }
   }
 ];
 
@@ -448,7 +583,8 @@ const PUZZLES = [
    STATE
 ========================================================================= */
 let S = null;
-const completedPuzzles = new Set();
+let currentDifficulty = "easy";
+const completedPuzzles = new Set(); // keys like "revolution:hard"
 
 function shuffle(arr){
   const a = arr.slice();
@@ -465,36 +601,48 @@ function showScreen(id){
 }
 
 /* -------- puzzle select screen -------- */
+function setDifficulty(diff){
+  currentDifficulty = diff;
+  document.getElementById("diffEasyBtn").classList.toggle("active", diff === "easy");
+  document.getElementById("diffHardBtn").classList.toggle("active", diff === "hard");
+  document.getElementById("diffDesc").textContent = DIFF_DESC[diff];
+  renderPuzzleGrid();
+}
+
 function renderPuzzleGrid(){
   const grid = document.getElementById("puzzleGrid");
   grid.innerHTML = "";
-  PUZZLES.forEach(p=>{
+  ERAS.forEach(era=>{
+    const variant = era[currentDifficulty];
     const card = document.createElement("button");
     card.className = "puzzle-card";
     card.innerHTML = `
-      <span class="icon">${p.icon}</span>
-      <span class="era-tag">${p.era}</span>
-      <h3>${p.title}</h3>
-      <p>${p.blurb}</p>
-      ${completedPuzzles.has(p.id) ? '<span class="played">✓ Solved</span>' : ''}
+      <span class="icon">${era.icon}</span>
+      <span class="era-tag">${era.era}</span>
+      <h3>${era.title}</h3>
+      <p>${variant.blurb}</p>
+      ${completedPuzzles.has(era.id+":"+currentDifficulty) ? '<span class="played">✓ Solved</span>' : ''}
     `;
-    card.addEventListener("click", ()=> startPuzzle(p.id));
+    card.addEventListener("click", ()=> startPuzzle(era.id, currentDifficulty));
     grid.appendChild(card);
   });
 }
 
 /* -------- start / init a puzzle -------- */
-function startPuzzle(puzzleId){
-  const puzzle = PUZZLES.find(p=>p.id===puzzleId);
+function startPuzzle(eraId, difficulty){
+  const era = ERAS.find(e=>e.id===eraId);
+  const variant = era[difficulty];
   const tiles = [];
   let tid = 0;
-  puzzle.categories.forEach((cat, ci)=>{
+  variant.categories.forEach((cat, ci)=>{
     cat.items.forEach(word=>{
       tiles.push({ id: tid++, word, cat: ci });
     });
   });
   S = {
-    puzzle,
+    era, difficulty,
+    categories: variant.categories,
+    title: era.title,
     tiles,
     order: shuffle(tiles.map(t=>t.id)),
     selected: new Set(),
@@ -503,8 +651,9 @@ function startPuzzle(puzzleId){
     triedCombos: new Set(),
     status: "playing"
   };
-  document.getElementById("gameEra").textContent = puzzle.era;
-  document.getElementById("gameTitle").textContent = puzzle.title;
+  document.getElementById("gameEra").textContent = era.era;
+  document.getElementById("gameTitle").innerHTML =
+    `${era.title} <span class="diff-tag ${difficulty}">${difficulty === "hard" ? "Hard Mode" : "Easy Mode"}</span>`;
   clearMessage();
   showScreen("screen-game");
   renderGame();
@@ -535,7 +684,7 @@ function renderSolvedBars(){
   const wrap = document.getElementById("solvedBars");
   wrap.innerHTML = "";
   S.solvedOrder.forEach(catIndex=>{
-    const cat = S.puzzle.categories[catIndex];
+    const cat = S.categories[catIndex];
     const lvl = LEVELS[catIndex];
     const bar = document.createElement("div");
     bar.className = "solved-bar";
@@ -661,19 +810,20 @@ function flashShake(ids){
 /* -------- end screen -------- */
 function endGame(){
   const won = S.status === "won";
-  completedPuzzles.add(S.puzzle.id);
+  completedPuzzles.add(S.era.id+":"+S.difficulty);
 
+  const diffLabel = S.difficulty === "hard" ? "Hard Mode" : "Easy Mode";
   document.getElementById("endEyebrow").textContent = won ? "PUZZLE SOLVED" : "PUZZLE OVER";
   document.getElementById("endHeadline").textContent = won
     ? (S.mistakesUsed === 0 ? "Perfect!" : "Solved It!")
     : "Nice Try!";
   document.getElementById("endSub").textContent = won
-    ? `You solved ${S.puzzle.title} with ${S.mistakesUsed} mistake${S.mistakesUsed===1?"":"s"}.`
-    : `You ran out of mistakes. Here's how ${S.puzzle.title} breaks down — review it before trying again.`;
+    ? `You solved ${S.title} (${diffLabel}) with ${S.mistakesUsed} mistake${S.mistakesUsed===1?"":"s"}.`
+    : `You ran out of mistakes on ${S.title} (${diffLabel}). Here's how it breaks down — review it before trying again.`;
 
   const wrap = document.getElementById("endBars");
   wrap.innerHTML = "";
-  S.puzzle.categories.forEach((cat, ci)=>{
+  S.categories.forEach((cat, ci)=>{
     const lvl = LEVELS[ci];
     const bar = document.createElement("div");
     bar.className = "end-bar";
@@ -690,22 +840,26 @@ function endGame(){
    EVENTS
 ========================================================================= */
 document.getElementById("instructionsContinueBtn").addEventListener("click", ()=>{
-  renderPuzzleGrid();
+  setDifficulty(currentDifficulty);
   showScreen("screen-select");
 });
 document.getElementById("reviewRulesBtn").addEventListener("click", ()=> showScreen("screen-instructions"));
 document.getElementById("switchPuzzleBtn").addEventListener("click", ()=>{
-  renderPuzzleGrid();
+  setDifficulty(S.difficulty);
   showScreen("screen-select");
 });
+document.getElementById("diffEasyBtn").addEventListener("click", ()=> setDifficulty("easy"));
+document.getElementById("diffHardBtn").addEventListener("click", ()=> setDifficulty("hard"));
 document.getElementById("shuffleBtn").addEventListener("click", shuffleTiles);
 document.getElementById("deselectBtn").addEventListener("click", deselectAll);
 document.getElementById("submitBtn").addEventListener("click", submitGuess);
-document.getElementById("playAgainBtn").addEventListener("click", ()=> startPuzzle(S.puzzle.id));
+document.getElementById("playAgainBtn").addEventListener("click", ()=> startPuzzle(S.era.id, S.difficulty));
 document.getElementById("chooseAnotherBtn").addEventListener("click", ()=>{
-  renderPuzzleGrid();
+  setDifficulty(S.difficulty);
   showScreen("screen-select");
 });
+
+setDifficulty("easy");
 
 })();
 </script>
