@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A New South? A Reconstruction Story</title>
+<meta name="description" content="A branching narrative through Reconstruction (1865-1877). Choose a role, live through the choices real Americans faced as the nation argued over what freedom meant, and examine primary sources along the way.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+:root {
+  --paper: #f3ead7;
+  --paper-dark: #e6d8b8;
+  --card: #fffcf3;
+  --ink: #211d18;
+  --ink-soft: #5b5245;
+  --navy: #16305c;
+  --navy-light: #24447c;
+  --gold: #b6892e;
+  --gold-dark: #8f6b1f;
+  --line: rgba(33,29,24,0.15);
+}
+* { -webkit-tap-highlight-color: transparent; }
+html,body { margin:0; padding:0; color:var(--ink); font-family:'Inter', system-ui, sans-serif; }
+body {
+  min-height:100vh;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle at 10% 15%, rgba(182,137,46,0.08), transparent 42%),
+    radial-gradient(circle at 88% 10%, rgba(22,48,92,0.06), transparent 40%),
+    radial-gradient(circle at 78% 85%, rgba(22,48,92,0.05), transparent 45%),
+    radial-gradient(circle at 6% 90%, rgba(182,137,46,0.06), transparent 40%);
+}
+h1,h2,h3,.serif { font-family:'Playfair Display', serif; font-weight:700; }
+a { color: var(--navy); }
+button { font-family:inherit; cursor:pointer; }
+.hidden { display:none !important; }
+.wrap { max-width: 880px; margin:0 auto; padding: 36px 22px 80px; }
+.center { text-align:center; }
+
+/* ── DECORATIVE ── */
+.divider { height:2px; width:180px; margin:20px auto; background:var(--gold); position:relative; }
+.divider::after {
+  content:'\2605'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  background:var(--paper); color:var(--gold); padding:0 12px; font-size:0.85rem;
+}
+.card-strip { height:8px; background:var(--navy); border-radius:12px 12px 0 0; }
+.seal {
+  display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  width:38px; height:38px; border-radius:50%;
+  background: var(--navy); color:#f7ecd6;
+  font-family:'Playfair Display', serif; font-weight:700; font-size:1.05rem;
+  border:2px solid var(--gold);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.28), inset 0 0 0 2px rgba(247,236,214,0.15);
+}
+
+/* ── TITLE ── */
+#screen-title .titlehead { display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:2px; }
+#screen-title .kicker { font-size:0.75rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--navy); margin-bottom:10px; font-weight:700; }
+#screen-title h1 { font-size:2.3rem; line-height:1.28; margin:0 0 6px; color:var(--navy); }
+#screen-title .sub { font-size:1rem; color:var(--ink-soft); font-style:italic; font-family:'Lora',serif; margin-bottom:6px; }
+.lede { max-width:640px; margin:0 auto 22px; font-size:1.05rem; line-height:1.85; color:var(--ink); font-family:'Lora', serif; }
+.lede p { margin:0 0 14px; }
+.btn-primary {
+  background:var(--navy); color:#fdf6ea; border:none; padding:14px 34px;
+  font-family:'Inter',sans-serif; font-size:1rem; font-weight:700; border-radius:3px; letter-spacing:0.03em;
+  box-shadow:0 3px 0 var(--navy-light);
+}
+.btn-primary:hover { background:var(--navy-light); }
+.btn-secondary {
+  background:transparent; color:var(--navy); border:1.5px solid var(--navy);
+  font-family:'Inter',sans-serif; padding:10px 22px; font-size:0.88rem; font-weight:700; border-radius:3px;
+}
+.btn-secondary:hover { background:var(--navy); color:#fdf6ea; }
+
+/* ── TEACHER NOTE ── */
+.teacher-note {
+  max-width:640px; margin:0 auto 30px; background:var(--card); border:1px solid var(--line);
+  border-radius:10px; padding:4px 22px;
+}
+.teacher-note summary {
+  cursor:pointer; padding:14px 0; font-weight:700; font-size:0.92rem; color:var(--navy);
+  list-style:none;
+}
+.teacher-note summary::-webkit-details-marker { display:none; }
+.tn-body { padding-bottom:18px; font-size:0.92rem; line-height:1.7; color:var(--ink); }
+.tn-body h4 { font-family:'Inter',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold-dark); margin:16px 0 6px; }
+.tn-body h4:first-child { margin-top:0; }
+.tn-body p { margin:0; }
+
+/* ── ROLE SELECT ── */
+#screen-role h2 { text-align:center; color:var(--navy); font-size:1.7rem; margin-bottom:6px; }
+#screen-role .sub { text-align:center; color:var(--ink-soft); font-style:italic; font-family:'Lora',serif; margin-bottom:28px; }
+.role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
+.role-card {
+  background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:0 22px 20px; display:flex; flex-direction:column; gap:8px;
+  overflow:hidden; transition:transform .15s ease, box-shadow .15s ease;
+}
+.role-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(33,29,24,0.16); }
+.role-card .rnote { font-size:0.8rem; color:var(--gold-dark); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:18px; }
+.role-card h3 { font-size:1.15rem; color:var(--navy); margin:0; }
+.role-card p { font-size:0.92rem; line-height:1.6; color:var(--ink); margin:0; flex:1; font-family:'Lora',serif; }
+.role-card button {
+  margin-top:8px; align-self:flex-start; background:var(--navy); color:#fdf6ea; border:none;
+  font-family:'Inter',sans-serif; padding:9px 18px; border-radius:3px; font-size:0.85rem; font-weight:700;
+}
+.role-card button:hover { background:var(--navy-light); }
+
+/* ── STORY ── */
+#screen-story .era-track { display:flex; justify-content:center; gap:10px; margin-bottom:22px; flex-wrap:wrap; }
+.era-dot { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; padding:5px 12px; border-radius:999px; background:var(--paper-dark); color:var(--ink-soft); border:1px solid var(--line); font-weight:600; }
+.era-dot.active { background:var(--navy); color:#fdf6ea; border-color:var(--navy); }
+.era-dot.done { background:var(--gold); color:#241f18; border-color:var(--gold); }
+
+.story-card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.story-card-inner { padding:26px 32px 30px; }
+.story-year { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--gold-dark); font-weight:700; margin-bottom:10px; }
+.story-text { font-size:1.1rem; line-height:1.85; color:var(--ink); white-space:pre-line; font-family:'Lora', serif; }
+.story-text p { margin:0 0 14px; }
+
+.archive-btn {
+  display:inline-flex; align-items:center; gap:7px; margin-top:16px;
+  background:var(--paper-dark); border:1px solid var(--gold); color:var(--navy);
+  font-family:'Inter',sans-serif; padding:9px 16px; border-radius:5px; font-size:0.85rem; font-weight:700;
+}
+.archive-btn:hover { background:var(--gold); color:#fff; }
+
+.choices { margin-top:24px; display:flex; flex-direction:column; gap:10px; }
+.choice-btn {
+  text-align:left; background:#fff; border:1.5px solid var(--navy); color:var(--navy);
+  font-family:'Inter',sans-serif; padding:14px 18px; border-radius:7px; font-size:0.95rem; line-height:1.45; font-weight:500;
+}
+.choice-btn:hover { background:var(--navy); color:#fdf6ea; }
+
+.consequence { margin-top:22px; padding:18px 20px; background:#f2e6c8; border-left:4px solid var(--gold-dark); border-radius:0 6px 6px 0; }
+.consequence .cq-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--gold-dark); font-weight:700; margin-bottom:6px; font-family:'Inter',sans-serif; }
+.consequence p { margin:0; font-size:1rem; line-height:1.7; font-style:italic; font-family:'Lora',serif; }
+#continue-wrap { margin-top:20px; text-align:right; }
+
+/* journey log */
+#journey { max-width:880px; margin:18px auto 0; }
+#journey summary { cursor:pointer; font-size:0.82rem; color:var(--ink-soft); font-weight:700; padding:6px 4px; }
+#journey-list { font-size:0.85rem; line-height:1.6; color:var(--ink-soft); padding:6px 4px 0 18px; font-family:'Lora',serif; }
+#journey-list li { margin-bottom:4px; }
+#journey-list .jy { color:var(--gold-dark); font-weight:700; margin-right:6px; font-family:'Inter',sans-serif; }
+
+/* ── ARCHIVE MODAL ── */
+#archive-overlay { position:fixed; inset:0; background:rgba(15,12,8,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+#archive-overlay.hidden { display:none; }
+#archive-modal { background:var(--paper); border-radius:10px; max-width:640px; width:100%; max-height:82vh; overflow-y:auto; padding:26px 28px; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+#archive-modal h3 { color:var(--navy); margin:0 0 4px; font-size:1.3rem; }
+#archive-modal .arch-close { float:right; background:none; border:none; font-size:1.3rem; color:var(--ink-soft); line-height:1; }
+.source-block { border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-top:16px; background:var(--card); }
+.source-block .stype { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; padding:2px 9px; border-radius:999px; display:inline-block; margin-bottom:8px; font-family:'Inter',sans-serif; }
+.stype.primary { background:#dcecd8; color:#2c5a26; }
+.stype.context { background:#e0e8f2; color:var(--navy); }
+.stype.recreated { background:#f6ddc8; color:#8a4a12; }
+.source-block h4 { margin:0 0 2px; font-size:1.05rem; color:var(--ink); font-family:'Lora',serif; }
+.source-block .syear { font-size:0.75rem; color:var(--ink-soft); margin-bottom:10px; font-family:'Inter',sans-serif; }
+.source-block .stext { font-size:0.96rem; line-height:1.65; font-style:italic; color:var(--ink); border-left:3px solid var(--gold); padding-left:12px; margin-bottom:10px; font-family:'Lora',serif; }
+.source-block .snote { font-size:0.86rem; line-height:1.6; color:var(--ink-soft); margin-bottom:8px; font-family:'Inter',sans-serif; }
+.source-block .scite { font-size:0.72rem; color:var(--ink-soft); opacity:0.85; font-family:'Inter',sans-serif; }
+
+/* ── REFLECTION ── */
+#screen-reflection .refl-card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+#screen-reflection .refl-card-inner { padding:26px 32px 30px; }
+#screen-reflection h2 { color:var(--navy); margin:0 0 4px; font-size:1.4rem; }
+#screen-reflection .refl-sub { color:var(--ink-soft); font-style:italic; font-family:'Lora',serif; margin-bottom:18px; font-size:0.94rem; }
+#refl-recap { background:var(--paper-dark); border-radius:8px; padding:12px 16px; margin-bottom:22px; font-size:0.85rem; }
+#refl-recap .rr-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:6px; font-weight:700; font-family:'Inter',sans-serif; }
+#refl-recap ul { margin:0; padding-left:18px; line-height:1.6; font-family:'Lora',serif; }
+.refl-q { margin-bottom:18px; }
+.refl-q label { display:block; font-size:0.95rem; font-weight:600; color:var(--ink); margin-bottom:7px; line-height:1.55; font-family:'Lora',serif; }
+.refl-q textarea { width:100%; min-height:70px; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-family:'Inter',sans-serif; font-size:0.9rem; line-height:1.55; resize:vertical; background:#fff; }
+.refl-q textarea:focus { outline:2px solid var(--gold); border-color:var(--gold); }
+
+/* ── EPILOGUE / FINAL ── */
+#screen-epilogue .epi-card { background:var(--navy); color:#fdf6ea; border-radius:12px; padding:32px 34px; margin-bottom:26px; position:relative; }
+#screen-epilogue .epi-card .kicker { color:#e0c17a; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:8px; font-weight:700; }
+#screen-epilogue .epi-card h2 { font-size:1.55rem; margin:0 0 12px; color:#fdf6ea; }
+#screen-epilogue .epi-card p { font-size:1.05rem; line-height:1.8; margin:0; font-family:'Lora',serif; }
+#final-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; justify-content:center; }
+
+footer.site { text-align:center; padding:26px 20px; font-size:0.78rem; color:var(--ink-soft); }
+footer.site a { color:var(--ink-soft); }
+
+@media (max-width:600px) {
+  .wrap { padding:24px 16px 60px; }
+  .story-card-inner, #screen-reflection .refl-card-inner { padding:20px 18px 24px; }
+  #screen-title h1 { font-size:1.7rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- TITLE -->
+  <section id="screen-title">
+    <div class="center">
+      <div class="kicker">A Branching History &middot; 1865&ndash;1877</div>
+      <div class="titlehead"><span class="seal">&#9733;</span><h1>A New South?<br>A Reconstruction Story</h1></div>
+      <div class="sub">You will not just read about it. You will live one version of it, choice by choice, and see where it leads.</div>
+      <div class="divider"></div>
+    </div>
+    <div class="lede">
+      <p>In April 1865, the Civil War ends. Four million enslaved Americans are free. What that freedom will actually mean &mdash; who can vote, own land, hold office, testify in court, or simply walk down a road unafraid &mdash; is not settled by that single fact. Over the next twelve years, formerly enslaved people, white Southerners, federal officials, and the U.S. Congress argue, vote, build, and sometimes attack one another over that exact question.</p>
+      <p>This is a story about that fight, told from the ground up. You will choose who you are: a federal Freedmen's Bureau agent sent to help enforce freedom's promises with almost no soldiers to back you up, a white Southern politician trying to build an interracial democracy in a region that mostly resents you for it, or a formerly enslaved person building a life &mdash; a family, a farm, a vote, maybe even a seat in office &mdash; that the law never let you have before. You will make real decisions at real turning points, examine primary sources from the archive along the way, and pause periodically to reflect on what you're seeing.</p>
+      <p>One thing this story will not do: ask you to act out violence, or make you the target of a graphic scene. Moments of danger and intimidation are described as history &mdash; things that happened, reported plainly &mdash; not things you perform. Your choices are always about how to respond. And there is no score to win: the nation's larger story ends the way it actually did. How your own character met that ending is still yours to decide.</p>
+    </div>
+    <details class="teacher-note">
+      <summary>For Teachers: Standards, Timing &amp; Content Approach &#9662;</summary>
+      <div class="tn-body">
+        <h4>Standards</h4>
+        <p>Built around the C3 Framework's historical and civic dimensions (D2.His.1&ndash;3: change, continuity, and causation; D2.Civ.1, 10, 12: civic participation, deliberation, and the reach of constitutional rights) and commonly aligns with 7th/8th grade U.S. History units covering Reconstruction (1865&ndash;1877), the 13th, 14th, and 15th Amendments, federalism, and the roots of Jim Crow.</p>
+        <h4>Timing</h4>
+        <p>One full role takes about 25&ndash;35 minutes, including the primary-source archive and reflection prompts. Assign one role per student or table group, then compare epilogues as a whole-class discussion &mdash; all three roles are built to reach the same historical turning points from different vantage points, which makes for strong compare-and-contrast debriefs.</p>
+        <h4>How this game handles difficult history</h4>
+        <p>Reconstruction can't be taught honestly without the Black Codes, the Ku Klux Klan, and the violent campaigns that ended it, and this game includes all of that &mdash; but students are never asked to act out, narrate, or personally experience violence. Danger and intimidation are described in historical summary, in primary-source documents, or as the reported consequence of a choice; every decision a student makes is about how their character responds, never about carrying out harm. The national outcome (the Compromise of 1877 and the rise of Jim Crow) is historically fixed no matter what choices are made &mdash; only the character's personal story varies &mdash; so the point is never to "beat" the actual history.</p>
+      </div>
+    </details>
+    <div class="center"><button class="btn-primary" onclick="goToRoleSelect()">Choose Your Path &rarr;</button></div>
+  </section>
+
+  <!-- ROLE SELECT -->
+  <section id="screen-role" class="hidden">
+    <h2>Whose eyes will you see this story through?</h2>
+    <div class="sub">Each path lives through the same twelve years, but experiences them very differently.</div>
+    <div class="role-grid" id="role-grid"></div>
+  </section>
+
+  <!-- STORY -->
+  <section id="screen-story" class="hidden">
+    <div class="era-track" id="era-track"></div>
+    <div class="story-card">
+      <div class="card-strip"></div>
+      <div class="story-card-inner">
+        <div class="story-year" id="story-year"></div>
+        <div class="story-text" id="story-text"></div>
+        <div id="archive-btn-wrap"></div>
+        <div class="choices" id="story-choices"></div>
+        <div id="consequence-wrap"></div>
+      </div>
+    </div>
+    <details id="journey">
+      <summary>Your journey so far &#9662;</summary>
+      <ul id="journey-list"></ul>
+    </details>
+  </section>
+
+  <!-- REFLECTION -->
+  <section id="screen-reflection" class="hidden">
+    <div class="refl-card">
+      <div class="card-strip"></div>
+      <div class="refl-card-inner">
+        <h2 id="refl-title"></h2>
+        <div class="refl-sub" id="refl-sub"></div>
+        <div id="refl-recap"></div>
+        <div id="refl-questions"></div>
+        <div class="center"><button class="btn-primary" onclick="continueFromReflection()">Continue the Story &rarr;</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EPILOGUE + FINAL REFLECTION -->
+  <section id="screen-epilogue" class="hidden">
+    <div class="epi-card">
+      <span class="seal" style="position:absolute; top:20px; right:24px;">&#9733;</span>
+      <div class="kicker" id="epi-kicker"></div>
+      <h2 id="epi-title"></h2>
+      <p id="epi-text"></p>
+    </div>
+    <div class="refl-card">
+      <div class="card-strip"></div>
+      <div class="refl-card-inner">
+        <h2 style="color:var(--navy); font-size:1.3rem; margin:0 0 4px;">Final Reflection</h2>
+        <div class="refl-sub">Take a step back from your character and think as a historian.</div>
+        <div id="final-questions"></div>
+      </div>
+    </div>
+    <div id="final-actions">
+      <button class="btn-primary" onclick="printJourney()">Print My Journey &amp; Reflections</button>
+      <button class="btn-secondary" onclick="restartGame()">Start Over as a Different Role</button>
+    </div>
+  </section>
+
+</div>
+
+<footer class="site">Humanities Immersed Learning &middot; <a href="../">Back to Games</a></footer>
+
+<!-- ARCHIVE MODAL -->
+<div id="archive-overlay" class="hidden">
+  <div id="archive-modal">
+    <button class="arch-close" onclick="closeArchive()">&times;</button>
+    <h3>The Archive</h3>
+    <div class="refl-sub" style="margin-top:0;">Three kinds of entry, always labeled: <strong>primary sources</strong> are direct quotations; <strong>historical context</strong> entries are accurate summaries of real events, not verbatim quotes; <strong>recreated sources</strong> are illustrative documents written for this story to feel like a real artifact, grounded in real history but not an actual archival record. Read each citation to see which is which.</div>
+    <div id="archive-sources"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════ DATA: ROLES ══════════════════════════
+const ROLES = {
+  bureau: {
+    label: "The Freedmen's Bureau Agent",
+    note: "A rural Southern county, 1865",
+    blurb: "A former Union officer sent by the federal government to help freedpeople and poor Southerners rebuild: negotiating labor contracts, opening schools, and settling disputes, usually as the only federal official for miles, with no guarantee Washington will back you when it matters most."
+  },
+  politician: {
+    label: "The Southern Unionist Politician",
+    note: "A state capital, the former Confederacy",
+    blurb: "A white Southerner who opposed secession, now holding elected office in a state remaking its own constitution. Old neighbors call you a traitor to your region; new allies need you to prove an interracial democracy can actually govern &mdash; before either side runs out of patience."
+  },
+  freedperson: {
+    label: "The Freedperson Rebuilding a Life",
+    note: "A former plantation county, just after emancipation",
+    blurb: "Freedom has arrived, but little else has: no land of your own yet, family scattered by years of forced sales, and a vote and a voice that some of the South's most powerful men are already organizing to take back."
+  }
+};
+
+// ══════════════════════════ DATA: ARCHIVE SOURCES ══════════════════════════
+const SOURCES = {
+  freedmens_bureau_act: { type:'primary', title:"An Act to Establish a Bureau for the Relief of Freedmen and Refugees", year:'1865',
+    text:`"There is hereby established in the War Department, to continue during the present war of rebellion, and for one year thereafter, a bureau of refugees, freedmen, and abandoned lands... The Commissioner... may direct such issues of provisions, clothing, and fuel as he may deem needful for the immediate and temporary shelter and supply of destitute and suffering refugees and freedmen."`,
+    note:"Congress created the Bureau on March 3, 1865, under General Oliver O. Howard, with a tiny staff (never more than about 900 agents for the entire South) to handle food relief, medical care, labor contracts, schools, and legal disputes for four million newly free people.",
+    cite:"13 Stat. 507, An Act to Establish a Bureau for the Relief of Freedmen and Refugees, March 3, 1865." },
+  lost_friends_ads: { type:'context', title:"The 'Information Wanted' Advertisements", year:'1865&ndash;1900s',
+    text:"Beginning almost immediately after emancipation, formerly enslaved people placed thousands of newspaper advertisements, especially in Black-owned and church papers, searching for parents, spouses, and children sold away from them years or decades earlier. Many ran for years; some searches succeeded after twenty or thirty years apart.",
+    note:"These ads are one of the largest bodies of firsthand evidence historians have of how central family separation was to slavery &mdash; and how hard freedpeople worked, immediately and for the rest of their lives, to undo it.",
+    cite:"Documented extensively in the Southwestern Christian Advocate's 'Lost Friends' column and similar Reconstruction-era newspaper archives." },
+  presidential_reconstruction: { type:'context', title:"Presidential Reconstruction", year:'1865',
+    text:"After Lincoln's assassination, President Andrew Johnson pursued a lenient, fast reunification plan: former Confederate states needed only to hold conventions repudiating secession, abolish slavery, and repudiate Confederate war debts to rejoin the Union and elect new governments. Johnson pardoned the vast majority of former Confederates who applied, restoring their political and property rights, including many former officers and officials.",
+    note:"Because the plan required so little, most 1865 Southern state governments were led by many of the same men who had led secession and the Confederacy months earlier. This is exactly what convinced the Republican-controlled Congress that Johnson's approach wasn't strict enough, leading to the much tougher Reconstruction Acts of 1867.",
+    cite:"Historical background on President Andrew Johnson's 1865 Reconstruction plan." },
+  sfo15: { type:'primary', title:"Special Field Order No. 15", year:'Jan. 1865',
+    text:`"The islands from Charleston, south, the abandoned rice fields along the rivers for thirty miles back from the sea, and the country bordering the St. Johns River, Florida, are reserved and set apart for the settlement of the negroes now made free by the acts of war and the proclamation of the President of the United States... the sole and exclusive management of affairs will be left to the freed people themselves..."`,
+    note:"General Sherman issued this order after meeting personally with twenty Black religious leaders in Savannah, who told him plainly what freedom required: 'land, and turn it and till it by our own labor.' Roughly 40,000 freedpeople settled on this land within months, in plots up to 40 acres, with the Army later lending surplus mules &mdash; the origin of the phrase '40 acres and a mule.'",
+    cite:"Special Field Order No. 15, Headquarters Military Division of the Mississippi, January 16, 1865." },
+  johnson_reversal: { type:'context', title:"President Johnson Reverses the Land Order", year:'1865',
+    text:"By the fall of 1865, President Johnson ordered the Sea Island and lowcountry lands set aside under Special Field Order No. 15 returned to their pardoned former owners. Most of the roughly 40,000 freedpeople who had settled there were evicted, in many cases by Freedmen's Bureau agents carrying out the order themselves.",
+    note:"The reversal meant almost no formerly enslaved family in the South received the land the government had, for a few months, actually promised them. Historians consistently point to this as one of Reconstruction's most consequential missed turns: without land of their own, most freedpeople had little choice but to work someone else's, on someone else's terms.",
+    cite:"Historical background on the 1865 restoration of Sea Island lands under President Andrew Johnson's amnesty and pardon policy." },
+  black_codes: { type:'primary', title:"Mississippi Black Code: Vagrancy and Labor Provisions", year:'Nov. 1865',
+    text:`"Every freedman, free negro, and mulatto shall, on the second Monday of January 1866, and annually thereafter, have a lawful home or employment, and shall have written evidence thereof... [any] found on the second Monday in January 1866, or thereafter, with no lawful employment or business... shall be deemed vagrants, and on conviction thereof shall be fined."`,
+    note:"Mississippi passed the first and most influential Black Codes in November 1865; other former Confederate states quickly passed similar laws. Vagrancy provisions like this one effectively forced freedpeople back into year-long labor contracts, often with their former enslavers, under threat of arrest, fines they couldn't pay, and forced labor to work off those fines.",
+    cite:"Mississippi Black Code, 'An Act to Amend the Vagrant Laws of the State,' November 1865 (excerpted)." },
+  thirteenth_amendment: { type:'primary', title:"The Thirteenth Amendment", year:'Ratified Dec. 1865',
+    text:`"Section 1. Neither slavery nor involuntary servitude, except as a punishment for crime whereof the party shall have been duly convicted, shall exist within the United States, or any place subject to their jurisdiction."`,
+    note:"Passed by Congress in January 1865 and ratified by the required three-fourths of states that December, the Amendment ended slavery permanently and nationwide &mdash; but its exception for people 'duly convicted' of a crime later became a loophole some Southern states used to lease convict labor, often to the same plantations, under brutal conditions.",
+    cite:"U.S. Constitution, Thirteenth Amendment, ratified December 6, 1865." },
+  reconstruction_acts_1867: { type:'context', title:"The Reconstruction Acts of 1867", year:'1867',
+    text:"Passed by Congress over President Johnson's veto, the Reconstruction Acts divided ten former Confederate states into five military districts under U.S. Army generals, required each state to write a new constitution guaranteeing Black men the right to vote, and required ratification of the Fourteenth Amendment before a state could rejoin Congress. Many former Confederate officials were temporarily barred from holding office.",
+    note:"This marked the start of 'Congressional' or 'Radical' Reconstruction, a much stricter approach than President Johnson's, driven by Republicans in Congress who believed his lenient plan had let the South's old leadership back into power with almost nothing changed.",
+    cite:"Summarized from the First Reconstruction Act, March 2, 1867, and subsequent Reconstruction Acts of 1867&ndash;68." },
+  state_constitutions_1868: { type:'context', title:"The New State Constitutions of 1868", year:'1868',
+    text:"Constitutional conventions across the former Confederacy in 1867&ndash;68 seated hundreds of Black delegates for the first time in Southern history. The resulting constitutions created the South's first public school systems, abolished property requirements for voting and officeholding, reformed local government, and, in most states, granted universal male suffrage regardless of race.",
+    note:"These constitutions were, by most measures, the most democratic governing documents the South had ever had &mdash; and several of their reforms, especially public education, outlasted Reconstruction itself, even after the governments that wrote them fell.",
+    cite:"Historical background on the 1867&ndash;68 Reconstruction-era state constitutional conventions." },
+  black_officeholders: { type:'context', title:"Black Officeholders During Reconstruction", year:'1867&ndash;1877',
+    text:"Approximately 2,000 Black men held some form of public office during Reconstruction, from local school boards and county offices to state legislatures and Congress. Hiram Revels became the first Black U.S. Senator (Mississippi, 1870); Joseph Rainey became the first Black U.S. Representative (South Carolina, 1870); South Carolina's state house had a Black majority for several years.",
+    note:"No Southern state legislature was ever majority-Black except South Carolina's lower house, and no Black candidate was ever elected governor outright (P.B.S. Pinchback served briefly as Louisiana's acting governor in 1872&ndash;73). The numbers were a real, historic first &mdash; and, measured against the South's Black population, still a modest share of total political power.",
+    cite:"Historical background on Black officeholding during Reconstruction, 1867&ndash;1877." },
+  fifteenth_amendment: { type:'primary', title:"The Fifteenth Amendment", year:'Ratified Feb. 1870',
+    text:`"Section 1. The right of citizens of the United States to vote shall not be denied or abridged by the United States or by any State on account of race, color, or previous condition of servitude."`,
+    note:"The Amendment protected the vote regardless of race, but said nothing about sex &mdash; voting rights for women, of any race, weren't guaranteed nationally until the Nineteenth Amendment in 1920. It also left states room to restrict voting through supposedly race-neutral means, a loophole later used for poll taxes and literacy tests.",
+    cite:"U.S. Constitution, Fifteenth Amendment, ratified February 3, 1870." },
+  kkk_enforcement: { type:'context', title:"The Klan and the Enforcement Acts", year:'1866&ndash;1871',
+    text:"Confederate veterans founded the Ku Klux Klan in Tennessee in 1865&ndash;66; it grew into an organized campaign of violence and intimidation aimed at preventing Black political participation across the South. Congress responded with three Enforcement Acts (1870&ndash;71), including the Ku Klux Klan Act, which let federal prosecutors bring cases against Klan violence and allowed the President to suspend habeas corpus in the worst-affected areas.",
+    note:"Federal prosecutions under these acts, especially in South Carolina in 1871&ndash;72, broke the first Klan's organized structure within a few years &mdash; a rare case of Reconstruction-era federal enforcement actually working. It did not end political violence in the South; other groups, and later the less centralized 'Redeemer' campaigns of the mid-1870s, continued it.",
+    cite:"Historical background on the founding of the Ku Klux Klan and the 1870&ndash;71 Enforcement Acts." },
+  panic_1873_sharecropping: { type:'context', title:"The Panic of 1873 and the Crop-Lien System", year:'1873&ndash;1879',
+    text:"A banking collapse triggered a national economic depression lasting roughly six years, shifting Northern political attention toward economic recovery and away from enforcing Reconstruction in the South. In the countryside, cash-poor freedpeople and poor white farmers increasingly worked land under sharecropping contracts, borrowing seed and supplies against a lien on their future crop at a local store, often at steep interest that left them in debt year after year regardless of harvest size.",
+    note:"Without their own land, most freedpeople had no real alternative to sharecropping. The system rarely involved anyone being legally forced to work, but debt, unfair contract terms, and few other sources of credit or land created a labor system many historians describe as a close economic cousin of the slavery it replaced.",
+    cite:"Historical background on the Panic of 1873 and the postwar Southern sharecropping and crop-lien system." },
+  sharecropping_contract: { type:'recreated', title:"A Sharecropping Contract", year:'1873',
+    text:"The undersigned agrees to furnish the land, mule, seed, and tools; the laborer agrees to furnish the labor and to receive one-third of the cotton crop when sold, after deducting the cost of rations, medicine, and supplies advanced during the year at the store's prices. Any balance owed the furnishing merchant at year's end shall be carried forward against next year's crop.",
+    note:"This contract is a recreation, not an actual signed document, but its terms are typical of real Reconstruction-era sharecropping agreements: the landowner set the store prices and kept the books, leaving tenants with very little practical way to check whether they'd actually been paid fairly.",
+    cite:"Illustrative reconstruction based on common sharecropping and crop-lien contract terms of the 1870s South; not an actual historical document." },
+  mississippi_plan_1875: { type:'context', title:"The Mississippi Plan", year:'1875',
+    text:"Ahead of Mississippi's 1875 elections, white Democratic 'rifle clubs' and similar armed groups organized a statewide campaign combining economic threats (landlords firing or evicting Republican-voting sharecroppers), public shows of armed force at rallies and campaign events, and targeted violence to suppress Black turnout and intimidate Republican officials into resigning or fleeing. The strategy worked: Democrats swept the election and 'redeemed' the state government.",
+    note:"Historians call this the Mississippi Plan because other Southern states, especially South Carolina and Louisiana, copied the same combination of tactics in 1876 to retake their own state governments. It succeeded largely because the Grant administration, facing its own political pressures, did not send federal troops to stop it.",
+    cite:"Historical background on the 1875 Mississippi election and the broader 'Redemption' campaigns of 1874&ndash;1877." },
+  compromise_1877: { type:'context', title:"The Compromise of 1877", year:'1877',
+    text:"The 1876 presidential election between Rutherford B. Hayes and Samuel Tilden ended in a disputed count in three Southern states. In an informal bargain to resolve the crisis, Hayes was awarded the presidency, and incoming officials agreed to withdraw the last federal troops still stationed in the South. Without federal enforcement, the last Reconstruction state governments (in South Carolina, Louisiana, and Florida) fell within weeks to Redeemer Democrats.",
+    note:"There was no single vote or law that ended Reconstruction; there was this negotiated political trade. Within twenty years, Southern states had passed a wave of new laws (poll taxes, literacy tests, and eventually full racial segregation, upheld by the Supreme Court in Plessy v. Ferguson in 1896) that would remain in place for most of the next century.",
+    cite:"Historical background on the disputed 1876 election and the Compromise of 1877." }
+};
+
+// ══════════════════════════ DATA: STORY NODES ══════════════════════════
+// Each role has 9 nodes (3 per era). choices: {label, delta, result, flag?}
+const STORY = {
+
+bureau: [
+{ year:'1865 &middot; Era One', text:`You've just arrived in a rural county as one of only a handful of Freedmen's Bureau agents for miles in any direction. Outside your tent office, a line has formed every morning since you got here: freedpeople asking for rations, help finding family members sold away years ago, or simply someone to write down that their marriage, until now never legally recognized, is real. Meanwhile, the planters whose fields sit empty want you to get "their people" back to work before the harvest is lost.`,
+  sources:['freedmens_bureau_act','lost_friends_ads'],
+  choices:[
+    {label:"Spend your first week helping reunite separated families and formally register marriages and children.", delta:1, result:"You fill page after page of your ledger with names that, for the first time, the law will actually recognize as families. It's slow, unglamorous work, and the planters outside grow visibly impatient."},
+    {label:"Prioritize brokering labor contracts between planters and freedpeople right away, worried everyone will go hungry by winter otherwise.", delta:0, result:"You get contracts signed quickly. Some are fair; a few, you suspect, are not, but there wasn't time today to review each one line by line."},
+    {label:"Side with the planters' demands and press freedpeople to return to the same fields, believing order matters most right now.", delta:-1, result:"The planters are pleased. Several freedpeople who came to your office hoping for something more than their old jobs back leave without much reason to trust you again."}
+  ]},
+{ year:'1865', text:`Word spreads fast: under Special Field Order No. 15, freedpeople along the coast have actually received land, up to 40 acres a family, with the Army lending mules. Then, months later, new orders arrive from Washington. President Johnson has pardoned the land's former owners and wants it returned to them. You are the federal officer who has to explain this, in person, to families who were told this land was theirs.`,
+  sources:['sfo15','johnson_reversal'],
+  choices:[
+    {label:"Slow-walk the eviction paperwork and quietly help affected families find alternative land or work before enforcing the order.", delta:2, result:"You buy a few families several extra weeks and help two of them find a fair tenancy elsewhere. It's not what was promised, but it's more than a fast eviction would have left them."},
+    {label:"Carry out your orders promptly, reasoning that you're a federal officer bound to follow policy either way.", delta:-1, result:"The evictions happen on schedule, without incident. You tell yourself the order came from Washington, not from you, and try not to think too hard about whether that distinction matters to the families being moved off land they'd already started to farm."},
+    {label:"Formally protest to your superior officer in writing, documenting the harm, even though you know it won't change the order.", delta:1, result:"Your report goes into a file in Washington that, as far as you can tell, no one urgently reads. Still, it exists &mdash; a record that at least one federal agent said, on paper, that this was a mistake."}
+  ]},
+{ year:'Late 1865', text:`Your state's new legislature, elected under President Johnson's fast reunification plan, passes a Black Code: freedpeople without a signed year-long labor contract by January can be arrested as vagrants and, if unable to pay the fine, forced to work it off. As a Bureau agent, you have some authority to override the harshest local court rulings under Bureau regulations &mdash; when you're willing to spend the political capital to use it.`,
+  sources:['black_codes'],
+  choices:[
+    {label:"Use your Bureau authority aggressively, overturning unjust vagrancy rulings whenever you become aware of them.", delta:2, result:"You void several convictions the local court didn't expect a federal agent to touch. The county judge complains loudly to your superiors about federal overreach. You keep doing it anyway."},
+    {label:"Pick your battles selectively, intervening only in the most severe cases to avoid provoking a backlash that could get the Bureau shut down here entirely.", delta:0, result:"You let some rulings stand that you privately believe are unjust, saving your limited authority for the cases that seem most urgent. It's a calculation you're not fully at peace with."},
+    {label:"Avoid confrontation with the local court altogether, worried that overstepping will cost you your post and leave freedpeople with no agent at all.", delta:-1, result:"You keep your post. The vagrancy law keeps operating exactly as the legislature intended, unchallenged by the one federal official in the county with any standing to challenge it."}
+  ]}
+],
+
+politician: [
+{ year:'1865 &middot; Era One', text:`Under President Johnson's fast, lenient plan, your state has rejoined civil government within months of surrender. In your new state legislature's first session, several members are former Confederate officers and officials, elected without any real check on their eligibility. As a Unionist who opposed secession from the start, you have to decide, on your very first day in office, how hard to fight this.`,
+  sources:['presidential_reconstruction'],
+  choices:[
+    {label:"Publicly challenge the seating of unrepentant Confederate officials, even knowing you'll be badly outvoted.", delta:2, result:"You lose the vote decisively, and you've made enemies before casting a single other ballot. A handful of colleagues, though, quietly tell you afterward that they respect that you said it out loud."},
+    {label:"Vote against seating them but avoid making a public issue of it, choosing a quieter kind of resistance.", delta:1, result:"Your no vote is recorded and mostly ignored. It costs you little, and it changes little, though it's on the record if anyone ever looks."},
+    {label:"Go along with seating them without protest, calculating you'll need your political capital for battles you might actually win.", delta:-1, result:"The former Confederate officials take their seats without friction from you. You tell yourself you're saving your fight for something that matters more. It's a promise you'll need to keep."}
+  ]},
+{ year:'1865', text:`A delegation of freedpeople from your own district asks for your help: President Johnson has ordered land they settled under Special Field Order No. 15 returned to its pardoned former owner, a man your own family has known for years. Several of your relatives and social circle expect you to simply let the President's policy run its course.`,
+  sources:['sfo15','johnson_reversal'],
+  choices:[
+    {label:"Formally intervene on the freedpeople's behalf, straining relationships with your own family and social class.", delta:2, result:"You write letters, make calls, and buy the families a delay, though the President's order ultimately still stands. Your uncle stops speaking to you at church. You decide that's a price you can live with."},
+    {label:"Decline to get directly involved, citing the President's clear authority on the matter, though you sympathize privately.", delta:-1, result:"You express sympathy but take no action. The eviction proceeds on schedule. Your standing with your own social circle is undisturbed, which is precisely the problem the freedpeople who came to you would point out."},
+    {label:"Offer informal advice and connections without staking your political name publicly on the issue.", delta:0, result:"You help quietly, behind the scenes, careful not to be seen doing it. It's more than nothing. It is also considerably less than what you're capable of."}
+  ]},
+{ year:'Late 1865', text:`The legislature debates whether to allow Black residents to testify in court against white defendants &mdash; a right the state's new Black Code explicitly denies, along with most other former Confederate states' codes. Without it, freedpeople have no real legal recourse if a white employer cheats or assaults them, since no Black witness's word counts against a white one's in court.`,
+  sources:['black_codes','thirteenth_amendment'],
+  choices:[
+    {label:"Introduce and champion a measure allowing Black testimony against white defendants in court.", delta:2, result:"The measure fails, badly, but you've forced a recorded vote and a public debate on a question your colleagues would rather have avoided entirely. A few newspapers outside the state take notice."},
+    {label:"Let the question come to a floor vote without actively championing it, voting yes yourself but not campaigning for it.", delta:0, result:"You vote your conscience when the moment arrives and say little beforehand or after. The measure fails without much of a fight from anyone, including you."},
+    {label:"Oppose extending court testimony rights, worried it will cost you your remaining political support among white constituents.", delta:-2, result:"You vote with the majority. The measure fails overwhelmingly, exactly as it would have without your vote, except now your vote is part of why."}
+  ]}
+],
+
+freedperson: [
+{ year:'1865 &middot; Era One', text:`Freedom has arrived faster than any plan for what to do with it. In your first weeks, you have to decide what matters most, with almost no money and no time to do everything at once: finding family members sold away years ago, securing any wage work you can before winter, or making the trip to the new Freedmen's Bureau office to have your marriage and your children legally recognized for the first time in your life.`,
+  sources:['freedmens_bureau_act','lost_friends_ads'],
+  choices:[
+    {label:"Spend scarce time and what little money you have trying to locate family members sold away years before.", delta:1, result:"You place a notice and ask everyone you meet if they've seen or heard of your people. It costs you paying work you could have taken instead. Some searches like yours take thirty years to end well. Yours doesn't end this year."},
+    {label:"Take the first available wage-labor arrangement with a nearby planter, securing food and shelter now and postponing the search for family.", delta:0, result:"You have work and a roof for the winter. The people you're still hoping to find remain, for now, exactly as unfound as they were before."},
+    {label:"Go to the Freedmen's Bureau office to formally register your marriage and have your children legally recognized as yours.", delta:2, result:"For the first time in your life, or your parents' lives, a government document exists proving your family is a family in the law's eyes, not just in your own. No court in this state could have taken your children from you before today the way it always legally could until now."}
+  ]},
+{ year:'1865', text:`Under Special Field Order No. 15, you and dozens of other families actually receive a plot of land along the coast, up to 40 acres, with the Army lending a mule to work it. Then, months later, Bureau agents arrive with new orders: President Johnson has pardoned the land's former owner, and it must be returned to him.`,
+  sources:['sfo15','johnson_reversal'],
+  choices:[
+    {label:"Refuse to leave the land you were promised, forcing the Bureau to physically remove you rather than walking away on your own.", delta:2, flag:'sfo15_resistance', result:"You hold the line as long as you can. In the end, the order is enforced regardless, but not before the agent sent to move you has to look you in the eye and explain, out loud, exactly what the government is taking back and why."},
+    {label:"Negotiate a labor contract with the returning owner to keep working the same land, now on his terms instead of your own.", delta:0, result:"You stay on land you'd briefly thought of as yours, working it again for someone else's benefit. It is, in practice, close to where you started, with one difference: you know now, firsthand, exactly how fast a promised right can be taken back."},
+    {label:"Leave peaceably and move on to seek work and land elsewhere, unwilling to risk more for a promise the government already broke.", delta:-1, result:"You gather what you can carry and start over somewhere else. It's a hard, familiar kind of resilience, built on a government promise that lasted barely half a year."}
+  ]},
+{ year:'Late 1865', text:`Your state's new Black Code requires every freedperson to hold a signed year-long labor contract by January or risk arrest as a vagrant, with fines you can't pay working themselves off as forced labor. A local court, all-white, can also rule you "unable to support" your own children and bind them into an apprenticeship with a white household instead.`,
+  sources:['black_codes'],
+  choices:[
+    {label:"Sign a labor contract quickly with a fair-minded employer the Bureau recommends, to protect your legal standing and your children's.", delta:1, result:"You're bound to a year's labor on someone else's terms, but on paper, at least, you and your children are protected from the vagrancy law's worst reach."},
+    {label:"Refuse a bad contract on principle, even though it leaves you legally exposed under the vagrancy law, hoping the Bureau will back you if trouble comes.", delta:2, result:"You hold out for terms you can actually live with. It's a real gamble under a law built to punish exactly this kind of refusal, but a fairer contract, eventually, is what you get."},
+    {label:"Accept whatever terms the first planter who asks offers, purely to avoid any legal risk at all.", delta:-2, result:"You're safe from the vagrancy law. The contract you signed to get there, you already suspect, will leave you owing more at year's end than you earned."}
+  ]}
+]
+};
+
+// ══════════════════════════ DATA: ERA 2 & 3 NODES (shared arc, appended below) ══════════════════════════
+STORY.bureau.push(
+{ year:'1867 &middot; Era Two', text:`Congress overrides President Johnson's veto and passes the Reconstruction Acts, placing the South under military districts and requiring new voter registration &mdash; for the first time including Black men. Registrars are stretched thin, and many freedmen on remote farms and in isolated quarters have no easy way to reach a registration point in town before the deadline.`,
+  sources:['reconstruction_acts_1867'],
+  choices:[
+    {label:"Travel personally with registrars to remote farms and quarters so freedmen who can't easily reach town still get registered.", delta:2, result:"You spend exhausting weeks on back roads, but dozens of men who never would have made it to town on their own are registered before the deadline."},
+    {label:"Register voters at your office as usual, helping mainly those who make it there without extra outreach.", delta:0, result:"You process everyone who shows up efficiently and fairly. The ones who couldn't make the trip, though, simply don't get registered this cycle."},
+    {label:"Focus your limited energy elsewhere, treating voter registration as the Army's job, not the Bureau's.", delta:-1, result:"You let the military handle registration on its own timeline. Registration numbers in your county come in noticeably lower than in districts where Bureau agents pitched in."}
+  ]},
+{ year:'1868', text:`Your state's new constitutional convention, with Black delegates seated for the first time in its history, has created the state's first public school system. As the Bureau's local education officer, funding is desperately short: you can pay to protect a teacher who's received threats and wants to stay, or use the same money to build a new schoolhouse in an outlying district with no school access at all.`,
+  sources:['state_constitutions_1868','black_officeholders'],
+  choices:[
+    {label:"Use the funds to protect and support the threatened teacher, so the existing school doesn't close.", delta:1, result:"The school stays open, and the teacher stays too, a little steadier for knowing the Bureau took the threat seriously. The outlying district goes another year without a school of its own."},
+    {label:"Prioritize building the new schoolhouse in the outlying district, betting the current threats won't escalate further.", delta:1, result:"A new schoolhouse opens where there was none. You hear later that the threatened teacher left the state before the year was out, for reasons you can't say for certain were only about the threats."},
+    {label:"Report the threats to the state government but take no further action yourself, unsure the Bureau's mandate to protect civilians directly is even clear.", delta:-1, result:"Your report goes into the state's files. No additional protection or funding follows. The teacher stays, uneasily, without much more support than before you filed it."}
+  ]},
+{ year:'1870', text:`The Fifteenth Amendment is ratified, guaranteeing Black men the vote nationwide &mdash; just as Klan violence against Black voters and officeholders sharply escalates across your district. Congress responds with the Enforcement Acts, letting federal prosecutors bring cases against organized political violence. Federal attorneys need sworn testimony from intimidated witnesses to make any of it stick.`,
+  sources:['fifteenth_amendment','kkk_enforcement'],
+  choices:[
+    {label:"Volunteer to gather sworn testimony from intimidated Black voters for federal prosecutors, despite the personal risk.", delta:2, flag:'bureau_testify', result:"You collect statements that federal attorneys can actually use, traveling at hours and by routes you don't mention in your official reports. More than one letter arrives at your office afterward that you don't share with your family."},
+    {label:"Continue your ordinary duties, providing testimony evidence only if directly asked and not seeking it out.", delta:0, result:"You cooperate when asked, but you don't go looking for cases. Some real intimidation in your district likely goes undocumented and unprosecuted as a result."},
+    {label:"Advise Black voters privately to avoid the polls this cycle for their own safety, doubting federal enforcement will actually protect them.", delta:-2, result:"Several families take your advice and stay home on election day. You've likely kept them safer in the short term, at the direct cost of the vote the Fifteenth Amendment just guaranteed them."}
+  ]}
+);
+STORY.bureau.push(
+{ year:'1873 &middot; Era Three', text:`The Bureau's federal funding runs out in 1872, and your official post effectively ends. The Panic of 1873 has thrown the whole country into economic crisis, and in the countryside, families with no land of their own increasingly sign sharecropping contracts that leave them in debt to a local merchant no matter how the harvest turns out.`,
+  sources:['panic_1873_sharecropping','sharecropping_contract'],
+  choices:[
+    {label:"Stay in the county without federal pay, continuing informally to review labor and sharecropping contracts for fairness whenever families ask.", delta:2, result:"You spend evenings and weekends going over contract terms for anyone who brings you one, unpaid, on your own time. It's a fraction of what a funded Bureau could have done. It is also more than nothing, in a place where nothing is exactly what most families would otherwise have."},
+    {label:"Take a paying job elsewhere in the county unrelated to civil rights work, staying available occasionally if specifically asked.", delta:0, result:"You need income like anyone else. You help when asked directly, which is less often than when you were known as the Bureau's man in town."},
+    {label:"Return North; the Bureau is gone, your salary is gone, and you've done what one person reasonably could.", delta:-1, result:"You leave the county you spent years working in. It's a defensible choice for a person with no more official reason to stay. It is also, undeniably, a door closing for the families who'd come to rely on you."}
+  ]},
+{ year:'1875', text:`A Mississippi Plan-style campaign of economic threats and organized armed intimidation spreads into your area ahead of the next elections, targeting Black voters and the Republican officials who depend on their votes. You still have contacts from your Bureau years, and some standing as a former federal officer.`,
+  sources:['mississippi_plan_1875'],
+  choices:[
+    {label:"Document specific intimidation incidents and report them to federal officials, knowing this makes you a target too.", delta:2, result:"You compile detailed reports and send them up the chain, though you have no illusions Washington's appetite for enforcement is what it was in 1871. At least one local paper prints your name as an example of continuing federal 'meddling.'"},
+    {label:"Help a few families you know personally, quietly, without taking any public stance.", delta:0, result:"You do what you can for people you know by name, without drawing attention to yourself. It helps the families you reach. It reaches very few of the families in the county who need it."},
+    {label:"Keep your distance entirely; the political violence isn't really Bureau business anymore, and you have your own family to think about.", delta:-2, result:"You stay out of it. The campaign proceeds in your area largely unchallenged by anyone with your particular experience and standing to challenge it."}
+  ]},
+{ year:'1877', text:`The Compromise of 1877 resolves the disputed presidential election by trading away the last federal troops still in the South. Reconstruction, as a project backed by federal power, is ending, not because the argument over equal citizenship was settled, but because Washington has decided it's gone on long enough.`,
+  sources:['compromise_1877'],
+  choices:[
+    {label:"Stay in the county for the long haul, betting that patient, local work can still matter even without federal backing.", delta:1, result:"You stay. It is unglamorous, occasionally lonely work with no federal salary and no federal authority behind it anymore, done because you've decided it's still worth doing."},
+    {label:"Leave for the North, believing there's little more a single person can accomplish here without federal support.", delta:-1, result:"You leave. It is, by any reasonable measure, a defensible decision for someone whose federal mandate ended years ago. It is also one fewer person in the county willing to keep asking hard questions out loud."},
+    {label:"Take a minor role in whatever remains of the state's Republican political apparatus, doing what you can within a shrinking system.", delta:0, result:"You stay involved in a diminished capacity, inside a party structure that has far less power in the state than it did even a year ago."}
+  ]}
+);
+
+STORY.politician.push(
+{ year:'1867 &middot; Era Two', text:`Congress overrides President Johnson's veto and passes the Reconstruction Acts, placing your state under military authority and requiring a new constitution guaranteeing Black male suffrage before it can rejoin Congress. Overnight, your political coalition's math changes completely: newly registered Black voters could make up the majority you've never had before, if you actually build a coalition with them rather than simply benefiting from their votes.`,
+  sources:['reconstruction_acts_1867'],
+  choices:[
+    {label:"Actively campaign together with Black political leaders and organizers to build a real biracial coalition.", delta:2, flag:'biracial_coalition', result:"You share platforms, literally and politically, with Black leaders your former social circle refuses to acknowledge in public. It costs you old friends. It builds you a coalition that actually wins elections."},
+    {label:"Accept Black voters' support without doing much to build genuine coalition relationships or a shared platform.", delta:0, result:"You benefit from the new electoral math without investing much in the people behind it. The coalition holds together for now, loosely, on convenience rather than trust."},
+    {label:"Try to distance yourself from association with Black suffrage publicly, even while benefiting from the new electoral math.", delta:-2, result:"You win your race while publicly downplaying exactly who won it for you. The Black voters who provided your margin notice the difference between being counted on and being acknowledged."}
+  ]},
+{ year:'1868', text:`You're a delegate at the state constitutional convention, which includes a substantial number of Black delegates for the first time in the state's history. The convention debates a provision establishing the state's first public school system, open to all children &mdash; a proposal that will require real new taxes and real political courage to pass.`,
+  sources:['state_constitutions_1868','black_officeholders'],
+  choices:[
+    {label:"Champion establishing the state's first public school system, open to all children, without a segregation carve-out.", delta:2, result:"The provision passes, one of the most genuinely progressive things this state's government has ever done. It also becomes one of the first things Redeemer newspapers point to when attacking the convention as reckless and expensive."},
+    {label:"Support public schools but push for a local-option segregation clause, seeing it as a necessary political compromise to get the article passed at all.", delta:0, result:"The article passes with your compromise attached. Public education for all children is a real historic first for this state; it is also, from the beginning, an unequal one."},
+    {label:"Oppose the education article, arguing the new taxes it requires will alienate whatever white support the coalition still has.", delta:-2, result:"You vote no. The article passes anyway without you, but your name is on record opposing the state's first public schools for reasons that had far more to do with politics than principle."}
+  ]},
+{ year:'1870', text:`The Fifteenth Amendment is ratified, and Klan violence targeting Black officeholders, and the white political allies who campaign alongside them, escalates sharply. Congress passes the Enforcement Acts, allowing federal prosecution of the violence &mdash; a deeply unpopular position with much of your remaining white constituency.`,
+  sources:['fifteenth_amendment','kkk_enforcement'],
+  choices:[
+    {label:"Publicly support the Enforcement Acts and federal prosecution of Klan violence, whatever it costs you with white voters.", delta:2, result:"You say, on the record, that political violence against your own constituents and allies is unacceptable regardless of who commits it. It costs you real support. You keep saying it."},
+    {label:"Stay privately supportive of enforcement but avoid public statements, worried about the personal and political risk.", delta:0, result:"You quietly favor enforcement without campaigning on it. It's a survivable position. It's also one that asks the people actually facing the violence to do the public arguing you won't."},
+    {label:"Publicly distance yourself from federal 'interference,' calculating it's the only way to survive politically as violence escalates.", delta:-2, result:"You put real distance between yourself and federal enforcement efforts, in public, on the record. It buys you political room. Former allies notice exactly what you bought it with."}
+  ]}
+);
+STORY.politician.push(
+{ year:'1873 &middot; Era Three', text:`The Panic of 1873 devastates the state's economy and turns public attention toward recovery and away from Reconstruction's remaining fights. Redeemer Democrats blame your government for the state's debt and for corruption, some of it real, in state contracts and railroad bonds.`,
+  sources:['panic_1873_sharecropping'],
+  choices:[
+    {label:"Defend the government's genuine achievements, like the schools, against blanket 'corruption' attacks, while acknowledging the real corruption that needs rooting out.", delta:2, result:"It's a harder argument to make than a simple denial, but it's the honest one: real achievements and real corruption coexisted in this government, and pretending otherwise, in either direction, would be its own kind of dishonesty."},
+    {label:"Distance yourself from the administration's record entirely to avoid being tainted by corruption scandals elsewhere in the party.", delta:-1, result:"You survive the immediate political damage by putting distance between yourself and colleagues under scrutiny. The government's real achievements lose a defender at exactly the moment they need one."},
+    {label:"Push to specifically identify and prosecute the corruption you know about, hoping it strengthens the broader Reconstruction project's credibility.", delta:1, result:"You name names and force some real accountability. It earns you enemies within your own coalition and, eventually, grudging credit from at least a few opponents for not simply covering it up."}
+  ]},
+{ year:'1875', text:`A Mississippi Plan-style redemption campaign targets your state ahead of the next elections: economic coercion against Black voters, public shows of armed force at rallies, and outright violence at some polling places, all aimed at retaking the state government by any means necessary.`,
+  sources:['mississippi_plan_1875'],
+  choices:[
+    {label:"Request federal troops or marshals for polling-place protection and campaign vigorously anyway.", delta:2, result:"Federal protection arrives at some, not all, of the polling places you requested it for. You campaign hard regardless, aware the odds have shifted sharply against your coalition."},
+    {label:"Quietly withdraw from active campaigning, citing the danger, while still voting your conscience where it's safe to.", delta:-1, result:"You step back from the visible fight at the exact moment your coalition needs visible fighters most. Your own safety is better secured. The election is not."},
+    {label:"Publicly switch allegiance to the Redeemer Democrats, calculating that political survival matters more than the coalition you helped build.", delta:-3, flag:'politician_defector', result:"You cross the aisle, publicly and formally, before the votes are even counted. Former allies call it betrayal. You call it survival. History generally doesn't need to choose only one of those descriptions to be true."}
+  ]},
+{ year:'1877', text:`The Compromise of 1877 resolves the disputed presidential election. Federal troops withdraw from the South, and your state's government, whatever coalition still holds it, falls within weeks to a Redeemer administration.`,
+  sources:['compromise_1877'],
+  choices:[
+    {label:"Stay in the state and continue whatever political fight remains possible, even from the margins.", delta:1, result:"You stay, holding what influence you can from a position with far less power than you once had, in a state now governed by people who spent a decade trying to remove you from office."},
+    {label:"Retire from politics quietly rather than serve any role, however small, in a Redeemer-controlled government.", delta:0, result:"You step away from public life. It preserves your record from further compromise. It also means one fewer voice, however diminished, still arguing for what the coalition tried to build."},
+    {label:"Accommodate the new Redeemer order fully, seeking a place within it despite everything you fought for over the previous decade.", delta:-2, result:"You find a place in the new order, a smaller one than you once held, built on setting aside most of what your career until now was supposedly about."}
+  ]}
+);
+
+STORY.freedperson.push(
+{ year:'1867 &middot; Era Two', text:`Congress's Reconstruction Acts require new voter registration across the South, and for the first time in your life, you have the chance to register to vote. Your landlord has made it clear, without saying so directly, that Republican-voting sharecroppers on his land shouldn't expect their leases renewed.`,
+  sources:['reconstruction_acts_1867'],
+  choices:[
+    {label:"Register to vote despite your landlord's implied threat to your family's housing and livelihood.", delta:2, result:"You register. It's not a small risk, and you know it. Whatever happens with the lease, no one can take back the fact that your name is now on the rolls."},
+    {label:"Register quietly, telling no one, hoping to avoid your landlord's notice.", delta:1, result:"You register without announcing it. It's a real step, taken as carefully as you can manage, in a system built to make even this ordinary act feel dangerous."},
+    {label:"Skip registering this cycle, unwilling to risk your family's only income over it right now.", delta:-1, result:"You wait for a safer year. Your family's housing is secure for now. The vote the Reconstruction Acts just opened to you goes unused this time."}
+  ]},
+{ year:'1868', text:`With the new constitution guaranteeing Black male suffrage and officeholding, community members urge you to stand for a local office &mdash; school board trustee, since you can read and are trusted across the community &mdash; rather than only supporting whichever candidate might otherwise run.`,
+  sources:['state_constitutions_1868','black_officeholders'],
+  choices:[
+    {label:"Agree to run for the local school board seat yourself.", delta:2, flag:'freedperson_officeholder', result:"You win the seat, becoming one of the first Black officeholders in your county's history. It is real, it is recorded, and it is exactly the kind of position some of your neighbors' worst threats are aimed at making too dangerous to hold."},
+    {label:"Decline to run yourself but actively help register voters and support whichever candidate does run.", delta:1, result:"You put your energy behind someone else's candidacy, canvassing and organizing rather than standing for office yourself. It's real, valuable work, done from a position with somewhat less exposure than the candidate's."},
+    {label:"Decline entirely, worried that visible political leadership will make your family too dangerous a target.", delta:-1, result:"You stay out of the race and out of the visible organizing around it. Your family draws less attention. The seat is filled, or not, by someone else's decision instead of yours."}
+  ]},
+{ year:'1870', text:`The Fifteenth Amendment is ratified, guaranteeing the vote regardless of race &mdash; and, in your area, night riders begin openly threatening Black voters and any officeholders in your community. The threats are specific enough that you know they're not idle.`,
+  sources:['fifteenth_amendment','kkk_enforcement'],
+  choices:[
+    {label:"Continue voting and, if applicable, serving or organizing, despite the direct threats.", delta:2, result:"You don't back down. It is a genuinely dangerous choice in this exact moment and place, made anyway, because the alternative feels like handing over something you only just won."},
+    {label:"Continue participating, but more cautiously, stepping back from any visible leadership role.", delta:0, result:"You keep voting but pull back from anything more visible than that, trying to balance real risk against a right you're not willing to fully give up."},
+    {label:"Stop participating in politics for now, prioritizing your family's immediate safety.", delta:-2, result:"You step back entirely this cycle. Your family's safety is the priority you name, and it's not a wrong one to name. The ballot the Fifteenth Amendment guaranteed goes uncast."}
+  ]}
+);
+STORY.freedperson.push(
+{ year:'1873 &middot; Era Three', text:`The Panic of 1873 has crashed cotton prices, and the sharecropping and crop-lien system is tightening its hold everywhere around you. You're offered a new sharecropping contract for the coming year, with store credit terms that heavily favor the landowner.`,
+  sources:['sharecropping_contract','panic_1873_sharecropping'],
+  choices:[
+    {label:"Push back and negotiate specific, fairer contract terms, even if it risks the landowner refusing to rent to you at all.", delta:2, result:"You get some real concessions in writing, though it takes several tense conversations to get there. Not every family in your position gets a landowner willing to negotiate at all."},
+    {label:"Sign the standard contract as offered, unable to risk having no land to farm at all this season.", delta:-1, result:"You sign what's offered. It's the same choice most families in your position make this year, for the same reason: no land at all is a worse outcome than land on unfair terms."},
+    {label:"Try to save what you can separately, aiming to eventually buy a small plot outright instead of renting or sharecropping at all.", delta:1, result:"You take on a leaner year now, setting aside what little you can toward owning land outright someday instead of working someone else's on someone else's terms indefinitely."}
+  ]},
+{ year:'1875', text:`A Mississippi Plan-style campaign of economic threats and organized shows of armed force spreads through your area ahead of the elections. Landowners openly threaten to evict any sharecropper who votes Republican; armed rallies pass through town on market days.`,
+  sources:['mississippi_plan_1875'],
+  choices:[
+    {label:"Continue voting and organizing anyway, despite the explicit threat to your family's housing and livelihood.", delta:2, result:"You continue participating despite everything arrayed to stop you. It's a genuinely dangerous choice, made with your eyes open to exactly what's being risked."},
+    {label:"Pull back from visible political activity to protect your family's housing and safety, while still supporting the cause quietly.", delta:-1, result:"You step back from anything visible, prioritizing your family's immediate safety over the political fight. It's an understandable choice under the circumstances, and also a real retreat from ground already won."},
+    {label:"Focus your energy on helping neighbors relocate to safer counties or Northern cities as conditions worsen locally.", delta:1, result:"Rather than fight the campaign directly, you help several families make a different kind of choice: leaving for somewhere the threats don't reach, an early example of a migration pattern that would grow much larger in the decades ahead."}
+  ]},
+{ year:'1877', text:`The Compromise of 1877 withdraws the last federal troops from the South, and the Redeemer government takes full control of your state. No amendment is repealed. On paper, you are exactly as free and as much a citizen as you were the day before. In practice, the government that might have enforced that fact at gunpoint has just decided it no longer will.`,
+  sources:['compromise_1877'],
+  choices:[
+    {label:"Stay and continue building whatever community institutions remain possible, a church, a school, a mutual aid society, even as political rights erode.", delta:2, result:"You keep building where you can, on ground that's shrinking but not gone. Institutions like the ones you're helping build outlast Redemption itself, and outlast Jim Crow after it, in ways no single election result can undo."},
+    {label:"Leave the state as part of the era's early wave of Black migration seeking better conditions elsewhere.", delta:1, result:"You leave for a place where you're hoping, not without reason, that conditions might be less hostile. It's a real form of agency, choosing where to plant your future rather than accepting where you happened to be planted."},
+    {label:"Withdraw from public and community life entirely, focusing only on your own family's survival under the new order.", delta:-2, result:"You pull inward, protecting what's yours as best you can and asking little else of a system that has made clear it intends to give little else. It is, in this era, an entirely understandable way to survive."}
+  ]}
+);
+
+// ══════════════════════════ DATA: ERA CLOSINGS ══════════════════════════
+const ERA1_CLOSING = {
+  bureau: "By December 1865, the required three-quarters of states ratify the Thirteenth Amendment. Slavery is now illegal everywhere in the United States, permanently, by the Constitution's own text. From your posting, though, the last few months have already taught you something the amendment's plain language can't: a law ending slavery and a country actually treating four million new citizens as free and equal are not remotely the same achievement.",
+  politician: "The Thirteenth Amendment becomes part of the Constitution in December 1865. In your own statehouse, the men who spent the last four years fighting to keep slavery legal now hold committee chairs again, pardoned and reseated within months. You didn't lose the war. You are increasingly unsure, some days, whether you're winning the peace.",
+  freedperson: "In December 1865, the Thirteenth Amendment becomes the law of the land: slavery is over, everywhere, for good. It is real, it is permanent, and it is the first thing this country has ever constitutionally guaranteed you. It is also, you already know from the last few months alone, nowhere near the end of the argument over what your freedom will actually be allowed to mean."
+};
+const ERA3_CLOSING = {
+  bureau: "In March 1877, the last federal troops still stationed in the South withdraw as part of the deal that settles the disputed 1876 election. Within weeks, the last Reconstruction state governments fall. Whatever the Bureau, and agents like you, managed to build over twelve years, no one in Washington is any longer willing to enforce at gunpoint. What survives from here forward will have to survive some other way.",
+  politician: "The Compromise of 1877 resolves the disputed presidential election by trading away the last federal troops in the South. Reconstruction, as a national project backed by federal power, ends &mdash; not because Congress voted to end it, and not because the argument over equal citizenship was settled, but because enough people in Washington decided it had gone on long enough. Your state's government, Reconstruction or Redeemer, is now entirely its own affair again.",
+  freedperson: "In 1877, the last federal troops leave the South, and the last Reconstruction governments fall within weeks. No amendment is repealed. On paper, you are exactly as free and as much a citizen as you were the day before. In practice, the government that might have enforced that fact at gunpoint has just decided it no longer will."
+};
+
+// ══════════════════════════ DATA: REFLECTIONS ══════════════════════════
+const REFLECTIONS = [
+  { title:"Reflection: Freedom's First Year", sub:"1865 &middot; Pause and think before the story continues.",
+    q:[
+      "The Freedmen's Bureau Act, the Thirteenth Amendment, and Special Field Order No. 15 all promised something to formerly enslaved Americans in 1865. Pick one of these promises and explain, using what your character just experienced, how fully (or not) it was actually kept that year.",
+      "Describe one choice your character made this era. Looking back, would you choose differently now? Why or why not?",
+      "The Black Codes were passed by state legislatures elected almost entirely by white Southerners under President Johnson's lenient plan for reunification. What does this tell you about why Congress later decided the President's approach to Reconstruction wasn't strict enough?"
+    ]},
+  { title:"Reflection: A Government Remade", sub:"1867&ndash;1870 &middot; Pause and think before the story continues.",
+    q:[
+      "Between 1867 and 1870, the country ratified the Fifteenth Amendment and roughly 2,000 Black men were elected to public office across the South, while at the same time the Ku Klux Klan grew into an organized campaign of political violence. Why do you think expanding rights and violent backlash against those rights happened at the very same time, rather than one after the other?",
+      "How did your character's role (federal agent, elected official, or newly enfranchised citizen) shape what they could actually do in this era? Do you think a character in one of the other two roles would have faced the same choices?",
+      "The federal Enforcement Acts let the national government prosecute local violence, and even suspend habeas corpus in part of South Carolina, to stop Klan terror. This is the federal government overriding state and local authority. Can you connect this tension to an earlier debate about federalism and states' rights?"
+    ]},
+  { title:"Reflection: What Ended, and What Didn't", sub:"1873&ndash;1877 &middot; Pause and think before the epilogue.",
+    q:[
+      "The Compromise of 1877 ended Reconstruction because of a disputed presidential election, not because the nation had resolved its argument over what freedom and equality should mean. Based on your character's experience, what do you think was still unresolved in 1877?",
+      "Historians argue Reconstruction's collapse wasn't inevitable: it required an organized campaign of violence and intimidation, like the Mississippi Plan, plus a choice by the North to stop enforcing federal law in the South. Based on what your character lived through, what specific choice, by a person, a state, or the federal government, do you think mattered most to that outcome?",
+      "Thinking across all three eras (1865&ndash;1877): what is the single biggest change your character witnessed, and what stayed troublingly the same?"
+    ]}
+];
+
+const FINAL_QUESTIONS = [
+  "If you had played this story as a different role (Freedmen's Bureau agent, Southern Unionist politician, or freedperson), which would you choose, and what do you think would have changed about the choices available to that character?",
+  "Reconstruction is sometimes called America's 'unfinished revolution.' Based on everything your character experienced across all three eras, write a short paragraph evaluating what it actually accomplished, what it failed to accomplish, and why you think it turned out that way."
+];
+
+// ══════════════════════════ DATA: EPILOGUES ══════════════════════════
+const EPILOGUES = {
+  bureau: {
+    testify: { title:"The Agent They Watched", text:"Your name shows up more than once in threatening letters printed anonymously in the local paper, and at least one Bureau colleague warns you privately to vary your route home. Nothing worse happens to you, as far as the official record shows &mdash; though in this line of work, 'as far as the official record shows' always carries a quiet asterisk. You spent your years here doing exactly what the job, at its best, was supposed to mean." },
+    high: { title:"The Agent Who Stayed", text:"You never became famous, and your name appears in no history book. But the Bureau's own surviving records, and a handful of the schools and contracts you helped negotiate, are the practical proof that federal promises could be more than paper when someone was willing to enforce them locally, year after year, at real professional and personal cost." },
+    low: { title:"An Agent in Name Only", text:"You kept your post, avoided controversy, and mostly kept the peace between planters and freedpeople on the planters' terms. It was, by the standards of the job, a quiet tenure. Whether it was a successful one depends entirely on whose freedom you were actually protecting." },
+    mid: { title:"One Agent Among Many", text:"You did some real good and let some real injustice pass unchallenged, the way most Bureau agents across the South actually did. History remembers Reconstruction's largest failures and its most dramatic victories; you lived, mostly, in the much larger space in between." }
+  },
+  politician: {
+    defector: { title:"The Convert", text:"You crossed the aisle in 1875, formally and publicly, trading the coalition you helped build for a place in the Redeemer government that replaced it. You told yourself it was survival, not betrayal. Your former allies, understandably, did not see much of a difference." },
+    high: { title:"A Builder of an Unfinished Democracy", text:"Your name appears in the biracial coalition's official rolls, in convention records, on the side of votes that expanded who counted as a full citizen in your state. Redemption eventually rolled most of it back regardless &mdash; you always suspected it might &mdash; but for a decade, in your own statehouse, it wasn't rolled back yet, and you spent that decade using it." },
+    low: { title:"A Career, Preserved", text:"You kept your seat, your reputation among white constituents, and your political career largely intact, at the cost of nearly every principle that supposedly separated you from the men you once opposed. History does not remember your name as either hero or villain. It mostly does not remember your name at all." },
+    mid: { title:"The Careful Legislator", text:"You picked your fights, won some and lost more, and left office with a record that reads, depending on who's reading it, as either principled caution or missed opportunity. Perhaps, like most of Reconstruction's supporters, it was some of both." }
+  },
+  freedperson: {
+    officeholder: { title:"One of the Two Thousand", text:"You became one of the roughly two thousand Black men who held some form of public office during Reconstruction, a fact no Redemption-era history book in your state will bother to record accurately, if it records it at all. Your actual term in office is real regardless of who later chooses to forget it, and somewhere in a county courthouse or a family Bible, a record of it still exists." },
+    high: { title:"A Name on the Rolls", text:"You spent this decade using every inch of freedom you were given and pushing for more of what you weren't: your name in a marriage register, your children in a schoolhouse, your ballot in a box more than once despite real threats for casting it. Redemption in 1877 takes back some of what you built. It does not take back all of it, and what's left becomes, quietly, the foundation the next generation builds on." },
+    low: { title:"Surviving the Decade", text:"You made the safest choice, over and over, when safety and principle pulled in different directions. Your family survived the decade largely intact, which in this era, for people in your position, was itself no small accomplishment. Whether more was possible is a question you turn over for the rest of your life." },
+    mid: { title:"Between Two Kinds of Risk", text:"You pushed hard sometimes and pulled back other times, weighing your family's safety against your family's rights choice by choice, the way most freedpeople actually had to. By 1877 you have lost some ground and gained some ground, in a rough balance that feels, some days, like progress and, other days, like exhaustion." }
+  }
+};
+
+const THRESH = {
+  bureau: { high:7, low:-5 },
+  politician: { high:8, low:-6 },
+  freedperson: { high:9, low:-6 }
+};
+
+// ══════════════════════════ ENGINE ══════════════════════════
+let state = null;
+
+function newState(role){
+  return { role, nodeIdx:0, score:0, flags:[], history:[], reflections:[{},{},{}], finalAnswers:['',''] };
+}
+
+function goToRoleSelect(){
+  document.getElementById('screen-title').classList.add('hidden');
+  renderRoleGrid();
+  document.getElementById('screen-role').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function renderRoleGrid(){
+  const grid = document.getElementById('role-grid');
+  grid.innerHTML='';
+  Object.keys(ROLES).forEach(key=>{
+    const r = ROLES[key];
+    const card = document.createElement('div');
+    card.className='role-card';
+    card.innerHTML = `<div class="card-strip"></div><div class="rnote">${r.note}</div><h3>${r.label}</h3><p>${r.blurb}</p><button onclick="startRole('${key}')">Live This Story</button>`;
+    grid.appendChild(card);
+  });
+}
+
+function startRole(role){
+  state = newState(role);
+  document.getElementById('screen-role').classList.add('hidden');
+  document.getElementById('screen-story').classList.remove('hidden');
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function currentEra(){ return Math.floor(state.nodeIdx/3) + 1; }
+
+function renderEraTrack(){
+  const track = document.getElementById('era-track');
+  const names = ['Era One: Emancipation’s First Test','Era Two: A Government Remade','Era Three: Redemption and Retreat'];
+  track.innerHTML = names.map((n,i)=>{
+    const num=i+1, cur=currentEra();
+    let cls='era-dot'; if(num<cur) cls+=' done'; else if(num===cur) cls+=' active';
+    return `<div class="${cls}">${n}</div>`;
+  }).join('');
+}
+
+function renderNode(){
+  renderEraTrack();
+  const nodes = STORY[state.role];
+  const node = nodes[state.nodeIdx];
+  document.getElementById('story-year').textContent = node.year.replace(/&middot;/g,'·');
+  document.getElementById('story-text').innerHTML = `<p>${node.text}</p>`;
+
+  const archWrap = document.getElementById('archive-btn-wrap');
+  if(node.sources && node.sources.length){
+    archWrap.innerHTML = `<button class="archive-btn" onclick='openArchive(${JSON.stringify(node.sources)})'>\u{1F4DC} Open the Archive (${node.sources.length} source${node.sources.length>1?'s':''})</button>`;
+  } else { archWrap.innerHTML=''; }
+
+  const choicesWrap = document.getElementById('story-choices');
+  choicesWrap.innerHTML='';
+  node.choices.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent = c.label;
+    btn.onclick = ()=>pickChoice(i);
+    choicesWrap.appendChild(btn);
+  });
+  document.getElementById('consequence-wrap').innerHTML='';
+  renderJourney();
+}
+
+function pickChoice(i){
+  const nodes = STORY[state.role];
+  const node = nodes[state.nodeIdx];
+  const choice = node.choices[i];
+  state.score += (choice.delta||0);
+  if(choice.flag) state.flags.push(choice.flag);
+  state.history.push({ era: currentEra(), year: node.year, label: choice.label });
+
+  document.getElementById('story-choices').innerHTML='';
+  document.getElementById('consequence-wrap').innerHTML =
+    `<div class="consequence"><div class="cq-label">What happens</div><p>${choice.result}</p></div>
+     <div id="continue-wrap"><button class="btn-primary" onclick="advance()">Continue &rarr;</button></div>`;
+  renderJourney();
+}
+
+function advance(){
+  const justFinishedEra = (state.nodeIdx % 3 === 2);
+  state.nodeIdx++;
+  if(justFinishedEra){
+    const eraNum = currentEra()-1; // era that just closed (1,2,3)
+    if(eraNum===1){ showClosing(ERA1_CLOSING[state.role], ['thirteenth_amendment'], ()=>showReflection(0)); return; }
+    if(eraNum===3){ showClosing(ERA3_CLOSING[state.role], ['compromise_1877'], ()=>showReflection(2)); return; }
+    showReflection(eraNum-1); // era2 closes straight into reflection[1]
+    return;
+  }
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function showClosing(text, sourceIds, thenFn){
+  document.getElementById('story-year').textContent = 'The Nation Marks a Turn';
+  document.getElementById('story-text').innerHTML = `<p>${text}</p>`;
+  document.getElementById('archive-btn-wrap').innerHTML = `<button class="archive-btn" onclick='openArchive(${JSON.stringify(sourceIds)})'>\u{1F4DC} Open the Archive (${sourceIds.length} source${sourceIds.length>1?'s':''})</button>`;
+  document.getElementById('story-choices').innerHTML='';
+  document.getElementById('consequence-wrap').innerHTML = `<div id="continue-wrap"><button class="btn-primary" onclick="(${thenFn.toString()})()">Continue &rarr;</button></div>`;
+  window.scrollTo(0,0);
+}
+
+function renderJourney(){
+  const list = document.getElementById('journey-list');
+  list.innerHTML = state.history.map(h=>`<li><span class="jy">${h.year.replace(/&middot;/g,'·')}</span>${h.label}</li>`).join('');
+}
+
+function openArchive(ids){
+  const wrap = document.getElementById('archive-sources');
+  wrap.innerHTML = ids.map(id=>{
+    const s = SOURCES[id];
+    const typeLabel = s.type==='primary' ? 'Primary Source · Direct Quote' : s.type==='recreated' ? 'Recreated Source · Illustrative' : 'Historical Context · Summary';
+    const typeCls = s.type;
+    return `<div class="source-block">
+      <span class="stype ${typeCls}">${typeLabel}</span>
+      <h4>${s.title}</h4>
+      <div class="syear">${s.year}</div>
+      <div class="stext">${s.text}</div>
+      <div class="snote">${s.note}</div>
+      <div class="scite">Source: ${s.cite}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('archive-overlay').classList.remove('hidden');
+}
+function closeArchive(){ document.getElementById('archive-overlay').classList.add('hidden'); }
+
+function showReflection(idx){
+  document.getElementById('screen-story').classList.add('hidden');
+  document.getElementById('screen-reflection').classList.remove('hidden');
+  document.getElementById('screen-reflection').dataset.idx = idx;
+  const r = REFLECTIONS[idx];
+  document.getElementById('refl-title').textContent = r.title;
+  document.getElementById('refl-sub').innerHTML = r.sub;
+
+  const eraHistory = state.history.filter(h=>h.era===idx+1);
+  document.getElementById('refl-recap').innerHTML = `<div class="rr-label">Your choices this era</div><ul>${eraHistory.map(h=>`<li><strong>${h.year.replace(/&middot;/g,'·')}:</strong> ${h.label}</li>`).join('')}</ul>`;
+
+  const qwrap = document.getElementById('refl-questions');
+  qwrap.innerHTML = r.q.map((q,i)=>`<div class="refl-q"><label>${i+1}. ${q}</label><textarea id="rq-${i}">${(state.reflections[idx][i]||'')}</textarea></div>`).join('');
+  window.scrollTo(0,0);
+}
+
+function continueFromReflection(){
+  const idx = parseInt(document.getElementById('screen-reflection').dataset.idx,10);
+  REFLECTIONS[idx].q.forEach((q,i)=>{ state.reflections[idx][i] = document.getElementById('rq-'+i).value; });
+  document.getElementById('screen-reflection').classList.add('hidden');
+  if(idx===2){ showEpilogue(); return; }
+  document.getElementById('screen-story').classList.remove('hidden');
+  renderNode();
+  window.scrollTo(0,0);
+}
+
+function pickEpilogueKey(role){
+  if(role==='bureau' && state.flags.includes('bureau_testify')) return 'testify';
+  if(role==='politician' && state.flags.includes('politician_defector')) return 'defector';
+  if(role==='freedperson' && state.flags.includes('freedperson_officeholder')) return 'officeholder';
+  const t = THRESH[role];
+  if(state.score>=t.high) return 'high';
+  if(state.score<=t.low) return 'low';
+  return 'mid';
+}
+
+function showEpilogue(){
+  document.getElementById('screen-epilogue').classList.remove('hidden');
+  const role = state.role;
+  const key = pickEpilogueKey(role);
+  const epi = EPILOGUES[role][key] || EPILOGUES[role].mid;
+  document.getElementById('epi-kicker').textContent = `${ROLES[role].label} · 1877`;
+  document.getElementById('epi-title').textContent = epi.title;
+  document.getElementById('epi-text').textContent = epi.text;
+  state.epilogueTitle = epi.title;
+  state.epilogueBody = epi.text;
+
+  const fwrap = document.getElementById('final-questions');
+  fwrap.innerHTML = FINAL_QUESTIONS.map((q,i)=>`<div class="refl-q"><label>${i+1}. ${q}</label><textarea id="fq-${i}" oninput="state.finalAnswers[${i}]=this.value">${state.finalAnswers[i]||''}</textarea></div>`).join('');
+  window.scrollTo(0,0);
+}
+
+function restartGame(){
+  document.getElementById('screen-epilogue').classList.add('hidden');
+  document.getElementById('screen-title').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function escHtml(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function printJourney(){
+  const role = ROLES[state.role];
+  let body = `<h1>A New South? A Reconstruction Story</h1><h2>${escHtml(role.label)} (${escHtml(role.note)})</h2>`;
+  body += `<div class="p-section"><h3>Path Through History</h3><ul>` + state.history.map(h=>`<li><strong>${escHtml(h.year.replace(/&middot;/g,'·'))}:</strong> ${escHtml(h.label)}</li>`).join('') + `</ul></div>`;
+  REFLECTIONS.forEach((r,idx)=>{
+    body += `<div class="p-section"><h3>${escHtml(r.title)}</h3>`;
+    r.q.forEach((q,i)=>{
+      body += `<div class="p-q">${escHtml(q)}</div><div class="p-a">${escHtml(state.reflections[idx][i]||'(no answer given)')}</div>`;
+    });
+    body += `</div>`;
+  });
+  body += `<div class="p-section"><h3>Epilogue: ${escHtml(state.epilogueTitle||'')}</h3><p>${escHtml(state.epilogueBody||'')}</p></div>`;
+  body += `<div class="p-section"><h3>Final Reflection</h3>`;
+  FINAL_QUESTIONS.forEach((q,i)=>{
+    body += `<div class="p-q">${escHtml(q)}</div><div class="p-a">${escHtml(state.finalAnswers[i]||'(no answer given)')}</div>`;
+  });
+  body += `</div>`;
+
+  const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Your Reconstruction Journey</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif; color:#211d18; max-width:720px; margin:36px auto; padding:0 24px; line-height:1.65;}
+  h1{font-size:1.6rem; margin-bottom:2px;}
+  h2{font-size:1.15rem; color:#16305c; margin-top:0; font-weight:normal; font-style:italic;}
+  h3{font-size:1.05rem; color:#8f6b1f; border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:30px;}
+  .p-q{font-weight:700; margin-top:14px;}
+  .p-a{margin:4px 0 0; white-space:pre-wrap;}
+  ul{padding-left:20px;}
+  .p-section{page-break-inside:avoid;}
+  @media print { body{ margin:0.4in; } }
+</style></head><body>${body}</body></html>`;
+
+  const win = window.open('', '_blank');
+  if(!win){ alert('Your browser blocked the print window as a pop-up. Please allow pop-ups for this page and try again.'); return; }
+  win.document.open();
+  win.document.write(doc);
+  win.document.close();
+  win.onload = function(){ win.focus(); win.print(); };
+}
+</script>
+</body>
+</html>
