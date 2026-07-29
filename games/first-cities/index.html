@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The First Cities: A Civilization Game</title>
+<meta name="description" content="Found a civilization on a realistic ancient map, choose how you domesticate, govern, write, and trade, and try to survive twelve turns of drought, flood, disease, and war. Poor choices can end in collapse.">
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --papyrus:#f4e9d2; --papyrus-dark:#e8d9b8; --parch:#faf1dc;
+  --ink:#2b2117; --ink-soft:#5c4a34;
+  --clay:#bf6b3d; --clay-dark:#8f4d2a;
+  --river:#2f7a86; --river-dark:#1d525c;
+  --gold:#c9a24b; --gold2:#e2c274;
+  --green:#5c7a3f; --green-dark:#3f5a2b;
+  --danger:#a1382b; --danger2:#7a2a20;
+  --stone:#8a8371;
+  --sea:#bcdbe0; --sand:#e3cf9e; --sand-dark:#cdb078;
+  --line:rgba(43,33,23,0.16);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--papyrus-dark); color:var(--ink);
+  font-family:'Figtree',system-ui,sans-serif; font-size:16px; line-height:1.55;
+  min-height:100vh;
+}
+h1,h2,h3{ font-family:'Cormorant Garamond',serif; font-weight:700; margin:0 0 .4em; color:var(--river-dark); }
+p{margin:0 0 1em;}
+button{font-family:inherit;}
+a{color:var(--clay-dark);}
+
+/* ══ HEADER ══ */
+#game-header{
+  background:linear-gradient(180deg,var(--river-dark),var(--river));
+  color:var(--parch); text-align:center; padding:26px 16px 20px;
+  border-bottom:5px solid var(--gold);
+  box-shadow:0 4px 14px rgba(0,0,0,0.25);
+}
+#game-header h1{
+  color:var(--gold2); margin:0; font-size:clamp(22px,4vw,36px);
+  text-shadow:2px 2px 0 rgba(0,0,0,0.35); letter-spacing:.5px;
+}
+#game-header .subtitle{ color:#cfe7ea; font-size:14px; margin-top:6px; letter-spacing:.4px; font-style:italic; }
+
+/* ══ LAYOUT ══ */
+#app{ max-width:1200px; margin:0 auto; padding:20px 16px 60px; }
+.screen{ display:none; }
+.screen.active{ display:block; animation:fadeIn .25s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+.panel{
+  background:var(--parch); border:1px solid var(--line); border-radius:14px;
+  padding:22px 26px; margin-bottom:16px;
+  box-shadow:0 3px 10px rgba(43,33,23,0.10);
+}
+.panel h2{ font-size:23px; }
+.panel h3{ font-size:16px; color:var(--clay-dark); margin-top:1.1em; }
+
+.btn{
+  display:inline-block; border:none; border-radius:999px; cursor:pointer;
+  font-family:'Figtree',sans-serif; font-weight:700; font-size:14px;
+  padding:11px 20px; transition:transform .1s ease, box-shadow .1s ease;
+  letter-spacing:.2px;
+}
+.btn:active{ transform:translateY(1px); }
+.btn:disabled{ opacity:.4; cursor:not-allowed; }
+.btn-primary{ background:var(--clay); color:#fff3e9; box-shadow:0 3px 0 var(--clay-dark); }
+.btn-primary:hover:not(:disabled){ background:#cc7847; }
+.btn-primary:active:not(:disabled){ box-shadow:0 1px 0 var(--clay-dark); }
+.btn-gold{ background:var(--gold); color:#2a1d10; box-shadow:0 3px 0 #9a701f; }
+.btn-gold:hover:not(:disabled){ background:var(--gold2); }
+.btn-ghost{ background:transparent; color:var(--river-dark); border:2px solid var(--river-dark); box-shadow:none; padding:9px 18px; }
+.btn-ghost:hover{ background:var(--river-dark); color:#fff; }
+.btn-green{ background:var(--green); color:#eafff0; box-shadow:0 3px 0 var(--green-dark); }
+.btn-green:hover:not(:disabled){ background:#6d9049; }
+.btn-small{ padding:6px 13px; font-size:12px; }
+
+/* ══ INTRO ══ */
+#screen-intro ol, #screen-intro ul{ padding-left:22px; }
+#screen-intro li{ margin-bottom:8px; }
+.goal-box{
+  background:var(--sand); border-left:5px solid var(--gold); border-radius:8px;
+  padding:14px 18px; margin:14px 0;
+}
+.concept-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:16px 0; }
+.concept-card{ background:var(--sand); border-radius:10px; padding:12px 14px; font-size:13.5px; }
+.concept-card b{ display:block; color:var(--river-dark); font-family:'Cormorant Garamond',serif; font-size:16px; margin-bottom:3px; }
+.intro-actions{ display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+
+/* ══ SITE SELECT / MAP ══ */
+#map-wrap{ position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--line); background:var(--sea); }
+#map-svg{ width:100%; height:auto; display:block; }
+.site-marker{ cursor:pointer; }
+.site-marker circle.dot{ fill:var(--parch); stroke:var(--ink); stroke-width:2.5; transition:transform .12s ease; }
+.site-marker:hover circle.dot{ transform:scale(1.12); transform-origin:center; }
+.site-marker.selected circle.dot{ stroke:var(--clay); stroke-width:4; }
+.site-marker text{ font-size:13px; font-weight:800; fill:var(--ink); text-anchor:middle; pointer-events:none; }
+.map-region-label{ font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; fill:var(--ink-soft); opacity:.75; pointer-events:none; }
+
+.site-detail{ background:var(--sand); border-radius:12px; padding:16px 18px; margin-top:14px; }
+.site-detail h3{ margin-top:0; font-size:19px; }
+.trait-row{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+.trait-chip{ background:var(--parch); border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:12.5px; font-weight:600; }
+.trait-chip.risk{ color:var(--danger2); }
+.trait-chip.good{ color:var(--green-dark); }
+.geo-note{ font-size:13px; font-style:italic; color:var(--ink-soft); border-top:1px dashed var(--line); padding-top:10px; margin-top:10px; }
+
+/* ══ GAME LAYOUT ══ */
+.game-layout{ display:grid; grid-template-columns:270px 1fr; gap:18px; align-items:start; }
+.sidebar{ display:flex; flex-direction:column; gap:14px; }
+.main-col{ display:flex; flex-direction:column; gap:14px; }
+
+.turn-bar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+.turn-bar h2{ margin:0; font-size:19px; }
+.era-tag{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--clay-dark); font-weight:800; }
+.year-tag{ font-family:'Cormorant Garamond',serif; font-size:15px; color:var(--ink-soft); }
+
+.settlement-card{ font-size:13px; }
+.settlement-card .sc-name{ font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--river-dark); margin-bottom:2px; }
+.settlement-card .sc-tag{ font-style:italic; color:var(--ink-soft); margin-bottom:8px; }
+
+.meter-row{ margin-bottom:10px; }
+.meter-label{ font-size:12.5px; display:flex; justify-content:space-between; margin-bottom:3px; font-weight:600; }
+.meter{ background:var(--sand-dark); border-radius:999px; height:12px; overflow:hidden; }
+.meter-fill{ height:100%; border-radius:999px; transition:width .3s ease; }
+.meter-fill.food{ background:linear-gradient(90deg,#8fae5b,var(--green)); }
+.meter-fill.stability{ background:linear-gradient(90deg,#7aa8c9,var(--river)); }
+.meter-fill.knowledge{ background:linear-gradient(90deg,#c99ee2,#8a4fb0); }
+.meter-fill.materials{ background:linear-gradient(90deg,#b89a6e,var(--stone)); }
+.meter-fill.wealth{ background:linear-gradient(90deg,var(--gold2),var(--gold)); }
+.meter-fill.defense{ background:linear-gradient(90deg,#c96b6b,var(--danger)); }
+.meter-fill.land{ background:linear-gradient(90deg,#a9c47f,var(--green-dark)); }
+.pop-line{ font-size:22px; font-family:'Cormorant Garamond',serif; font-weight:700; color:var(--river-dark); }
+.pop-line span{ font-size:13px; color:var(--ink-soft); font-family:'Figtree',sans-serif; font-weight:600; }
+
+#log-list{ max-height:210px; overflow-y:auto; font-size:12.6px; }
+.log-entry{ padding:6px 0; border-bottom:1px dashed var(--line); }
+.log-entry:last-child{ border-bottom:none; }
+.log-entry .log-turn{ font-weight:800; color:var(--clay-dark); }
+.log-entry.event{ color:var(--river-dark); }
+.log-entry.milestone{ color:#8a4fb0; font-weight:700; }
+.log-entry.bad{ color:var(--danger2); }
+
+/* ══ ALLOCATION ══ */
+.alloc-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+.alloc-row:last-child{ border-bottom:none; }
+.alloc-icon{ font-size:20px; width:28px; text-align:center; }
+.alloc-name{ flex:1; font-weight:700; font-size:14px; }
+.alloc-name small{ display:block; font-weight:500; color:var(--ink-soft); font-size:11.5px; }
+.stepper{ display:flex; align-items:center; gap:6px; }
+.stepper button{ width:26px; height:26px; border-radius:50%; border:1px solid var(--ink-soft); background:#fff; cursor:pointer; font-weight:800; line-height:1; }
+.stepper button:disabled{ opacity:.35; cursor:not-allowed; }
+.stepper span{ min-width:38px; text-align:center; font-weight:800; font-size:14px; }
+.alloc-total{ text-align:right; font-size:13px; font-weight:700; margin-top:6px; }
+.alloc-total.bad{ color:var(--danger2); }
+.alloc-total.good{ color:var(--green-dark); }
+.preview-box{ background:var(--sand); border-radius:10px; padding:10px 14px; margin-top:10px; font-size:12.8px; }
+.preview-box b{ color:var(--river-dark); }
+
+/* ══ PROJECTS ══ */
+.project-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; }
+.project-card{ background:var(--sand); border-radius:10px; padding:11px 13px; font-size:12.8px; border:2px solid transparent; }
+.project-card.owned{ border-color:var(--green); opacity:.85; }
+.project-card.locked{ opacity:.5; }
+.project-card .pc-title{ font-weight:800; color:var(--river-dark); font-size:14px; }
+.project-card .pc-effect{ margin:4px 0 8px; color:var(--ink-soft); }
+.project-card button{ width:100%; }
+
+/* ══ MODALS ══ */
+.modal-overlay{ display:none; position:fixed; inset:0; background:rgba(20,15,8,0.62); z-index:400; align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.show{ display:flex; }
+.modal{ background:var(--parch); border-radius:16px; max-width:600px; width:100%; max-height:88vh; overflow-y:auto; padding:26px 28px; box-shadow:0 14px 44px rgba(0,0,0,0.4); border:1px solid var(--line); }
+.modal-tag{ font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:800; color:var(--clay-dark); margin-bottom:6px; }
+.option-card{ background:var(--sand); border-radius:10px; padding:13px 15px; margin-bottom:10px; cursor:pointer; border:2px solid transparent; transition:border-color .12s; }
+.option-card:hover{ border-color:var(--clay); }
+.option-card .oc-label{ font-family:'Cormorant Garamond',serif; font-weight:700; font-size:18px; color:var(--river-dark); }
+.option-card .oc-desc{ font-size:13px; margin:3px 0 6px; }
+.option-card .oc-detail{ font-size:12.3px; color:var(--ink-soft); font-style:italic; }
+.event-outcome{ background:var(--sand); border-radius:10px; padding:14px 16px; margin:12px 0; }
+.event-outcome .eo-tier{ font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+.event-outcome .eo-tier.success{ color:var(--green-dark); }
+.event-outcome .eo-tier.partial{ color:#946a1e; }
+.event-outcome .eo-tier.failure{ color:var(--danger2); }
+.event-outcome .eo-line{ font-size:13.5px; margin-bottom:4px; }
+.event-outcome .eo-line b{ color:var(--river-dark); }
+
+/* ══ ENDING ══ */
+.stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin:14px 0; }
+.stat-box{ background:var(--sand); border:1px solid var(--line); border-radius:10px; padding:11px 13px; text-align:center; }
+.stat-box .snum{ font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--clay-dark); font-weight:700; }
+.stat-box .slabel{ font-size:11.5px; color:var(--ink-soft); }
+.ending-banner{ text-align:center; padding:18px; border-radius:12px; margin-bottom:16px; }
+.ending-banner.good{ background:linear-gradient(135deg,#e9f2da,#d3e5b8); }
+.ending-banner.mixed{ background:linear-gradient(135deg,#f2e6c9,#e3cd9a); }
+.ending-banner.bad{ background:linear-gradient(135deg,#f0d9d2,#e0b8ac); }
+.ending-banner h2{ font-size:28px; margin-bottom:6px; }
+.ach-list{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+.ach-chip{ background:var(--sand); border-radius:999px; padding:6px 14px; font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.ach-chip.locked{ opacity:.4; }
+
+/* ══ REFLECTION ══ */
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.field-row label, .q-block label{ display:block; font-weight:700; font-size:13.5px; margin-bottom:5px; color:var(--river-dark); }
+.field-row input{ width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--ink-soft); font-family:inherit; font-size:14px; }
+.q-block{ margin-bottom:16px; }
+.q-block textarea{ width:100%; min-height:74px; padding:10px; border-radius:8px; border:1px solid var(--ink-soft); font-family:inherit; font-size:14px; resize:vertical; }
+.q-block .q-hint{ font-size:12px; color:var(--ink-soft); margin-bottom:5px; }
+#export-status{ font-size:13px; color:var(--green-dark); font-weight:700; margin-top:8px; min-height:18px; }
+#print-only{ display:none; }
+
+@media print{
+  #game-header, .btn, #screen-reflection > .panel:not(#print-only), .modal-overlay{ display:none !important; }
+  #print-only{ display:block !important; }
+  body{ background:#fff; }
+}
+
+@media (max-width:860px){
+  .game-layout{ grid-template-columns:1fr; }
+  .field-row{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="game-header">
+  <h1>🏺 The First Cities</h1>
+  <div class="subtitle">Found a civilization. Choose wisely. It will not always survive.</div>
+</div>
+
+<div id="app">
+
+  <!-- ══════ SCREEN: INTRO ══════ -->
+  <section id="screen-intro" class="screen active">
+    <div class="panel">
+      <h2>Before There Were Nations</h2>
+      <p>Long before kingdoms, empires, or borders on a map, small groups of people had to decide: where do we settle, what do we grow or herd, who leads us, and how do we remember what we've learned? Every one of those decisions shaped whether their community thrived, struggled, or vanished from history entirely.</p>
+      <p>In this game, <strong>you</strong> make those decisions. You will choose a settlement site, decide how your people domesticate plants and animals, build traditions and technology, and manage resources across twelve turns spanning roughly 2,200 years of ancient history. Along the way, droughts, floods, disease, raiders, and your own people's discontent will test every choice.</p>
+
+      <div class="goal-box">
+        <strong>This game can end badly.</strong> Civilizations in this game can starve, collapse into civil war, be conquered, or wear out the very land they depend on. There is no script forcing success. Your decisions, and the geography you settle in, determine what happens.
+      </div>
+
+      <h3>Key Ideas You'll Use</h3>
+      <div class="concept-grid">
+        <div class="concept-card"><b>Geographic Determinism</b>Where you settle shapes almost everything else: your food supply, your defenses, your trade, and the disasters you're most likely to face.</div>
+        <div class="concept-card"><b>Domestication</b>Taming plants and animals created reliable food surpluses, but also new risks, like diseases that jump from animals to people.</div>
+        <div class="concept-card"><b>Language &amp; Record-Keeping</b>Knowledge that only lives in memory can be lost in a single bad generation. Writing changes that, at a cost.</div>
+        <div class="concept-card"><b>Technology</b>Tools, irrigation, and construction let a civilization support more people with less land, but they take time and resources to develop.</div>
+        <div class="concept-card"><b>Tradition &amp; Government</b>How you're led, what you believe, and how power passes on all shape how well your people hold together under stress.</div>
+        <div class="concept-card"><b>Rise and Fall</b>Real civilizations collapsed from environmental overuse, internal division, and conquest, not just "bad luck." Yours can too.</div>
+      </div>
+
+      <h3>How to Play</h3>
+      <ol>
+        <li>Choose one of eight real-feeling (but fictional) settlement sites. Read each carefully; you cannot move later.</li>
+        <li>Each turn, allocate your people's labor across the categories available to you. Early on, this is simple: mostly farming and research. As your civilization grows, more categories unlock: building, culture, trade, and military.</li>
+        <li>Advance the turn to see your harvest, resolve a random event, and sometimes face a bigger decision about your civilization's direction.</li>
+        <li>Spend accumulated Materials on lasting projects like granaries, irrigation, and walls.</li>
+        <li>Survive twelve turns to reach a final assessment of your civilization's legacy, or don't. Then reflect on what you'd do differently.</li>
+      </ol>
+
+      <div class="intro-actions">
+        <button class="btn btn-primary" onclick="goToScreen('screen-site')">Choose Your Settlement →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SCREEN: SITE SELECT ══════ -->
+  <section id="screen-site" class="screen">
+    <div class="panel">
+      <h2>Choose Where to Settle</h2>
+      <p>This is the single most important decision you will make. Click a site on the map to learn about it. Every site trades some advantages for others: no site is simply "the best."</p>
+      <div id="map-wrap">
+        <svg id="map-svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div id="site-detail-wrap"></div>
+      <button class="btn btn-primary" id="btn-confirm-site" disabled onclick="confirmSite()" style="margin-top:16px">Found Your Settlement Here →</button>
+    </div>
+  </section>
+
+  <!-- ══════ SCREEN: GAME ══════ -->
+  <section id="screen-game" class="screen">
+    <div class="game-layout">
+      <div class="sidebar">
+        <div class="panel settlement-card" id="settlement-panel"></div>
+        <div class="panel" id="meters-panel"></div>
+        <div class="panel">
+          <h3 style="margin-top:0">📜 Chronicle</h3>
+          <div id="log-list"></div>
+        </div>
+      </div>
+      <div class="main-col">
+        <div class="panel turn-bar">
+          <div>
+            <h2 id="turn-title">Turn 1 of 12</h2>
+            <div class="era-tag" id="era-tag"></div>
+          </div>
+          <div class="year-tag" id="year-tag"></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-top:0">Allocate Your People's Labor</h3>
+          <p style="font-size:13px;color:var(--ink-soft);margin-bottom:10px">Assign 100% of your labor across the categories available to you. Every point spent on one thing is a point not spent on another.</p>
+          <div id="alloc-list"></div>
+          <div class="alloc-total" id="alloc-total"></div>
+          <div class="preview-box" id="preview-box"></div>
+        </div>
+        <div class="panel" id="projects-panel"></div>
+        <div class="panel" style="text-align:center">
+          <button class="btn btn-gold" id="btn-advance" onclick="advanceTurn()">Advance the Turn →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SCREEN: ENDING ══════ -->
+  <section id="screen-ending" class="screen">
+    <div class="panel" id="ending-panel"></div>
+  </section>
+
+  <!-- ══════ SCREEN: REFLECTION ══════ -->
+  <section id="screen-reflection" class="screen">
+    <div class="panel">
+      <h2>✍️ Reflection</h2>
+      <p>Answer the questions below using specific decisions from your playthrough. When finished, download your reflection as a Word document to send to your teacher.</p>
+
+      <div class="field-row">
+        <div><label for="f-name">Your Name</label><input type="text" id="f-name" placeholder="First and Last Name"></div>
+        <div><label for="f-class">Class / Period</label><input type="text" id="f-class" placeholder="e.g. World History, Period 2"></div>
+      </div>
+      <div class="field-row">
+        <div><label for="f-teacher">Teacher's Email (optional)</label><input type="email" id="f-teacher" placeholder="teacher@school.edu"></div>
+        <div><label for="f-date">Date</label><input type="text" id="f-date" readonly></div>
+      </div>
+
+      <div class="q-block">
+        <label>1. Why did you choose your settlement site? Name one advantage and one disadvantage it gave you, and describe a moment in the game where that disadvantage actually mattered.</label>
+        <textarea id="q1"></textarea>
+      </div>
+      <div class="q-block">
+        <label>2. Explain your domestication focus (plants, animals, or balanced). How did it affect your food supply or your risk of disease over the course of the game?</label>
+        <textarea id="q2"></textarea>
+      </div>
+      <div class="q-block">
+        <div class="q-hint">Vocabulary reminder: geographic determinism is the idea that a location's geography strongly shapes how a society can develop.</div>
+        <label>3. Describe one moment where your civilization's geography (not just your choices) determined what happened to you.</label>
+        <textarea id="q3"></textarea>
+      </div>
+      <div class="q-block">
+        <label>4. Did you develop writing, or rely on oral tradition? What was the trade-off, and did it matter by the end of the game?</label>
+        <textarea id="q4"></textarea>
+      </div>
+      <div class="q-block">
+        <label>5. Describe one decision about government, tradition, or succession that you made. What short-term effect did it have, and what long-term effect?</label>
+        <textarea id="q5"></textarea>
+      </div>
+      <div class="q-block">
+        <label>6. Look at your ending. Was it caused mainly by bad luck, a poor decision, your geography, or a combination? Explain using specifics from your Chronicle.</label>
+        <textarea id="q6"></textarea>
+      </div>
+      <div class="q-block">
+        <label>7. If you played again on the same site, what would you change about your labor allocation or your milestone choices?</label>
+        <textarea id="q7"></textarea>
+      </div>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-green" onclick="exportWordDoc()">⬇ Download as Word Document</button>
+        <button class="btn btn-ghost" onclick="window.print()">🖨 Print / Save as PDF</button>
+        <button class="btn btn-ghost" id="btn-email-teacher" onclick="emailTeacher()" style="display:none">✉️ Email My Teacher</button>
+      </div>
+      <div id="export-status"></div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px">The email button opens your email app with your teacher's address filled in. You will still need to attach the downloaded file yourself.</p>
+
+      <div style="margin-top:24px; text-align:center;">
+        <button class="btn btn-ghost" onclick="resetGame()">🔄 Start a New Civilization</button>
+      </div>
+    </div>
+
+    <div id="print-only" class="panel">
+      <h2 style="text-align:center">The First Cities — Reflection</h2>
+      <div id="export-preview"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════ MILESTONE / DECISION MODAL ══════ -->
+<div id="decision-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-tag" id="decision-tag">Civilization Decision</div>
+    <h2 id="decision-title"></h2>
+    <p id="decision-body"></p>
+    <div id="decision-options"></div>
+  </div>
+</div>
+
+<!-- ══════ EVENT MODAL ══════ -->
+<div id="event-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-tag" id="event-tag">Event</div>
+    <h2 id="event-title"></h2>
+    <p id="event-body"></p>
+    <div id="event-outcome-wrap"></div>
+    <div id="event-options"></div>
+    <div id="event-continue-wrap" style="text-align:center; display:none;">
+      <button class="btn btn-primary" onclick="continueAfterEvent()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════════════════════
+const TOTAL_TURNS = 12;
+const YEAR_START = -3000;
+const YEAR_STEP = 200;
+
+const FOOD_YIELD_BASE = 1.4;
+const FOOD_NEED = 1.0;
+const MATS_YIELD_BASE = 0.55;
+const KNOW_YIELD_BASE = 0.62;
+const CULTURE_STAB_FACTOR = 22;
+const WEALTH_YIELD_BASE = 0.6;
+const DEFENSE_YIELD_BASE = 0.55;
+
+const CULTIVATION_THRESHOLD = 15;
+const ANIMAL_TRACTION_THRESHOLD = 30;
+const BRONZE_THRESHOLD = 55;
+const WRITING_THRESHOLD = 40;
+const IRON_THRESHOLD = 95;
+
+function eraOfTurn(t){ if(t<=3) return 1; if(t<=6) return 2; if(t<=9) return 3; return 4; }
+const ERA_NAMES = {1:'Era I: The First Settlement', 2:'Era II: The Growing Village', 3:'Era III: The Early Civilization', 4:'Era IV: The Kingdom'};
+function yearOfTurn(t){ return YEAR_START + (t-1)*YEAR_STEP; }
+function formatYear(y){ return y<0 ? `${Math.abs(y)} BCE` : `${y} CE`; }
+
+// ══════════════════════════════════════════════════════════════
+//  SITES  (geographic determinism: every trait is a trade-off)
+// ══════════════════════════════════════════════════════════════
+const SITES = {
+  delta:{
+    id:'delta', name:'The River Delta', emoji:'🌾', x:762, y:432,
+    tagline:"Where the great river fans out and meets the sea",
+    blurb:"Rich black silt renews itself every year as the river floods and recedes, and boats can reach the open sea within a day. But the same waters that feed your fields can just as easily drown them without warning.",
+    fertility:1.5, materials:0.7, tradeMult:1.4, defense:0.7, startPop:260, startFood:260, foodCapBase:340,
+    risk:{drought:1, flood:4, disease:2, raid:1, storm:1},
+    geoNote:"Real early river-valley civilizations (Mesopotamia, Egypt) formed on deltas and floodplains exactly like this one, because annual floods renew the soil for free, in exchange for living at the mercy of the river."
+  },
+  valley:{
+    id:'valley', name:'The River Valley', emoji:'🏞️', x:562, y:300,
+    tagline:"A wide floodplain upstream, sheltered by low hills",
+    blurb:"Your fields sit in a broad valley the river has carved over centuries. The soil is good and water is close by, but the surrounding hills funnel travelers, traders, and raiders straight to your door.",
+    fertility:1.2, materials:1.0, tradeMult:1.0, defense:1.0, startPop:220, startFood:230, foodCapBase:300,
+    risk:{drought:1, flood:2, disease:1, raid:2, storm:0},
+    geoNote:"A balanced site: not the richest soil, not the most exposed. Many early societies chose 'good enough, defensible' land over the single richest, most vulnerable plot available."
+  },
+  bay:{
+    id:'bay', name:'The Coastal Bay', emoji:'🌊', x:862, y:522,
+    tagline:"A sheltered harbor where cliffs meet open water",
+    blurb:"Fish are abundant and, one day, ships from distant shores might reach your harbor. But storms roll in off the water without much warning, and anyone who can sail can reach you just as easily as you can reach them.",
+    fertility:0.9, materials:0.8, tradeMult:1.6, defense:1.1, startPop:200, startFood:190, foodCapBase:260,
+    risk:{drought:1, flood:0, disease:1, raid:1, storm:4},
+    geoNote:"Coastal peoples throughout history built wealth on fishing and sea trade, but paid for it in storms and seaborne raiders they could never fully wall out."
+  },
+  steppe:{
+    id:'steppe', name:'The Open Steppe', emoji:'🌿', x:302, y:118,
+    tagline:"Endless grassland with no natural walls",
+    blurb:"Herds could grow enormous on this open grass, and travel across it is easy in every direction. That is also the problem: there is nowhere to hide, and every horizon is a direction someone else could come from.",
+    fertility:0.85, materials:0.5, tradeMult:1.1, defense:0.5, startPop:210, startFood:260, foodCapBase:290,
+    risk:{drought:2, flood:0, disease:1, raid:4, storm:0},
+    geoNote:"Open grassland rewards animal domestication and mobility, but a fixed settlement here has almost no natural defense, a recurring vulnerability across the history of steppe frontiers."
+  },
+  highlands:{
+    id:'highlands', name:'The Highland Foothills', emoji:'⛰️', x:420, y:158,
+    tagline:"Rocky hills rich in stone and ore",
+    blurb:"Terraced slopes yield less grain per field than the lowlands, but stone and metal ore lie everywhere underfoot, and the high ground is brutal for any enemy to climb.",
+    fertility:0.6, materials:1.6, tradeMult:0.7, defense:1.6, startPop:150, startFood:260, foodCapBase:240,
+    risk:{drought:1, flood:0, disease:0, raid:1, storm:0},
+    geoNote:"Highland settlements traded farmland for defensibility and mineral wealth, a deliberate trade many mountain civilizations made, accepting smaller populations in exchange for security."
+  },
+  desert:{
+    id:'desert', name:'The Desert Oasis', emoji:'🏜️', x:762, y:198,
+    tagline:"A pocket of green in a sea of sand",
+    blurb:"Caravans crossing the sand from every direction must pass through your oasis, which makes you a natural center of trade, if the wells hold. If they fail, there is no second water source for days in any direction.",
+    fertility:0.5, materials:0.5, tradeMult:1.9, defense:0.9, startPop:120, startFood:320, foodCapBase:200,
+    risk:{drought:4, flood:0, disease:0, raid:1, storm:0},
+    geoNote:"Oasis and crossroads settlements became legendary trade hubs precisely because of their scarcity. Controlling water in a dry region is its own kind of power, and its own kind of fragility."
+  },
+  forest:{
+    id:'forest', name:'The Forest Frontier', emoji:'🌲', x:182, y:480,
+    tagline:"Dense woodland, cleared field by field",
+    blurb:"Timber and game are abundant, and thick tree cover hides you from prying eyes. But every field must be cut from the forest by hand, and nobody nearby has ever mapped what else lives in these woods.",
+    fertility:0.8, materials:1.4, tradeMult:0.6, defense:1.2, startPop:150, startFood:210, foodCapBase:250,
+    risk:{drought:0, flood:0, disease:2, raid:2, storm:0},
+    geoNote:"Forest frontiers were slow to clear and slow to connect to trade networks, but their isolation and resources let unusual, independent cultures develop at their own pace."
+  },
+  marsh:{
+    id:'marsh', name:'The Marsh Wetlands', emoji:'🐸', x:652, y:500,
+    tagline:"Reedy wetlands beside the river's mouth",
+    blurb:"Fish, waterfowl, and marsh-grown grain could feed more people here than almost anywhere else on the map. But standing water breeds sickness, and building anything solid means fighting the mud itself.",
+    fertility:1.6, materials:0.3, tradeMult:0.9, defense:1.0, startPop:230, startFood:260, foodCapBase:300,
+    risk:{drought:0, flood:1, disease:4, raid:1, storm:1},
+    geoNote:"Wetland societies could reach very high population densities on fish and marsh agriculture, but stagnant water and dense settlement made them some of history's most disease-prone regions."
+  }
+};
+const SITE_ORDER = ['delta','valley','bay','steppe','highlands','desert','forest','marsh'];
+
+// ══════════════════════════════════════════════════════════════
+//  BUILD PROJECTS
+// ══════════════════════════════════════════════════════════════
+const PROJECTS = {
+  granary:{ name:'Granary', icon:'🏺', cost:40, minTurn:1,
+    effect:'+140 Food storage capacity. Cuts starvation losses roughly in half when the harvest fails.',
+    apply(s){ s.foodCap += 140; s.builtProjects.granary = true; } },
+  irrigation:{ name:'Irrigation Works', icon:'💧', cost:65, minTurn:1, requiresKnowledge:CULTIVATION_THRESHOLD,
+    effect:'+25% fertility. Sharply reduces flood and drought severity. Required to farm intensively without wearing out the land.',
+    apply(s){ s.builtProjects.irrigation = true; } },
+  walls:{ name:'Defensive Walls', icon:'🧱', cost:55, minTurn:3,
+    effect:'+22 permanent Defense. Greatly reduces raid and invasion losses.',
+    apply(s){ s.builtProjects.walls = true; s.defense = Math.min(150, s.defense+22); } },
+  temple:{ name:'Temple / Shrine', icon:'⛩️', cost:35, minTurn:2,
+    effect:'+1 Stability regeneration every turn for the rest of the game.',
+    apply(s){ s.builtProjects.temple = true; } },
+  tradepost:{ name:'Trade Post', icon:'🏪', cost:50, minTurn:7,
+    effect:'+30% Wealth from trade for the rest of the game.',
+    apply(s){ s.builtProjects.tradepost = true; } },
+};
+const PROJECT_ORDER = ['granary','irrigation','walls','temple','tradepost'];
+
+// ══════════════════════════════════════════════════════════════
+//  LABOR CATEGORIES (progressive complexity by era)
+// ══════════════════════════════════════════════════════════════
+const CATEGORIES = {
+  farming:{ name:'Farming & Gathering', icon:'🌾', minEra:1, note:'Produces Food.' },
+  research:{ name:'Domestication & Research', icon:'🔬', minEra:1, note:'Produces Knowledge; drives new technology.' },
+  building:{ name:'Building & Crafting', icon:'🧱', minEra:2, note:'Produces Materials, spent on Projects.' },
+  culture:{ name:'Culture & Order', icon:'⛩️', minEra:2, note:'Raises Stability.' },
+  trade:{ name:'Trade', icon:'🐫', minEra:3, note:'Produces Wealth.' },
+  military:{ name:'Military', icon:'🛡️', minEra:4, note:'Raises Defense.' }
+};
+function availableCategories(era){ return Object.keys(CATEGORIES).filter(k=>CATEGORIES[k].minEra<=era); }
+
+// ══════════════════════════════════════════════════════════════
+//  MILESTONE DECISIONS
+// ══════════════════════════════════════════════════════════════
+const MILESTONES = {
+  domestication:{
+    title:"Choose Your Domestication Focus", tag:"Founding Decision",
+    body:"Your people are learning to control nature instead of only gathering what it offers. Wild grains can be bred into reliable crops. Wild animals can be tamed into herds, for meat, milk, wool, and labor. Where will your earliest effort go?",
+    options:[
+      { label:'Focus on Plants', desc:'Breed hardier, more productive grains and vegetables.',
+        detail:'Immediate: +12 Knowledge now, and stronger farming yield going forward. Long-term: your food system depends on fewer staple crops, so a crop blight can hit you harder.',
+        apply(s){ s.domesticationFocus='plant'; s.knowledge+=12; s.log('milestone', `Your people commit to plant domestication. Immediate: +12 Knowledge, stronger farm yield. Long-term: your food supply now leans on fewer staple crops, raising blight risk.`); } },
+      { label:'Focus on Animals', desc:'Tame herds for meat, milk, wool, and hauling power.',
+        detail:'Immediate: +12 Knowledge now, and future labor bonuses once animal traction is learned. Long-term: herd animals can pass new diseases to people, a real pattern behind history’s worst epidemics, so expect occasional outbreaks.',
+        apply(s){ s.domesticationFocus='animal'; s.knowledge+=12; s.log('milestone', `Your people commit to animal domestication. Immediate: +12 Knowledge, future labor bonus from animal traction. Long-term: herd animals raise your risk of disease outbreaks.`); } },
+      { label:'Balance Both', desc:'Spread your effort across plants and animals.',
+        detail:'Immediate: a smaller Knowledge bonus than specializing. Long-term: a more diversified, resilient food system that resists any single disaster.',
+        apply(s){ s.domesticationFocus='balanced'; s.knowledge+=6; s.log('milestone', `Your people balance plant and animal domestication. Immediate: +6 Knowledge, less than specializing. Long-term: a diversified food system, more resistant to blight and disease alike.`); } }
+    ]
+  },
+  governance:{
+    title:"Choose How Your People Are Led", tag:"Turn 2 Decision",
+    body:"Your settlement has grown enough that decisions can no longer be made by everyone shouting at once. Someone, or some group, needs to lead.",
+    options:[
+      { label:'A Council of Elders', desc:'Respected elders decide together, by consensus.',
+        detail:'Immediate: nothing dramatic. Long-term: +1 Stability regeneration each turn, and your civilization resists sudden succession crises, but responds more slowly to emergencies.',
+        apply(s){ s.governance='council'; s.log('milestone', `Your people choose a Council of Elders. Long-term: steady +1 Stability each turn and resistance to succession crises, but slower crisis response.`); } },
+      { label:'A Single Chief', desc:'One leader decides quickly, for better or worse.',
+        detail:'Immediate: nothing dramatic. Long-term: faster, stronger recovery from sudden crises, but your civilization is more vulnerable to a succession crisis if that leader falls or a rival emerges.',
+        apply(s){ s.governance='chief'; s.log('milestone', `Your people choose a single Chief. Long-term: faster crisis recovery, but higher risk from succession crises later.`); } }
+    ]
+  },
+  tradition:{
+    title:"Choose Your Guiding Tradition", tag:"Turn 4 Decision",
+    body:"Your village has grown into a true community with shared stories, shared grief, and shared celebration. What binds your people together?",
+    options:[
+      { label:'Ancestor Veneration', desc:'Honor and consult the wisdom of those who came before.',
+        detail:'Immediate: +2 Stability now. Long-term: steady, reliable +2 Stability regeneration each turn from continuity and shared identity.',
+        apply(s){ s.tradition='ancestor'; s.stability=Math.min(100,s.stability+2); s.log('milestone', `Your people adopt Ancestor Veneration. Immediate: +2 Stability. Long-term: +2 Stability every turn from a strong shared identity.`); } },
+      { label:'Nature Spirits', desc:'Honor the land, rivers, and animals your survival depends on.',
+        detail:'Immediate: +1 Stability now. Long-term: +1 Stability each turn, and your land recovers from overuse faster (+Land Health regeneration).',
+        apply(s){ s.tradition='nature'; s.stability=Math.min(100,s.stability+1); s.log('milestone', `Your people adopt Nature Spirit traditions. Immediate: +1 Stability. Long-term: +1 Stability every turn, and your land heals faster from overuse.`); } },
+      { label:'Organized Priesthood', desc:'A formal class of priests interprets the divine and enforces order.',
+        detail:'Immediate: +4 Stability now, the strongest option. Long-term: +3 Stability every turn, but the priesthood may eventually demand more power for itself.',
+        apply(s){ s.tradition='priesthood'; s.stability=Math.min(100,s.stability+4); s.log('milestone', `Your people establish an Organized Priesthood. Immediate: +4 Stability, the strongest boost. Long-term: +3 Stability every turn, but expect the priesthood to eventually ask for more.`); } }
+    ]
+  },
+  tradeStance:{
+    title:"Strangers on the Trade Road", tag:"Turn 7 Decision",
+    body:"For the first time, travelers from distant peoples have reached your civilization, offering goods you have never seen. How will you treat outsiders who arrive from now on?",
+    options:[
+      { label:'Open Trade Network', desc:'Welcome outsiders and build lasting trade relationships.',
+        detail:'Immediate: nothing dramatic. Long-term: strongest Wealth generation from Trade labor, and more frequent positive trade events, but you also become a more visible target.',
+        apply(s){ s.tradeStance='open'; s.log('milestone', `Your people choose Open Trade. Long-term: strongest trade income, more trade opportunities, but greater visibility to outsiders.`); } },
+      { label:'Cautious Exchange', desc:'Trade, but on your own terms and only at arm’s length.',
+        detail:'Immediate: nothing dramatic. Long-term: modest, reliable Wealth from Trade labor with lower risk either way.',
+        apply(s){ s.tradeStance='cautious'; s.log('milestone', `Your people choose Cautious Exchange. Long-term: steady, modest trade income with balanced risk.`); } },
+      { label:'Raiding Culture', desc:'Take what you need from weaker neighbors instead of trading for it.',
+        detail:'Immediate: a one-time gain of Materials and Wealth. Long-term: weaker ongoing Trade income, and neighboring peoples may eventually retaliate.',
+        apply(s){ s.tradeStance='raiding'; s.materials+=30; s.wealth+=25; s.hostileNeighbor=true; s.log('milestone', `Your people adopt a Raiding Culture. Immediate: +30 Materials, +25 Wealth. Long-term: weaker trade income, and a neighboring people now bears a grudge.`); } }
+    ]
+  },
+  successionLaw:{
+    title:"Decide How Power Will Pass", tag:"Turn 10 Decision",
+    body:"Your civilization has endured long enough that its founders are gone and the question of who leads next has become urgent. How will future leadership be decided?",
+    options:[
+      { label:'Hereditary Monarchy', desc:'Power passes down a single family line.',
+        detail:'Immediate: nothing dramatic. Long-term: strong, decisive leadership and higher Defense readiness, but a serious risk of succession crisis if a ruler is weak or contested.',
+        apply(s){ s.successionLaw='hereditary'; s.defense=Math.min(150,s.defense+8); s.log('milestone', `Your people establish Hereditary Monarchy. Long-term: +8 Defense from decisive leadership, but real risk of a succession crisis.`); } },
+      { label:'Elected Leadership', desc:'A council or assembly chooses each new leader.',
+        detail:'Immediate: nothing dramatic. Long-term: much lower risk of succession crisis, at the cost of somewhat slower decision-making.',
+        apply(s){ s.successionLaw='council'; s.log('milestone', `Your people establish Elected Leadership. Long-term: far lower succession-crisis risk, slightly slower decisions.`); } },
+      { label:'Theocratic Rule', desc:'Religious authority and political authority become one.',
+        detail:'Immediate: +5 Stability now. Long-term: strong Stability as long as the tradition holds, but a single crisis of faith could destabilize everything at once.',
+        apply(s){ s.successionLaw='theocratic'; s.stability=Math.min(100,s.stability+5); s.log('milestone', `Your people establish Theocratic Rule. Immediate: +5 Stability. Long-term: strong stability, but everything now rests on a single foundation.`); } }
+    ]
+  },
+  writingSystem:{
+    title:"How Will You Preserve What You Know?", tag:"Knowledge Milestone",
+    body:"Your people have accumulated enough hard-won knowledge, about farming seasons, remedies, laws, and history, that losing it would now be a real tragedy. Right now, all of it lives only in memory. How will you preserve it?",
+    options:[
+      { label:'Keep Oral Tradition Only', desc:'Trust your elders and storytellers to remember and pass it on.',
+        detail:'Immediate: no cost. Long-term: if a disaster kills a large share of your population, a significant portion of your accumulated Knowledge could be lost forever with them.',
+        apply(s){ s.writingSystem='oral'; s.log('milestone', `Your people rely on Oral Tradition. No cost now, but a major loss of population later could permanently erase a large share of your Knowledge.`); } },
+      { label:'Develop Tally & Symbols', desc:'Simple marks and pictures for numbers, goods, and events.',
+        detail:'Immediate: costs 20 Materials and a turn of focus. Long-term: modest ongoing Trade and Stability bonus, and Knowledge losses from population disasters are cut roughly in half.',
+        apply(s){ s.writingSystem='tally'; s.materials=Math.max(0,s.materials-20); s.log('milestone', `Your people develop Tally & Symbols. Immediate: -20 Materials. Long-term: modest Trade/Stability bonus, and Knowledge losses from disasters are roughly halved.`); } },
+      { label:'Develop Full Writing', desc:'A true written language for law, trade, and history.',
+        detail:'Immediate: costs 45 Materials and 15 Knowledge. Long-term: strong Trade and Stability bonus, enables formal law codes, and your Knowledge is never lost to population disasters.',
+        apply(s){ s.writingSystem='full'; s.materials=Math.max(0,s.materials-45); s.knowledge=Math.max(0,s.knowledge-15); s.log('milestone', `Your people develop Full Writing. Immediate: -45 Materials, -15 Knowledge. Long-term: strong Trade/Stability bonus and your accumulated Knowledge can never again be lost to disaster.`); } }
+    ]
+  },
+  environmentalCrossroads:{
+    title:"The Land Shows Signs of Strain", tag:"Environmental Crossroads",
+    body:"Your farmers report thinner soil, lower yields on fields that used to be reliable, and, in some places, salt crusting where water has evaporated year after year. This has happened to real civilizations before yours. What will you do?",
+    options:[
+      { label:'Invest in Sustainable Land Management', desc:'Crop rotation, fallow fields, and careful water use.',
+        detail:'Immediate: costs 35 Materials. Long-term: Land Health recovers steadily from now on, protecting your fertility for the rest of the game.',
+        apply(s){ s.materials=Math.max(0,s.materials-35); s.sustainableFarming=true; s.log('milestone', `Your people invest in sustainable land management. Immediate: -35 Materials. Long-term: your Land Health will recover steadily instead of continuing to decline.`); } },
+      { label:'Keep Farming as Intensively as Possible', desc:'You need the food now more than you need to protect the future.',
+        detail:'Immediate: no cost, full farming output continues. Long-term: Land Health keeps declining, permanently lowering your fertility until the land is exhausted.',
+        apply(s){ s.log('milestone', `Your people choose to keep farming intensively. No cost now, but Land Health will continue declining, and fertility will keep dropping.`); } }
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+//  EVENTS
+// ══════════════════════════════════════════════════════════════
+function rollTier(readiness, difficulty){
+  const roll = Math.floor(Math.random()*20)+1+readiness;
+  if(roll >= difficulty+6) return 'success';
+  if(roll >= difficulty-5) return 'partial';
+  return 'failure';
+}
+
+const EVENTS = [
+  { id:'drought', title:'Drought', emoji:'☀️', minTurn:1, maxTurn:12,
+    weight(s){ return 2 + SITES[s.siteId].risk.drought*2; },
+    readiness(s){ return (s.builtProjects.irrigation?9:0) + Math.min(6, Math.floor(s.food/40)); },
+    difficulty(s){ return 13 + Math.floor(s.turn/5)*2; },
+    body:"The rains have failed for a full season. Wells and streams are running low across the land.",
+    outcomes:{
+      success:s=>({ immediate:"Your stores and water management hold. No losses this turn.", long:"Your people's confidence in your planning grows. +3 Stability.", apply(){ s.stability=Math.min(100,s.stability+3); } }),
+      partial:s=>({ immediate:"Rationing keeps most people fed, but food stock drops sharply (-25%).", long:"No lasting damage, but it was close.", apply(){ s.food=Math.max(0,Math.round(s.food*0.75)); } }),
+      failure:s=>({ immediate:"The wells run dry. Food stock collapses (-55%) and roughly 6% of your population dies of thirst and hunger.", long:"-10 Stability. Without irrigation, this will happen again.", apply(){ s.food=Math.max(0,Math.round(s.food*0.45)); s.applyPopLoss(0.06,'drought'); s.stability=Math.max(0,s.stability-10); } })
+    }
+  },
+  { id:'flood', title:'The River Floods', emoji:'🌊', minTurn:1, maxTurn:12,
+    weight(s){ return 1 + SITES[s.siteId].risk.flood*2.2; },
+    readiness(s){ return (s.builtProjects.irrigation?10:0); },
+    difficulty(s){ return 13; },
+    body:"The river has risen far beyond its banks, spreading fast across the lowlands.",
+    outcomes:{
+      success:s=>({ immediate:"Your flood-control holds. No losses.", long:"Proof your engineering works pays off: permanent +5% fertility.", apply(){ s._deltaFertBonus=(s._deltaFertBonus||0)+0.05; } }),
+      partial:s=>({ immediate:"Some fields and stores are lost (-20% Materials, -15% Food), and a handful of lives are lost (3% population).", long:"The silt the flood leaves behind enriches your soil for the next two turns (+20% fertility, temporary).", apply(){ s.materials=Math.max(0,Math.round(s.materials*0.8)); s.food=Math.max(0,Math.round(s.food*0.85)); s.applyPopLoss(0.03,'flood'); s.tempFertilityTurns=2; s.tempFertilityBonus=0.2; } }),
+      failure:s=>({ immediate:"The flood devastates your settlement: -45% Materials, -30% Food, and roughly 9% of your population is lost.", long:"-8 Stability. The silt does enrich your soil for the next two turns (+20% fertility), a bitter consolation.", apply(){ s.materials=Math.max(0,Math.round(s.materials*0.55)); s.food=Math.max(0,Math.round(s.food*0.7)); s.applyPopLoss(0.09,'flood'); s.stability=Math.max(0,s.stability-8); s.tempFertilityTurns=2; s.tempFertilityBonus=0.2; } })
+    }
+  },
+  { id:'blight', title:'Crop Blight', emoji:'🥀', minTurn:2, maxTurn:12,
+    weight(s){ return 3; },
+    readiness(s){ return (s.domesticationFocus==='balanced'?9:0) + (s.domesticationFocus==='plant'?-3:0) + (s.builtProjects.irrigation?3:0); },
+    difficulty(s){ return 13; },
+    body:"A blight is spreading through your fields, withering crops before harvest.",
+    outcomes:{
+      success:s=>({ immediate:"Your diversified fields resist the blight. No losses.", long:"No lasting effect.", apply(){} }),
+      partial:s=>({ immediate:"Part of the harvest is lost (-20% Food).", long:"No lasting effect.", apply(){ s.food=Math.max(0,Math.round(s.food*0.8)); } }),
+      failure:s=>({ immediate:"The blight wipes out much of your harvest (-45% Food).", long:s.domesticationFocus==='plant' ? "Because you leaned heavily on a small number of staple crops, this hits especially hard. -6 Stability." : "-4 Stability.", apply(){ s.food=Math.max(0,Math.round(s.food*0.55)); s.stability=Math.max(0,s.stability-(s.domesticationFocus==='plant'?6:4)); } })
+    }
+  },
+  { id:'disease', title:'Sickness Spreads', emoji:'🤒', minTurn:2, maxTurn:12,
+    weight(s){ return 2 + SITES[s.siteId].risk.disease*1.8 + (s.population>500?2:0); },
+    readiness(s){ return Math.round(s.stability/10) + (s.tradition==='priesthood'?2:0); },
+    difficulty(s){ return 13; },
+    body:"Illness is spreading through your settlement, and the sick are overwhelming what care your people can give.",
+    outcomes:{
+      success:s=>({ immediate:"Your people care for the sick effectively. Minimal losses.", long:"No lasting effect.", apply(){} }),
+      partial:s=>({ immediate:"The sickness takes a toll: roughly 4% of your population.", long:"-3 Stability from the grief and disruption.", apply(){ s.applyPopLoss(0.04,'disease'); s.stability=Math.max(0,s.stability-3); } }),
+      failure:s=>({ immediate:"The sickness spreads unchecked: roughly 10% of your population is lost.", long:"-10 Stability.", apply(){ s.applyPopLoss(0.10,'disease'); s.stability=Math.max(0,s.stability-10); } })
+    }
+  },
+  { id:'zoonotic', title:'Plague from the Herds', emoji:'🐄', minTurn:2, maxTurn:12,
+    weight(s){ return s.domesticationFocus==='animal' ? 4 : (s.domesticationFocus==='balanced' ? 1.5 : 0); },
+    readiness(s){ return Math.round(s.stability/10); },
+    difficulty(s){ return 13; },
+    body:"A sickness has jumped from your herds to your people, something new that no healer has seen before.",
+    outcomes:{
+      success:s=>({ immediate:"Isolating the sick limits the spread. Minimal losses.", long:"Your healers learn something from this; +4 Knowledge.", apply(){ s.knowledge+=4; } }),
+      partial:s=>({ immediate:"The illness spreads through several households: roughly 5% of your population.", long:"-3 Stability.", apply(){ s.applyPopLoss(0.05,'zoonotic'); s.stability=Math.max(0,s.stability-3); } }),
+      failure:s=>({ immediate:"The illness spreads widely: roughly 12% of your population is lost, more than any drought or blight so far.", long:"-9 Stability. This is a real historical pattern: diseases that jump from domesticated animals to people have caused some of history's worst epidemics.", apply(){ s.applyPopLoss(0.12,'zoonotic'); s.stability=Math.max(0,s.stability-9); } })
+    }
+  },
+  { id:'raiders', title:'Raiders on the Horizon', emoji:'⚔️', minTurn:2, maxTurn:12,
+    weight(s){ return 2 + SITES[s.siteId].risk.raid*2 + (s.hostileNeighbor?3:0); },
+    readiness(s){ return Math.round(s.defense/8) + (s.builtProjects.walls?4:0); },
+    difficulty(s){ return 13 + Math.floor(s.turn/4); },
+    body:"Armed raiders have been spotted approaching your settlement, moving fast.",
+    outcomes:{
+      success:s=>({ immediate:"Your defenses repel the raiders entirely. No losses; you even recover some of their supplies (+15 Materials).", long:"+2 Stability from the victory.", apply(){ s.materials+=15; s.stability=Math.min(100,s.stability+2); } }),
+      partial:s=>({ immediate:"The raiders take supplies before retreating: -20 Materials, -15 Food.", long:"No lasting effect.", apply(){ s.materials=Math.max(0,s.materials-20); s.food=Math.max(0,s.food-15); } }),
+      failure:s=>({ immediate:"The raid is a disaster: -40 Materials, -25 Food, and roughly 5% of your population is killed or taken.", long:"-8 Stability.", apply(){ s.materials=Math.max(0,s.materials-40); s.food=Math.max(0,s.food-25); s.applyPopLoss(0.05,'raid'); s.stability=Math.max(0,s.stability-8); } })
+    }
+  },
+  { id:'tribe_land', title:'A Tribe Seeks Land', emoji:'🏕️', minTurn:1, maxTurn:6,
+    weight(s){ return SITES[s.siteId].risk.raid>=3 ? 3 : 1.5; },
+    kind:'choice',
+    body:"A smaller group, displaced from their own land, has arrived asking to settle alongside your people.",
+    options:[
+      { label:'Welcome Them', apply(s){ const gain=Math.round(s.population*0.08); s.population+=gain; s.knowledge+=6; s.stability=Math.max(0,s.stability-4); return {immediate:`You welcome them: +${gain} population and +6 Knowledge from their different skills.`, long:"-4 Stability short-term as your people adjust to newcomers, but no lasting enemy."}; } },
+      { label:'Turn Them Away', apply(s){ s.stability=Math.min(100,s.stability+2); s.hostileNeighbor=true; return {immediate:"You turn them away. +2 Stability now; your people feel safer.", long:"They do not forget this. A neighboring people now bears a grudge against you, raising future raid risk."}; } }
+    ]
+  },
+  { id:'caravan', title:'A Caravan Arrives', emoji:'🐫', minTurn:1, maxTurn:12,
+    weight(s){ return SITES[s.siteId].tradeMult>=1.3 ? 3.5 : 1.5; },
+    kind:'choice',
+    body:"Traveling merchants have arrived with goods from distant lands, offering to exchange them for what you can spare.",
+    options:[
+      { label:'Trade With Them', apply(s){
+          if(s.materials<15 && s.food<20){ return {immediate:"You have too little surplus to trade meaningfully.", long:"No lasting effect."}; }
+          const matsSpent=Math.min(15,s.materials); const foodSpent=Math.min(10,Math.max(0,s.food-30));
+          s.materials-=matsSpent; s.food-=foodSpent;
+          const wealthGain=Math.round((matsSpent+foodSpent)*1.6*SITES[s.siteId].tradeMult*(s.tradeStance==='open'?1.3:1));
+          s.wealth+=wealthGain;
+          return {immediate:`You trade surplus goods for Wealth: -${matsSpent} Materials, -${foodSpent} Food, +${wealthGain} Wealth.`, long:"Strengthens your trade reputation."};
+        } },
+      { label:'Decline (Save Your Surplus)', apply(s){ return {immediate:"You decline. Nothing changes.", long:"You keep every bit of your surplus, but miss the opportunity."}; } }
+    ]
+  },
+  { id:'pirates', title:'Raiders From the Sea', emoji:'🏴‍☠️', minTurn:3, maxTurn:12,
+    weight(s){ return SITES[s.siteId].risk.storm>=3 ? 3.5 : 0.5; },
+    readiness(s){ return Math.round(s.defense/8); },
+    difficulty(s){ return 14; },
+    body:"Ships have appeared off the coast, and they are not here to trade.",
+    outcomes:{
+      success:s=>({ immediate:"Your coastal defenses hold. No losses.", long:"+2 Stability.", apply(){ s.stability=Math.min(100,s.stability+2); } }),
+      partial:s=>({ immediate:"They loot the docks before fleeing: -20 Wealth, -15 Materials.", long:"No lasting effect.", apply(){ s.wealth=Math.max(0,s.wealth-20); s.materials=Math.max(0,s.materials-15); } }),
+      failure:s=>({ immediate:"A brutal raid: -40 Wealth, -20 Materials, roughly 4% population lost.", long:"-6 Stability.", apply(){ s.wealth=Math.max(0,s.wealth-40); s.materials=Math.max(0,s.materials-20); s.applyPopLoss(0.04,'raid'); s.stability=Math.max(0,s.stability-6); } })
+    }
+  },
+  { id:'bumper', title:'A Bountiful Harvest', emoji:'🌽', minTurn:1, maxTurn:12,
+    weight(s){ return 2.5; },
+    body:"The season has been unusually kind. Grain stores overflow.",
+    outcomes:{ success:s=>({immediate:`Food stock rises by 20%.`, long:"No lasting effect.", apply(){ s.food=Math.round(s.food*1.2);} }), partial:null, failure:null, forceSuccess:true }
+  },
+  { id:'inventive', title:'An Inventive Mind', emoji:'💡', minTurn:1, maxTurn:12,
+    weight(s){ return 2.2; },
+    body:"One of your people has stumbled onto a clever new technique, and it's already spreading by word of mouth.",
+    outcomes:{ success:s=>({immediate:"+10 Knowledge.", long:"A small but real step toward new technology.", apply(){ s.knowledge+=10; } }), partial:null, failure:null, forceSuccess:true }
+  },
+  { id:'quiet', title:'A Season of Quiet', emoji:'🌤️', minTurn:1, maxTurn:12,
+    weight(s){ return 3; },
+    body:"Nothing remarkable happens this season, just steady, ordinary life.",
+    outcomes:{ success:s=>({immediate:"+2 Stability from the calm.", long:"No lasting effect.", apply(){ s.stability=Math.min(100,s.stability+2); } }), partial:null, failure:null, forceSuccess:true }
+  },
+  { id:'discontent', title:'Whispers of Discontent', emoji:'😠', minTurn:2, maxTurn:12,
+    weight(s){ return s.stability<45 ? 4 : 0.4; },
+    kind:'choice',
+    body:"Grumbling has turned into open complaints. Some of your people feel unheard, overworked, or afraid.",
+    options:[
+      { label:'Address Their Grievances', apply(s){ const cost=Math.min(20,s.food); s.food-=cost; s.stability=Math.min(100,s.stability+8); s.unrest=false; return {immediate:`You spend resources to address concerns: -${cost} Food, +8 Stability.`, long:"Trust in your leadership is restored."}; } },
+      { label:'Ignore It', apply(s){ s.unrest=true; return {immediate:"You ignore the complaints. Nothing changes for now.", long:"Discontent festers. Expect a bigger crisis if it isn't addressed soon."}; } }
+    ]
+  },
+  { id:'revolt', title:'Open Revolt', emoji:'🔥', minTurn:3, maxTurn:12,
+    weight(s){ return (s.unrest || s.stability<25) ? 4.5 : 0.3; },
+    readiness(s){ return Math.round(s.stability/6) + (s.governance==='chief'?3:0); },
+    difficulty(s){ return 15; },
+    body:"Anger has boiled over into open unrest in the streets and fields.",
+    outcomes:{
+      success:s=>({ immediate:"Order is restored before real damage is done.", long:"+5 Stability from the resolution, and the underlying discontent is addressed.", apply(){ s.stability=Math.min(100,s.stability+5); s.unrest=false; } }),
+      partial:s=>({ immediate:"The unrest is contained, but not without cost: -12 Stability, -15 Materials.", long:"Underlying tensions remain.", apply(){ s.stability=Math.max(0,s.stability-12); s.materials=Math.max(0,s.materials-15); } }),
+      failure:s=>({ immediate:"The revolt spirals: -30 Stability, and roughly 4% of your population is lost to the violence.", long:"Your civilization is now dangerously close to collapse.", apply(){ s.stability=Math.max(0,s.stability-30); s.applyPopLoss(0.04,'revolt'); s.lastCritical='internal'; } })
+    }
+  },
+  { id:'priesthood_demand', title:'The Priesthood Grows Bold', emoji:'⛩️', minTurn:4, maxTurn:12,
+    weight(s){ return s.tradition==='priesthood' ? 3 : 0; },
+    kind:'choice', once:true,
+    body:"The priesthood you established now argues that their guidance deserves formal political power, not just spiritual authority.",
+    options:[
+      { label:'Grant Them Power', apply(s){ s.stability=Math.min(100,s.stability+6); s.priesthoodDominant=true; return {immediate:"You grant the priesthood formal authority. +6 Stability now.", long:"A single crisis of faith could destabilize your entire government later."}; } },
+      { label:'Resist Their Demand', apply(s){ s.stability=Math.max(0,s.stability-6); return {immediate:"You resist. -6 Stability now as tensions rise.", long:"You keep religious and political power separate, avoiding a future single point of failure."}; } }
+    ]
+  },
+  { id:'migrants', title:'Skilled Migrants Arrive', emoji:'🚶', minTurn:3, maxTurn:12,
+    weight(s){ return 2; },
+    kind:'choice',
+    body:"A small group of skilled newcomers, potters, herders, or builders, ask to join your civilization.",
+    options:[
+      { label:'Accept Them', apply(s){ const gain=Math.round(s.population*0.05); s.population+=gain; s.materials+=15; s.stability=Math.max(0,s.stability-2); return {immediate:`+${gain} population, +15 Materials from their skills.`, long:"-2 Stability short-term while they integrate."}; } },
+      { label:'Turn Them Away', apply(s){ return {immediate:"You turn them away. Nothing changes.", long:"You miss the population and skill boost, but avoid any friction."}; } }
+    ]
+  },
+  { id:'succession_crisis', title:'A Succession Dispute', emoji:'👑', minTurn:9, maxTurn:12,
+    weight(s){ return s.successionLaw==='hereditary' ? 4 : (s.successionLaw ? 0.5 : 2); },
+    readiness(s){ return Math.round(s.stability/6) + (s.successionLaw==='council'?7:0) + (s.successionLaw==='hereditary'?-2:0); },
+    difficulty(s){ return 15; },
+    body:"Your civilization's leadership is contested. Rival claimants and factions are pulling your people in different directions.",
+    outcomes:{
+      success:s=>({ immediate:"The transition of power goes smoothly.", long:"No lasting effect.", apply(){} }),
+      partial:s=>({ immediate:"A rocky transition: -15 Stability.", long:"No lasting effect beyond the disruption.", apply(){ s.stability=Math.max(0,s.stability-15); } }),
+      failure:s=>({ immediate:"The dispute turns violent: -35 Stability, and roughly 6% of your population is lost.", long:"Your civilization may not recover from this.", apply(){ s.stability=Math.max(0,s.stability-35); s.applyPopLoss(0.06,'succession'); s.lastCritical='internal'; } })
+    }
+  },
+  { id:'invasion', title:'A Foreign Army Approaches', emoji:'🗡️', minTurn:9, maxTurn:12,
+    weight(s){ return 2.5 + (s.hostileNeighbor?3:0); },
+    readiness(s){ return Math.round(s.defense/6); },
+    difficulty(s){ return 16; },
+    body:"An organized army from beyond your borders is marching toward your civilization, seeking land or tribute.",
+    outcomes:{
+      success:s=>({ immediate:"Your defenses hold and the army withdraws.", long:"+6 Stability and a hard-earned reputation for strength.", apply(){ s.stability=Math.min(100,s.stability+6); } }),
+      partial:s=>({ immediate:"You hold your capital but lose outlying farmland: -60 Food, -30 Materials.", long:"-8 Stability.", apply(){ s.food=Math.max(0,s.food-60); s.materials=Math.max(0,s.materials-30); s.stability=Math.max(0,s.stability-8); } }),
+      failure:s=>({ immediate:"Your defenses fail entirely: roughly 18% of your population is lost, and -50 Stability.", long:"Your civilization may not survive this.", apply(){ s.applyPopLoss(0.18,'invasion'); s.stability=Math.max(0,s.stability-50); s.lastCritical='invasion'; } })
+    }
+  },
+];
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+let state = null;
+let selectedSiteId = null;
+let pendingEventOutcome = null;
+let pendingEvent = null;
+
+function newGameState(siteId){
+  const site = SITES[siteId];
+  const s = {
+    siteId, turn:1, population:site.startPop, food:site.startFood, foodCap:site.foodCapBase,
+    stability:60, knowledge:0, materials:20, wealth:0, defense:10, landHealth:100,
+    domesticationFocus:null, governance:null, tradition:null, writingSystem:'oral', tradeStance:null, successionLaw:null,
+    sustainableFarming:false, hostileNeighbor:false, unrest:false, priesthoodDominant:false, lastCritical:null,
+    builtProjects:{}, milestonesAnswered:{}, techFlags:{cultivation:false, animalTraction:false, bronze:false, iron:false},
+    alloc:{}, chronicle:[], eventLog:[], gameOver:false, endingId:null, startPop:site.startPop,
+    tempFertilityTurns:0, tempFertilityBonus:0, farmingOverTurns:0,
+    log(kind, text){ this.eventLog.push({turn:this.turn, kind, text}); },
+    applyPopLoss(ratio, cause){
+      const loss = Math.max(1, Math.round(this.population * ratio));
+      this.population = Math.max(0, this.population - loss);
+      this._lastPopLoss = loss; this._lastPopLossRatio = ratio; this._lastCause = cause;
+      if(ratio >= 0.08){
+        let knowledgeLossPct = 0;
+        if(this.writingSystem==='oral') knowledgeLossPct = 0.30;
+        else if(this.writingSystem==='tally') knowledgeLossPct = 0.12;
+        else knowledgeLossPct = 0;
+        if(knowledgeLossPct>0 && this.knowledge>0){
+          const kLoss = Math.round(this.knowledge*knowledgeLossPct);
+          this.knowledge = Math.max(0, this.knowledge-kLoss);
+          this.log('bad', `Because so much knowledge lived only in memory, ${kLoss} Knowledge was lost forever along with the people who carried it.`);
+        }
+      }
+      return loss;
+    }
+  };
+  const cats = availableCategories(1);
+  const even = Math.floor(100/cats.length/5)*5;
+  let total=0;
+  cats.forEach((c,i)=>{ s.alloc[c] = (i===cats.length-1) ? (100-total) : even; total += (i===cats.length-1?0:even); });
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DOM HELPERS
+// ══════════════════════════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function goToScreen(id){ document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active')); $(id).classList.add('active'); window.scrollTo(0,0); }
+
+// ══════════════════════════════════════════════════════════════
+//  MAP RENDER
+// ══════════════════════════════════════════════════════════════
+function renderMap(){
+  const svg = $('map-svg');
+  svg.innerHTML = `
+    <rect x="0" y="0" width="1000" height="640" fill="var(--sea)"/>
+    <path d="M40,60 L560,20 L760,40 L900,140 L935,260 L860,360 L930,430 L960,520 L900,610 L640,635 L360,615 L140,560 L60,420 L30,220 Z" fill="var(--sand)" stroke="var(--sand-dark)" stroke-width="4"/>
+    <path d="M900,140 L935,260 L860,360 L930,430 L960,520 L900,610" fill="none" stroke="var(--sand-dark)" stroke-width="3" opacity="0.5"/>
+    <!-- Steppe wash -->
+    <path d="M60,80 L520,50 L560,140 L360,220 L120,200 Z" fill="#d7e0a8" opacity="0.55"/>
+    <text x="230" y="105" class="map-region-label">The Steppe</text>
+    <!-- Highlands hachures -->
+    <g stroke="var(--stone)" stroke-width="4" opacity="0.7" stroke-linecap="round">
+      <path d="M360,170 l30,-34 l28,34"/><path d="M400,178 l28,-32 l28,32"/><path d="M440,170 l26,-30 l26,30"/>
+      <path d="M385,205 l26,-30 l26,30"/><path d="M425,210 l24,-28 l24,28"/>
+    </g>
+    <text x="440" y="252" class="map-region-label">The Highlands</text>
+    <!-- Desert stipple -->
+    <path d="M660,110 L900,140 L900,290 L680,300 L640,200 Z" fill="#e9d59a" opacity="0.6"/>
+    <g fill="var(--sand-dark)" opacity="0.6">
+      ${(()=>{ let dots=''; for(let i=0;i<70;i++){ const x=660+Math.random()*230; const y=115+Math.random()*175; dots+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="2"/>`; } return dots; })()}
+    </g>
+    <text x="760" y="130" class="map-region-label">The Desert</text>
+    <!-- Forest -->
+    <g opacity="0.65">
+      ${(()=>{ let t=''; const pts=[[120,420],[150,460],[100,470],[180,440],[210,470],[140,500],[190,510],[230,500],[90,510],[220,430]]; pts.forEach(p=>{ t+=`<circle cx="${p[0]}" cy="${p[1]}" r="16" fill="var(--green-dark)"/>`; }); return t; })()}
+    </g>
+    <text x="170" y="410" class="map-region-label">The Forest</text>
+    <!-- River -->
+    <path d="M420,160 C 480,210 520,250 562,300 C 610,360 640,390 652,430 C 665,460 700,480 762,432" fill="none" stroke="var(--river)" stroke-width="10" stroke-linecap="round" opacity="0.85"/>
+    <path d="M420,160 C 480,210 520,250 562,300 C 610,360 640,390 652,430 C 665,460 700,480 762,432" fill="none" stroke="var(--river-dark)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    <!-- Delta fan -->
+    <path d="M745,410 L800,415 L830,440 L790,460 L745,455 Z" fill="var(--river)" opacity="0.5"/>
+    <!-- Marsh reeds -->
+    <g stroke="var(--green-dark)" stroke-width="2" opacity="0.7">
+      ${(()=>{ let r=''; for(let i=0;i<18;i++){ const x=610+Math.random()*90; const y=470+Math.random()*55; r+=`<line x1="${x}" y1="${y}" x2="${x-3}" y2="${y-14}"/>`; } return r; })()}
+    </g>
+    <text x="650" y="460" class="map-region-label">The Marsh</text>
+    <!-- Bay indentation label -->
+    <text x="855" y="490" class="map-region-label">The Bay</text>
+    <text x="555" y="270" class="map-region-label">The Valley</text>
+    <text x="150" y="450" class="map-region-label" opacity="0"></text>
+    <g id="site-markers"></g>
+  `;
+  const g = $('site-markers');
+  SITE_ORDER.forEach(id=>{
+    const site = SITES[id];
+    const marker = document.createElementNS('http://www.w3.org/2000/svg','g');
+    marker.setAttribute('class','site-marker');
+    marker.setAttribute('data-site', id);
+    marker.innerHTML = `<circle class="dot" cx="${site.x}" cy="${site.y}" r="22"></circle>
+      <text x="${site.x}" y="${site.y+6}" font-size="20">${site.emoji}</text>
+      <text x="${site.x}" y="${site.y+38}">${site.name.replace('The ','')}</text>`;
+    marker.addEventListener('click', ()=>selectSite(id));
+    g.appendChild(marker);
+  });
+}
+
+function selectSite(id){
+  selectedSiteId = id;
+  document.querySelectorAll('.site-marker').forEach(m=>m.classList.toggle('selected', m.getAttribute('data-site')===id));
+  const site = SITES[id];
+  const riskEntries = Object.entries(site.risk).filter(([k,v])=>v>=2).map(([k,v])=>`${k.charAt(0).toUpperCase()+k.slice(1)} risk: ${'●'.repeat(v)}`);
+  $('site-detail-wrap').innerHTML = `
+    <div class="site-detail">
+      <h3>${site.emoji} ${site.name}</h3>
+      <p style="font-style:italic;margin-bottom:8px">${site.tagline}</p>
+      <p>${site.blurb}</p>
+      <div class="trait-row">
+        <span class="trait-chip ${site.fertility>=1.2?'good':(site.fertility<0.8?'risk':'')}">Fertility ${site.fertility>=1.2?'High':site.fertility>=0.9?'Medium':'Low'}</span>
+        <span class="trait-chip ${site.materials>=1.2?'good':''}">Materials ${site.materials>=1.2?'High':site.materials>=0.7?'Medium':'Low'}</span>
+        <span class="trait-chip ${site.tradeMult>=1.3?'good':''}">Trade ${site.tradeMult>=1.3?'High':site.tradeMult>=0.9?'Medium':'Low'}</span>
+        <span class="trait-chip ${site.defense>=1.2?'good':(site.defense<0.8?'risk':'')}">Defense ${site.defense>=1.2?'High':site.defense>=0.9?'Medium':'Low'}</span>
+        ${riskEntries.map(r=>`<span class="trait-chip risk">${r}</span>`).join('')}
+      </div>
+      <div class="geo-note">${site.geoNote}</div>
+    </div>`;
+  $('btn-confirm-site').disabled = false;
+}
+
+function confirmSite(){
+  if(!selectedSiteId) return;
+  state = newGameState(selectedSiteId);
+  showMilestone('domestication', ()=>{ startTurnFlow(); });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  GAME SCREEN RENDER
+// ══════════════════════════════════════════════════════════════
+function meterRow(label, value, max, cls, extra){
+  const pct = Math.max(0, Math.min(100, (value/max)*100));
+  return `<div class="meter-row">
+    <div class="meter-label"><span>${label}</span><span>${extra!==undefined?extra:Math.round(value)}</span></div>
+    <div class="meter"><div class="meter-fill ${cls}" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function renderSettlementPanel(){
+  const site = SITES[state.siteId];
+  $('settlement-panel').innerHTML = `
+    <div class="sc-name">${site.emoji} ${site.name}</div>
+    <div class="sc-tag">${site.tagline}</div>
+    <div class="trait-row">
+      <span class="trait-chip">Fertility ${site.fertility>=1.2?'High':site.fertility>=0.9?'Med':'Low'}</span>
+      <span class="trait-chip">Materials ${site.materials>=1.2?'High':site.materials>=0.7?'Med':'Low'}</span>
+      <span class="trait-chip">Defense ${site.defense>=1.2?'High':site.defense>=0.9?'Med':'Low'}</span>
+    </div>
+  `;
+}
+
+function renderMeters(){
+  const era = eraOfTurn(state.turn);
+  let html = `<h3 style="margin-top:0">Civilization Status</h3>
+  <div class="pop-line">${Math.round(state.population).toLocaleString()} <span>people</span></div>`;
+  html += meterRow('Food Stock', state.food, state.foodCap, 'food', `${Math.round(state.food)} / ${state.foodCap}`);
+  html += meterRow('Stability', state.stability, 100, 'stability');
+  html += meterRow('Knowledge', state.knowledge, 150, 'knowledge', Math.round(state.knowledge));
+  html += meterRow('Materials', state.materials, 150, 'materials', Math.round(state.materials));
+  if(era>=2) html += meterRow('Land Health', state.landHealth, 100, 'land');
+  if(era>=3) html += meterRow('Wealth', state.wealth, 150, 'wealth', Math.round(state.wealth));
+  if(era>=4) html += meterRow('Defense', state.defense, 100, 'defense');
+  const techs = [];
+  if(state.techFlags.cultivation) techs.push('Improved Cultivation');
+  if(state.techFlags.animalTraction) techs.push('Animal Traction');
+  if(state.techFlags.bronze) techs.push('Bronze Tools');
+  if(state.techFlags.iron) techs.push('Iron Tools');
+  if(state.writingSystem && state.writingSystem!=='oral') techs.push(state.writingSystem==='full'?'Full Writing':'Tally & Symbols');
+  if(techs.length) html += `<div style="font-size:12px;color:var(--ink-soft);margin-top:8px"><b>Technology:</b> ${techs.join(', ')}</div>`;
+  $('meters-panel').innerHTML = html;
+}
+
+function renderLog(){
+  const list = $('log-list');
+  list.innerHTML = state.eventLog.slice().reverse().map(e=>`<div class="log-entry ${e.kind}"><span class="log-turn">T${e.turn}</span> ${e.text}</div>`).join('') || '<div style="font-size:12px;color:var(--ink-soft)">Nothing has happened yet.</div>';
+}
+
+function renderAllocation(){
+  const era = eraOfTurn(state.turn);
+  const cats = availableCategories(era);
+  cats.forEach(c=>{ if(state.alloc[c]===undefined) state.alloc[c]=0; });
+  Object.keys(state.alloc).forEach(c=>{ if(!cats.includes(c)) delete state.alloc[c]; });
+  const list = $('alloc-list');
+  list.innerHTML = cats.map(c=>{
+    const cat = CATEGORIES[c];
+    return `<div class="alloc-row">
+      <div class="alloc-icon">${cat.icon}</div>
+      <div class="alloc-name">${cat.name}<small>${cat.note}</small></div>
+      <div class="stepper">
+        <button onclick="stepAlloc('${c}',-5)">−</button>
+        <span id="alloc-val-${c}">${state.alloc[c]}%</span>
+        <button onclick="stepAlloc('${c}',5)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateAllocTotal();
+  updatePreview();
+}
+
+function stepAlloc(cat, delta){
+  const newVal = state.alloc[cat] + delta;
+  if(newVal<0 || newVal>100) return;
+  state.alloc[cat] = newVal;
+  $(`alloc-val-${cat}`).textContent = newVal+'%';
+  updateAllocTotal();
+  updatePreview();
+}
+
+function allocTotal(){ return Object.values(state.alloc).reduce((a,b)=>a+b,0); }
+
+function updateAllocTotal(){
+  const total = allocTotal();
+  const el = $('alloc-total');
+  el.textContent = `Total allocated: ${total}%`;
+  el.className = 'alloc-total ' + (total===100?'good':'bad');
+  $('btn-advance').disabled = total!==100;
+}
+
+function currentFertility(){
+  const site = SITES[state.siteId];
+  let f = site.fertility + (state._deltaFertBonus||0);
+  if(state.techFlags.cultivation) f += 0.30;
+  if(state.techFlags.animalTraction) f += 0.15;
+  if(state.techFlags.bronze) f += 0.10;
+  if(state.techFlags.iron) f += 0.20;
+  if(state.builtProjects.irrigation) f *= 1.25;
+  if(state.tempFertilityTurns>0) f *= (1+state.tempFertilityBonus);
+  f *= (0.6 + 0.4*(state.landHealth/100));
+  return f;
+}
+function currentMaterialsMult(){
+  const site = SITES[state.siteId];
+  let m = site.materials;
+  if(state.techFlags.bronze) m *= 1.15;
+  if(state.techFlags.iron) m *= 1.3;
+  return m;
+}
+function currentTradeMult(){
+  const site = SITES[state.siteId];
+  let t = site.tradeMult;
+  if(state.tradeStance==='open') t *= 1.3;
+  if(state.tradeStance==='raiding') t *= 0.75;
+  if(state.builtProjects.tradepost) t *= 1.3;
+  if(state.writingSystem==='full') t *= 1.2;
+  else if(state.writingSystem==='tally') t *= 1.08;
+  return t;
+}
+
+function updatePreview(){
+  const farmingShare = (state.alloc.farming||0)/100;
+  const researchShare = (state.alloc.research||0)/100;
+  const buildingShare = (state.alloc.building||0)/100;
+  const cultureShare = (state.alloc.culture||0)/100;
+  const tradeShare = (state.alloc.trade||0)/100;
+  const militaryShare = (state.alloc.military||0)/100;
+
+  const foodProduced = Math.round(state.population*farmingShare*FOOD_YIELD_BASE*currentFertility());
+  const foodConsumed = Math.round(state.population*FOOD_NEED);
+  const netFood = foodProduced-foodConsumed;
+  const knowledgeGain = Math.round(state.population*researchShare*KNOW_YIELD_BASE/10);
+  const matsGain = Math.round(state.population*buildingShare*MATS_YIELD_BASE*currentMaterialsMult()/10);
+
+  let text = `<b>Expected this turn:</b> Food ${foodProduced} produced vs ${foodConsumed} needed (net ${netFood>=0?'+':''}${netFood}). `;
+  text += `Knowledge +${knowledgeGain}. `;
+  if(state.alloc.building!==undefined) text += `Materials +${matsGain}. `;
+  if(state.alloc.culture!==undefined) text += `Stability trending ${cultureShare*CULTURE_STAB_FACTOR>=3?'up':'flat'}. `;
+  if(state.alloc.trade!==undefined) text += `Wealth +${Math.round(state.population*tradeShare*WEALTH_YIELD_BASE*currentTradeMult()/10)}. `;
+  if(state.alloc.military!==undefined) text += `Defense trending ${militaryShare>0.05?'up':'down (decays without upkeep)'}. `;
+  if(netFood<0) text += `<br><span style="color:var(--danger2);font-weight:700">Warning: your people will go hungry this turn.</span>`;
+  $('preview-box').innerHTML = text;
+}
+
+function renderProjects(){
+  const era = eraOfTurn(state.turn);
+  const panel = $('projects-panel');
+  let html = `<h3 style="margin-top:0">Build Projects <small style="font-weight:500;font-size:12px;color:var(--ink-soft)">(spend Materials any time)</small></h3><div class="project-grid">`;
+  PROJECT_ORDER.forEach(id=>{
+    const p = PROJECTS[id];
+    const owned = !!state.builtProjects[id];
+    const unlocked = state.turn>=p.minTurn && (!p.requiresKnowledge || state.knowledge>=p.requiresKnowledge);
+    const affordable = state.materials>=p.cost;
+    html += `<div class="project-card ${owned?'owned':(unlocked?'':'locked')}">
+      <div class="pc-title">${p.icon} ${p.name} ${owned?'✓':''}</div>
+      <div class="pc-effect">${p.effect}${owned?'':` <b>Cost: ${p.cost} Materials</b>`}</div>
+      ${owned ? '' : unlocked ? `<button class="btn btn-small btn-primary" ${affordable?'':'disabled'} onclick="buildProject('${id}')">Build (${p.cost} Materials)</button>` : `<button class="btn btn-small btn-ghost" disabled>Locked${p.requiresKnowledge?` (needs ${p.requiresKnowledge} Knowledge)`:` (Turn ${p.minTurn}+)`}</button>`}
+    </div>`;
+  });
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+function buildProject(id){
+  const p = PROJECTS[id];
+  if(state.materials<p.cost || state.builtProjects[id]) return;
+  state.materials -= p.cost;
+  p.apply(state);
+  state.log('event', `You built a ${p.name}. ${p.effect}`);
+  renderMeters(); renderProjects(); renderLog();
+}
+
+function renderGameScreen(){
+  renderSettlementPanel();
+  $('turn-title').textContent = `Turn ${state.turn} of ${TOTAL_TURNS}`;
+  $('era-tag').textContent = ERA_NAMES[eraOfTurn(state.turn)];
+  $('year-tag').textContent = formatYear(yearOfTurn(state.turn));
+  renderMeters();
+  renderLog();
+  renderAllocation();
+  renderProjects();
+  goToScreen('screen-game');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MILESTONE MODAL
+// ══════════════════════════════════════════════════════════════
+function showMilestone(id, onDone){
+  const m = MILESTONES[id];
+  $('decision-tag').textContent = m.tag;
+  $('decision-title').textContent = m.title;
+  $('decision-body').textContent = m.body;
+  $('decision-options').innerHTML = m.options.map((o,i)=>`
+    <div class="option-card" onclick="chooseMilestone('${id}',${i})">
+      <div class="oc-label">${o.label}</div>
+      <div class="oc-desc">${o.desc}</div>
+      <div class="oc-detail">${o.detail}</div>
+    </div>`).join('');
+  $('decision-modal').classList.add('show');
+  $('decision-modal').dataset.onDoneId = '';
+  window._milestoneOnDone = onDone;
+}
+function chooseMilestone(id, i){
+  const m = MILESTONES[id];
+  m.options[i].apply(state);
+  state.milestonesAnswered[id] = true;
+  $('decision-modal').classList.remove('show');
+  renderMeters(); renderLog();
+  if(window._milestoneOnDone) window._milestoneOnDone();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TURN FLOW
+// ══════════════════════════════════════════════════════════════
+function startTurnFlow(){
+  renderGameScreen();
+}
+
+function advanceTurn(){
+  if(allocTotal()!==100) return;
+  runProductionAndPopulation();
+  runLandHealthAndStability();
+  runTechChecks();
+  renderMeters(); renderLog();
+
+  if(checkGameOver()) return;
+
+  // threshold milestones
+  if(!state.milestonesAnswered.writingSystem && state.knowledge>=WRITING_THRESHOLD){
+    showMilestone('writingSystem', ()=>proceedToEvent());
+    return;
+  }
+  if(!state.milestonesAnswered.environmentalCrossroads && state.landHealth<58){
+    showMilestone('environmentalCrossroads', ()=>proceedToEvent());
+    return;
+  }
+  proceedToEvent();
+}
+
+function runProductionAndPopulation(){
+  const s = state;
+  const farmingShare = (s.alloc.farming||0)/100;
+  const researchShare = (s.alloc.research||0)/100;
+  const buildingShare = (s.alloc.building||0)/100;
+  const cultureShare = (s.alloc.culture||0)/100;
+  const tradeShare = (s.alloc.trade||0)/100;
+  const militaryShare = (s.alloc.military||0)/100;
+
+  const foodProduced = Math.round(s.population*farmingShare*FOOD_YIELD_BASE*currentFertility());
+  const foodConsumed = Math.round(s.population*FOOD_NEED);
+  const netFood = foodProduced - foodConsumed;
+
+  s.food += netFood;
+
+  if(s.food < 0){
+    const deficit = -s.food;
+    const severity = Math.min(1, deficit/(s.population*FOOD_NEED));
+    const lossRatio = Math.min(0.30, severity*0.6);
+    const loss = s.applyPopLoss(lossRatio, 'starvation');
+    s.stability = Math.max(0, s.stability - Math.round(10+severity*20));
+    s.food = 0;
+    s.log('bad', `Starvation strikes: ${loss.toLocaleString()} people lost, and Stability falls.`);
+  } else {
+    s.food = Math.min(s.foodCap, s.food);
+    const surplusRatio = Math.min(1, netFood/(s.population*0.5+1));
+    const stabilityFactor = Math.max(0.3, s.stability/100);
+    const growth = Math.round(s.population*0.06*stabilityFactor*Math.max(0,surplusRatio));
+    const popCap = Math.round(s.foodCap*1.3);
+    s.population = Math.min(popCap, s.population+growth);
+  }
+
+  const knowledgeGain = Math.round(s.population*researchShare*KNOW_YIELD_BASE/10);
+  s.knowledge += knowledgeGain;
+
+  if(buildingShare>0){
+    const matsGain = Math.round(s.population*buildingShare*MATS_YIELD_BASE*currentMaterialsMult()/10);
+    s.materials = Math.min(220, s.materials+matsGain);
+  }
+  if(tradeShare>0){
+    const wealthGain = Math.round(s.population*tradeShare*WEALTH_YIELD_BASE*currentTradeMult()/10);
+    s.wealth += wealthGain;
+  }
+  if(militaryShare>0){
+    s.defense = Math.min(150, Math.round(s.defense*0.9 + s.population*militaryShare*DEFENSE_YIELD_BASE/10));
+  } else if(s.defense>0){
+    s.defense = Math.max(0, Math.round(s.defense*0.92));
+  }
+
+  s.farmingShareLastTurn = farmingShare;
+  if(s.tempFertilityTurns>0) s.tempFertilityTurns--;
+
+  s.log('event', `Turn ${s.turn} (${formatYear(yearOfTurn(s.turn))}): Food ${netFood>=0?'+':''}${netFood}, Knowledge +${knowledgeGain}, Population ${Math.round(s.population).toLocaleString()}.`);
+}
+
+function runLandHealthAndStability(){
+  const s = state;
+  const site = SITES[s.siteId];
+  const breakeven = 1/(FOOD_YIELD_BASE*(site.fertility||1));
+  const sustainableShare = Math.min(0.95, breakeven+0.15);
+  const farmingShare = s.farmingShareLastTurn||0;
+
+  if(!s.builtProjects.irrigation && !s.sustainableFarming && farmingShare > sustainableShare+0.15){
+    s.landHealth = Math.max(0, s.landHealth - Math.round((farmingShare-sustainableShare)*45));
+  } else {
+    const regen = s.sustainableFarming ? 4 : (s.tradition==='nature' ? 3 : 1.5);
+    s.landHealth = Math.min(100, s.landHealth + regen);
+  }
+
+  let stabilityDelta = -1;
+  if(s.governance==='council') stabilityDelta += 1;
+  if(s.tradition==='ancestor') stabilityDelta += 2;
+  if(s.tradition==='nature') stabilityDelta += 1;
+  if(s.tradition==='priesthood') stabilityDelta += 3;
+  if(s.builtProjects.temple) stabilityDelta += 1;
+  const cultureShare = (s.alloc.culture||0)/100;
+  stabilityDelta += Math.round(cultureShare*CULTURE_STAB_FACTOR);
+  if(s.food>s.foodCap*0.5) stabilityDelta += 1;
+  s.stability = Math.max(0, Math.min(100, s.stability+stabilityDelta));
+}
+
+function runTechChecks(){
+  const s = state;
+  if(!s.techFlags.cultivation && s.knowledge>=CULTIVATION_THRESHOLD){
+    s.techFlags.cultivation = true;
+    s.log('milestone', `Technology unlocked: Improved Cultivation. Your people have learned terracing, canal-digging, or crop rotation suited to your land. +30% fertility, permanently.`);
+  }
+  if(!s.techFlags.animalTraction && s.domesticationFocus!=='plant' && s.knowledge>=ANIMAL_TRACTION_THRESHOLD){
+    s.techFlags.animalTraction = true;
+    s.log('milestone', `Technology unlocked: Animal Traction. Plows and pack animals boost farming and hauling. +15% fertility, permanently.`);
+  }
+  if(!s.techFlags.bronze && s.knowledge>=BRONZE_THRESHOLD){
+    s.techFlags.bronze = true;
+    s.log('milestone', `Technology unlocked: Bronze Tools. Sharper tools improve both farming and construction, permanently.`);
+  }
+  if(!s.techFlags.iron && s.knowledge>=IRON_THRESHOLD){
+    s.techFlags.iron = true;
+    s.defense = Math.min(150, s.defense+10);
+    s.log('milestone', `Technology unlocked: Iron Tools. Stronger tools and weapons improve farming, construction, and defense, permanently.`);
+  }
+}
+
+function checkGameOver(){
+  const s = state;
+  if(s.population<=15){
+    s.gameOver = true;
+    s.endingId = 'extinction';
+    showEnding();
+    return true;
+  }
+  if(s.stability<=0){
+    s.gameOver = true;
+    s.endingId = 'collapse_internal';
+    showEnding();
+    return true;
+  }
+  return false;
+}
+
+// ── EVENT SELECTION & RESOLUTION ──
+function pickEvent(){
+  const s = state;
+  const pool = EVENTS.filter(e=>{
+    if(s.turn<e.minTurn || s.turn>e.maxTurn) return false;
+    if(e.once && s._firedOnce && s._firedOnce[e.id]) return false;
+    const w = e.weight(s);
+    return w>0;
+  });
+  const weights = pool.map(e=>e.weight(s));
+  const totalW = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*totalW;
+  for(let i=0;i<pool.length;i++){
+    r -= weights[i];
+    if(r<=0) return pool[i];
+  }
+  return pool[pool.length-1];
+}
+
+function proceedToEvent(){
+  const ev = pickEvent();
+  pendingEvent = ev;
+  if(ev.once){ state._firedOnce = state._firedOnce||{}; state._firedOnce[ev.id]=true; }
+  $('event-tag').textContent = ev.kind==='choice' ? 'Decision' : 'Event';
+  $('event-title').textContent = `${ev.emoji} ${ev.title}`;
+  $('event-body').textContent = typeof ev.body==='function' ? ev.body(state) : ev.body;
+  $('event-outcome-wrap').innerHTML = '';
+  $('event-continue-wrap').style.display = 'none';
+
+  if(ev.kind==='choice'){
+    $('event-options').innerHTML = ev.options.map((o,i)=>`<div class="option-card" onclick="chooseEventOption(${i})"><div class="oc-label">${o.label}</div></div>`).join('');
+    $('event-options').style.display='';
+  } else {
+    $('event-options').innerHTML='';
+    $('event-options').style.display='none';
+    resolveAutoEvent(ev);
+  }
+  $('event-modal').classList.add('show');
+}
+
+function resolveAutoEvent(ev){
+  const s = state;
+  let tier, outcome;
+  if(ev.outcomes.forceSuccess){
+    tier='success'; outcome = ev.outcomes.success(s);
+  } else {
+    const readiness = ev.readiness ? ev.readiness(s) : 0;
+    const difficulty = ev.difficulty ? ev.difficulty(s) : 14;
+    tier = rollTier(readiness, difficulty);
+    outcome = ev.outcomes[tier](s);
+  }
+  outcome.apply();
+  const tierLabel = {success:'Success', partial:'Partial Success', failure:'Failure'}[tier];
+  $('event-outcome-wrap').innerHTML = `<div class="event-outcome">
+    <div class="eo-tier ${tier}">${tierLabel}</div>
+    <div class="eo-line"><b>Immediate:</b> ${outcome.immediate}</div>
+    <div class="eo-line"><b>Long-term:</b> ${outcome.long}</div>
+  </div>`;
+  state.log(tier==='failure'?'bad':'event', `${ev.emoji} ${ev.title}: ${outcome.immediate}`);
+  $('event-continue-wrap').style.display='';
+  renderMeters();
+}
+
+function chooseEventOption(i){
+  const ev = pendingEvent;
+  const result = ev.options[i].apply(state);
+  $('event-options').style.display='none';
+  $('event-outcome-wrap').innerHTML = `<div class="event-outcome">
+    <div class="eo-line"><b>Immediate:</b> ${result.immediate}</div>
+    <div class="eo-line"><b>Long-term:</b> ${result.long}</div>
+  </div>`;
+  state.log('event', `${ev.emoji} ${ev.title}: ${result.immediate}`);
+  $('event-continue-wrap').style.display='';
+  renderMeters();
+}
+
+function continueAfterEvent(){
+  $('event-modal').classList.remove('show');
+  if(checkGameOver()) return;
+  finalizeTurnAdvance();
+}
+
+function finalizeTurnAdvance(){
+  state.turn += 1;
+  if(state.turn > TOTAL_TURNS){
+    state.gameOver = true;
+    state.endingId = 'completed';
+    showEnding();
+    return;
+  }
+  const turnMilestoneMap = {2:'governance', 4:'tradition', 7:'tradeStance', 10:'successionLaw'};
+  const msId = turnMilestoneMap[state.turn];
+  if(msId && !state.milestonesAnswered[msId]){
+    showMilestone(msId, ()=>finishNewTurnSetup());
+    return;
+  }
+  finishNewTurnSetup();
+}
+
+function finishNewTurnSetup(){
+  const era = eraOfTurn(state.turn);
+  const cats = availableCategories(era);
+  const prevCats = Object.keys(state.alloc);
+  const newCats = cats.filter(c=>!prevCats.includes(c));
+  if(newCats.length){
+    // shrink existing allocations proportionally to make room for new categories at 10% each
+    const carve = Math.min(90, newCats.length*10);
+    let total = allocTotal();
+    if(total>0){
+      const scale = (100-carve)/total;
+      prevCats.forEach(c=>{ state.alloc[c] = Math.round(state.alloc[c]*scale/5)*5; });
+    }
+    newCats.forEach(c=> state.alloc[c] = Math.round((carve/newCats.length)/5)*5 );
+    let diff = 100 - allocTotal();
+    if(diff!==0){ const firstCat = cats[0]; state.alloc[firstCat] = Math.max(0, state.alloc[firstCat]+diff); }
+  }
+  renderGameScreen();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ENDING
+// ══════════════════════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  { id:'writing', name:'First Writing System', icon:'✍️', desc:'Developed a full writing system.', check:s=>s.writingSystem==='full' },
+  { id:'irrigation', name:'Master Irrigators', icon:'💧', desc:'Built Irrigation Works.', check:s=>!!s.builtProjects.irrigation },
+  { id:'walls', name:'Well Defended', icon:'🧱', desc:'Built Defensive Walls.', check:s=>!!s.builtProjects.walls },
+  { id:'iron', name:'Iron Age Power', icon:'⚒️', desc:'Unlocked Iron Tools.', check:s=>s.techFlags.iron },
+  { id:'trade', name:'Great Trading Power', icon:'🐫', desc:'Chose Open Trade and built real wealth.', check:s=>s.tradeStance==='open' && s.wealth>=150 },
+  { id:'land', name:'Guardian of the Land', icon:'🌿', desc:'Kept Land Health at 70 or above.', check:s=>s.landHealth>=70 },
+  { id:'growth', name:'A Growing People', icon:'📈', desc:'Grew your population to 3x its starting size.', check:s=>s.population>=s.startPop*3 },
+  { id:'brink', name:'Pulled Back From the Brink', icon:'🕊️', desc:'Survived a moment of severe internal crisis.', check:s=>s._wasNearCollapse },
+];
+
+function computeEndingStats(){
+  const s = state;
+  return {
+    population: Math.round(s.population),
+    stability: Math.round(s.stability),
+    knowledge: Math.round(s.knowledge),
+    materials: Math.round(s.materials),
+    wealth: Math.round(s.wealth),
+    landHealth: Math.round(s.landHealth),
+    turnsReached: Math.min(s.turn, TOTAL_TURNS)
+  };
+}
+
+function determineOutcome(){
+  const s = state;
+  if(s.endingId==='extinction'){
+    let cause = 'Starvation and hardship';
+    if(s._lastCause==='disease' || s._lastCause==='zoonotic') cause='Disease';
+    if(s._lastCause==='raid' || s._lastCause==='invasion') cause='Conquest and violence';
+    return { tone:'bad', title:'Lost to the Land', text:`Your civilization did not survive. ${cause} reduced your population past the point of recovery. Whatever your people built, whatever they knew, ended with them.` };
+  }
+  if(s.endingId==='collapse_internal'){
+    const cause = s.lastCritical==='internal' ? 'internal division, revolt, and a broken succession' : 'a complete breakdown of order';
+    return { tone:'bad', title:'Collapse From Within', text:`Your civilization tore itself apart. Stability fell to nothing amid ${cause}. The land remained, and perhaps scattered people survived on it, but the civilization you built no longer holds together.` };
+  }
+  // completed
+  const popRatio = s.population/s.startPop;
+  const techScore = (s.techFlags.bronze?1:0)+(s.techFlags.iron?1:0)+(s.writingSystem==='full'?1:0)+(s.builtProjects.irrigation?1:0);
+  if(popRatio>=3 && s.stability>=60 && techScore>=3){
+    return { tone:'good', title:'A Golden Age Civilization', text:`Your people thrived. A large, stable population; real technological achievement; a civilization that others would have looked to as a model. This is about as well as any ancient civilization could hope to fare.` };
+  }
+  if(s.stability>=70 && popRatio<3){
+    return { tone:'good', title:'An Enduring Traditional Kingdom', text:`Your civilization did not grow explosively, but it endured, held together by strong traditions and stable leadership. Longevity, not size, was your civilization's great achievement.` };
+  }
+  if(s.wealth>=220 && s.tradeStance==='open'){
+    return { tone:'good', title:'A Great Trading Power', text:`Your civilization became known less for its farmland than for its markets and caravans. Wealth flowed through your settlement from every direction, a legacy built on openness to outsiders.` };
+  }
+  if(s.defense>=70 && s.successionLaw==='hereditary'){
+    return { tone:'mixed', title:'A Regional Power, Forged by Strength', text:`Your civilization survived through strength: strong defenses, a decisive line of rulers, and a readiness to meet threats head-on. It came at some cost to openness and flexibility, but it endured.` };
+  }
+  if(popRatio>=1.4){
+    return { tone:'mixed', title:'A Modest but Lasting Settlement', text:`Your civilization made it through twelve turns of ancient history. It grew, if slowly, and held together, if imperfectly. Not every civilization becomes an empire, and that is alright.` };
+  }
+  return { tone:'mixed', title:'A Fragile Survival', text:`Your civilization is still standing at the end, but only barely. Population growth stalled, and more than once you were closer to collapse than you may have realized. It survived. It did not thrive.` };
+}
+
+function showEnding(){
+  const s = state;
+  const outcome = determineOutcome();
+  const stats = computeEndingStats();
+  const earned = ACHIEVEMENTS.filter(a=>a.check(s));
+  const missed = ACHIEVEMENTS.filter(a=>!a.check(s));
+
+  let html = `<div class="ending-banner ${outcome.tone}"><h2>${outcome.title}</h2><p style="margin:0">${outcome.text}</p></div>`;
+  html += `<div class="stat-grid">
+    <div class="stat-box"><div class="snum">${stats.population.toLocaleString()}</div><div class="slabel">Final Population</div></div>
+    <div class="stat-box"><div class="snum">${stats.stability}</div><div class="slabel">Stability</div></div>
+    <div class="stat-box"><div class="snum">${stats.knowledge}</div><div class="slabel">Knowledge</div></div>
+    <div class="stat-box"><div class="snum">${stats.landHealth}</div><div class="slabel">Land Health</div></div>
+    <div class="stat-box"><div class="snum">${stats.turnsReached}/${TOTAL_TURNS}</div><div class="slabel">Turns Reached</div></div>
+  </div>`;
+  html += `<h3>Achievements</h3><div class="ach-list">`;
+  earned.forEach(a=> html += `<div class="ach-chip">${a.icon} ${a.name}</div>` );
+  missed.forEach(a=> html += `<div class="ach-chip locked">${a.icon} ${a.name}</div>` );
+  html += `</div>`;
+  html += `<h3>Your Founding Choices</h3><div class="trait-row">
+    <span class="trait-chip">Site: ${SITES[s.siteId].name}</span>
+    <span class="trait-chip">Domestication: ${s.domesticationFocus||'—'}</span>
+    <span class="trait-chip">Governance: ${s.governance||'—'}</span>
+    <span class="trait-chip">Tradition: ${s.tradition||'—'}</span>
+    <span class="trait-chip">Writing: ${s.writingSystem}</span>
+    <span class="trait-chip">Trade Stance: ${s.tradeStance||'—'}</span>
+    <span class="trait-chip">Succession: ${s.successionLaw||'—'}</span>
+  </div>`;
+  html += `<div style="text-align:center;margin-top:18px"><button class="btn btn-primary" onclick="goToScreen('screen-ending'); document.getElementById('f-date').value=new Date().toLocaleDateString(); goToScreen('screen-reflection');">Continue to Reflection →</button></div>`;
+
+  $('ending-panel').innerHTML = html;
+  goToScreen('screen-ending');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  REFLECTION / EXPORT
+// ══════════════════════════════════════════════════════════════
+function gatherReflectionHTML(){
+  const name = $('f-name').value || '(no name entered)';
+  const cls = $('f-class').value || '(no class entered)';
+  const date = $('f-date').value || '';
+  let h = `<p><b>Name:</b> ${name} &nbsp; <b>Class:</b> ${cls} &nbsp; <b>Date:</b> ${date}</p>`;
+  for(let i=1;i<=7;i++){
+    const label = document.querySelector(`#q${i}`).closest('.q-block').querySelector('label').textContent;
+    const val = $(`q${i}`).value || '(no answer entered)';
+    h += `<p><b>${label}</b><br>${val.replace(/\n/g,'<br>')}</p>`;
+  }
+  return h;
+}
+
+function exportWordDoc(){
+  if(!state){ $('export-status').textContent = 'Play a full game first, then come back to export.'; return; }
+  const content = gatherReflectionHTML();
+  $('export-preview').innerHTML = content;
+  const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>The First Cities Reflection</title></head><body style='font-family:Calibri,Arial,sans-serif'>";
+  const footer = "</body></html>";
+  const title = "<h1 style='text-align:center'>The First Cities — Reflection</h1>";
+  const sourceHTML = header + title + content + footer;
+  const blob = new Blob(['﻿', sourceHTML], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const studentName = ($('f-name').value || 'student').replace(/[^a-z0-9]+/gi,'-');
+  a.download = `first-cities-reflection-${studentName}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  $('export-status').textContent = '✅ Downloaded! Check your Downloads folder, then attach the file to an email to your teacher.';
+}
+
+function emailTeacher(){
+  const teacher = $('f-teacher').value.trim();
+  if(!teacher) return;
+  const name = $('f-name').value || 'a student';
+  const subject = encodeURIComponent('The First Cities: Civilization Game Reflection');
+  const body = encodeURIComponent(`Hi,\n\nAttached is my reflection from The First Cities civilization game.\n\n- ${name}\n\n(Remember: attach the downloaded .doc file before sending!)`);
+  window.location.href = `mailto:${teacher}?subject=${subject}&body=${body}`;
+}
+
+function resetGame(){
+  state = null; selectedSiteId = null; pendingEvent = null;
+  document.querySelectorAll('.site-marker').forEach(m=>m.classList.remove('selected'));
+  $('site-detail-wrap').innerHTML = '';
+  $('btn-confirm-site').disabled = true;
+  document.querySelectorAll('.q-block textarea').forEach(t=>t.value='');
+  $('f-name').value=''; $('f-class').value=''; $('f-teacher').value='';
+  $('export-status').textContent = '';
+  goToScreen('screen-intro');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+renderMap();
+$('f-date').value = new Date().toLocaleDateString();
+document.getElementById('f-teacher').addEventListener('input', function(){
+  $('btn-email-teacher').style.display = this.value.trim() ? '' : 'none';
+});
+</script>
+</body>
+</html>
