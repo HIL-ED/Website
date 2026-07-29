@@ -1,6 +1,6 @@
 /* =========================================================================
    AP CONNECTIONS — DATA
-   Five AP courses, each broken into its official College Board units.
+   Six AP courses, each broken into its official College Board units.
    Every unit has an Easy category set and a Hard category set. Hard sets
    avoid "these are all people" / "these are all terms" groupings in favor
    of shared years, mirrored pairs (push vs. pull, expansionary vs.
@@ -201,6 +201,205 @@ const COURSES = [
           { name:"Reactions Against Globalization", items:["Religious Fundamentalism","Economic Nationalism","Anti-Globalization Protests","Populism"] },
           { name:"Technologies That Accelerated Globalization", items:["The Internet","Green Revolution","Container Shipping","Satellite Communication"] },
           { name:"Drivers of Contemporary Migration", items:["Labor Demand","Political Conflict","Climate Displacement","Family Reunification"] }
+        ]
+      }
+    }
+  ]
+},
+
+/* ======================================================================
+   AP UNITED STATES HISTORY
+====================================================================== */
+{
+  id:"apush", icon:"🇺🇸", name:"AP United States History",
+  blurb:"Nine periods from first contact to the present, following the official College Board period structure.",
+  units:[
+    {
+      id:"apush-p1", unit:"Period 1", title:"Contact and Colonization", range:"1491–1607",
+      easy:{
+        blurb:"Native societies before contact, early explorers, the Columbian Exchange, and Spanish colonial institutions.",
+        categories:[
+          { name:"Pre-Columbian Native Societies", items:["Iroquois Confederacy","Pueblo Peoples","Mississippian Culture","Aztec Empire"] },
+          { name:"European Explorers", items:["Christopher Columbus","Hernán Cortés","Francisco Pizarro","Juan Ponce de León"] },
+          { name:"Elements of the Columbian Exchange", items:["Horses","Smallpox","Maize","Sugar"] },
+          { name:"Spanish Colonial Institutions", items:["Encomienda System","Conquistador","Mission System","Casta System"] }
+        ]
+      },
+      hard:{
+        blurb:"Which direction the Columbian Exchange went, why small Spanish forces won, and how geography shaped Native societies.",
+        categories:[
+          { name:"Went from the Old World to the New", items:["Horses","Smallpox","Wheat","Sugarcane"] },
+          { name:"Went from the New World to the Old", items:["Maize","Potatoes","Tobacco","Syphilis"] },
+          { name:"Why Small Spanish Forces Conquered Large Empires", items:["Steel Weapons","Ships and Naval Technology","Disease","Alliances with Rival Native Groups"] },
+          { name:"How Geography Shaped Native Societies Before Contact", items:["Great Basin Foragers","Pacific Northwest Fishing Societies","Great Plains Nomadic Hunters","Eastern Woodlands Farmers"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p2", unit:"Period 2", title:"Colonial North America", range:"1607–1754",
+      easy:{
+        blurb:"Early settlements, colonial regions, key figures, and colonial economic systems.",
+        categories:[
+          { name:"Early Colonial Settlements", items:["Jamestown","Plymouth","Massachusetts Bay","New Amsterdam"] },
+          { name:"Colonial Regions", items:["New England Colonies","Middle Colonies","Chesapeake Colonies","Southern Colonies"] },
+          { name:"Key Figures of Colonial America", items:["John Smith","William Bradford","William Penn","Anne Hutchinson"] },
+          { name:"Colonial Economic Systems", items:["Cash Crop Agriculture","Triangular Trade","Indentured Servitude","Chattel Slavery"] }
+        ]
+      },
+      hard:{
+        blurb:"Why specific colonies were founded, the Great Awakening, British policy before 1754, and conflicts with Native Americans.",
+        categories:[
+          { name:"Why Specific Colonies Were Founded", items:["Religious Freedom","Profit","Debtor Relief","Religious Tolerance"] },
+          { name:"The Great Awakening", items:["Religious Revivalism","New Lights vs. Old Lights","Jonathan Edwards' Sermons","Emotional Preaching"] },
+          { name:"British Colonial Policy Before 1754", items:["Salutary Neglect","Navigation Acts","Mercantilism","Royal Charters"] },
+          { name:"Colonial Conflicts With Native Americans", items:["Bacon's Rebellion","King Philip's War","Pequot War","Powhatan Wars"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p3", unit:"Period 3", title:"Revolution and the New Nation", range:"1754–1800",
+      easy:{
+        blurb:"Causes of the Revolution, battles, founding documents, and early republic figures.",
+        categories:[
+          { name:"Causes of the American Revolution", items:["Taxation Without Representation","Stamp Act","Boston Massacre","Intolerable Acts"] },
+          { name:"Revolutionary War Battles", items:["Lexington and Concord","Saratoga","Yorktown","Bunker Hill"] },
+          { name:"Founding Documents", items:["Declaration of Independence","Articles of Confederation","US Constitution","Bill of Rights"] },
+          { name:"Early Republic Figures", items:["George Washington","Alexander Hamilton","Thomas Jefferson","John Adams"] }
+        ]
+      },
+      hard:{
+        blurb:"A single constitutional year, Federalist vs. Anti-Federalist positions, and the fallout from the French and Indian War.",
+        categories:[
+          { name:"All Happened in 1787", items:["Constitutional Convention","Northwest Ordinance","Shays' Rebellion Ends","Great Compromise Reached"] },
+          { name:"Federalist Positions", items:["Strong Central Government","Loose Construction of the Constitution","National Bank","Favored Ratification"] },
+          { name:"Anti-Federalist Positions", items:["Strong State Governments","Strict Construction of the Constitution","Feared Tyranny","Demanded a Bill of Rights"] },
+          { name:"Consequences of the French and Indian War", items:["Proclamation of 1763","British War Debt","End of Salutary Neglect","Growing Colonial Resentment"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p4", unit:"Period 4", title:"Nationalism and Democracy", range:"1800–1848",
+      easy:{
+        blurb:"Jeffersonian-era events, Market Revolution innovations, reform movements, and Jacksonian Democracy.",
+        categories:[
+          { name:"Jeffersonian-Era Events", items:["Louisiana Purchase","Marbury v. Madison","Embargo Act","War of 1812"] },
+          { name:"Market Revolution Innovations", items:["Erie Canal","Cotton Gin","Steamboat","Railroad"] },
+          { name:"Reform Movements of the Era", items:["Abolitionism","Temperance Movement","Women's Rights Movement","Public Education Reform"] },
+          { name:"Jacksonian Democracy Terms", items:["Spoils System","Nullification Crisis","Indian Removal Act","Bank War"] }
+        ]
+      },
+      hard:{
+        blurb:"A single early-republic year, causes of the War of 1812, effects of the Market Revolution, and reform inspired by religious revival.",
+        categories:[
+          { name:"All Happened in 1803", items:["Louisiana Purchase","Marbury v. Madison Decided","Ohio Statehood","Napoleonic Wars Resume in Europe"] },
+          { name:"Causes of the War of 1812", items:["Impressment of Sailors","British Support for Native Raids","Trade Restrictions (Orders in Council)","War Hawks' Push for Expansion"] },
+          { name:"Effects of the Market Revolution", items:["Rise of Factory Labor","Growth of Cities","Regional Economic Specialization","Wage Labor Replacing Household Production"] },
+          { name:"Reform Movements Inspired by the Second Great Awakening", items:["Abolitionism","Temperance Movement","Utopian Communities","Women's Rights Movement"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p5", unit:"Period 5", title:"Slavery, Expansion, and the Civil War", range:"1844–1877",
+      easy:{
+        blurb:"Manifest Destiny, causes of the Civil War, its key figures, and Reconstruction amendments.",
+        categories:[
+          { name:"Manifest Destiny Events", items:["Texas Annexation","Mexican-American War","Oregon Treaty","California Gold Rush"] },
+          { name:"Causes of the Civil War", items:["Missouri Compromise","Compromise of 1850","Kansas-Nebraska Act","Dred Scott Decision"] },
+          { name:"Civil War Figures", items:["Abraham Lincoln","Jefferson Davis","Ulysses S. Grant","Robert E. Lee"] },
+          { name:"Reconstruction Amendments & Laws", items:["13th Amendment","14th Amendment","15th Amendment","Reconstruction Act of 1867"] }
+        ]
+      },
+      hard:{
+        blurb:"A single Civil War year, competing Reconstruction plans, why the Union won, and setbacks to Black freedom.",
+        categories:[
+          { name:"All Happened in 1863", items:["Emancipation Proclamation Takes Effect","Battle of Gettysburg","Fall of Vicksburg","Gettysburg Address Delivered"] },
+          { name:"Competing Plans for Reconstruction", items:["Lincoln's Ten Percent Plan","Radical Republicans' Plan","Andrew Johnson's Plan","Congressional Reconstruction"] },
+          { name:"Advantages That Helped the Union Win", items:["Industrial Capacity","Larger Population","Naval Blockade","Railroad Network"] },
+          { name:"Setbacks to Black Freedom During and After Reconstruction", items:["Black Codes","Ku Klux Klan Violence","Sharecropping","End of Reconstruction (1877)"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p6", unit:"Period 6", title:"The Gilded Age", range:"1865–1898",
+      easy:{
+        blurb:"Industrialists, labor unions, immigration and urbanization, and the Populist movement.",
+        categories:[
+          { name:"Gilded Age Industrialists", items:["Andrew Carnegie","John D. Rockefeller","J.P. Morgan","Cornelius Vanderbilt"] },
+          { name:"Labor Unions & Strikes", items:["Knights of Labor","American Federation of Labor","Homestead Strike","Pullman Strike"] },
+          { name:"Immigration & Urbanization Terms", items:["Ellis Island","Tenement","Nativism","Settlement House"] },
+          { name:"The Populist Movement", items:["Populist Party","Free Silver","William Jennings Bryan","Farmers' Alliance"] }
+        ]
+      },
+      hard:{
+        blurb:"Industries behind the monopolies, justifications for Gilded Age wealth, government responses to unrest, and the roots of nativism.",
+        categories:[
+          { name:"Industries Dominated by Gilded Age Monopolies", items:["Steel","Oil","Banking","Railroads"] },
+          { name:"Justifications for Gilded Age Wealth & Inequality", items:["Social Darwinism","Gospel of Wealth","Laissez-Faire","Horatio Alger Myth"] },
+          { name:"Government Responses to Big Business & Labor Unrest", items:["Interstate Commerce Act","Sherman Antitrust Act","Use of Federal Troops Against Strikers","Injunctions Against Unions"] },
+          { name:"Roots of Immigration Restriction & Nativism", items:["Chinese Exclusion Act","Fear of Job Competition","Anti-Catholic Sentiment","Fear of Radical Political Ideas"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p7", unit:"Period 7", title:"Progressivism and the World Wars", range:"1890–1945",
+      easy:{
+        blurb:"Progressive Era reforms, the US in WWI, New Deal programs, and the WWII home front.",
+        categories:[
+          { name:"Progressive Era Reforms", items:["Direct Election of Senators","Women's Suffrage","Prohibition","Federal Income Tax"] },
+          { name:"The US in WWI & Its Aftermath", items:["Zimmermann Telegram","Treaty of Versailles","League of Nations","Selective Service Act"] },
+          { name:"New Deal Programs", items:["Civilian Conservation Corps","Works Progress Administration","Social Security Administration","Tennessee Valley Authority"] },
+          { name:"WWII Home Front & Battles", items:["Pearl Harbor","D-Day","Rosie the Riveter","Japanese American Internment"] }
+        ]
+      },
+      hard:{
+        blurb:"A single WWI-era year, causes of the Great Depression, criticism of the New Deal, and the path to WWII.",
+        categories:[
+          { name:"All Happened in 1917", items:["US Enters WWI","Espionage Act Passed","Russian Revolution","Selective Service Act Passed"] },
+          { name:"Causes & Worsening Factors of the Great Depression", items:["Stock Market Speculation","Overproduction","Bank Failures","Smoot-Hawley Tariff"] },
+          { name:"Criticisms of the New Deal (From Left and Right)", items:["Called Too Radical by Conservatives","Called Too Timid by Populists Like Huey Long","Struck Down by the Supreme Court","Criticized for Deficit Spending"] },
+          { name:"Path to US Entry into World War II", items:["Pearl Harbor Attack","Lend-Lease Act","Axis Declarations of War on the US","Growing Japanese Aggression in Asia"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p8", unit:"Period 8", title:"The Cold War and Civil Rights", range:"1945–1980",
+      easy:{
+        blurb:"Cold War containment, Civil Rights milestones, Great Society programs, and Vietnam.",
+        categories:[
+          { name:"Cold War Containment Policy", items:["Truman Doctrine","Marshall Plan","NATO","Domino Theory"] },
+          { name:"Civil Rights Movement Milestones", items:["Brown v. Board of Education","Montgomery Bus Boycott","March on Washington","Civil Rights Act of 1964"] },
+          { name:"Great Society Programs", items:["Medicare","Medicaid","Head Start","Voting Rights Act of 1965"] },
+          { name:"Vietnam War & Protest", items:["Gulf of Tonkin Resolution","Tet Offensive","Anti-War Movement","Vietnamization"] }
+        ]
+      },
+      hard:{
+        blurb:"A single pivotal year, Civil Rights tactics, the counterculture, and why opposition to Vietnam grew.",
+        categories:[
+          { name:"All Happened in 1968", items:["Tet Offensive","Assassination of MLK","Assassination of Robert Kennedy","Election of Richard Nixon"] },
+          { name:"Tactics of the Civil Rights Movement", items:["Nonviolent Civil Disobedience","Sit-Ins","Freedom Rides","NAACP Legal Strategy"] },
+          { name:"The 1960s Counterculture", items:["Hippie Movement","Woodstock","Generation Gap","Sexual Revolution"] },
+          { name:"Why Opposition to the Vietnam War Grew", items:["Rising Draft Calls","Credibility Gap","Media Coverage of Casualties","No Clear Victory Strategy"] }
+        ]
+      }
+    },
+    {
+      id:"apush-p9", unit:"Period 9", title:"The Contemporary Era", range:"1980–Present",
+      easy:{
+        blurb:"Reagan-era policy, the end of the Cold War, post-9/11 foreign policy, and modern political movements.",
+        categories:[
+          { name:"Reagan Era Policies", items:["Reaganomics","Supply-Side Economics","Deregulation","Increased Defense Spending"] },
+          { name:"Events Marking the End of the Cold War", items:["Fall of the Berlin Wall","Reunification of Germany","Breakup of the Soviet Union","End of the Warsaw Pact"] },
+          { name:"Post-9/11 Foreign Policy", items:["War on Terror","USA PATRIOT Act","Iraq War","Afghanistan War"] },
+          { name:"Modern Political & Social Movements", items:["Tea Party Movement","Black Lives Matter","#MeToo Movement","Marriage Equality Movement"] }
+        ]
+      },
+      hard:{
+        blurb:"A single post-9/11 year, Gorbachev's reforms, causes of the 2008 crisis, and technology's political impact.",
+        categories:[
+          { name:"All Happened in 2001", items:["September 11 Attacks","USA PATRIOT Act Passed","War in Afghanistan Begins","Bush Tax Cuts Enacted"] },
+          { name:"Gorbachev's Reforms and the End of the Cold War", items:["Perestroika","Glasnost","Fall of the Berlin Wall","Collapse of the Soviet Union"] },
+          { name:"Causes of the 2008 Financial Crisis", items:["Subprime Mortgage Lending","Housing Bubble Collapse","Bank Failures","Deregulation of Financial Markets"] },
+          { name:"How Modern Technology Reshaped Politics & Society", items:["Social Media's Role in Activism","24-Hour News Cycle","Political Polarization","Fake News and Disinformation"] }
         ]
       }
     }
