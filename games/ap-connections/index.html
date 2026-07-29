@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Connections | Humanities Immersed Learning</title>
+<meta name="description" content="An AP review game inspired by NYT Connections: sort 16 clues into four hidden categories, unit by unit, across AP World History, AP Human Geography, AP Government, AP Macroeconomics, and AP Microeconomics. Easy and Hard modes.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AP Connections">
+<meta property="og:description" content="Sort 16 clues into four hidden categories, unit by unit, across five AP courses. Easy and Hard modes. Free to play, no install.">
+<meta property="og:image" content="../../images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#16305c;
+    --navy-deep:#0f2242;
+    --orange:#cc6b31;
+    --orange-bright:#e4854a;
+    --cream:#f5ead8;
+    --cream-dark:#ebddc5;
+    --paper:#fbf5e9;
+    --ink:#201e1d;
+    --muted:#5a5650;
+    --font-display:'Caprasimo', serif;
+    --font-body:'Figtree', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+
+    --lvl0-bg:#e8c468; --lvl0-text:#4a3505;
+    --lvl1-bg:#9fbf8f; --lvl1-text:#1f3315;
+    --lvl2-bg:#8fb0d9; --lvl2-text:#142840;
+    --lvl3-bg:#c79bd9; --lvl3-text:#3a1f44;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--orange);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.45;}
+  ::selection{background:var(--orange-bright); color:#fff;}
+
+  .topnav{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:14px 24px; background:var(--paper);
+    border-bottom:1px solid rgba(32,30,29,0.1);
+  }
+  .topnav .brand{
+    margin-right:auto; text-decoration:none;
+    font-family:var(--font-display); font-size:17px; color:var(--navy); font-weight:400;
+  }
+  .topnav .brand:hover{opacity:.85;}
+  .topnav a.navlink{ text-decoration:none; color:var(--ink); font-size:13.5px; font-weight:600; }
+  .topnav a.navlink:hover{ color:var(--orange); }
+
+  .screen{display:none; min-height:calc(100vh - 54px);}
+  .screen.active{display:block;}
+
+  /* ---------------- INSTRUCTIONS / COURSE / UNIT SELECT ---------------- */
+  #screen-instructions, #screen-courses, #screen-units{ max-width:940px; margin:0 auto; padding:44px 22px 80px; }
+  .masthead{text-align:center; margin-bottom:6px;}
+  .masthead .eyebrow{
+    display:block; font-family:var(--font-mono); letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; color:var(--orange); margin-bottom:12px;
+  }
+  .masthead h1{
+    font-family:var(--font-display); font-weight:400;
+    font-size:clamp(30px, 6vw, 46px); margin:0; color:var(--navy);
+  }
+  .masthead p.sub{
+    max-width:660px; margin:14px auto 0; font-size:15.5px; line-height:1.6; color:var(--muted);
+  }
+
+  .rules-card{
+    max-width:680px; margin:32px auto 0; background:var(--paper);
+    border:1px solid var(--cream-dark); border-radius:14px;
+    padding:8px 28px 22px; font-size:14.5px; line-height:1.65;
+  }
+  .rules-card h4{ font-family:var(--font-display); font-weight:400; font-size:16px; margin:18px 0 6px; color:var(--navy); }
+  .rules-card p{margin:0;}
+  .rules-card ul{margin:6px 0 0; padding-left:20px;}
+  .rules-card li{margin-bottom:5px;}
+  .level-key{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+  .level-chip{
+    display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:11.5px;
+    padding:5px 11px; border-radius:20px; font-weight:600;
+  }
+  .level-chip i{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  .continue-bar{display:flex; justify-content:center; margin:34px 0 6px;}
+  .btn-cta{
+    padding:15px 38px; border-radius:30px; border:1px solid var(--orange);
+    background:linear-gradient(180deg, var(--orange-bright), var(--orange));
+    color:#fff; font-weight:700; font-size:15px; letter-spacing:.02em;
+    box-shadow:0 8px 20px rgba(204,107,49,.3);
+  }
+  .btn-cta:hover{filter:brightness(1.05);}
+
+  .review-rules-bar{display:flex; justify-content:center; margin-top:8px;}
+  .btn-link{
+    background:transparent; border:none; color:var(--muted); font-family:var(--font-mono);
+    font-size:12px; letter-spacing:.04em; text-decoration:underline; padding:6px;
+  }
+  .btn-link:hover{color:var(--orange);}
+
+  /* ---------------- COURSE SELECT ---------------- */
+  .course-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:18px; margin-top:32px;
+  }
+  .course-card{
+    text-align:left; display:flex; flex-direction:column; gap:10px;
+    background:var(--cream-dark); border:1px solid #d8c6a2; border-radius:18px;
+    padding:24px 22px 20px; box-shadow:0 3px 10px rgba(46,43,37,.14);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .course-card:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(46,43,37,.2); }
+  .course-card .icon{font-size:34px; line-height:1;}
+  .course-card h3{ font-family:var(--font-display); font-weight:400; font-size:21px; margin:2px 0 0; color:var(--ink); }
+  .course-card p{ font-size:13.5px; line-height:1.5; color:var(--muted); margin:0; }
+  .course-card .unit-count{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--navy); font-weight:700;
+  }
+  .course-card .progress{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    color:#3f6f47; font-weight:700;
+  }
+
+  /* ---------------- UNIT SELECT ---------------- */
+  .units-topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:4px; }
+  .units-topbar h1{ font-family:var(--font-display); font-weight:400; font-size:clamp(26px,5vw,38px); margin:2px 0 0; color:var(--navy); }
+  .back-link{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:4px; white-space:nowrap; }
+  .back-link:hover{ color:var(--orange); }
+
+  .diff-toggle-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; margin:26px 0 6px; }
+  .diff-toggle{
+    display:inline-flex; background:var(--cream-dark); border-radius:26px; padding:4px; gap:2px;
+    border:1px solid #d8c6a2;
+  }
+  .diff-btn{
+    padding:9px 22px; border-radius:22px; border:none; background:transparent;
+    font-weight:700; font-size:13.5px; color:var(--muted); letter-spacing:.01em;
+  }
+  .diff-btn.active{ background:var(--navy); color:#fff; }
+  .diff-btn:hover:not(.active){ color:var(--ink); }
+  .diff-desc{ font-size:13px; color:var(--muted); text-align:center; max-width:520px; }
+
+  .puzzle-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:16px; margin-top:22px;
+  }
+  .puzzle-card{
+    text-align:left; display:flex; flex-direction:column; gap:8px;
+    background:var(--cream-dark); border:1px solid #d8c6a2; border-radius:16px;
+    padding:20px 20px 18px; box-shadow:0 3px 10px rgba(46,43,37,.14);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .puzzle-card:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(46,43,37,.2); }
+  .puzzle-card .era-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--navy); font-weight:700;
+  }
+  .puzzle-card h3{ font-family:var(--font-display); font-weight:400; font-size:19px; margin:2px 0 0; color:var(--ink); }
+  .puzzle-card p{ font-size:13px; line-height:1.5; color:var(--muted); margin:0; }
+  .puzzle-card .played{
+    align-self:flex-start; margin-top:2px; font-family:var(--font-mono); font-size:10px;
+    letter-spacing:.05em; text-transform:uppercase; color:#3f6f47; font-weight:700;
+  }
+
+  /* ---------------- GAME SCREEN ---------------- */
+  #screen-game{ max-width:680px; margin:0 auto; padding:24px 18px 70px; }
+  .game-topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  .game-eyebrow{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--orange); }
+  .game-topbar h2{ font-family:var(--font-display); font-weight:400; font-size:21px; margin:2px 0 0; color:var(--navy); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .diff-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 10px; border-radius:20px; font-weight:700; vertical-align:middle;
+  }
+  .diff-tag.easy{ background:#cfe3c9; color:#1f3d1f; }
+  .diff-tag.hard{ background:#e3b6b0; color:#4a1a14; }
+  .switch-link{ font-family:var(--font-mono); font-size:11px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:4px; white-space:nowrap; }
+  .switch-link:hover{ color:var(--orange); }
+
+  .game-instructions{ text-align:center; font-size:14px; color:var(--muted); margin:10px 0 16px; }
+
+  .mistakes-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:18px; font-family:var(--font-mono); font-size:12.5px; color:var(--muted); }
+  .dot{width:11px; height:11px; border-radius:50%; background:var(--navy); display:inline-block;}
+  .dot.used{background:transparent; border:2px solid #c9bda1;}
+  .dots{display:flex; gap:6px;}
+
+  .msg-area{ text-align:center; min-height:26px; margin-bottom:10px; }
+  .msg{
+    display:inline-block; font-family:var(--font-mono); font-size:12.5px; font-weight:600;
+    padding:6px 16px; border-radius:20px; background:var(--navy); color:#fff;
+    animation:msg-pop .18s ease;
+  }
+  .msg.err{background:#8a3a35;}
+  .msg.good{background:#3f6f47;}
+  @keyframes msg-pop{ from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+  .solved-bars{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+  .solved-bar{
+    border-radius:10px; padding:12px 16px; text-align:center;
+    animation:solved-in .35s ease;
+  }
+  @keyframes solved-in{ from{transform:scale(.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .solved-bar .cat-name{ font-weight:800; font-size:14.5px; letter-spacing:.01em; }
+  .solved-bar .cat-items{ font-size:12.5px; margin-top:3px; opacity:.9; }
+
+  .tile-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:16px;
+  }
+  @media (max-width:460px){ .tile-grid{grid-template-columns:repeat(2, 1fr);} }
+  .tile{
+    background:var(--cream-dark); border:2px solid #d8c6a2; border-radius:10px;
+    min-height:82px; padding:8px 6px; display:flex; align-items:center; justify-content:center;
+    text-align:center; font-weight:700; font-size:clamp(10px,2.3vw,12.5px); line-height:1.25;
+    color:var(--ink); user-select:none; transition:transform .1s ease, background .1s ease, border-color .1s ease;
+  }
+  .tile:hover{ border-color:var(--navy); }
+  .tile.selected{ background:var(--navy); color:#fff; border-color:var(--navy); transform:translateY(-2px); }
+  .tile.shake{ animation:shake .4s ease; }
+  @keyframes shake{
+    10%,90%{transform:translateX(-3px);} 20%,80%{transform:translateX(4px);}
+    30%,50%,70%{transform:translateX(-6px);} 40%,60%{transform:translateX(6px);}
+  }
+
+  .controls-row{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .ctrl-btn{
+    padding:11px 20px; border-radius:24px; border:1.5px solid var(--navy); background:transparent;
+    color:var(--navy); font-weight:700; font-size:13px; letter-spacing:.02em;
+  }
+  .ctrl-btn:hover:not(:disabled){ background:rgba(22,48,92,.08); }
+  .ctrl-btn.primary{ background:var(--navy); color:#fff; }
+  .ctrl-btn.primary:hover:not(:disabled){ background:var(--navy-deep); }
+
+  /* ---------------- END SCREEN ---------------- */
+  #screen-end{ max-width:680px; margin:0 auto; padding:56px 22px 80px; text-align:center; }
+  #screen-end .end-eyebrow{ font-family:var(--font-mono); letter-spacing:.18em; text-transform:uppercase; color:var(--orange); font-size:12px; }
+  #screen-end h1{ font-family:var(--font-display); font-weight:400; font-size:clamp(28px,5vw,42px); margin:10px 0 4px; color:var(--navy); }
+  #screen-end .end-sub{ font-size:14.5px; color:var(--muted); margin-bottom:26px; }
+  .end-bars{ display:flex; flex-direction:column; gap:10px; text-align:left; margin-bottom:28px; }
+  .end-bar{ border-radius:10px; padding:14px 18px; }
+  .end-bar .cat-name{ font-weight:800; font-size:14.5px; }
+  .end-bar .cat-items{ font-size:12.5px; margin-top:4px; opacity:.9; }
+  .end-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .end-actions button{ padding:13px 26px; border-radius:26px; font-weight:700; font-size:14px; border:1.5px solid var(--navy); }
+  .btn-primary-end{ background:var(--navy); color:#fff; }
+  .btn-primary-end:hover{ background:var(--navy-deep); }
+  .btn-secondary-end{ background:transparent; color:var(--navy); }
+  .btn-secondary-end:hover{ background:rgba(22,48,92,.08); }
+
+  @media (prefers-reduced-motion: reduce){
+    .tile, .solved-bar, .msg{ animation:none; transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <a class="brand" href="../../">Humanities Immersed Learning</a>
+  <a class="navlink" href="../">All Games</a>
+  <a class="navlink" href="../../teachers/">Teachers</a>
+</div>
+
+<!-- ============ INSTRUCTIONS SCREEN ============ -->
+<section id="screen-instructions" class="screen active">
+  <div class="masthead">
+    <span class="eyebrow">An AP Review Game</span>
+    <h1>AP Connections</h1>
+    <p class="sub">Inspired by the popular puzzle: find groups of four items that share a hidden connection. Pick a course, then a unit, then sort 16 clues into four hidden categories, in Easy or Hard mode.</p>
+  </div>
+
+  <div class="rules-card">
+    <h4>How to play</h4>
+    <p>You'll see 16 terms, people, cases, models, or concepts in a grid. They secretly belong to <b>four groups of four</b>. Select four tiles you think belong together, then hit Submit.</p>
+    <h4>Pick a course, then a unit</h4>
+    <p>Next you'll choose from five AP courses: <b>World History</b>, <b>Human Geography</b>, <b>Government</b>, <b>Macroeconomics</b>, and <b>Microeconomics</b>. Each course is broken into its real units, so you can review one unit at a time or work through the whole course.</p>
+    <h4>Easy vs. Hard mode</h4>
+    <p>Every unit has two versions. <b>Easy</b> groups are more direct, think "these are all court cases" or "these are all market structures." <b>Hard</b> groups cut across categories on purpose: a shared year, a mirrored pair like push factors vs. pull factors or expansionary vs. contractionary policy, or vocabulary that sounds interchangeable but isn't. Reading closely matters more than recognizing the topic.</p>
+    <h4>Difficulty colors</h4>
+    <p>Once you solve a group, it's revealed in one of four colors, from most straightforward to trickiest:</p>
+    <div class="level-key">
+      <span class="level-chip" style="background:var(--lvl0-bg); color:var(--lvl0-text);"><i style="background:var(--lvl0-text)"></i>Straightforward</span>
+      <span class="level-chip" style="background:var(--lvl1-bg); color:var(--lvl1-text);"><i style="background:var(--lvl1-text)"></i>Solid Recall</span>
+      <span class="level-chip" style="background:var(--lvl2-bg); color:var(--lvl2-text);"><i style="background:var(--lvl2-text)"></i>Tricky</span>
+      <span class="level-chip" style="background:var(--lvl3-bg); color:var(--lvl3-text);"><i style="background:var(--lvl3-text)"></i>Trickiest</span>
+    </div>
+    <h4>Mistakes</h4>
+    <p>You get <b>4 mistakes</b> before the puzzle ends. If three of your four tiles belong together, you'll see a "One away..." hint.</p>
+    <h4>Tools</h4>
+    <p><b>Shuffle</b> rearranges the remaining tiles. <b>Deselect All</b> clears your current picks.</p>
+  </div>
+
+  <div class="continue-bar">
+    <button class="btn-cta" id="instructionsContinueBtn">Choose a Course →</button>
+  </div>
+</section>
+
+<!-- ============ COURSE SELECT SCREEN ============ -->
+<section id="screen-courses" class="screen">
+  <div class="masthead">
+    <span class="eyebrow">An AP Review Game</span>
+    <h1>Choose a Course</h1>
+    <p class="sub">Each course is broken into its own units. Pick one to see what's inside.</p>
+  </div>
+
+  <div class="course-grid" id="courseGrid"></div>
+
+  <div class="review-rules-bar">
+    <button class="btn-link" id="reviewRulesBtn">↺ Review how to play again</button>
+  </div>
+</section>
+
+<!-- ============ UNIT SELECT SCREEN ============ -->
+<section id="screen-units" class="screen">
+  <div class="units-topbar">
+    <div class="masthead" style="text-align:left; margin-bottom:0;">
+      <span class="eyebrow" id="unitsEyebrow">—</span>
+      <h1 id="unitsTitle">—</h1>
+    </div>
+    <button class="back-link" id="backToCoursesBtn">↺ Choose another course</button>
+  </div>
+  <p class="sub" id="unitsSub" style="max-width:660px; font-size:15px; color:var(--muted); line-height:1.6; margin-top:10px;"></p>
+
+  <div class="diff-toggle-wrap">
+    <div class="diff-toggle">
+      <button class="diff-btn active" id="diffEasyBtn" data-diff="easy">Easy Mode</button>
+      <button class="diff-btn" id="diffHardBtn" data-diff="hard">Hard Mode</button>
+    </div>
+    <p class="diff-desc" id="diffDesc"></p>
+  </div>
+
+  <div class="puzzle-grid" id="puzzleGrid"></div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="game-topbar">
+    <div>
+      <span class="game-eyebrow" id="gameEra">—</span>
+      <h2 id="gameTitle">—</h2>
+    </div>
+    <button class="switch-link" id="switchPuzzleBtn">↺ Choose another unit</button>
+  </div>
+
+  <p class="game-instructions">Find four groups of four. Select tiles, then hit Submit.</p>
+
+  <div class="mistakes-row">
+    <span>Mistakes remaining</span>
+    <span class="dots" id="mistakeDots"></span>
+  </div>
+
+  <div class="msg-area" id="msgArea"></div>
+
+  <div class="solved-bars" id="solvedBars"></div>
+  <div class="tile-grid" id="tileGrid"></div>
+
+  <div class="controls-row">
+    <button class="ctrl-btn" id="shuffleBtn">Shuffle</button>
+    <button class="ctrl-btn" id="deselectBtn">Deselect All</button>
+    <button class="ctrl-btn primary" id="submitBtn" disabled>Submit</button>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="end-eyebrow" id="endEyebrow">PUZZLE COMPLETE</div>
+  <h1 id="endHeadline">—</h1>
+  <div class="end-sub" id="endSub">—</div>
+
+  <div class="end-bars" id="endBars"></div>
+
+  <div class="end-actions">
+    <button class="btn-primary-end" id="playAgainBtn">Play This Unit Again</button>
+    <button class="btn-secondary-end" id="chooseAnotherBtn">Choose Another Unit</button>
+  </div>
+</section>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
