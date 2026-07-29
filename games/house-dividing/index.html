@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A House Dividing: The Road to Fort Sumter</title>
+<meta name="description" content="An interactive timeline game for grades 6-8 tracing the causes of the U.S. Civil War, from the cotton gin to Fort Sumter, using real primary sources.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0e1a2b;
+    --navy:#152840;
+    --navy-light:#213a5c;
+    --navy-lighter:#2e4f78;
+    --parchment:#f1e7d0;
+    --parchment-dark:#e2d1a8;
+    --gold:#c19a53;
+    --gold-bright:#e6c07a;
+    --union-blue:#3d5c8c;
+    --union-blue-bright:#5a7fb5;
+    --danger-red:#a5453f;
+    --danger-red-bright:#c65f56;
+    --ink:#26201a;
+    --success:#5b8a5e;
+    --font-display:'Fredoka', 'Nunito', system-ui, sans-serif;
+    --font-body:'Nunito', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(1200px 800px at 15% -10%, #1c3352 0%, transparent 60%),
+      radial-gradient(1200px 900px at 110% 10%, #16283f 0%, transparent 55%),
+      var(--navy-deep);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold); color:var(--ink);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.45;}
+  a{color:var(--gold-bright);}
+
+  .screen{display:none; min-height:100vh;}
+  .screen.active{display:block;}
+
+  .seal-rule{
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold) 15%, var(--gold-bright) 50%, var(--gold) 85%, transparent);
+    opacity:.75;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--gold-bright);
+    opacity:.9;
+  }
+
+  /* ============= INSTRUCTIONS / INTRO ============= */
+  #screen-instructions{ max-width:880px; margin:0 auto; padding:52px 24px 90px; }
+  .masthead{text-align:center; margin-bottom:8px;}
+  .masthead .eyebrow{display:block; margin-bottom:14px;}
+  .masthead h1{
+    font-family:var(--font-display); font-size:clamp(30px, 5.4vw, 50px);
+    margin:0; font-weight:700; letter-spacing:.005em; line-height:1.15;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold) 70%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .masthead p.sub{
+    color:#cfc4a3; max-width:600px; margin:14px auto 0; font-size:15.5px; line-height:1.6;
+  }
+  .instructions-card{
+    max-width:760px; margin:34px auto 0;
+    background:rgba(20,30,51,.55); border:1px solid var(--navy-lighter); border-radius:12px;
+    padding:6px 26px 22px; font-size:14px; line-height:1.65; color:#e6dcc0;
+  }
+  .instructions-card h4{margin:18px 0 5px; color:var(--gold-bright); font-size:14.5px; font-family:var(--font-display); letter-spacing:.02em;}
+  .instructions-card p{margin:0;}
+  .instructions-card ul{margin:4px 0 0; padding-left:20px;}
+  .instructions-card li{margin-bottom:5px;}
+  .content-note{
+    max-width:760px; margin:22px auto 0; background:rgba(165,69,63,.12);
+    border:1px solid rgba(165,69,63,.4); border-radius:10px; padding:14px 20px;
+    font-size:13px; line-height:1.6; color:#f0d9d6;
+  }
+  .content-note b{color:#f4a9a2;}
+  .instructions-continue-bar{display:flex; justify-content:center; margin:36px 0 10px;}
+  .primary-btn{
+    padding:15px 40px; border-radius:30px; border:1px solid var(--gold);
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color:var(--ink); font-weight:700; font-size:15px; letter-spacing:.03em;
+    box-shadow:0 8px 22px rgba(193,154,83,.25); font-family:var(--font-display);
+  }
+  .primary-btn:hover{filter:brightness(1.06);}
+  .secondary-btn{
+    background:transparent; border:1px solid var(--navy-lighter); color:var(--gold-bright);
+    padding:13px 26px; border-radius:26px; font-weight:700; font-size:14px; font-family:var(--font-display);
+  }
+  .secondary-btn:hover{background:rgba(255,255,255,.04);}
+
+  /* ============= GAME SCREEN ============= */
+  #screen-game{ padding:16px 16px 48px; max-width:980px; margin:0 auto; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:10px; padding:12px 18px; margin-bottom:14px;
+  }
+  .topbar .title-block{display:flex; flex-direction:column; gap:2px;}
+  .topbar .title-block h2{font-family:var(--font-display); font-size:16px; margin:0; color:var(--parchment);}
+  .stat-chip{text-align:center;}
+  .stat-chip .num{font-family:var(--font-mono); font-size:18px; font-weight:600; color:var(--gold-bright);}
+  .stat-chip .lbl{font-family:var(--font-mono); font-size:9px; letter-spacing:.07em; text-transform:uppercase; color:#a89b76;}
+
+  .timeline-strip{
+    display:flex; gap:5px; overflow-x:auto; padding:4px 2px 12px; margin-bottom:6px;
+  }
+  .timeline-dot{
+    flex:none; width:30px; height:30px; border-radius:50%; border:2px solid var(--navy-lighter);
+    background:var(--navy); color:#7c88a0; font-family:var(--font-mono); font-size:10px;
+    display:flex; align-items:center; justify-content:center; font-weight:600;
+  }
+  .timeline-dot.visited{border-color:var(--gold); color:var(--gold-bright); background:var(--navy-light);}
+  .timeline-dot.current{background:var(--gold); color:var(--ink); border-color:var(--gold-bright);}
+  .timeline-dot.clickable{cursor:pointer;}
+  .timeline-dot.clickable:hover{filter:brightness(1.15);}
+
+  .meters{ display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:16px; }
+  .meter{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:9px; padding:10px 16px;
+  }
+  .meter-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .meter-name{font-family:var(--font-display); font-size:13px; color:var(--parchment);}
+  .meter-val{font-family:var(--font-mono); font-size:12px; color:var(--gold-bright);}
+  .meter-track{height:10px; border-radius:6px; background:rgba(255,255,255,.08); overflow:hidden;}
+  .meter-fill{height:100%; border-radius:6px; transition:width .8s cubic-bezier(.22,.9,.3,1);}
+  .meter-fill.economic{background:linear-gradient(90deg, var(--gold), var(--gold-bright));}
+  .meter-fill.political{background:linear-gradient(90deg, var(--union-blue), var(--union-blue-bright));}
+  .meter-fill.attitudes{background:linear-gradient(90deg, var(--danger-red), var(--danger-red-bright));}
+
+  .stop-card{
+    background:linear-gradient(180deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+    color:var(--ink); border-radius:12px; border:1px solid #b79f6e;
+    padding:24px 26px 26px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .stop-year{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:#8a744a; font-weight:700;}
+  .stop-era{font-family:var(--font-mono); font-size:11px; color:#6b5f45; margin-top:2px;}
+  .stop-title{font-family:var(--font-display); font-size:24px; margin:6px 0 14px; color:var(--ink); line-height:1.2;}
+  .stop-narrative p{font-size:14.5px; line-height:1.65; margin:0 0 12px; color:#3c3527;}
+
+  .source-box{
+    background:#fbf5e6; border:1px solid #b79f6e; border-left:5px solid var(--gold);
+    border-radius:6px; padding:14px 18px 16px; margin:16px 0; box-shadow:inset 0 1px 3px rgba(0,0,0,.05);
+  }
+  .source-label{font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:#8a744a; font-weight:700; margin-bottom:6px;}
+  .source-quote{font-family:var(--font-display); font-size:16.5px; line-height:1.5; color:var(--ink); font-style:italic; margin:0 0 8px;}
+  .source-attr{font-family:var(--font-mono); font-size:11.5px; color:#6b5f45;}
+  .source-note{font-size:12.5px; color:#5a5140; margin-top:8px; line-height:1.55; padding-top:8px; border-top:1px dashed #b79f6e;}
+
+  .myth-box{
+    background:rgba(165,69,63,.08); border:1px solid var(--danger-red); border-radius:8px;
+    padding:14px 18px 16px; margin:16px 0;
+  }
+  .myth-box h4{font-family:var(--font-display); margin:0 0 6px; font-size:14.5px; color:var(--danger-red);}
+  .myth-box p{font-size:13.5px; line-height:1.6; margin:0; color:#3c3527;}
+
+  .question-block{margin-top:22px; padding-top:18px; border-top:2px solid #b79f6e;}
+  .question-prompt{font-family:var(--font-display); font-size:15.5px; margin:0 0 12px; color:var(--ink); line-height:1.4;}
+  .choice-list{display:flex; flex-direction:column; gap:8px;}
+  .choice-btn{
+    text-align:left; padding:12px 16px; border-radius:8px; border:1px solid #b79f6e;
+    background:#fff; color:#3c3527; font-size:13.5px; line-height:1.45; font-family:var(--font-body);
+  }
+  .choice-btn:hover:not(:disabled){background:#fbf1de; border-color:var(--gold);}
+  .choice-btn.chosen-correct{background:rgba(91,138,94,.18); border-color:var(--success); font-weight:700;}
+  .choice-btn.chosen-wrong{background:rgba(165,69,63,.14); border-color:var(--danger-red);}
+  .choice-btn.reveal-correct{background:rgba(91,138,94,.18); border-color:var(--success); font-weight:700;}
+  .choice-feedback{
+    font-size:13px; line-height:1.55; margin-top:6px; padding:10px 14px; border-radius:6px;
+  }
+  .choice-feedback.good{background:rgba(91,138,94,.15); color:#2c4a2e;}
+  .choice-feedback.bad{background:rgba(165,69,63,.12); color:#5a2822;}
+
+  .stop-footer{display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:10px;}
+  .score-note{font-family:var(--font-mono); font-size:11.5px; color:#6b5f45;}
+
+  .tension-log-panel{
+    margin-top:16px; background:linear-gradient(180deg,var(--navy) 0%, var(--navy-deep) 100%);
+    border:1px solid var(--navy-lighter); border-radius:10px; padding:14px 18px;
+  }
+  .tension-log-panel h3{font-family:var(--font-display); margin:0 0 10px; font-size:14px; color:var(--gold-bright);}
+  .log-feed{max-height:150px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:6px; padding-right:4px;}
+  .log-entry{font-size:12.5px; line-height:1.45; padding:7px 10px; border-radius:6px; border-left:3px solid var(--gold); background:rgba(255,255,255,.03);}
+  .log-entry .yr{font-family:var(--font-mono); color:#a89b76; margin-right:6px;}
+
+  /* ============= END SCREEN ============= */
+  #screen-end{ max-width:820px; margin:0 auto; padding:60px 24px 90px; text-align:center; }
+  #screen-end .verdict-eyebrow{font-family:var(--font-mono); letter-spacing:.2em; color:var(--gold-bright); font-size:12px;}
+  #screen-end h1{font-family:var(--font-display); font-size:clamp(28px,5vw,44px); margin:12px 0 6px;}
+  #screen-end .rank{font-family:var(--font-mono); font-size:14px; color:#cfc4a3; margin-bottom:20px;}
+
+  .end-meters{display:grid; grid-template-columns:1fr; gap:10px; margin:24px 0; text-align:left;}
+
+  .civics-note{
+    text-align:left; background:rgba(20,30,51,.6); border:1px solid var(--navy-lighter);
+    border-radius:10px; padding:20px 24px; font-size:14px; line-height:1.7; color:#d8cfb4; margin-bottom:20px;
+  }
+  .civics-note h3{font-family:var(--font-display); color:var(--gold-bright); font-size:16px; margin:0 0 10px;}
+  .civics-note b{color:var(--gold-bright);}
+  .civics-note ul{margin:8px 0 0; padding-left:20px;}
+  .civics-note li{margin-bottom:6px;}
+
+  .end-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--navy-lighter); border-radius:8px;}
+
+  @media (max-width:600px){
+    #screen-instructions{padding:36px 18px 70px;}
+    .stop-card{padding:20px 18px 22px;}
+    .stop-title{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ INSTRUCTIONS SCREEN ============ -->
+<section id="screen-instructions" class="screen active">
+  <div class="masthead">
+    <span class="eyebrow">An Interactive History Timeline</span>
+    <h1>A House Dividing</h1>
+    <p class="sub">The Road to Fort Sumter. Travel from 1793 to 1861 through the real events, real documents, and real people whose choices pulled the North and South further apart, until war finally broke out.</p>
+  </div>
+
+  <div class="instructions-card">
+    <h4>How this works</h4>
+    <p>You'll move through 14 stops in chronological order. At each stop, you'll read what happened, examine an actual primary source (something written or said at the time), and answer a short question about why it mattered.</p>
+    <h4>Three meters</h4>
+    <p>As you move through history, three meters will rise, tracking the widening divide between North and South:</p>
+    <ul>
+      <li><b>Economic Divergence</b>: how differently the Northern and Southern economies were developing.</li>
+      <li><b>Political Conflict</b>: how strained compromise in Congress and the courts had become.</li>
+      <li><b>Attitudes on Slavery</b>: how far apart Northern and Southern beliefs about slavery itself had grown.</li>
+    </ul>
+    <p>These meters move based on what actually happened historically, not on your answers. Your answers instead build your <b>Historian Score</b>, a check on how well you understand <i>why</i> each event mattered.</p>
+    <h4>A note on the ending</h4>
+    <p>This isn't a game you can win or lose by making different choices; it's real history, and it ends the way it really ended: with the firing on Fort Sumter. Your job is to understand how the nation got there.</p>
+  </div>
+
+  <div class="content-note">
+    <b>A note before you begin:</b> This game deals honestly with slavery, including some difficult primary sources, because you can't understand the Civil War without understanding slavery. Nothing here is graphic, but some of the words you'll read, especially from people defending slavery, are upsetting on purpose. If you have questions, talk with your teacher or a trusted adult.
+  </div>
+
+  <div class="instructions-continue-bar">
+    <button class="primary-btn" id="startBtn">Begin: 1793 →</button>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="topbar">
+    <div class="title-block">
+      <span class="eyebrow">A House Dividing</span>
+      <h2 id="topStopLabel">Stop 1 of 14</h2>
+    </div>
+    <div class="stat-chip">
+      <div class="num" id="statScore">0 / 14</div>
+      <div class="lbl">Historian Score</div>
+    </div>
+  </div>
+
+  <div class="timeline-strip" id="timelineStrip"></div>
+
+  <div class="meters">
+    <div class="meter">
+      <div class="meter-top"><span class="meter-name">Economic Divergence</span><span class="meter-val" id="valEconomic">8</span></div>
+      <div class="meter-track"><div class="meter-fill economic" id="fillEconomic" style="width:8%"></div></div>
+    </div>
+    <div class="meter">
+      <div class="meter-top"><span class="meter-name">Political Conflict</span><span class="meter-val" id="valPolitical">8</span></div>
+      <div class="meter-track"><div class="meter-fill political" id="fillPolitical" style="width:8%"></div></div>
+    </div>
+    <div class="meter">
+      <div class="meter-top"><span class="meter-name">Attitudes on Slavery</span><span class="meter-val" id="valAttitudes">8</span></div>
+      <div class="meter-track"><div class="meter-fill attitudes" id="fillAttitudes" style="width:8%"></div></div>
+    </div>
+  </div>
+
+  <div class="stop-card" id="stopCard"></div>
+
+  <div class="tension-log-panel">
+    <h3>Tension Log</h3>
+    <div class="log-feed" id="logFeed"></div>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="verdict-eyebrow">APRIL 12, 1861</div>
+  <h1>The First Shots</h1>
+  <div class="rank" id="endRank">—</div>
+
+  <div class="end-meters" id="endMeters"></div>
+
+  <div class="civics-note" id="civicsNote"></div>
+
+  <div class="end-actions">
+    <button class="primary-btn" id="restartBtn">Play Again From the Start</button>
+    <button class="secondary-btn" id="reviewBtn">Review the Timeline</button>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   CONFIG: the full timeline. Meter deltas reflect the actual historical
+   weight of each event (they do not depend on the player's answers) so the
+   meters always converge near their historical end state. Only the
+   Historian Score depends on whether the player answers correctly.
+========================================================================= */
+const STOPS = [
+{
+  id:"cotton-gin", year:"1793", era:"An Economy Splits", title:"The Cotton Gin and “King Cotton”",
+  narrative:[
+    "In 1793, a young inventor named Eli Whitney built a machine called the cotton gin. It could clean the seeds out of cotton about fifty times faster than doing it by hand.",
+    "Suddenly, growing cotton became hugely profitable. Southern planters rushed to plant more of it across Georgia, Alabama, Mississippi, and beyond. But cotton still had to be planted, weeded, and picked by hand, and planters wanted that labor for free. Instead of slowly fading out, as some of the nation's founders had predicted, slavery grew far more important to the Southern economy after 1793.",
+    "Meanwhile, the North was heading in a different direction. Northern states were passing laws to gradually end slavery there, and Northern money increasingly built factories, shipyards, and free-labor farms instead. Two very different economies were now growing inside the same country."
+  ],
+  source:{ label:"By the Numbers", quote:"In 1790, the South grew about 3,000 bales of cotton a year. By 1850, it grew more than two million bales a year, and cotton made up over half of everything the United States sold to other countries.", attribution:"U.S. trade records, early-to-mid 1800s", note:"Almost all of that cotton was planted and picked by enslaved workers." },
+  question:{
+    prompt:"Why did the cotton gin make slavery MORE central to the Southern economy, not less?",
+    choices:[
+      { text:"It made cotton farming so profitable that planters wanted to grow much more of it, which meant they wanted more enslaved workers to plant and pick it.", correct:true, feedback:"Exactly. The gin only sped up cleaning the cotton — growing, planting, and picking it still took a huge amount of forced labor, and planters expanded slavery to do more of it." },
+      { text:"It replaced human workers with a machine, so plantations needed fewer enslaved people.", correct:false, feedback:"Not quite. The gin only cleaned cotton of its seeds. Someone still had to plant, tend, and pick every plant by hand, and that work fell to enslaved people." },
+      { text:"The federal government required every cotton plantation to use enslaved labor.", correct:false, feedback:"No law did this. Planters chose to expand slavery because it was profitable, not because they were required to." },
+      { text:"Northern factories refused to buy cotton unless enslaved people grew it.", correct:false, feedback:"Northern textile mills bought cotton because it was cheap and plentiful — they didn't investigate how it was grown, which is its own troubling part of this story." }
+    ]
+  },
+  deltas:{economic:20, political:0, attitudes:0},
+  log:"Cotton booms across the Deep South, and so does slavery."
+},
+{
+  id:"missouri-compromise", year:"1820", era:"Drawing a Line Across the Map", title:"The Missouri Compromise",
+  narrative:[
+    "By 1819, the United States had eleven free states and eleven slave states, an even balance that gave neither side control of the Senate. Then Missouri asked to join the Union as a slave state, and Congress erupted in argument. If Missouri came in slave, the balance would tip.",
+    "Kentucky senator Henry Clay brokered a deal: Missouri would join as a slave state, Maine would join as a free state to keep the balance, and, for the first time, Congress drew an actual line across the map. North of the 36°30′ line, in the rest of the Louisiana Territory, slavery would be banned. South of it, slavery would be allowed.",
+    "The compromise held the Union together for the moment. But it also set a troubling precedent: the nation's future would now be fought over, state by state and territory by territory, one line at a time."
+  ],
+  source:{ label:"A Private Letter", quote:"This momentous question, like a fire bell in the night, awakened and filled me with terror. I considered it at once as the knell of the Union.", attribution:"Thomas Jefferson, in a letter to John Holmes, 1820", note:"Jefferson, who enslaved hundreds of people himself, was reacting to how close the Missouri crisis came to splitting the country apart." },
+  question:{
+    prompt:"Why does the Missouri Compromise matter, even though it kept the peace in 1820?",
+    choices:[
+      { text:"It showed that Congress could only manage the conflict over slavery's expansion by dividing more territory, not by resolving the underlying disagreement.", correct:true, feedback:"Right. The compromise was a temporary patch, not a solution, and it set the pattern that every new territory would reignite the same fight." },
+      { text:"It ended slavery in the United States forever.", correct:false, feedback:"It didn't — it only decided where slavery could expand in one part of the Louisiana Territory. Slavery remained fully legal in the existing Southern states." },
+      { text:"It gave the North permanent control of the Senate.", correct:false, feedback:"Not quite — adding Maine alongside Missouri was specifically designed to keep the Senate balanced, not tip it." },
+      { text:"It settled the argument over slavery so completely that Congress never had to compromise on it again.", correct:false, feedback:"The opposite happened — this was the first of several major compromises over the next 40 years, each one more strained than the last." }
+    ]
+  },
+  deltas:{economic:0, political:15, attitudes:5},
+  log:"Congress draws its first line across the map: slavery here, freedom there."
+},
+{
+  id:"abolition-rises", year:"1830s", era:"Two Souths, Two Norths", title:"Voices Rise: Abolition and “A Positive Good”",
+  narrative:[
+    "In the 1830s, attitudes toward slavery hardened on both sides. In the North, a small but loud abolitionist movement grew louder. In 1831, a young journalist named William Lloyd Garrison began publishing The Liberator, a newspaper demanding slavery's immediate end. Formerly enslaved writers and speakers, and free Black activists and communities, were central to this growing movement, publishing, organizing, and demanding to be heard.",
+    "That same year, an enslaved man named Nat Turner led an armed uprising in Virginia. It was violently crushed, but it terrified white Southerners and led Southern states to pass even harsher laws restricting enslaved people's movement, education, and gatherings.",
+    "In the South, some political leaders stopped calling slavery a “necessary evil,” something they hoped might fade away, and started defending it outright. South Carolina Senator John C. Calhoun became one of the most influential voices arguing that slavery wasn't just acceptable, but good."
+  ],
+  source:{ label:"Two Voices of the 1830s", quote:"I will not equivocate — I will not excuse — I will not retreat a single inch — AND I WILL BE HEARD.", attribution:"William Lloyd Garrison, The Liberator, January 1, 1831", note:"Compare this to Senator Calhoun's words from a Senate speech six years later: “[Slavery is]… instead of an evil, a good — a positive good.” These two quotations show how far apart North and South were moving on the very question of whether slavery was wrong." },
+  question:{
+    prompt:"What does the shift from calling slavery a “necessary evil” to a “positive good” tell historians?",
+    choices:[
+      { text:"That some Southern leaders had stopped viewing slavery as something to eventually end, and instead were building a permanent defense of it, making future compromise much harder.", correct:true, feedback:"Yes. When one side sees a moral wrong as merely unfortunate, compromise is possible. When it's defended as good and permanent, common ground becomes much harder to find." },
+      { text:"That slavery was becoming less common in the South during the 1830s.", correct:false, feedback:"The opposite was true — the enslaved population and the size of the plantation economy were both growing quickly during this period." },
+      { text:"That Northern and Southern leaders were becoming more alike in their views on slavery.", correct:false, feedback:"They were moving in opposite directions: the North's abolitionist movement was growing louder while the South's defense of slavery was hardening." },
+      { text:"That Nat Turner's uprising convinced most Southerners to support ending slavery.", correct:false, feedback:"It had the reverse effect — most Southern states responded by tightening restrictions on enslaved and free Black people even further." }
+    ]
+  },
+  deltas:{economic:0, political:4, attitudes:18},
+  log:"North and South begin arguing not just about slavery's future, but whether it's wrong at all."
+},
+{
+  id:"gag-rule", year:"1836–1844", era:"Silencing the Debate", title:"The Gag Rule and a Censored Mail",
+  narrative:[
+    "As the argument over slavery grew louder, Southern representatives in Congress didn't just want to win the debate, they tried to stop it from happening at all. Starting in 1836, the House of Representatives passed a series of “gag rules” that automatically tabled, without discussion, any petition asking Congress to restrict or end slavery.",
+    "Former President John Quincy Adams, then serving in the House, fought the gag rule for eight straight years, arguing it violated the constitutional right of citizens to petition their government. He finally succeeded in getting it repealed in 1844.",
+    "Around the same time, Southern postmasters began seizing and burning abolitionist literature mailed from the North, refusing to deliver it. Both the gag rule and the mail seizures showed something important: parts of the country had reached a point where they weren't just disagreeing about slavery, they were trying to make sure the other side couldn't even talk about it."
+  ],
+  source:{ label:"A Constitutional Fight", quote:"That the Congress of the United States has no power to interfere in any way with the institution of slavery.", attribution:"Text adapted from the House gag rule resolutions, 1836–1844", note:"This resolution effectively banned Congress from even discussing anti-slavery petitions, no matter how many citizens signed them." },
+  question:{
+    prompt:"Why is it significant that Congress tried to ban debate about slavery, rather than just voting it down?",
+    choices:[
+      { text:"It shows the conflict had moved beyond disagreeing on policy — one side was trying to prevent the other from even raising the issue, a sign of a much deeper breakdown in the ability to compromise.", correct:true, feedback:"Correct. Refusing to even discuss an issue is a stronger sign of conflict than losing a vote on it — it suggests the two sides no longer trusted normal political debate to settle things." },
+      { text:"It shows that most Northerners didn't actually care about ending slavery.", correct:false, feedback:"Petitions against slavery were flooding into Congress by the thousands — that's exactly why Southern representatives wanted to block them from being read at all." },
+      { text:"It proves Congress had already voted to end slavery and just needed to finalize the paperwork.", correct:false, feedback:"Not at all — the gag rule did the opposite, blocking anti-slavery petitions from being considered." },
+      { text:"It was a minor procedural rule with no real impact on the national debate.", correct:false, feedback:"It was a big deal at the time — a former U.S. president spent eight years fighting to overturn it in Congress." }
+    ]
+  },
+  deltas:{economic:0, political:10, attitudes:6},
+  log:"Congress tries to silence the slavery debate instead of settling it."
+},
+{
+  id:"wilmot-proviso", year:"1846–1848", era:"New Land, Same Fight", title:"War With Mexico and the Wilmot Proviso",
+  narrative:[
+    "In 1846, the United States went to war with Mexico. By 1848, it had won a huge amount of new territory, stretching from Texas to California. Almost immediately, the old question resurfaced: would slavery be allowed in this new land?",
+    "In 1846, Pennsylvania congressman David Wilmot proposed an amendment, the Wilmot Proviso, banning slavery in any territory won from Mexico. It passed the House multiple times but repeatedly failed in the Senate, where slave states had more equal footing.",
+    "The Wilmot Proviso never became law, but it revealed just how central the expansion question had become. Every acre of new land was now a battlefield in the fight over slavery's future."
+  ],
+  source:{ label:"The Proviso's Own Words", quote:"Neither slavery nor involuntary servitude shall ever exist in any part of said territory.", attribution:"The Wilmot Proviso, as introduced in Congress, 1846", note:"This single sentence, debated for years, never became law, but it dominated Congress for the rest of the decade." },
+  question:{
+    prompt:"Why did the question of slavery in NEW territories cause such intense conflict?",
+    choices:[
+      { text:"Every new state admitted to the Union could shift the delicate balance of power between free and slave states in Congress, so both sides fought hard over every new territory.", correct:true, feedback:"Exactly right. With the Senate evenly balanced, each new state's status could tip the entire chamber, which is why both sides treated every new territory as a high-stakes fight." },
+      { text:"Because slavery was already illegal everywhere else in the country by 1846.", correct:false, feedback:"Slavery remained fully legal across the South in 1846 — the fight here was specifically about whether it would expand into new land." },
+      { text:"Because Mexico required the U.S. to ban slavery as a condition of the peace treaty.", correct:false, feedback:"Mexico had no say in this internal U.S. debate — the treaty ending the war didn't set slavery's status in the new territories." },
+      { text:"Because Congress had already agreed new territories would automatically become slave states.", correct:false, feedback:"There was no such agreement — that's precisely why the fight over the Wilmot Proviso dragged on for years." }
+    ]
+  },
+  deltas:{economic:6, political:12, attitudes:0},
+  log:"New land won from Mexico reopens the same old fight, over and over."
+},
+{
+  id:"compromise-1850", year:"1850", era:"A Bigger, Angrier Compromise", title:"The Compromise of 1850 and the Fugitive Slave Act",
+  narrative:[
+    "By 1850, California wanted to join the Union as a free state, which would break the Senate's balance for good. Henry Clay, again the great compromiser, and Illinois senator Stephen Douglas pushed through a package of laws known as the Compromise of 1850.",
+    "California entered as a free state. The slave trade (though not slavery itself) was banned in Washington, D.C. And the territories of Utah and New Mexico would decide slavery's status themselves through a vote, an idea called popular sovereignty.",
+    "But the most explosive part was the new Fugitive Slave Act. It made it a federal crime, punishable by fines and jail time, for anyone in the North to help a person escaping slavery, or even to refuse to help catch one. Suddenly, ordinary Northerners who had never enslaved anyone were legally forced to participate in slavery's enforcement."
+  ],
+  source:{ label:"A Law That Reached North", quote:"The Fugitive Slave Act empowered federal marshals to deputize any bystander to help capture an escaped enslaved person on the spot, denied the accused a jury trial, and fined anyone who helped them escape or refused to assist.", attribution:"Summary of the Fugitive Slave Act of 1850", note:"Even free Black Americans in the North could be seized and sent south under this law, since the accused had no right to testify in their own defense." },
+  question:{
+    prompt:"Why did the Fugitive Slave Act anger even many Northerners who weren't abolitionists?",
+    choices:[
+      { text:"It forced ordinary Northern citizens, regardless of their own views, to actively help capture and return enslaved people, making slavery's enforcement personal even for people far from the South.", correct:true, feedback:"Right. Laws that only affected the South were easy for many Northerners to ignore. A law that could force YOU to help catch someone, or punish you for refusing, made the conflict impossible to ignore." },
+      { text:"Because it freed every enslaved person in the South immediately.", correct:false, feedback:"It did the opposite — it strengthened the enforcement of slavery by making it easier to recapture people who had escaped." },
+      { text:"Because it only applied to Southern states and had no effect in the North.", correct:false, feedback:"That's exactly backwards — its entire purpose was to force cooperation from Northern states and citizens." },
+      { text:"Because it gave accused runaways the right to a full jury trial.", correct:false, feedback:"The law denied accused individuals a jury trial, which was part of what made it so controversial." }
+    ]
+  },
+  deltas:{economic:0, political:14, attitudes:10},
+  log:"A new law forces the North to help enforce slavery, and many Northerners recoil."
+},
+{
+  id:"uncle-toms-cabin", year:"1852", era:"A Story Changes Minds", title:"Uncle Tom's Cabin Shakes the North",
+  narrative:[
+    "In 1852, Harriet Beecher Stowe, a Northern writer horrified by the Fugitive Slave Act, published Uncle Tom's Cabin, a novel depicting the cruelty of slavery through the eyes of enslaved characters. It became a massive bestseller, selling hundreds of thousands of copies in its first year alone and reaching readers who had never before been forced to imagine slavery up close.",
+    "The book didn't convince everyone. Many in the South accused Stowe of exaggeration and produced their own novels defending slavery in response. But among Northerners who had previously thought of slavery as a distant Southern issue, the book turned an abstract political debate into something emotional and personal.",
+    "There's a popular story that when Abraham Lincoln met Stowe years later, he said, “So you're the little woman who wrote the book that started this great war.” Most historians doubt he actually said it; there's no reliable record of it. But the fact that people wanted to believe it shows just how powerfully the book shaped how Americans remembered the coming of the war."
+  ],
+  source:{ label:"From the Novel", quote:"I've often thought I wish I'd been born a beast... 'cause the beasts is happier, and don't have no souls to be lost.", attribution:"Fictional dialogue from Uncle Tom's Cabin, Harriet Beecher Stowe, 1852", note:"Stowe based many scenes on real accounts from formerly enslaved people and abolitionist newspapers, though she herself had never lived in the South." },
+  question:{
+    prompt:"What does the disputed Lincoln quote about Uncle Tom's Cabin teach about using historical sources carefully?",
+    choices:[
+      { text:"That a story can be widely repeated and “feel true” without solid evidence it actually happened — good historians check whether a quote is documented before trusting it.", correct:true, feedback:"Exactly the kind of thinking historians use. A famous-sounding quote isn't automatically reliable just because it's often repeated, including claims about why the Civil War happened." },
+      { text:"That Lincoln definitely said this exact sentence to Stowe in person.", correct:false, feedback:"Most historians actually doubt this happened — there's no solid documentary evidence, which is the whole point of the lesson here." },
+      { text:"That novels can never be used as historical evidence.", correct:false, feedback:"Novels like Uncle Tom's Cabin ARE valuable historical evidence, of the culture and emotions of the time, even though a fictional story shouldn't be mistaken for a historical fact by itself." },
+      { text:"That the story proves Uncle Tom's Cabin had no real impact on Northern opinion.", correct:false, feedback:"The opposite is true — the book's massive sales and its effect on Northern readers are well documented, whether or not Lincoln ever said that specific line." }
+    ]
+  },
+  deltas:{economic:0, political:0, attitudes:12},
+  log:"A novel turns a distant political debate into something millions of Northerners feel personally."
+},
+{
+  id:"kansas-nebraska", year:"1854–1856", era:"Popular Sovereignty Turns Violent", title:"The Kansas-Nebraska Act and “Bleeding Kansas”",
+  narrative:[
+    "In 1854, Senator Stephen Douglas pushed through the Kansas-Nebraska Act, organizing two new territories and letting settlers there decide slavery's fate by popular sovereignty, essentially, a vote. The problem: both territories sat north of the Missouri Compromise line, where slavery had been banned for over 30 years. The Act effectively erased that boundary.",
+    "Pro-slavery and anti-slavery settlers both rushed into Kansas, each side hoping to win the vote by outnumbering the other. Instead of a peaceful election, Kansas descended into years of armed raids, burned towns, and killings between the two sides. Newspapers began calling it “Bleeding Kansas.”",
+    "Bleeding Kansas showed the whole country something alarming: the political system's attempts to compromise on slavery's expansion were starting to produce actual violence instead of peace."
+  ],
+  source:{ label:"A Warning Realized", quote:"I have no doubt the fate of Kansas will decide the fate, ultimately, of slavery in this country.", attribution:"Attributed to Abraham Lincoln, writing in the mid-1850s about the stakes of the Kansas conflict", note:"Both pro- and anti-slavery Americans across the country understood Kansas as a preview of a much bigger national fight." },
+  question:{
+    prompt:"What made “Bleeding Kansas” different from earlier political conflicts like the gag rule or the Wilmot Proviso debate?",
+    choices:[
+      { text:"The disagreement stopped being only political and became physically violent, with settlers killing each other over slavery's future rather than just arguing about it in Congress.", correct:true, feedback:"Right. Earlier fights over slavery's expansion happened through speeches, laws, and votes. Kansas showed the conflict could turn into actual armed violence between ordinary Americans." },
+      { text:"It was the first time slavery's expansion into new territories was ever debated.", correct:false, feedback:"That debate had been going on for years already, through the Missouri Compromise, the Wilmot Proviso, and the Compromise of 1850." },
+      { text:"It permanently settled whether Kansas would be a free or slave state with no further conflict.", correct:false, feedback:"Kansas remained a violent, contested territory for years, and only entered the Union as a free state in 1861, right before the war began." },
+      { text:"It only affected people who lived in Kansas, with no wider national impact.", correct:false, feedback:"Newspapers across the country covered Bleeding Kansas closely, and it became a rallying point that hardened opinions on both sides nationwide." }
+    ]
+  },
+  deltas:{economic:4, political:16, attitudes:8},
+  log:"Popular sovereignty turns Kansas into a battlefield, and the whole country is watching."
+},
+{
+  id:"dred-scott", year:"1857", era:"The Supreme Court Weighs In", title:"The Dred Scott Decision",
+  narrative:[
+    "Dred Scott and his wife Harriet Scott were an enslaved couple who sued for their freedom, arguing that because their enslaver had taken them to live in free territory for years, they should be legally free. Their case reached the U.S. Supreme Court in 1857.",
+    "Chief Justice Roger Taney's ruling went far beyond the Scotts' individual case. The Court ruled that Black Americans, enslaved or free, could never be U.S. citizens and had no right to sue in federal court at all. It also struck down the Missouri Compromise entirely, ruling Congress had no power to ban slavery in any territory.",
+    "The decision stunned the North, where many saw it as proof that the federal government itself was now controlled by pro-slavery interests. It energized the young Republican Party, formed just a few years earlier specifically to oppose slavery's expansion."
+  ],
+  source:{ label:"The Court's Words", quote:"[Black Americans] had no rights which the white man was bound to respect.", attribution:"Chief Justice Roger Taney, writing the majority opinion in Dred Scott v. Sandford, 1857", note:"This sentence, written by the head of the nation's highest court, shows how far the legal system had moved to deny Black Americans' basic rights and protect slavery." },
+  question:{
+    prompt:"Why did the Dred Scott decision push the country closer to war rather than settling anything?",
+    choices:[
+      { text:"Instead of resolving the slavery question, it removed one of the North's remaining legal tools, banning slavery in territories, convincing many Northerners that compromise through the courts and Congress was running out.", correct:true, feedback:"Correct. When the nation's highest court sides completely with one position and strikes down existing compromises, the losing side often concludes that peaceful political solutions are running out." },
+      { text:"It freed Dred Scott and Harriet Scott and declared slavery unconstitutional everywhere.", correct:false, feedback:"The ruling did the opposite — it kept the Scotts enslaved and declared that Congress couldn't even ban slavery in the territories." },
+      { text:"It was a minor case that most Americans at the time never heard about.", correct:false, feedback:"It was front-page news nationwide and became one of the most talked-about Supreme Court decisions in the nation's history up to that point." },
+      { text:"It gave Congress new power to ban slavery anywhere in the country.", correct:false, feedback:"It ruled the opposite — that Congress had NO power to ban slavery in the territories, striking down the Missouri Compromise's ban." }
+    ]
+  },
+  deltas:{economic:0, political:10, attitudes:14},
+  log:"The Supreme Court rules against Dred Scott, and against compromise itself."
+},
+{
+  id:"lincoln-douglas", year:"1858", era:"A House Divided", title:"The Lincoln-Douglas Debates",
+  narrative:[
+    "In 1858, Illinois Senate candidates Abraham Lincoln and Stephen Douglas held a series of seven public debates across the state, arguing over slavery's expansion. Lincoln opposed slavery's spread into new territories but, at this point, stopped short of calling for its immediate end where it already existed. Douglas defended popular sovereignty, letting each territory vote on it.",
+    "The debates drew huge crowds and were reprinted in newspapers nationwide, turning a state Senate race into a national argument over slavery's future. Lincoln lost the Senate race, but the debates made him a national figure.",
+    "Before the debates even began, Lincoln had opened his campaign with a warning about where the country was heading, one that borrowed a phrase straight from the Bible."
+  ],
+  source:{ label:"The House Divided Speech", quote:"A house divided against itself cannot stand. I believe this government cannot endure, permanently half slave and half free.", attribution:"Abraham Lincoln, accepting the Illinois Republican nomination for U.S. Senate, June 1858", note:"Lincoln argued the nation would eventually have to become all one way or all the other; it could not stay divided forever." },
+  question:{
+    prompt:"What was Lincoln actually arguing with his “house divided” metaphor?",
+    choices:[
+      { text:"That the United States could not permanently remain half-slave and half-free — the conflict over slavery would eventually have to be resolved one way or the other, not stay balanced forever.", correct:true, feedback:"Yes. Lincoln wasn't predicting a literal civil war in this speech — he was arguing the country's half-and-half status on slavery was fundamentally unstable and couldn't last." },
+      { text:"That the Southern states should immediately secede from the Union.", correct:false, feedback:"Lincoln was arguing against the nation splitting apart, not for it — he wanted the Union to hold together, eventually as all free." },
+      { text:"That slavery should be allowed to expand into every new U.S. territory.", correct:false, feedback:"Lincoln opposed slavery's expansion into new territories throughout the debates — that was his central position against Douglas's popular sovereignty." },
+      { text:"That the debates were only about Illinois state issues with no national significance.", correct:false, feedback:"The opposite happened — newspapers across the country reprinted the debates, and they became a defining moment in the national argument over slavery." }
+    ]
+  },
+  deltas:{economic:0, political:6, attitudes:10},
+  log:"Lincoln warns the nation cannot stay “half slave and half free” forever."
+},
+{
+  id:"john-brown", year:"1859", era:"Fear Spreads South", title:"John Brown's Raid on Harpers Ferry",
+  narrative:[
+    "In October 1859, the radical abolitionist John Brown led a small armed group in a raid on the federal armory at Harpers Ferry, Virginia. His plan was to seize weapons and spark a larger uprising among enslaved people. The raid failed within two days; Brown was captured, tried for treason, and hanged in December 1859.",
+    "Brown's raid terrified white Southerners, who saw it as proof that Northern abolitionists were willing to use armed violence to end slavery by force, exactly what many Southern leaders had long warned about. Southern states expanded their militias and grew increasingly suspicious of any Northern visitor or idea.",
+    "In the North, reactions were divided. Many condemned Brown's violent methods. But others, including some prominent writers and abolitionists, began treating him as a martyr for the anti-slavery cause, a sign of how deeply the movement's most committed members now believed peaceful politics alone would never end slavery."
+  ],
+  source:{ label:"Brown's Final Statement to the Court", quote:"I believe that to have interfered as I have done... in behalf of His despised poor, was not wrong, but right.", attribution:"John Brown, addressing the court before his sentencing, November 1859", note:"Brown believed slavery was such a grave moral wrong that armed resistance to it was justified, a view most Americans at the time, North and South, did not share." },
+  question:{
+    prompt:"Why did John Brown's raid deepen sectional distrust more than earlier political disagreements had?",
+    choices:[
+      { text:"It showed Southerners that at least some Northerners were willing to use organized violence, not just political arguments, to attack slavery directly, confirming their worst fears about the North's intentions.", correct:true, feedback:"Right. Political disagreements can eventually be negotiated. An actual armed attempt to arm enslaved people confirmed Southern fears that compromise with the North might not be possible at all." },
+      { text:"Because it succeeded in freeing thousands of enslaved people across Virginia.", correct:false, feedback:"The raid failed almost immediately — Brown and his men were captured within about two days, before any large uprising could begin." },
+      { text:"Because Southern states responded by immediately ending slavery to avoid future raids.", correct:false, feedback:"Southern states did the opposite, tightening security, expanding militias, and growing more defensive of slavery, not less." },
+      { text:"Because most Northerners, including abolitionists, unanimously praised Brown's methods.", correct:false, feedback:"Reactions in the North were actually divided — many, including some abolitionists, condemned his violent methods even while sympathizing with his goal." }
+    ]
+  },
+  deltas:{economic:0, political:6, attitudes:14},
+  log:"An armed raid on a federal armory confirms the South's deepest fears about the North."
+},
+{
+  id:"election-1860", year:"1860", era:"The Breaking Point", title:"The Election of Abraham Lincoln",
+  narrative:[
+    "By 1860, the Democratic Party, once the one national political party still holding North and South together, split in two over slavery, nominating separate Northern and Southern candidates. This division cleared the way for Abraham Lincoln, the Republican candidate, to win the presidency in November 1860, despite receiving almost no popular votes in the South and not even appearing on the ballot in ten Southern states.",
+    "Lincoln and the Republican Party had promised only to stop slavery's expansion into new territories, not to abolish it where it already existed. But for many Southern leaders, that was already too much. They had warned for years that a Republican president would be the final signal to leave the Union, and now one had been elected without a single Southern electoral vote.",
+    "Within weeks of Lincoln's election, South Carolina's legislature called for a convention to consider secession."
+  ],
+  source:{ label:"A Result That Shocked the South", quote:"Lincoln won the 1860 election with about 40% of the national popular vote but a clear majority of electoral votes, carrying every free state and not a single slave state.", attribution:"1860 U.S. presidential election results", note:"To many Southern leaders, this proved the North alone now had the power to elect a president without any Southern support at all." },
+  question:{
+    prompt:"Why did Lincoln's election, even though he wasn't calling for slavery's immediate end, push the South toward secession?",
+    choices:[
+      { text:"It proved a candidate opposed to slavery's expansion could now win the presidency using only Northern votes, showing Southern states they had permanently lost the political power to protect slavery's future through national elections.", correct:true, feedback:"Exactly. It wasn't just about what Lincoln planned to do immediately — it was proof the North's growing population could now control the presidency without any Southern support, a fundamental shift in political power." },
+      { text:"Because Lincoln had already announced plans to free every enslaved person in the South immediately after taking office.", correct:false, feedback:"Lincoln's actual 1860 platform only opposed slavery's expansion into new territories, not its abolition where it already existed, though many Southern leaders didn't trust that would last." },
+      { text:"Because Lincoln won a majority of the popular vote in Southern states.", correct:false, feedback:"Lincoln received almost no popular votes in the South and wasn't even on the ballot in ten Southern states." },
+      { text:"Because the Democratic Party stayed unified and simply lost a fair national election.", correct:false, feedback:"The Democratic Party actually split into Northern and Southern factions in 1860, dividing its own votes and helping clear Lincoln's path to victory." }
+    ]
+  },
+  deltas:{economic:0, political:18, attitudes:0},
+  log:"Lincoln wins the presidency without a single Southern electoral vote."
+},
+{
+  id:"secession", year:"Dec 1860 – Feb 1861", era:"The Union Splits", title:"Secession, and What the Documents Actually Say",
+  narrative:[
+    "South Carolina became the first state to secede from the Union on December 20, 1860, followed within weeks by Mississippi, Florida, Alabama, Georgia, Louisiana, and Texas. In February 1861, these seven states formed the Confederate States of America.",
+    "Each seceding state published an official document explaining why it was leaving the Union. These documents are some of the clearest primary sources historians have for understanding the war's cause, because they aren't guesses about what secessionists believed. They are the secessionists' own words, written at the time, for the public record."
+  ],
+  source:{ label:"In Their Own Words", quote:"Our position is thoroughly identified with the institution of slavery — the greatest material interest of the world.", attribution:"Mississippi's Declaration of the Immediate Causes Which Induce and Justify Secession, January 1861", note:"South Carolina's own declaration similarly complained of “increasing hostility on the part of the non-slaveholding States to the institution of slavery.” Weeks later, Confederate Vice President Alexander Stephens said the new government's foundation rested on the idea that Black people were unequal to white people, calling slavery its “cornerstone.”" },
+  myth:{ title:"Mythbuster: “It Was About States' Rights”", body:"You may have heard someone say the Civil War was really about “states' rights,” not slavery. It's true that Southern states argued for states' rights, but read their own declarations again: the specific right they said they were fighting for was the right to keep enslaving people. Historians who study these primary sources directly, rather than later retellings, agree: slavery was the central and driving cause of secession and the Civil War. The states said so themselves." },
+  question:{
+    prompt:"Why do historians treat the secession declarations as such strong evidence for what caused the war?",
+    choices:[
+      { text:"Because they are direct, public statements from the seceding states themselves, written at the time to explain their own reasons, rather than a later interpretation of their motives.", correct:true, feedback:"Correct. Primary sources written by the people who actually made the decision, explaining their own reasoning in their own words, are some of the strongest evidence historians can use." },
+      { text:"Because they were written by Northern politicians trying to make the South look bad.", correct:false, feedback:"These documents were written and published by the seceding Southern states themselves, as their own official public explanations." },
+      { text:"Because they focus entirely on tariffs and taxes, with no mention of slavery at all.", correct:false, feedback:"The opposite is true — slavery is the central, explicitly named issue in these declarations, as the quotations above show." },
+      { text:"Because no other evidence from this period has survived.", correct:false, feedback:"Plenty of other evidence survives from this period, letters, speeches, laws, but the secession declarations are especially direct because they explain the states' own stated reasons in their own words." }
+    ]
+  },
+  deltas:{economic:8, political:12, attitudes:14},
+  log:"Seven states secede, and say plainly, in writing, why."
+},
+{
+  id:"fort-sumter", year:"April 12, 1861", era:"The First Shots", title:"Fort Sumter",
+  narrative:[
+    "By early 1861, the new Confederacy controlled most federal property within its borders, except for a handful of forts, including Fort Sumter, a Union garrison in the harbor of Charleston, South Carolina, commanded by Major Robert Anderson.",
+    "When President Lincoln announced he would resupply the fort with food, not weapons, Confederate leaders saw it as a provocation. Before dawn on April 12, 1861, Confederate artillery under General P.G.T. Beauregard opened fire on Fort Sumter. The bombardment lasted about 34 hours before Anderson surrendered.",
+    "Remarkably, no one was killed in the battle itself. But two Union soldiers died in an accidental explosion during a 100-gun salute as the garrison lowered its flag in surrender, the first deaths of a war that would eventually claim more American lives than any conflict before or since.",
+    "Four days later, Lincoln called for 75,000 volunteers to put down what he called an insurrection. Four more slave states, Virginia, Arkansas, Tennessee, and North Carolina, then seceded rather than send troops against their fellow Southerners. The Civil War had begun."
+  ],
+  source:{ label:"The Nation Reacts", quote:"Both parties deprecated war, but one of them would make war rather than let the nation survive, and the other would accept war rather than let it perish. And the war came.", attribution:"Abraham Lincoln, Second Inaugural Address, March 1865, reflecting back on how the war began", note:"Lincoln wrote this looking back near the war's end. That same speech states plainly that slavery “was, somehow, the cause of the war.”" },
+  question:{
+    prompt:"Looking back across this entire timeline, what was the true root cause of the Civil War?",
+    choices:[
+      { text:"Slavery. Economic differences, political fights, and states' rights arguments were all real, but they consistently trace back to disagreements over slavery, its expansion, its legality, and eventually its existence.", correct:true, feedback:"This is what the historical evidence, including the seceding states' own declarations, supports. Economic and political factors mattered, but they were consistently entangled with, and driven by, the fight over slavery." },
+      { text:"Tariffs and taxes on manufactured goods, with slavery playing only a minor role.", correct:false, feedback:"Tariffs were a real point of tension, but the primary sources you've examined, especially the states' own secession declarations, name slavery specifically and repeatedly as the central issue, far more than tariffs." },
+      { text:"A simple disagreement over states' rights in general, unrelated to slavery.", correct:false, feedback:"Look back at the secession documents: the specific “state right” they named again and again was the right to keep enslaving people. States' rights was the argument's structure; slavery was its content." },
+      { text:"A sudden, unpredictable event with no earlier warning signs.", correct:false, feedback:"The opposite is true — this timeline traces over sixty years of escalating warning signs, compromises, court cases, and violence, all connected to slavery, building toward this moment." }
+    ]
+  },
+  deltas:{economic:0, political:10, attitudes:0},
+  log:"Confederate guns open fire on Fort Sumter. The war has begun."
+}
+];
+
+const START_METERS = { economic:8, political:8, attitudes:8 };
+const RANKS = [
+  { min:0,  label:"Beginning Historian" },
+  { min:5,  label:"Apprentice Historian" },
+  { min:9,  label:"Skilled Historian" },
+  { min:12, label:"Master Historian of the Sectional Crisis" }
+];
+
+/* =========================================================================
+   STATE
+========================================================================= */
+let meters = null;
+let score = 0;
+let currentIndex = 0;   // stop currently displayed
+let furthestIndex = 0;  // highest stop index reached (0-based); STOPS.length means finished
+let stopStates = [];    // per-stop: null or { choiceIndex, correct }
+let logEntries = [];
+
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+function resetGame(){
+  meters = Object.assign({}, START_METERS);
+  score = 0;
+  currentIndex = 0;
+  furthestIndex = 0;
+  stopStates = STOPS.map(()=>null);
+  logEntries = [];
+}
+
+/* =========================================================================
+   RENDERING
+========================================================================= */
+function renderMeters(){
+  document.getElementById("valEconomic").textContent = Math.round(meters.economic);
+  document.getElementById("valPolitical").textContent = Math.round(meters.political);
+  document.getElementById("valAttitudes").textContent = Math.round(meters.attitudes);
+  document.getElementById("fillEconomic").style.width = clamp(meters.economic,0,100) + "%";
+  document.getElementById("fillPolitical").style.width = clamp(meters.political,0,100) + "%";
+  document.getElementById("fillAttitudes").style.width = clamp(meters.attitudes,0,100) + "%";
+}
+
+function renderTimelineStrip(){
+  const strip = document.getElementById("timelineStrip");
+  strip.innerHTML = "";
+  STOPS.forEach((stop, i)=>{
+    const dot = document.createElement("div");
+    let cls = "timeline-dot";
+    if(i === currentIndex) cls += " current";
+    else if(i <= furthestIndex - 1 || stopStates[i]) cls += " visited";
+    if(i <= furthestIndex && i !== currentIndex) cls += " clickable";
+    dot.className = cls;
+    dot.textContent = (i+1);
+    dot.title = stop.year + ": " + stop.title;
+    if(i <= furthestIndex && i !== currentIndex){
+      dot.addEventListener("click", ()=>{ currentIndex = i; renderAll(); });
+    }
+    strip.appendChild(dot);
+  });
+}
+
+function renderLog(){
+  const feed = document.getElementById("logFeed");
+  feed.innerHTML = "";
+  logEntries.forEach(entry=>{
+    const div = document.createElement("div");
+    div.className = "log-entry";
+    div.innerHTML = '<span class="yr">' + entry.year + "</span>" + entry.text;
+    feed.appendChild(div);
+  });
+}
+
+function renderStopCard(){
+  const stop = STOPS[currentIndex];
+  const state = stopStates[currentIndex];
+  const card = document.getElementById("stopCard");
+
+  let html = "";
+  html += '<div class="stop-year">' + stop.year + '</div>';
+  html += '<div class="stop-era">' + stop.era + '</div>';
+  html += '<div class="stop-title">' + stop.title + '</div>';
+  html += '<div class="stop-narrative">' + stop.narrative.map(p=>'<p>'+p+'</p>').join("") + '</div>';
+
+  html += '<div class="source-box">';
+  html += '<div class="source-label">' + stop.source.label + '</div>';
+  html += '<div class="source-quote">“' + stop.source.quote + '”</div>';
+  html += '<div class="source-attr">' + stop.source.attribution + '</div>';
+  if(stop.source.note){ html += '<div class="source-note">' + stop.source.note + '</div>'; }
+  html += '</div>';
+
+  if(stop.myth){
+    html += '<div class="myth-box"><h4>' + stop.myth.title + '</h4><p>' + stop.myth.body + '</p></div>';
+  }
+
+  html += '<div class="question-block">';
+  html += '<div class="question-prompt">' + stop.question.prompt + '</div>';
+  html += '<div class="choice-list" id="choiceList"></div>';
+  html += '</div>';
+
+  html += '<div class="stop-footer">';
+  html += '<div class="score-note" id="stopScoreNote"></div>';
+  html += '<div id="stopContinueWrap"></div>';
+  html += '</div>';
+
+  card.innerHTML = html;
+
+  const choiceList = document.getElementById("choiceList");
+  stop.question.choices.forEach((choice, ci)=>{
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.textContent = choice.text;
+    if(state){
+      btn.disabled = true;
+      if(ci === state.choiceIndex && state.correct) btn.classList.add("chosen-correct");
+      else if(ci === state.choiceIndex && !state.correct) btn.classList.add("chosen-wrong");
+      else if(choice.correct) btn.classList.add("reveal-correct");
+    } else {
+      btn.addEventListener("click", ()=> answerStop(ci));
+    }
+    choiceList.appendChild(btn);
+
+    if(state && (ci === state.choiceIndex)){
+      const fb = document.createElement("div");
+      fb.className = "choice-feedback " + (choice.correct ? "good" : "bad");
+      fb.textContent = choice.feedback;
+      choiceList.appendChild(fb);
+    }
+  });
+
+  const scoreNote = document.getElementById("stopScoreNote");
+  const continueWrap = document.getElementById("stopContinueWrap");
+  if(state){
+    scoreNote.textContent = state.correct ? "Correct — added to your Historian Score." : "Not quite — read the explanation above.";
+    const btn = document.createElement("button");
+    btn.className = "primary-btn";
+    const isFrontierStop = (currentIndex === furthestIndex - 1);
+    if(!isFrontierStop){
+      // Reviewing an earlier, already-completed stop: jump back to the frontier.
+      btn.textContent = "Back to Current Stop →";
+      btn.addEventListener("click", ()=>{ currentIndex = Math.min(furthestIndex - 1, STOPS.length - 1); renderAll(); });
+    } else if(furthestIndex >= STOPS.length){
+      btn.textContent = "See How the War Began →";
+      btn.addEventListener("click", goToEnd);
+    } else {
+      btn.textContent = "Continue →";
+      btn.addEventListener("click", advanceStop);
+    }
+    continueWrap.appendChild(btn);
+  } else {
+    scoreNote.textContent = "Choose the best answer to continue.";
+  }
+}
+
+function renderTop(){
+  document.getElementById("topStopLabel").textContent = "Stop " + (currentIndex+1) + " of " + STOPS.length;
+  document.getElementById("statScore").textContent = score + " / " + STOPS.length;
+}
+
+function renderAll(){
+  renderTop();
+  renderTimelineStrip();
+  renderMeters();
+  renderStopCard();
+  renderLog();
+}
+
+/* =========================================================================
+   ACTIONS
+========================================================================= */
+function answerStop(choiceIndex){
+  if(stopStates[currentIndex]) return;
+  const stop = STOPS[currentIndex];
+  const choice = stop.question.choices[choiceIndex];
+  stopStates[currentIndex] = { choiceIndex, correct: !!choice.correct };
+  if(choice.correct) score += 1;
+
+  meters.economic = clamp(meters.economic + stop.deltas.economic, 0, 100);
+  meters.political = clamp(meters.political + stop.deltas.political, 0, 100);
+  meters.attitudes = clamp(meters.attitudes + stop.deltas.attitudes, 0, 100);
+
+  logEntries.push({ year: stop.year, text: stop.log });
+  if(currentIndex + 1 > furthestIndex) furthestIndex = currentIndex + 1;
+
+  renderAll();
+}
+
+function advanceStop(){
+  currentIndex += 1;
+  renderAll();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function goToEnd(){
+  furthestIndex = STOPS.length;
+  showScreen("screen-end");
+  showEndScreen();
+  window.scrollTo({top:0});
+}
+
+/* =========================================================================
+   END SCREEN
+========================================================================= */
+function rankFor(s){
+  let label = RANKS[0].label;
+  RANKS.forEach(r=>{ if(s >= r.min) label = r.label; });
+  return label;
+}
+
+function showEndScreen(){
+  document.getElementById("endRank").textContent =
+    "Historian Score: " + score + " / " + STOPS.length + "  —  " + rankFor(score);
+
+  const endMeters = document.getElementById("endMeters");
+  endMeters.innerHTML = "";
+  const meterDefs = [
+    { key:"economic", name:"Economic Divergence", cls:"economic" },
+    { key:"political", name:"Political Conflict", cls:"political" },
+    { key:"attitudes", name:"Attitudes on Slavery", cls:"attitudes" }
+  ];
+  meterDefs.forEach(def=>{
+    const div = document.createElement("div");
+    div.className = "meter";
+    div.innerHTML =
+      '<div class="meter-top"><span class="meter-name">' + def.name + '</span><span class="meter-val">' + Math.round(meters[def.key]) + '</span></div>' +
+      '<div class="meter-track"><div class="meter-fill ' + def.cls + '" style="width:' + clamp(meters[def.key],0,100) + '%"></div></div>';
+    endMeters.appendChild(div);
+  });
+
+  document.getElementById("civicsNote").innerHTML =
+    '<h3>So, What Really Caused the Civil War?</h3>' +
+    '<p>By April 1861, Political Conflict and Attitudes on Slavery had both reached the breaking point, while Economic Divergence, though real, never rose as high. That pattern matches what historians find in the evidence: the North and South did build different economies, but the disagreements that actually broke the Union apart were about slavery itself, its expansion, its legality, and whether it was right or wrong, again and again.</p>' +
+    '<p><b>Every stop on this timeline connects back to slavery:</b></p>' +
+    '<ul>' +
+    '<li>The cotton gin made Southern planters MORE dependent on enslaved labor, not less.</li>' +
+    '<li>Every compromise, Missouri, 1850, Kansas-Nebraska, was really an argument about where slavery could expand.</li>' +
+    '<li>Dred Scott and the Fugitive Slave Act show the legal system bending to protect slavery.</li>' +
+    '<li>And when Southern states explained secession in their own words, they said so directly: slavery was the reason.</li>' +
+    '</ul>' +
+    '<p>Some people still claim the war was mainly about “states’ rights” or tariffs. As you saw at the secession stop, the states themselves said otherwise, in writing, at the time. Trusting primary sources over popular myths is exactly how historians tell the difference.</p>';
+}
+
+/* =========================================================================
+   INIT / NAV
+========================================================================= */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+document.getElementById("startBtn").addEventListener("click", ()=>{
+  resetGame();
+  showScreen("screen-game");
+  renderAll();
+  window.scrollTo({top:0});
+});
+
+document.getElementById("restartBtn").addEventListener("click", ()=>{
+  resetGame();
+  showScreen("screen-game");
+  renderAll();
+  window.scrollTo({top:0});
+});
+
+document.getElementById("reviewBtn").addEventListener("click", ()=>{
+  currentIndex = 0;
+  showScreen("screen-game");
+  renderAll();
+  window.scrollTo({top:0});
+});
+
+})();
+</script>
+</body>
+</html>
