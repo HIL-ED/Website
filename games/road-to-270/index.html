@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road to 270: The Presidential Campaign Game</title>
+<meta name="description" content="A pass-and-play board game for 4 players: run for President, race around the campaign trail, and try to be the first to lock in $150M in Campaign Funds and 270 Electoral Votes.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b2545;
+    --navy-deep:#071a34;
+    --navy-light:#123469;
+    --parchment:#f5efdc;
+    --parchment-dark:#e6d9b4;
+    --parchment-darker:#d8c795;
+    --gold:#c9971f;
+    --gold-bright:#f0c14b;
+    --dem:#2a5fae;
+    --dem-dark:#1c4586;
+    --rep:#c8383a;
+    --rep-dark:#9c2b2d;
+    --ink:#1c1a17;
+    --success:#3c8a5b;
+    --danger:#b23b3b;
+    --font-display:'Oswald', 'Inter', sans-serif;
+    --font-body:'Inter', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 700px at 10% -10%, #16305c 0%, transparent 55%),
+      radial-gradient(1100px 800px at 105% 5%, #142a52 0%, transparent 55%),
+      var(--navy-deep);
+    color:var(--parchment);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--gold-bright);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.4;}
+  h1,h2,h3{font-family:var(--font-display); margin:0;}
+  ::selection{background:var(--gold); color:var(--ink);}
+
+  .screen{display:none; min-height:100vh;}
+  .screen.active{display:flex; flex-direction:column;}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; background:rgba(7,26,52,.7);
+    border-bottom:1px solid rgba(240,193,75,.18);
+  }
+  .topbar .brand{
+    font-family:var(--font-display); font-weight:700; letter-spacing:.02em;
+    font-size:16px; color:var(--parchment); text-decoration:none;
+    display:flex; align-items:center; gap:8px;
+  }
+  .topbar .brand:hover{color:var(--gold-bright);}
+  .topbar .links{display:flex; gap:16px; align-items:center;}
+  .topbar .links a, .topbar .links button.linklike{
+    background:none; border:none; color:var(--parchment); opacity:.8;
+    font-size:13px; font-weight:600; text-decoration:none; padding:0;
+  }
+  .topbar .links a:hover, .topbar .links button.linklike:hover{opacity:1; color:var(--gold-bright);}
+
+  /* ============ SETUP ============ */
+  #screen-setup .wrap{max-width:920px; margin:0 auto; padding:48px 24px 90px; flex:1;}
+  .masthead{text-align:center; margin-bottom:10px;}
+  .eyebrow{
+    font-family:var(--font-mono); letter-spacing:.18em; text-transform:uppercase;
+    font-size:11px; color:var(--gold-bright); opacity:.9; display:block; margin-bottom:12px;
+  }
+  .masthead h1{
+    font-size:clamp(30px, 5.4vw, 50px); font-weight:700; letter-spacing:.01em;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold) 75%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .masthead p.sub{
+    max-width:600px; margin:14px auto 0; font-size:15.5px; line-height:1.6; color:#d9d0b8;
+  }
+
+  .card-box{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:14px; padding:24px;
+    border:1px solid #b79f6e; box-shadow:0 14px 30px rgba(0,0,0,.35);
+  }
+  .setup-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:16px; margin-top:30px;
+  }
+  .player-setup{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:14px; padding:18px 18px 20px;
+    border:1px solid #b79f6e; box-shadow:0 10px 22px rgba(0,0,0,.3);
+  }
+  .player-setup .pnum{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:#7a6a3f; margin-bottom:8px;
+  }
+  .player-setup input[type=text]{
+    width:100%; padding:10px 12px; border-radius:7px; border:1px solid #b79f6e;
+    background:#fffdf6; color:var(--ink); font-size:15px; font-family:var(--font-body);
+    margin-bottom:12px;
+  }
+  .party-toggle{display:flex; gap:8px;}
+  .party-btn{
+    flex:1; padding:10px 8px; border-radius:8px; border:2px solid transparent;
+    font-family:var(--font-display); font-weight:600; font-size:13.5px;
+    text-transform:uppercase; letter-spacing:.03em; background:#eee2c4; color:#5a4d2c;
+    transition:transform .1s ease;
+  }
+  .party-btn:hover{transform:translateY(-1px);}
+  .party-btn.dem.active{background:var(--dem); color:#fff; border-color:var(--dem-dark);}
+  .party-btn.rep.active{background:var(--rep); color:#fff; border-color:var(--rep-dark);}
+
+  .setup-actions{display:flex; gap:14px; justify-content:center; margin-top:34px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font-display); font-weight:600; letter-spacing:.02em;
+    font-size:15px; padding:13px 28px; border-radius:10px; border:none;
+    text-transform:uppercase;
+  }
+  .btn-primary{background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:#3a2a06; box-shadow:0 6px 16px rgba(201,151,31,.35);}
+  .btn-primary:hover:not(:disabled){filter:brightness(1.06);}
+  .btn-ghost{background:transparent; color:var(--parchment); border:1.5px solid rgba(245,239,220,.5);}
+  .btn-ghost:hover{border-color:var(--gold-bright); color:var(--gold-bright);}
+  .btn-secondary{background:#e6d9b4; color:#3a2a06;}
+  .btn-danger{background:var(--danger); color:#fff;}
+  #setup-error{color:#ffb4b4; text-align:center; margin-top:14px; font-size:13.5px; min-height:18px;}
+
+  /* ============ INSTRUCTIONS ============ */
+  #screen-instructions .wrap{max-width:800px; margin:0 auto; padding:48px 24px 90px; flex:1;}
+  .rules-box{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:14px; padding:28px 30px; border:1px solid #b79f6e;
+    box-shadow:0 14px 30px rgba(0,0,0,.35);
+  }
+  .rules-box h2{font-size:19px; color:var(--navy); margin:22px 0 8px;}
+  .rules-box h2:first-child{margin-top:0;}
+  .rules-box p, .rules-box li{font-size:14.5px; line-height:1.65; color:#33291a;}
+  .rules-box ul{margin:6px 0; padding-left:20px;}
+  .glossary{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:8px;}
+  .glossary .g-item{background:#fffdf6; border:1px solid #d8c795; border-radius:9px; padding:10px 12px;}
+  .glossary .g-item b{display:block; font-size:13.5px; color:var(--navy); margin-bottom:2px;}
+  .glossary .g-item span{font-size:12.5px; color:#4a3f28;}
+
+  /* ============ GAME ============ */
+  #screen-game .wrap{max-width:1180px; margin:0 auto; padding:22px 20px 40px; flex:1; width:100%;}
+  .turn-banner{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    margin-bottom:18px; padding:10px 18px; border-radius:999px;
+    background:rgba(245,239,220,.08); border:1px solid rgba(240,193,75,.25);
+    font-family:var(--font-mono); font-size:13px; letter-spacing:.04em;
+  }
+  .turn-banner .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .turn-banner b{font-family:var(--font-display); font-size:15px; letter-spacing:.02em; text-transform:uppercase;}
+
+  .game-layout{display:grid; grid-template-columns: minmax(0,1fr) 300px; gap:22px;}
+  @media (max-width:980px){ .game-layout{grid-template-columns:1fr;} }
+
+  .board-wrap{background:rgba(7,26,52,.4); border-radius:18px; padding:14px; border:1px solid rgba(240,193,75,.18);}
+  .board{
+    display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr);
+    gap:5px; aspect-ratio:1/1; width:100%;
+  }
+  .center-panel{
+    grid-row:2/7; grid-column:2/7;
+    background:linear-gradient(180deg, #16305c, #0f2246);
+    border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; padding:14px; border:1px solid rgba(240,193,75,.25);
+  }
+  .center-seal{font-size:34px;}
+  .center-panel h2{font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-bright); text-align:center;}
+  .dice-area{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .die{
+    width:56px; height:56px; border-radius:12px; background:var(--parchment);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-weight:700; font-size:26px; color:var(--navy);
+    box-shadow:0 6px 14px rgba(0,0,0,.4);
+  }
+  .roll-btn{min-width:160px;}
+  .square{
+    background:var(--parchment-dark); border-radius:7px; position:relative;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:2px; overflow:hidden; border:1px solid rgba(0,0,0,.12);
+  }
+  .square .ic{font-size:15px; line-height:1;}
+  .square .lb{font-size:7px; font-family:var(--font-mono); text-align:center; color:#3a2f1a; line-height:1.1; margin-top:2px; padding:0 1px;}
+  .square.start{background:var(--gold-bright);}
+  .square.milestone{background:#e3c88a;}
+  .square.scandal{background:#e3b7b2;}
+  .square.endorsement{background:#c9dfc4;}
+  .square.trivia{background:#c9d7ec;}
+  .square.swing{background:#f0d8b0;}
+  .square.special{background:#ded4ee;}
+  .tokens{position:absolute; bottom:2px; left:2px; right:2px; display:flex; gap:2px; flex-wrap:wrap; justify-content:center;}
+  .token{
+    width:11px; height:11px; border-radius:50%; border:1.5px solid rgba(0,0,0,.4);
+    box-shadow:0 1px 2px rgba(0,0,0,.4); flex-shrink:0;
+  }
+
+  .side-panel{display:flex; flex-direction:column; gap:12px;}
+  .pcard{
+    border-radius:12px; padding:12px 14px; background:rgba(245,239,220,.06);
+    border:1px solid rgba(240,193,75,.16);
+  }
+  .pcard.active{border-color:var(--gold-bright); background:rgba(240,193,75,.1); box-shadow:0 0 0 2px rgba(240,193,75,.15) inset;}
+  .pcard .prow{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .pcard .pdot{width:11px; height:11px; border-radius:50%; flex-shrink:0;}
+  .pcard .pname{font-family:var(--font-display); font-weight:600; font-size:14.5px; flex:1;}
+  .pcard .pparty{font-family:var(--font-mono); font-size:10px; text-transform:uppercase; opacity:.75;}
+  .pcard .stats{display:flex; gap:14px;}
+  .pcard .stat{flex:1;}
+  .pcard .stat .k{font-size:10px; font-family:var(--font-mono); text-transform:uppercase; opacity:.7; letter-spacing:.04em;}
+  .pcard .stat .v{font-size:17px; font-family:var(--font-mono); font-weight:600;}
+  .pcard .bar{height:5px; border-radius:3px; background:rgba(255,255,255,.1); margin-top:4px; overflow:hidden;}
+  .pcard .bar i{display:block; height:100%; border-radius:3px;}
+
+  /* ============ MODAL ============ */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(4,12,26,.78);
+    display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal{
+    max-width:460px; width:100%; background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:16px; padding:26px 26px 22px; text-align:center;
+    box-shadow:0 24px 60px rgba(0,0,0,.5); border:1px solid #b79f6e;
+    animation:pop .18s ease;
+  }
+  @keyframes pop{from{transform:scale(.92); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .modal .m-icon{font-size:38px; margin-bottom:6px;}
+  .modal .m-tag{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:#7a6a3f;}
+  .modal h3{font-size:19px; margin:6px 0 10px; color:var(--navy);}
+  .modal p.m-body{font-size:14.5px; line-height:1.55; margin:0 0 14px; color:#33291a;}
+  .modal .m-effects{display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;}
+  .m-effect{
+    font-family:var(--font-mono); font-weight:700; font-size:14.5px; padding:6px 12px;
+    border-radius:8px; background:#fffdf6; border:1px solid #d8c795;
+  }
+  .m-effect.pos{color:var(--success);}
+  .m-effect.neg{color:var(--danger);}
+  .modal .m-quiz-opts{display:flex; flex-direction:column; gap:8px; margin-bottom:6px;}
+  .quiz-opt{
+    text-align:left; padding:11px 14px; border-radius:9px; border:1.5px solid #b79f6e;
+    background:#fffdf6; font-size:14px; color:var(--ink); font-family:var(--font-body);
+  }
+  .quiz-opt:hover:not(:disabled){border-color:var(--gold);}
+  .quiz-opt.correct{background:#d6ecd6; border-color:var(--success);}
+  .quiz-opt.wrong{background:#f3d6d3; border-color:var(--danger);}
+  .modal .pass-overlay-btn{margin-top:6px;}
+
+  /* pass interstitial */
+  .pass-screen .modal{max-width:420px;}
+  .pass-screen .pdot-big{width:20px; height:20px; border-radius:50%; display:inline-block; margin-right:8px; vertical-align:-3px;}
+
+  footer.gamefoot{
+    text-align:center; padding:18px; font-size:12px; opacity:.55;
+  }
+
+  /* ============ END SCREEN ============ */
+  #screen-end .wrap{max-width:820px; margin:0 auto; padding:48px 24px 90px; flex:1;}
+  .winner-banner{
+    text-align:center; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+    color:#3a2a06; border-radius:16px; padding:26px 20px; margin-bottom:26px;
+    box-shadow:0 14px 30px rgba(0,0,0,.35);
+  }
+  .winner-banner .ws{font-size:13px; text-transform:uppercase; letter-spacing:.12em; font-family:var(--font-mono);}
+  .winner-banner h2{font-size:clamp(24px,4vw,34px); margin:6px 0;}
+  .results-table{width:100%; border-collapse:collapse; margin-bottom:30px; background:rgba(245,239,220,.06); border-radius:12px; overflow:hidden;}
+  .results-table th, .results-table td{padding:11px 14px; text-align:left; font-size:13.5px; border-bottom:1px solid rgba(240,193,75,.15);}
+  .results-table th{font-family:var(--font-mono); text-transform:uppercase; font-size:10.5px; letter-spacing:.06em; opacity:.7;}
+  .results-table td.win{color:var(--gold-bright); font-weight:700;}
+  .reflect-box{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:14px; padding:26px 28px; border:1px solid #b79f6e;
+  }
+  .reflect-box h2{color:var(--navy); font-size:20px; margin-bottom:6px;}
+  .reflect-box p.lead{font-size:13.5px; color:#4a3f28; margin:0 0 16px;}
+  .reflect-box ol{padding-left:22px; margin:0;}
+  .reflect-box li{font-size:14.5px; line-height:1.7; margin-bottom:12px; color:#28210f;}
+  .end-actions{display:flex; gap:14px; justify-content:center; margin-top:26px; flex-wrap:wrap;}
+
+  @media print{
+    .topbar, .end-actions, .winner-banner{display:none !important;}
+    body{background:#fff; color:#000;}
+    .reflect-box{border:none; box-shadow:none; color:#000; background:#fff;}
+    .reflect-box li{color:#000;}
+  }
+
+  @media (max-width:640px){
+    .square .lb{display:none;}
+    .setup-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:460px){
+    .setup-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP SCREEN ============ -->
+<section id="screen-setup" class="screen active">
+  <div class="topbar">
+    <a class="brand" href="../">🗳️ Road to 270</a>
+    <div class="links"><a href="../">All Games</a></div>
+  </div>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="eyebrow">A pass-and-play election board game</span>
+      <h1>Road to 270</h1>
+      <p class="sub">Four candidates. One campaign trail. Roll the dice, work the primary calendar, and be the first to lock in $150M in Campaign Funds <em>and</em> 270 Electoral Votes.</p>
+    </div>
+
+    <div class="card-box" style="margin-top:30px;">
+      <h3 style="color:var(--navy); font-size:16px; margin-bottom:4px;">Name your candidates</h3>
+      <p style="font-size:13.5px; color:#4a3f28; margin:0;">All 4 players share one device. Enter names and pick a party for each — it flavors the campaign cards you draw.</p>
+      <div class="setup-grid" id="setup-grid"></div>
+    </div>
+
+    <div id="setup-error"></div>
+
+    <div class="setup-actions">
+      <button class="btn btn-ghost" id="btn-show-rules">How to Play</button>
+      <button class="btn btn-primary" id="btn-start-game">Start Campaign →</button>
+    </div>
+  </div>
+  <footer class="gamefoot">Road to 270 · Humanities Immersed Learning</footer>
+</section>
+
+<!-- ============ INSTRUCTIONS SCREEN ============ -->
+<section id="screen-instructions" class="screen">
+  <div class="topbar">
+    <a class="brand" href="../">🗳️ Road to 270</a>
+    <div class="links"><button class="linklike" id="btn-close-rules">← Back to Setup</button></div>
+  </div>
+  <div class="wrap">
+    <div class="rules-box">
+      <h2>Objective</h2>
+      <p>Be the first candidate to reach <b>$150M in Campaign Funds</b> and <b>270 Electoral Votes</b> at the same time. The instant you cross both thresholds, the election is called and you win.</p>
+
+      <h2>Setup</h2>
+      <ul>
+        <li>4 players, 1 device, passed around the table.</li>
+        <li>Each player names their candidate and picks <b>Democrat</b> or <b>Republican</b> — this determines which flavor of Campaign Event, Scandal, and Endorsement cards you draw.</li>
+        <li>Everyone starts with $10M in funds and 0 Electoral Votes.</li>
+      </ul>
+
+      <h2>On Your Turn</h2>
+      <ul>
+        <li>Tap <b>Roll Dice</b> and move your candidate that many spaces around the board.</li>
+        <li>Resolve whatever square you land on (see glossary below).</li>
+        <li>Every time you pass or land on <b>Election Day</b> (the start square), collect a $10M Get-Out-The-Vote bonus.</li>
+        <li>Pass the device to the next candidate.</li>
+      </ul>
+
+      <h2>Square Glossary</h2>
+      <div class="glossary">
+        <div class="g-item"><b>🗳️ Election Day</b><span>Start square. Pass it, collect $10M.</span></div>
+        <div class="g-item"><b>💰 Fundraiser / 📣 Campaign Event</b><span>Draw a party-flavored card. Gain funds and/or support.</span></div>
+        <div class="g-item"><b>🎤 Debate Night</b><span>Answer a real civics question about U.S. elections for a bonus.</span></div>
+        <div class="g-item"><b>🏛️ Milestone</b><span>Iowa, New Hampshire, Super Tuesday, or the National Convention — big, guaranteed gains.</span></div>
+        <div class="g-item"><b>📰 Scandal</b><span>Draw a party-flavored setback card. Lose funds and/or support.</span></div>
+        <div class="g-item"><b>🤝 Endorsement</b><span>Draw a party-flavored endorsement card. A strong, guaranteed boost.</span></div>
+        <div class="g-item"><b>🏟️ Swing State</b><span>Your choice: spend funds to buy support here, or hold onto your cash.</span></div>
+        <div class="g-item"><b>⏭️ Go Again</b><span>Take another turn immediately.</span></div>
+        <div class="g-item"><b>⏸️ Lose a Turn</b><span>Sit out your next turn.</span></div>
+      </div>
+
+      <h2>Why $150M and 270?</h2>
+      <p>270 is the real number of Electoral Votes needed to win the presidency — a majority of the 538 total. $150M is a stand-in for a nationally competitive war chest. You need both money <i>and</i> support to actually win, just like a real campaign.</p>
+
+      <h2>When You're Done</h2>
+      <p>The game ends the moment someone crosses both thresholds. Then answer the reflection questions as a class or individually.</p>
+    </div>
+  </div>
+  <footer class="gamefoot">Road to 270 · Humanities Immersed Learning</footer>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="topbar">
+    <a class="brand" href="../">🗳️ Road to 270</a>
+    <div class="links">
+      <button class="linklike" id="btn-rules-ingame">How to Play</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="turn-banner" id="turn-banner">
+      <span class="dot" id="turn-dot"></span>
+      <span>Current Candidate:</span> <b id="turn-name">—</b>
+    </div>
+
+    <div class="game-layout">
+      <div class="board-wrap">
+        <div class="board" id="board">
+          <div class="center-panel">
+            <div class="center-seal">🇺🇸</div>
+            <h2>Election Night Targets<br>$150M &amp; 270 EV</h2>
+            <div class="dice-area">
+              <div class="die" id="die-face">?</div>
+              <button class="btn btn-primary roll-btn" id="btn-roll">Roll Dice</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="side-panel" id="side-panel"></div>
+    </div>
+  </div>
+  <footer class="gamefoot">Road to 270 · Humanities Immersed Learning</footer>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="topbar">
+    <a class="brand" href="../">🗳️ Road to 270</a>
+    <div class="links"><a href="../">All Games</a></div>
+  </div>
+  <div class="wrap">
+    <div class="winner-banner">
+      <div class="ws">Election Night Results</div>
+      <h2 id="winner-heading">—</h2>
+    </div>
+    <table class="results-table" id="results-table"></table>
+    <div class="reflect-box">
+      <h2>Reflection Questions</h2>
+      <p class="lead">Answer on your own or discuss as a class.</p>
+      <ol id="reflect-list"></ol>
+    </div>
+    <div class="end-actions">
+      <button class="btn btn-secondary" id="btn-print">Print Reflection Questions</button>
+      <button class="btn btn-primary" id="btn-play-again">Play Again</button>
+    </div>
+  </div>
+  <footer class="gamefoot">Road to 270 · Humanities Immersed Learning</footer>
+</section>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= DATA ================= */
+
+const PARTY_LABEL = {D:'Democrat', R:'Republican'};
+const PARTY_COLOR = {D:'#2a5fae', R:'#c8383a'};
+const PLAYER_COLORS = ['#f0c14b','#3c8a5b','#8a56c9','#e0803f'];
+
+// 24-square perimeter track on a 7x7 grid.
+const SQUARES = [
+  {i:0,  type:'start',       label:'Election Day',        icon:'🗳️'},
+  {i:1,  type:'event',       label:'Fundraiser',           icon:'💰'},
+  {i:2,  type:'trivia',      label:'Debate Night',         icon:'🎤'},
+  {i:3,  type:'event',       label:'Campaign Rally',       icon:'📣'},
+  {i:4,  type:'milestone',   label:'Iowa Caucus',          icon:'🏛️', key:'iowa'},
+  {i:5,  type:'scandal',     label:'Scandal',               icon:'📰'},
+  {i:6,  type:'swing',       label:'Ohio',                  icon:'🏟️'},
+  {i:7,  type:'endorsement', label:'Endorsement',           icon:'🤝'},
+  {i:8,  type:'special',     label:'Go Again',              icon:'⏭️', special:'again'},
+  {i:9,  type:'milestone',   label:'NH Primary',            icon:'🏛️', key:'nh'},
+  {i:10, type:'event',       label:'Campaign Event',        icon:'📣'},
+  {i:11, type:'scandal',     label:'Scandal',               icon:'📰'},
+  {i:12, type:'trivia',      label:'Debate Night',          icon:'🎤'},
+  {i:13, type:'swing',       label:'Florida',                icon:'🏟️'},
+  {i:14, type:'special',     label:'Lose a Turn',            icon:'⏸️', special:'lose'},
+  {i:15, type:'endorsement', label:'Endorsement',            icon:'🤝'},
+  {i:16, type:'milestone',   label:'Super Tuesday',          icon:'🏛️', key:'superTuesday'},
+  {i:17, type:'event',       label:'Fundraiser',              icon:'💰'},
+  {i:18, type:'scandal',     label:'Scandal',                  icon:'📰'},
+  {i:19, type:'swing',       label:'Pennsylvania',             icon:'🏟️'},
+  {i:20, type:'event',       label:'Campaign Event',           icon:'📣'},
+  {i:21, type:'milestone',   label:'Convention',                icon:'🏛️', key:'convention'},
+  {i:22, type:'endorsement', label:'Endorsement',               icon:'🤝'},
+  {i:23, type:'swing',       label:'Arizona',                    icon:'🏟️'},
+];
+const BOARD_SIZE = SQUARES.length;
+
+function coordsForIndex(i){
+  if(i<=6)  return {row:1, col:1+i};
+  if(i<=12) return {row:1+(i-6), col:7};
+  if(i<=18) return {row:7, col:7-(i-12)};
+  return {row:7-(i-18), col:1};
+}
+
+const EVENT_CARDS = {
+  D:[
+    {t:"Your plan to expand health care coverage draws a big crowd at a union hall town hall.", f:15, s:10},
+    {t:"A youth voter registration drive built around your climate agenda signs up thousands of new voters.", f:5, s:20},
+    {t:"Teachers' groups rally behind your public education funding proposal.", f:15, s:15},
+    {t:"Your infrastructure jobs plan gets a strong reception in a Rust Belt factory town.", f:20, s:10},
+    {t:"A well-received answer on immigration reform earns positive coverage.", f:10, s:15},
+    {t:"Small-dollar donors flood your campaign after your speech on economic inequality.", f:25, s:5},
+  ],
+  R:[
+    {t:"Your tax cut proposal energizes small business owners at a chamber of commerce breakfast.", f:20, s:10},
+    {t:"A strong answer on border security draws praise at a town hall.", f:10, s:15},
+    {t:"Veterans' groups rally behind your national defense plan.", f:15, s:15},
+    {t:"Your energy independence plan gets a strong reception in an oil-and-gas town.", f:20, s:10},
+    {t:"A well-received answer on cutting regulation earns positive coverage from local business owners.", f:10, s:15},
+    {t:"Major donors flood your campaign after your speech on limited government.", f:25, s:5},
+  ],
+  N:[
+    {t:"Your debate performance is called 'confident and clear' by pundits across the spectrum.", f:10, s:15},
+    {t:"A viral moment from your rope-line handshake tour earns national attention.", f:5, s:20},
+    {t:"You raise $25M at a single evening gala.", f:25, s:0},
+    {t:"Local news runs a flattering profile on your campaign's ground game.", f:10, s:10},
+  ]
+};
+
+const SCANDAL_CARDS = {
+  D:[
+    {t:"Opponents accuse your campaign of flip-flopping on trade policy.", f:-10, s:-10},
+    {t:"A leaked memo shows internal disagreement over your climate plan's cost.", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces, embarrassing the campaign.", f:-10, s:-5},
+    {t:"Your position on gun policy draws criticism from moderate voters in swing districts.", f:-5, s:-15},
+    {t:"A super PAC ad twists your record on taxes.", f:-15, s:-5},
+    {t:"You're criticized for a scheduling gaffe that skipped a key labor rally.", f:-5, s:-10},
+  ],
+  R:[
+    {t:"Opponents accuse your campaign of flip-flopping on trade policy.", f:-10, s:-10},
+    {t:"A leaked memo shows internal disagreement over your tax plan's cost.", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces, embarrassing the campaign.", f:-10, s:-5},
+    {t:"Your position on health care policy draws criticism from moderate voters in swing districts.", f:-5, s:-15},
+    {t:"A super PAC ad twists your record on spending.", f:-15, s:-5},
+    {t:"You're criticized for a scheduling gaffe that skipped a key veterans' event.", f:-5, s:-10},
+  ],
+  N:[
+    {t:"A gaffe at a press conference goes viral for the wrong reasons.", f:-10, s:-10},
+    {t:"Fact-checkers flag a claim from your latest ad.", f:-5, s:-15},
+    {t:"Low turnout at a rally leads to unflattering photos in the press.", f:-10, s:-5},
+    {t:"You lose your voice mid-speech at a nationally televised event.", f:-5, s:-10},
+  ]
+};
+
+const ENDORSEMENT_CARDS = {
+  D:[
+    {t:"A major labor union formally endorses your campaign.", f:15, s:20},
+    {t:"A coalition of environmental groups throws its support behind you.", f:10, s:20},
+    {t:"A former primary rival endorses you and joins you on the trail.", f:20, s:15},
+    {t:"A prominent civil rights organization endorses your candidacy.", f:15, s:20},
+  ],
+  R:[
+    {t:"A major business association formally endorses your campaign.", f:15, s:20},
+    {t:"A coalition of law enforcement groups throws its support behind you.", f:10, s:20},
+    {t:"A former primary rival endorses you and joins you on the trail.", f:20, s:15},
+    {t:"A prominent veterans' organization endorses your candidacy.", f:15, s:20},
+  ],
+  N:[
+    {t:"Your hometown newspaper endorses your candidacy.", f:10, s:15},
+    {t:"A popular podcast host praises your authenticity to millions of listeners.", f:15, s:15},
+    {t:"A respected retired general says you have what it takes to be Commander-in-Chief.", f:10, s:20},
+  ]
+};
+
+const MILESTONES = {
+  iowa:{
+    label:"Iowa Caucus",
+    variants:[
+      "The first-in-the-nation contest is decided not by secret ballot but by voters physically gathering in gyms and living rooms across the state.",
+      "Iowans caucus in person, standing in groups for their candidate — a strong showing here sets the tone for the whole race."
+    ],
+    f:15, s:25
+  },
+  nh:{
+    label:"New Hampshire Primary",
+    variants:[
+      "New Hampshire holds the first true primary of the race — a strong showing here can build unstoppable momentum.",
+      "Voters cast secret-ballot votes in the 'First in the Nation' primary, and the media narrative shifts overnight."
+    ],
+    f:15, s:25
+  },
+  superTuesday:{
+    label:"Super Tuesday",
+    variants:[
+      "More than a dozen states vote on the same day, awarding the largest single batch of delegates of the whole race.",
+      "Super Tuesday delivers results from coast to coast in a single night — the biggest swing of the primary calendar."
+    ],
+    f:25, s:40
+  },
+  convention:{
+    label:"National Convention",
+    variants:[
+      "Your party's delegates formally nominate you as their candidate, kicking off the general election campaign.",
+      "Balloons drop as your party officially makes you its nominee for President of the United States."
+    ],
+    f:30, s:30
+  }
+};
+
+const TRIVIA = [
+  {q:"How many electoral votes does a candidate need to win the presidency?", opts:["218","270","300","538"], correct:1},
+  {q:"What is the total number of electoral votes available nationwide?", opts:["435","500","538","600"], correct:2},
+  {q:"Which constitutional amendment outlines how the President is elected through the Electoral College?", opts:["1st","12th","19th","25th"], correct:1},
+  {q:"What do we call Iowa's first-in-the-nation contest, where voters gather in person rather than casting a secret ballot?", opts:["Primary","Caucus","Convention","General Election"], correct:1},
+  {q:"What do we call a state where either major party has a real chance of winning?", opts:["Red state","Blue state","Swing state","Home state"], correct:2},
+  {q:"At a national party convention, who officially nominates the party's presidential candidate?", opts:["Voters directly","Delegates","The Senate","The Supreme Court"], correct:1},
+  {q:"What is the term for an elector who doesn't vote for the candidate they pledged to support?", opts:["Rogue elector","Faithless elector","Split elector","Free elector"], correct:1},
+  {q:"In most states, how are a state's electoral votes awarded?", opts:["Split proportionally by popular vote","Winner-take-all","By state legislature vote","By coin flip"], correct:1},
+  {q:"What is the name for the day in early March when the largest number of states hold primaries at once?", opts:["Big Tuesday","Primary Tuesday","Super Tuesday","Mega Tuesday"], correct:2},
+  {q:"By law, when is U.S. Election Day?", opts:["First Monday in November","The Tuesday after the first Monday in November","Last Tuesday in October","December 1st"], correct:1},
+  {q:"What federal agency enforces campaign finance laws?", opts:["IRS","Federal Election Commission (FEC)","FBI","FCC"], correct:1},
+  {q:"What is a 'Political Action Committee' commonly called for short?", opts:["PAC","FEC","DNC","POTUS"], correct:0},
+  {q:"Who presides over the official counting of electoral votes in Congress?", opts:["The Speaker of the House","The Vice President","The Chief Justice","The Senate Majority Leader"], correct:1},
+  {q:"If no candidate wins a majority of electoral votes, which body decides the presidential election?", opts:["The Supreme Court","The Senate","The House of Representatives","A national runoff election"], correct:2},
+  {q:"Which state currently has the most electoral votes of any state?", opts:["Texas","Florida","New York","California"], correct:3},
+];
+
+const REFLECTION_QUESTIONS = [
+  "Which mattered more to your success: fundraising, campaign events, or Debate Night answers? Why?",
+  "Explain in your own words why a candidate needs 270 electoral votes — not just the most popular votes nationwide — to win the presidency.",
+  "Describe a moment you had to decide whether to spend funds in a Swing State or hold onto your cash. What did you decide, and why?",
+  "Compare a Scandal card you drew to a real historical or current campaign scandal. How did that real campaign respond, and was it similar to how you responded in the game?",
+  "Endorsements are a real campaign strategy. Pick one endorsement you received and explain what real-world group might give an endorsement like it, and why it would matter.",
+  "The Iowa Caucus and New Hampshire Primary are the first contests in a real presidential race. Why do you think these early states get so much attention from candidates and the media?",
+  "If you could change one rule of this game to make it more accurately reflect how U.S. presidential elections actually work, what would you change and why?",
+  "Did Campaign Funds or Voter Support matter more to winning the game? Does that match how you think money and popularity interact in real elections?",
+  "How did being assigned a party (Democrat or Republican) affect the way you played, if at all?",
+  "What is one thing about the U.S. presidential election process that surprised you, or that you understood better after playing this game?"
+];
+
+/* ================= STATE ================= */
+
+const FUNDS_TARGET = 150;
+const SUPPORT_TARGET = 270;
+const START_FUNDS = 10;
+const LAP_BONUS = 10;
+const SWING_COST = 15;
+const SWING_GAIN = 20;
+
+let state = null; // {players:[...], current, gameOver}
+
+function newGameState(playerConfigs){
+  return {
+    players: playerConfigs.map((p,idx)=>({
+      name:p.name, party:p.party, color:PLAYER_COLORS[idx],
+      funds:START_FUNDS, support:0, pos:0, skipNext:false
+    })),
+    current: 0,
+    gameOver:false,
+    winnerIdx:null
+  };
+}
+
+/* ================= SETUP SCREEN ================= */
+
+const setupGrid = document.getElementById('setup-grid');
+const defaultNames = ["Candidate 1","Candidate 2","Candidate 3","Candidate 4"];
+const defaultParties = ["D","R","D","R"];
+
+for(let i=0;i<4;i++){
+  const div = document.createElement('div');
+  div.className = 'player-setup';
+  div.innerHTML = `
+    <div class="pnum">Player ${i+1}</div>
+    <input type="text" maxlength="20" data-idx="${i}" class="name-input" placeholder="${defaultNames[i]}">
+    <div class="party-toggle" data-idx="${i}">
+      <button class="party-btn dem" data-party="D" type="button">Democrat</button>
+      <button class="party-btn rep" data-party="R" type="button">Republican</button>
+    </div>
+  `;
+  setupGrid.appendChild(div);
+}
+// set default party selections
+document.querySelectorAll('.party-toggle').forEach(group=>{
+  const idx = +group.dataset.idx;
+  const def = defaultParties[idx];
+  group.querySelectorAll('.party-btn').forEach(btn=>{
+    if(btn.dataset.party===def) btn.classList.add('active');
+    btn.addEventListener('click', ()=>{
+      group.querySelectorAll('.party-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+});
+
+document.getElementById('btn-start-game').addEventListener('click', ()=>{
+  const configs = [];
+  for(let i=0;i<4;i++){
+    const nameInput = document.querySelector(`.name-input[data-idx="${i}"]`);
+    const name = nameInput.value.trim() || defaultNames[i];
+    const group = document.querySelector(`.party-toggle[data-idx="${i}"]`);
+    const activeBtn = group.querySelector('.party-btn.active');
+    const party = activeBtn ? activeBtn.dataset.party : 'D';
+    configs.push({name, party});
+  }
+  document.getElementById('setup-error').textContent = '';
+  state = newGameState(configs);
+  buildBoard();
+  renderSidePanel();
+  goToScreen('screen-game');
+  beginTurn();
+});
+
+document.getElementById('btn-show-rules').addEventListener('click', ()=> goToScreen('screen-instructions', 'screen-setup'));
+document.getElementById('btn-close-rules').addEventListener('click', ()=> {
+  goToScreen(returnScreen || 'screen-setup');
+});
+document.getElementById('btn-rules-ingame').addEventListener('click', ()=> goToScreen('screen-instructions','screen-game'));
+
+let returnScreen = 'screen-setup';
+function goToScreen(id, from){
+  if(from) returnScreen = from;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ================= BOARD RENDER ================= */
+
+const boardEl = document.getElementById('board');
+function buildBoard(){
+  // remove old squares (keep center-panel)
+  boardEl.querySelectorAll('.square').forEach(el=>el.remove());
+  SQUARES.forEach(sq=>{
+    const {row,col} = coordsForIndex(sq.i);
+    const div = document.createElement('div');
+    div.className = 'square ' + sq.type;
+    div.id = 'sq-'+sq.i;
+    div.style.gridRow = row;
+    div.style.gridColumn = col;
+    div.innerHTML = `<span class="ic">${sq.icon}</span><span class="lb">${sq.label}</span><div class="tokens" id="tok-${sq.i}"></div>`;
+    boardEl.appendChild(div);
+  });
+  renderTokens();
+}
+
+function renderTokens(){
+  SQUARES.forEach(sq=>{
+    const tokEl = document.getElementById('tok-'+sq.i);
+    if(tokEl) tokEl.innerHTML = '';
+  });
+  state.players.forEach(p=>{
+    const tokEl = document.getElementById('tok-'+p.pos);
+    if(!tokEl) return;
+    const t = document.createElement('div');
+    t.className = 'token';
+    t.style.background = p.color;
+    tokEl.appendChild(t);
+  });
+}
+
+/* ================= SIDE PANEL ================= */
+
+const sidePanel = document.getElementById('side-panel');
+function renderSidePanel(){
+  sidePanel.innerHTML = '';
+  state.players.forEach((p, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'pcard' + (idx===state.current && !state.gameOver ? ' active':'');
+    const fPct = Math.min(100, (p.funds/FUNDS_TARGET)*100);
+    const sPct = Math.min(100, (p.support/SUPPORT_TARGET)*100);
+    div.innerHTML = `
+      <div class="prow">
+        <span class="pdot" style="background:${p.color}"></span>
+        <span class="pname">${escapeHtml(p.name)}</span>
+        <span class="pparty" style="color:${PARTY_COLOR[p.party]}">${PARTY_LABEL[p.party]}</span>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Funds</div>
+          <div class="v">$${p.funds}M</div>
+          <div class="bar"><i style="width:${fPct}%; background:var(--gold-bright)"></i></div>
+        </div>
+        <div class="stat">
+          <div class="k">Support</div>
+          <div class="v">${p.support} EV</div>
+          <div class="bar"><i style="width:${sPct}%; background:${PARTY_COLOR[p.party]}"></i></div>
+        </div>
+      </div>
+    `;
+    sidePanel.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ================= TURN FLOW ================= */
+
+const turnName = document.getElementById('turn-name');
+const turnDot = document.getElementById('turn-dot');
+const rollBtn = document.getElementById('btn-roll');
+const dieFace = document.getElementById('die-face');
+
+function currentPlayer(){ return state.players[state.current]; }
+
+function beginTurn(){
+  const p = currentPlayer();
+  if(p.skipNext){
+    p.skipNext = false;
+    showModal({
+      icon:'⏸️', tag:'Lose a Turn', title:`${p.name} sits this one out`,
+      body:`Your campaign bus is stuck — no move this turn.`,
+      onClose: advanceToNextPlayer
+    });
+    return;
+  }
+  turnName.textContent = `${p.name} (${PARTY_LABEL[p.party]})`;
+  turnDot.style.background = p.color;
+  rollBtn.disabled = false;
+  dieFace.textContent = '?';
+  renderSidePanel();
+}
+
+rollBtn.addEventListener('click', ()=>{
+  rollBtn.disabled = true;
+  let ticks = 0;
+  const spin = setInterval(()=>{
+    dieFace.textContent = String(1+Math.floor(Math.random()*6));
+    ticks++;
+    if(ticks>=8){
+      clearInterval(spin);
+      const roll = 1+Math.floor(Math.random()*6);
+      dieFace.textContent = String(roll);
+      setTimeout(()=> movePlayer(roll), 250);
+    }
+  }, 70);
+});
+
+function movePlayer(steps){
+  const p = currentPlayer();
+  let stepsLeft = steps;
+  let lapBonusGiven = false;
+  const stepInterval = setInterval(()=>{
+    p.pos = (p.pos+1) % BOARD_SIZE;
+    stepsLeft--;
+    if(p.pos === 0 && !lapBonusGiven){
+      p.funds += LAP_BONUS;
+      lapBonusGiven = true;
+    }
+    renderTokens();
+    renderSidePanel();
+    if(stepsLeft<=0){
+      clearInterval(stepInterval);
+      setTimeout(()=> resolveSquare(p, lapBonusGiven), 200);
+    }
+  }, 160);
+}
+
+function resolveSquare(p, gotLapBonus){
+  const sq = SQUARES[p.pos];
+  const lapNote = gotLapBonus ? ` (+$${LAP_BONUS}M Get-Out-The-Vote bonus for passing Election Day)` : '';
+
+  switch(sq.type){
+    case 'start':
+      showModal({
+        icon:'🗳️', tag:'Election Day', title:'Election Day',
+        body:`You land right on Election Day.${gotLapBonus?'':''} Collect your Get-Out-The-Vote bonus.`,
+        effects: gotLapBonus ? [] : [{label:`+$${LAP_BONUS}M`, cls:'pos'}],
+        onClose: ()=>{ if(!gotLapBonus){ p.funds += LAP_BONUS; } finishSquare(); }
+      });
+      break;
+    case 'event': {
+      const card = drawCard(EVENT_CARDS, p.party);
+      applyAndShow('💰','Campaign Event', card, lapNote);
+      break;
+    }
+    case 'scandal': {
+      const card = drawCard(SCANDAL_CARDS, p.party);
+      applyAndShow('📰','Scandal', card, lapNote);
+      break;
+    }
+    case 'endorsement': {
+      const card = drawCard(ENDORSEMENT_CARDS, p.party);
+      applyAndShow('🤝','Endorsement', card, lapNote);
+      break;
+    }
+    case 'milestone': {
+      const m = MILESTONES[sq.key];
+      const text = m.variants[Math.floor(Math.random()*m.variants.length)];
+      p.funds += m.f; p.support += m.s;
+      showModal({
+        icon:'🏛️', tag:'Milestone', title:m.label,
+        body: text + lapNote,
+        effects:[{label:`+$${m.f}M`, cls:'pos'},{label:`+${m.s} EV`, cls:'pos'}],
+        onClose: finishSquare
+      });
+      break;
+    }
+    case 'trivia': {
+      showTrivia(p, lapNote);
+      break;
+    }
+    case 'swing': {
+      showSwingState(p, sq, lapNote);
+      break;
+    }
+    case 'special': {
+      if(sq.special==='again'){
+        showModal({
+          icon:'⏭️', tag:'Go Again', title:'You get to go again!',
+          body:`A viral clip of your speech has voters cheering.${lapNote}`,
+          onClose: ()=>{ closeModalThen(()=> beginTurn()); }
+        });
+      } else {
+        p.skipNext = true;
+        showModal({
+          icon:'⏸️', tag:'Lose a Turn', title:'Campaign bus breaks down',
+          body:`A snowstorm strands your bus. You'll lose your next turn.${lapNote}`,
+          onClose: finishSquare
+        });
+      }
+      break;
+    }
+  }
+}
+
+function drawCard(pool, party){
+  const partyPool = pool[party];
+  const neutralPool = pool.N;
+  const useNeutral = Math.random() < (neutralPool.length / (partyPool.length+neutralPool.length));
+  const arr = useNeutral ? neutralPool : partyPool;
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function applyAndShow(icon, tag, card, lapNote){
+  const p = currentPlayer();
+  p.funds = Math.max(0, p.funds + card.f);
+  p.support = Math.max(0, p.support + card.s);
+  const effects = [];
+  if(card.f) effects.push({label:`${card.f>0?'+':''}$${card.f}M`, cls: card.f>=0?'pos':'neg'});
+  if(card.s) effects.push({label:`${card.s>0?'+':''}${card.s} EV`, cls: card.s>=0?'pos':'neg'});
+  showModal({
+    icon, tag, title: tag,
+    body: card.t + lapNote,
+    effects,
+    onClose: finishSquare
+  });
+}
+
+function showTrivia(p, lapNote){
+  const q = TRIVIA[Math.floor(Math.random()*TRIVIA.length)];
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">🎤</div>
+    <div class="m-tag">Debate Night</div>
+    <h3>${escapeHtml(q.q)}</h3>
+    <div class="m-quiz-opts" id="quiz-opts"></div>
+  `;
+  const optsWrap = box.querySelector('#quiz-opts');
+  q.opts.forEach((opt, i)=>{
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = opt;
+    b.addEventListener('click', ()=>{
+      optsWrap.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+      const correct = i===q.correct;
+      b.classList.add(correct?'correct':'wrong');
+      if(!correct) optsWrap.children[q.correct].classList.add('correct');
+      const fGain = correct?15:5, sGain = correct?15:5;
+      p.funds += fGain; p.support += sGain;
+      setTimeout(()=>{
+        showModal({
+          icon: correct?'✅':'🤔',
+          tag:'Debate Night',
+          title: correct ? 'Strong answer!' : 'Not quite — but you held your own',
+          body: (correct ? `Correct! The right answer was "${q.opts[q.correct]}." ` : `The correct answer was "${q.opts[q.correct]}." `) + lapNote,
+          effects:[{label:`+$${fGain}M`, cls:'pos'},{label:`+${sGain} EV`, cls:'pos'}],
+          onClose: finishSquare
+        });
+      }, 700);
+    });
+    optsWrap.appendChild(b);
+  });
+  overlay.classList.add('active');
+}
+
+function showSwingState(p, sq, lapNote){
+  const canAfford = p.funds >= SWING_COST;
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">🏟️</div>
+    <div class="m-tag">Battleground State</div>
+    <h3>${escapeHtml(sq.label)}</h3>
+    <p class="m-body">This state has flipped between parties in recent elections. Running ads here is expensive, but it moves real votes.${lapNote}</p>
+    <div class="m-effects"><span class="m-effect neg">-$${SWING_COST}M</span><span class="m-effect pos">+${SWING_GAIN} EV</span></div>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:4px;">
+      <button class="btn btn-secondary" id="swing-skip">Save Your Cash</button>
+      <button class="btn btn-primary" id="swing-spend" ${canAfford?'':'disabled'}>Spend $${SWING_COST}M</button>
+    </div>
+  `;
+  box.querySelector('#swing-skip').addEventListener('click', ()=>{
+    closeModalThen(finishSquare);
+  });
+  box.querySelector('#swing-spend').addEventListener('click', ()=>{
+    if(p.funds < SWING_COST) return;
+    p.funds -= SWING_COST;
+    p.support += SWING_GAIN;
+    renderSidePanel();
+    closeModalThen(finishSquare);
+  });
+  overlay.classList.add('active');
+}
+
+function showModal({icon, tag, title, body, effects, onClose}){
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">${icon}</div>
+    <div class="m-tag">${escapeHtml(tag)}</div>
+    <h3>${escapeHtml(title)}</h3>
+    <p class="m-body">${escapeHtml(body)}</p>
+    ${effects && effects.length ? `<div class="m-effects">${effects.map(e=>`<span class="m-effect ${e.cls}">${e.label}</span>`).join('')}</div>` : ''}
+    <button class="btn btn-primary" id="modal-ok">Continue</button>
+  `;
+  box.querySelector('#modal-ok').addEventListener('click', ()=>{
+    closeModalThen(onClose);
+  });
+  overlay.classList.add('active');
+  renderSidePanel();
+}
+
+function closeModalThen(cb){
+  document.getElementById('modal-overlay').classList.remove('active');
+  if(cb) cb();
+}
+
+function finishSquare(){
+  renderSidePanel();
+  const p = currentPlayer();
+  if(p.funds >= FUNDS_TARGET && p.support >= SUPPORT_TARGET){
+    endGame(state.current);
+    return;
+  }
+  advanceToNextPlayer();
+}
+
+function advanceToNextPlayer(){
+  state.current = (state.current+1) % state.players.length;
+  showPassInterstitial();
+}
+
+function showPassInterstitial(){
+  const p = currentPlayer();
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">🤝</div>
+    <div class="m-tag">Pass the device</div>
+    <h3><span class="pdot-big" style="background:${p.color}"></span>${escapeHtml(p.name)}'s turn</h3>
+    <p class="m-body">Hand the device to <b>${escapeHtml(p.name)}</b> (${PARTY_LABEL[p.party]}), then tap ready.</p>
+    <button class="btn btn-primary" id="pass-ready">We're Ready</button>
+  `;
+  box.querySelector('#pass-ready').addEventListener('click', ()=>{
+    closeModalThen(beginTurn);
+  });
+  overlay.classList.add('active');
+}
+
+/* ================= END GAME ================= */
+
+function endGame(winnerIdx){
+  state.gameOver = true;
+  state.winnerIdx = winnerIdx;
+  const winner = state.players[winnerIdx];
+
+  document.getElementById('winner-heading').textContent =
+    `President-Elect ${winner.name} (${PARTY_LABEL[winner.party]})`;
+
+  const table = document.getElementById('results-table');
+  const sorted = state.players.map((p,idx)=>({...p, idx})).sort((a,b)=> (b.support-a.support) || (b.funds-a.funds));
+  table.innerHTML = `
+    <tr><th>Candidate</th><th>Party</th><th>Campaign Funds</th><th>Voter Support</th></tr>
+    ${sorted.map(p=>`
+      <tr>
+        <td class="${p.idx===winnerIdx?'win':''}">${escapeHtml(p.name)}${p.idx===winnerIdx?' 🏆':''}</td>
+        <td style="color:${PARTY_COLOR[p.party]}">${PARTY_LABEL[p.party]}</td>
+        <td>$${p.funds}M</td>
+        <td>${p.support} EV</td>
+      </tr>
+    `).join('')}
+  `;
+
+  const reflectList = document.getElementById('reflect-list');
+  reflectList.innerHTML = REFLECTION_QUESTIONS.map(q=>`<li>${escapeHtml(q)}</li>`).join('');
+
+  goToScreen('screen-end');
+}
+
+document.getElementById('btn-print').addEventListener('click', ()=> window.print());
+document.getElementById('btn-play-again').addEventListener('click', ()=>{
+  goToScreen('screen-setup');
+});
+
+})();
+</script>
+</body>
+</html>
