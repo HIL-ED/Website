@@ -153,8 +153,9 @@ a{color:var(--coral);}
 .choice-btn .c-desc{ font-size:13.5px; color:var(--ink-soft); margin-bottom:8px; }
 .choice-btn .c-effects{ display:flex; gap:12px; flex-wrap:wrap; }
 .eff{ font-size:12.5px; font-weight:800; padding:3px 9px; border-radius:999px; }
-.eff-pos{ background:#dcf0dc; color:#215c21; }
-.eff-neg{ background:#fbe0dc; color:#8a3220; }
+.eff-arrow{ font-size:13px; }
+.eff-pos{ background:#dcf0dc; color:#1f7a2e; }
+.eff-neg{ background:#fbe0dc; color:#c23b26; }
 .eff-zero{ background:#eee; color:#777; }
 
 /* ══ CONSEQUENCE PANEL ══ */
@@ -800,8 +801,9 @@ a{color:var(--coral);}
         var v = choice.effects[key] || 0;
         var cls = v > 0 ? 'eff-pos' : (v < 0 ? 'eff-neg' : 'eff-zero');
         var icon = key === 'land' ? '🌳' : (key === 'community' ? '👥' : '💰');
-        var sign = v > 0 ? '+' : '';
-        effHtml += '<span class="eff ' + cls + '">' + icon + ' ' + sign + v + '</span>';
+        var arrow = v > 0 ? '▲' : (v < 0 ? '▼' : '–');
+        var srText = v > 0 ? 'increase' : (v < 0 ? 'decrease' : 'no change');
+        effHtml += '<span class="eff ' + cls + '">' + icon + ' <span class="eff-arrow" aria-hidden="true">' + arrow + '</span><span class="sr-only">' + srText + '</span></span>';
       });
       btn.innerHTML = '<span class="c-label">' + choice.label + '</span>' +
         '<span class="c-desc">' + choice.desc + '</span>' +
