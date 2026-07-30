@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Road to 270: The Presidential Campaign Game</title>
-<meta name="description" content="A pass-and-play board game for 4 players: run for President, race around the campaign trail, and try to be the first to lock in $150M in Campaign Funds and 270 Electoral Votes.">
+<meta name="description" content="A pass-and-play board game for 4 players: run for President on a continuous campaign trail, make strategic calls at Iowa, New Hampshire, Super Tuesday, and beyond, and be the first to lock in $150M in Campaign Funds and 270 Electoral Votes.">
 <link rel="icon" type="image/png" href="../../images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +26,18 @@
     --ink:#1c1a17;
     --success:#3c8a5b;
     --danger:#b23b3b;
+    --sq-event:#f4eeda;
+    --sq-event-ink:#3a2f1a;
+    --sq-scandal:#cf7468;
+    --sq-scandal-ink:#3a1410;
+    --sq-endorsement:#5f84b8;
+    --sq-endorsement-ink:#f5efdc;
+    --sq-trivia:#2f4f83;
+    --sq-trivia-ink:#f5efdc;
+    --sq-swing:#8f74ad;
+    --sq-swing-ink:#f5efdc;
+    --sq-special:#e0ae4c;
+    --sq-special-ink:#3a2a06;
     --font-display:'Oswald', 'Inter', sans-serif;
     --font-body:'Inter', system-ui, sans-serif;
     --font-mono:'IBM Plex Mono', 'Courier New', monospace;
@@ -157,16 +169,31 @@
     background:rgba(245,239,220,.08); border:1px solid rgba(240,193,75,.25);
     font-family:var(--font-mono); font-size:13px; letter-spacing:.04em;
   }
+  .turn-banner.keyevent{
+    background:linear-gradient(90deg, rgba(200,56,58,.18), rgba(95,132,184,.18));
+    border-color:var(--gold-bright);
+  }
   .turn-banner .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
   .turn-banner b{font-family:var(--font-display); font-size:15px; letter-spacing:.02em; text-transform:uppercase;}
 
   .game-layout{display:grid; grid-template-columns: minmax(0,1fr) 300px; gap:22px;}
   @media (max-width:980px){ .game-layout{grid-template-columns:1fr;} }
 
-  .board-wrap{background:rgba(7,26,52,.4); border-radius:18px; padding:14px; border:1px solid rgba(240,193,75,.18);}
+  .board-wrap{
+    background:rgba(7,26,52,.4); border-radius:18px; padding:14px;
+    border:1px solid rgba(240,193,75,.18);
+    box-shadow:0 0 0 3px rgba(0,0,0,0), inset 0 0 0 1px rgba(255,255,255,.02);
+    position:relative;
+  }
+  .board-wrap::before{
+    content:""; position:absolute; inset:0; border-radius:18px; padding:2px;
+    background:linear-gradient(120deg, #b8433f 0%, #b8433f 30%, #f5efdc 30%, #f5efdc 36%, #2f4f83 36%, #2f4f83 66%, #f5efdc 66%, #f5efdc 72%, #b8433f 72%, #b8433f 100%);
+    opacity:.5; -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+  }
   .board{
     display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr);
-    gap:5px; aspect-ratio:1/1; width:100%;
+    gap:5px; aspect-ratio:1/1; width:100%; position:relative;
   }
   .center-panel{
     grid-row:2/7; grid-column:2/7;
@@ -175,7 +202,8 @@
     gap:10px; padding:14px; border:1px solid rgba(240,193,75,.25);
   }
   .center-seal{font-size:34px;}
-  .center-panel h2{font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-bright); text-align:center;}
+  .center-panel h2{font-size:14px; text-transform:uppercase; letter-spacing:.07em; color:var(--gold-bright); text-align:center; line-height:1.4;}
+  .center-panel .sub-target{font-size:11px; font-family:var(--font-mono); color:#c7d3ea; opacity:.85; text-align:center;}
   .dice-area{display:flex; flex-direction:column; align-items:center; gap:10px;}
   .die{
     width:56px; height:56px; border-radius:12px; background:var(--parchment);
@@ -185,19 +213,24 @@
   }
   .roll-btn{min-width:160px;}
   .square{
-    background:var(--parchment-dark); border-radius:7px; position:relative;
+    border-radius:7px; position:relative;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:2px; overflow:hidden; border:1px solid rgba(0,0,0,.12);
+    padding:2px; overflow:hidden; border:1px solid rgba(0,0,0,.18);
   }
   .square .ic{font-size:15px; line-height:1;}
-  .square .lb{font-size:7px; font-family:var(--font-mono); text-align:center; color:#3a2f1a; line-height:1.1; margin-top:2px; padding:0 1px;}
-  .square.start{background:var(--gold-bright);}
-  .square.milestone{background:#e3c88a;}
-  .square.scandal{background:#e3b7b2;}
-  .square.endorsement{background:#c9dfc4;}
-  .square.trivia{background:#c9d7ec;}
-  .square.swing{background:#f0d8b0;}
-  .square.special{background:#ded4ee;}
+  .square .lb{font-size:7px; font-family:var(--font-mono); text-align:center; line-height:1.1; margin-top:2px; padding:0 1px;}
+  .square.event{background:var(--sq-event); color:var(--sq-event-ink);}
+  .square.event .lb{color:var(--sq-event-ink);}
+  .square.scandal{background:var(--sq-scandal); color:var(--sq-scandal-ink);}
+  .square.scandal .lb{color:var(--sq-scandal-ink);}
+  .square.endorsement{background:var(--sq-endorsement); color:var(--sq-endorsement-ink);}
+  .square.endorsement .lb{color:var(--sq-endorsement-ink);}
+  .square.trivia{background:var(--sq-trivia); color:var(--sq-trivia-ink);}
+  .square.trivia .lb{color:var(--sq-trivia-ink);}
+  .square.swing{background:var(--sq-swing); color:var(--sq-swing-ink);}
+  .square.swing .lb{color:var(--sq-swing-ink);}
+  .square.special{background:var(--sq-special); color:var(--sq-special-ink);}
+  .square.special .lb{color:var(--sq-special-ink);}
   .tokens{position:absolute; bottom:2px; left:2px; right:2px; display:flex; gap:2px; flex-wrap:wrap; justify-content:center;}
   .token{
     width:11px; height:11px; border-radius:50%; border:1.5px solid rgba(0,0,0,.4);
@@ -217,7 +250,7 @@
   .pcard .stats{display:flex; gap:14px;}
   .pcard .stat{flex:1;}
   .pcard .stat .k{font-size:10px; font-family:var(--font-mono); text-transform:uppercase; opacity:.7; letter-spacing:.04em;}
-  .pcard .stat .v{font-size:17px; font-family:var(--font-mono); font-weight:600;}
+  .pcard .stat .v{font-size:17px; font-family:var(--font-mono); font-weight:600; font-variant-numeric:tabular-nums;}
   .pcard .bar{height:5px; border-radius:3px; background:rgba(255,255,255,.1); margin-top:4px; overflow:hidden;}
   .pcard .bar i{display:block; height:100%; border-radius:3px;}
 
@@ -228,16 +261,16 @@
   }
   .modal-overlay.active{display:flex;}
   .modal{
-    max-width:460px; width:100%; background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    max-width:480px; width:100%; background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
     color:var(--ink); border-radius:16px; padding:26px 26px 22px; text-align:center;
     box-shadow:0 24px 60px rgba(0,0,0,.5); border:1px solid #b79f6e;
-    animation:pop .18s ease;
+    animation:pop .18s ease; max-height:88vh; overflow-y:auto;
   }
   @keyframes pop{from{transform:scale(.92); opacity:0;} to{transform:scale(1); opacity:1;}}
   .modal .m-icon{font-size:38px; margin-bottom:6px;}
   .modal .m-tag{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:#7a6a3f;}
   .modal h3{font-size:19px; margin:6px 0 10px; color:var(--navy);}
-  .modal p.m-body{font-size:14.5px; line-height:1.55; margin:0 0 14px; color:#33291a;}
+  .modal p.m-body{font-size:14.5px; line-height:1.6; margin:0 0 14px; color:#33291a; text-align:left;}
   .modal .m-effects{display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;}
   .m-effect{
     font-family:var(--font-mono); font-weight:700; font-size:14.5px; padding:6px 12px;
@@ -245,6 +278,7 @@
   }
   .m-effect.pos{color:var(--success);}
   .m-effect.neg{color:var(--danger);}
+  .m-effect.neutral{color:var(--navy);}
   .modal .m-quiz-opts{display:flex; flex-direction:column; gap:8px; margin-bottom:6px;}
   .quiz-opt{
     text-align:left; padding:11px 14px; border-radius:9px; border:1.5px solid #b79f6e;
@@ -253,11 +287,17 @@
   .quiz-opt:hover:not(:disabled){border-color:var(--gold);}
   .quiz-opt.correct{background:#d6ecd6; border-color:var(--success);}
   .quiz-opt.wrong{background:#f3d6d3; border-color:var(--danger);}
-  .modal .pass-overlay-btn{margin-top:6px;}
 
-  /* pass interstitial */
-  .pass-screen .modal{max-width:420px;}
-  .pass-screen .pdot-big{width:20px; height:20px; border-radius:50%; display:inline-block; margin-right:8px; vertical-align:-3px;}
+  .choice-opts{display:flex; flex-direction:column; gap:10px; margin-top:4px;}
+  .choice-opt{
+    text-align:left; padding:12px 14px; border-radius:10px; border:1.5px solid #b79f6e;
+    background:#fffdf6; width:100%;
+  }
+  .choice-opt:hover{border-color:var(--gold);}
+  .choice-opt .co-label{font-family:var(--font-display); font-weight:600; font-size:14.5px; color:var(--navy); text-transform:uppercase; letter-spacing:.02em;}
+  .choice-opt .co-desc{font-size:13px; color:#4a3f28; margin:4px 0 8px; line-height:1.45;}
+  .choice-opt .co-vals{display:flex; gap:8px;}
+  .choice-opt .co-val{font-family:var(--font-mono); font-weight:700; font-size:12.5px; padding:3px 8px; border-radius:6px; background:#f0e8d0; color:var(--success);}
 
   footer.gamefoot{
     text-align:center; padding:18px; font-size:12px; opacity:.55;
@@ -273,7 +313,7 @@
   .winner-banner .ws{font-size:13px; text-transform:uppercase; letter-spacing:.12em; font-family:var(--font-mono);}
   .winner-banner h2{font-size:clamp(24px,4vw,34px); margin:6px 0;}
   .results-table{width:100%; border-collapse:collapse; margin-bottom:30px; background:rgba(245,239,220,.06); border-radius:12px; overflow:hidden;}
-  .results-table th, .results-table td{padding:11px 14px; text-align:left; font-size:13.5px; border-bottom:1px solid rgba(240,193,75,.15);}
+  .results-table th, .results-table td{padding:11px 14px; text-align:left; font-size:13.5px; border-bottom:1px solid rgba(240,193,75,.15); font-variant-numeric:tabular-nums;}
   .results-table th{font-family:var(--font-mono); text-transform:uppercase; font-size:10.5px; letter-spacing:.06em; opacity:.7;}
   .results-table td.win{color:var(--gold-bright); font-weight:700;}
   .reflect-box{
@@ -314,7 +354,7 @@
     <div class="masthead">
       <span class="eyebrow">A pass-and-play election board game</span>
       <h1>Road to 270</h1>
-      <p class="sub">Four candidates. One campaign trail. Roll the dice, work the primary calendar, and be the first to lock in $150M in Campaign Funds <em>and</em> 270 Electoral Votes.</p>
+      <p class="sub">Four candidates. One campaign trail that never stops looping. Roll the dice, make the calls that decide Iowa, New Hampshire, and Super Tuesday, and be the first to lock in $150M in Campaign Funds <em>and</em> 270 Electoral Votes.</p>
     </div>
 
     <div class="card-box" style="margin-top:30px;">
@@ -351,22 +391,25 @@
         <li>Everyone starts with $10M in funds and 0 Electoral Votes.</li>
       </ul>
 
+      <h2>The Board Never Stops</h2>
+      <p>There's no "start" or "finish" square. Roll, move, land on a square, resolve it, pass the device — and just keep going around. The only thing that ends the game is a candidate hitting both targets.</p>
+
       <h2>On Your Turn</h2>
       <ul>
         <li>Tap <b>Roll Dice</b> and move your candidate that many spaces around the board.</li>
-        <li>Resolve whatever square you land on (see glossary below).</li>
-        <li>Every time you pass or land on <b>Election Day</b> (the start square), collect a $10M Get-Out-The-Vote bonus.</li>
+        <li>Read the short scene that plays out, then see what it means for your campaign.</li>
         <li>Pass the device to the next candidate.</li>
       </ul>
 
+      <h2>Key Event Rounds</h2>
+      <p>Every 12 turns, the whole table pauses for a <b>Key Event</b> — a real moment from the presidential calendar (Iowa Caucus, New Hampshire Primary, Super Tuesday, the National Convention, a general election debate, and a Get-Out-The-Vote blitz). Every player, one at a time, chooses their own strategy for that moment: chase support, chase funds, or play it balanced. The calendar cycles, so if the game runs long, you'll live through Iowa again.</p>
+
       <h2>Square Glossary</h2>
       <div class="glossary">
-        <div class="g-item"><b>🗳️ Election Day</b><span>Start square. Pass it, collect $10M.</span></div>
-        <div class="g-item"><b>💰 Fundraiser / 📣 Campaign Event</b><span>Draw a party-flavored card. Gain funds and/or support.</span></div>
-        <div class="g-item"><b>🎤 Debate Night</b><span>Answer a real civics question about U.S. elections for a bonus.</span></div>
-        <div class="g-item"><b>🏛️ Milestone</b><span>Iowa, New Hampshire, Super Tuesday, or the National Convention — big, guaranteed gains.</span></div>
+        <div class="g-item"><b>💰📣 Fundraiser / Campaign Event</b><span>Draw a party-flavored card. Gain funds and/or support.</span></div>
         <div class="g-item"><b>📰 Scandal</b><span>Draw a party-flavored setback card. Lose funds and/or support.</span></div>
         <div class="g-item"><b>🤝 Endorsement</b><span>Draw a party-flavored endorsement card. A strong, guaranteed boost.</span></div>
+        <div class="g-item"><b>🎤 Debate Night</b><span>Answer a real civics question about U.S. elections for a bonus.</span></div>
         <div class="g-item"><b>🏟️ Swing State</b><span>Your choice: spend funds to buy support here, or hold onto your cash.</span></div>
         <div class="g-item"><b>⏭️ Go Again</b><span>Take another turn immediately.</span></div>
         <div class="g-item"><b>⏸️ Lose a Turn</b><span>Sit out your next turn.</span></div>
@@ -401,7 +444,8 @@
         <div class="board" id="board">
           <div class="center-panel">
             <div class="center-seal">🇺🇸</div>
-            <h2>Election Night Targets<br>$150M &amp; 270 EV</h2>
+            <h2>Targets to Win<br>$150M &amp; 270 Electoral Votes</h2>
+            <div class="sub-target" id="next-keyevent-note">Next Key Event in 12 turns</div>
             <div class="dice-area">
               <div class="die" id="die-face">?</div>
               <button class="btn btn-primary roll-btn" id="btn-roll">Roll Dice</button>
@@ -455,32 +499,32 @@ const PARTY_LABEL = {D:'Democrat', R:'Republican'};
 const PARTY_COLOR = {D:'#2a5fae', R:'#c8383a'};
 const PLAYER_COLORS = ['#f0c14b','#3c8a5b','#8a56c9','#e0803f'];
 
-// 24-square perimeter track on a 7x7 grid.
+// 24-square perimeter track on a 7x7 grid. No start/finish square — it's a pure loop.
 const SQUARES = [
-  {i:0,  type:'start',       label:'Election Day',        icon:'🗳️'},
-  {i:1,  type:'event',       label:'Fundraiser',           icon:'💰'},
-  {i:2,  type:'trivia',      label:'Debate Night',         icon:'🎤'},
-  {i:3,  type:'event',       label:'Campaign Rally',       icon:'📣'},
-  {i:4,  type:'milestone',   label:'Iowa Caucus',          icon:'🏛️', key:'iowa'},
-  {i:5,  type:'scandal',     label:'Scandal',               icon:'📰'},
-  {i:6,  type:'swing',       label:'Ohio',                  icon:'🏟️'},
-  {i:7,  type:'endorsement', label:'Endorsement',           icon:'🤝'},
-  {i:8,  type:'special',     label:'Go Again',              icon:'⏭️', special:'again'},
-  {i:9,  type:'milestone',   label:'NH Primary',            icon:'🏛️', key:'nh'},
-  {i:10, type:'event',       label:'Campaign Event',        icon:'📣'},
-  {i:11, type:'scandal',     label:'Scandal',               icon:'📰'},
-  {i:12, type:'trivia',      label:'Debate Night',          icon:'🎤'},
-  {i:13, type:'swing',       label:'Florida',                icon:'🏟️'},
-  {i:14, type:'special',     label:'Lose a Turn',            icon:'⏸️', special:'lose'},
-  {i:15, type:'endorsement', label:'Endorsement',            icon:'🤝'},
-  {i:16, type:'milestone',   label:'Super Tuesday',          icon:'🏛️', key:'superTuesday'},
-  {i:17, type:'event',       label:'Fundraiser',              icon:'💰'},
-  {i:18, type:'scandal',     label:'Scandal',                  icon:'📰'},
-  {i:19, type:'swing',       label:'Pennsylvania',             icon:'🏟️'},
-  {i:20, type:'event',       label:'Campaign Event',           icon:'📣'},
-  {i:21, type:'milestone',   label:'Convention',                icon:'🏛️', key:'convention'},
-  {i:22, type:'endorsement', label:'Endorsement',               icon:'🤝'},
-  {i:23, type:'swing',       label:'Arizona',                    icon:'🏟️'},
+  {i:0,  type:'event',       label:'Fundraiser',        icon:'💰'},
+  {i:1,  type:'scandal',     label:'Scandal',           icon:'📰'},
+  {i:2,  type:'endorsement', label:'Endorsement',        icon:'🤝'},
+  {i:3,  type:'trivia',      label:'Debate Night',       icon:'🎤'},
+  {i:4,  type:'swing',       label:'Ohio',               icon:'🏟️', state:'ohio'},
+  {i:5,  type:'event',       label:'Campaign Event',     icon:'📣'},
+  {i:6,  type:'scandal',     label:'Scandal',            icon:'📰'},
+  {i:7,  type:'special',     label:'Go Again',           icon:'⏭️', special:'again'},
+  {i:8,  type:'endorsement', label:'Endorsement',        icon:'🤝'},
+  {i:9,  type:'swing',       label:'Florida',            icon:'🏟️', state:'florida'},
+  {i:10, type:'trivia',      label:'Debate Night',       icon:'🎤'},
+  {i:11, type:'event',       label:'Fundraiser',         icon:'💰'},
+  {i:12, type:'scandal',     label:'Scandal',            icon:'📰'},
+  {i:13, type:'endorsement', label:'Endorsement',        icon:'🤝'},
+  {i:14, type:'special',     label:'Lose a Turn',        icon:'⏸️', special:'lose'},
+  {i:15, type:'swing',       label:'Pennsylvania',       icon:'🏟️', state:'pennsylvania'},
+  {i:16, type:'event',       label:'Campaign Event',     icon:'📣'},
+  {i:17, type:'scandal',     label:'Scandal',            icon:'📰'},
+  {i:18, type:'event',       label:'Fundraiser',         icon:'💰'},
+  {i:19, type:'endorsement', label:'Endorsement',        icon:'🤝'},
+  {i:20, type:'event',       label:'Campaign Event',     icon:'📣'},
+  {i:21, type:'swing',       label:'Arizona',            icon:'🏟️', state:'arizona'},
+  {i:22, type:'scandal',     label:'Scandal',            icon:'📰'},
+  {i:23, type:'trivia',      label:'Debate Night',       icon:'🎤'},
 ];
 const BOARD_SIZE = SQUARES.length;
 
@@ -493,108 +537,95 @@ function coordsForIndex(i){
 
 const EVENT_CARDS = {
   D:[
-    {t:"Your plan to expand health care coverage draws a big crowd at a union hall town hall.", f:15, s:10},
-    {t:"A youth voter registration drive built around your climate agenda signs up thousands of new voters.", f:5, s:20},
-    {t:"Teachers' groups rally behind your public education funding proposal.", f:15, s:15},
-    {t:"Your infrastructure jobs plan gets a strong reception in a Rust Belt factory town.", f:20, s:10},
-    {t:"A well-received answer on immigration reform earns positive coverage.", f:10, s:15},
-    {t:"Small-dollar donors flood your campaign after your speech on economic inequality.", f:25, s:5},
+    {t:"A town hall at the union hall runs long as your health care plan draws round after round of applause. Volunteers say the sign-up sheet for local phone-banking filled up twice over.", f:15, s:10},
+    {t:"A youth voter registration drive built around your climate agenda visits three college campuses in a single day. Organizers report signing up thousands of new voters before the tables even closed.", f:5, s:20},
+    {t:"Teachers pack a school gymnasium to hear your public education funding proposal. Several announce on the spot that they're taking the day off next week to canvass for you.", f:15, s:15},
+    {t:"Your infrastructure jobs plan gets a standing ovation in a Rust Belt factory town that's been waiting decades for exactly this kind of investment. Local union leaders shake your hand for the cameras.", f:20, s:10},
+    {t:"A well-prepared answer on immigration reform at a community forum earns respectful applause from a normally skeptical crowd. Reporters call it one of the more substantive answers of the campaign so far.", f:10, s:15},
+    {t:"Small-dollar donations pour in overnight after clips of your speech on economic inequality spread online. Your finance team says it's the best 24 hours the campaign has had.", f:25, s:5},
+    {t:"A packed rally in a mid-sized city runs an hour past its scheduled end because the crowd keeps chanting for one more question. Local organizers say turnout blew past every projection.", f:10, s:20},
+    {t:"Your child care affordability plan gets picked up by a national parenting podcast with millions of listeners. Messages of support flood your campaign's accounts for days.", f:15, s:15},
   ],
   R:[
-    {t:"Your tax cut proposal energizes small business owners at a chamber of commerce breakfast.", f:20, s:10},
-    {t:"A strong answer on border security draws praise at a town hall.", f:10, s:15},
-    {t:"Veterans' groups rally behind your national defense plan.", f:15, s:15},
-    {t:"Your energy independence plan gets a strong reception in an oil-and-gas town.", f:20, s:10},
-    {t:"A well-received answer on cutting regulation earns positive coverage from local business owners.", f:10, s:15},
-    {t:"Major donors flood your campaign after your speech on limited government.", f:25, s:5},
+    {t:"A chamber of commerce breakfast runs long as your tax cut proposal draws round after round of applause from small business owners. Several attendees say they're organizing a fundraiser on your behalf before you've even left the building.", f:20, s:10},
+    {t:"A town hall in a border community gives you a respectful hearing on your border security plan. Reporters call it one of the more substantive answers of the campaign so far.", f:10, s:15},
+    {t:"Veterans pack an American Legion hall to hear your national defense plan, and several announce on the spot that they're volunteering to canvass for you.", f:15, s:15},
+    {t:"Your energy independence plan gets a standing ovation in an oil-and-gas town that's been waiting years for exactly this kind of investment. Local workers shake your hand for the cameras.", f:20, s:10},
+    {t:"A well-prepared answer on cutting regulation at a community forum earns respectful applause from local business owners. They say it's the most detail they've heard from any candidate all cycle.", f:10, s:15},
+    {t:"Major donations pour in overnight after clips of your speech on limited government spread online. Your finance team calls it the best 24 hours the campaign has had.", f:25, s:5},
+    {t:"A packed rally in a mid-sized city runs an hour past schedule because the crowd keeps chanting for one more question. Local organizers say turnout blew past every projection.", f:10, s:20},
+    {t:"Your small-business tax relief plan gets picked up by a popular business podcast with millions of listeners. Messages of support flood your campaign's accounts for days.", f:15, s:15},
   ],
   N:[
-    {t:"Your debate performance is called 'confident and clear' by pundits across the spectrum.", f:10, s:15},
-    {t:"A viral moment from your rope-line handshake tour earns national attention.", f:5, s:20},
-    {t:"You raise $25M at a single evening gala.", f:25, s:0},
-    {t:"Local news runs a flattering profile on your campaign's ground game.", f:10, s:10},
+    {t:"Pundits across the spectrum call your debate performance 'confident and clear.' Even a few unfriendly commentators admit you had a good night.", f:10, s:15},
+    {t:"A viral moment from your rope-line handshake tour racks up millions of views overnight. Late-night hosts are already making jokes about it.", f:5, s:20},
+    {t:"You raise $25 million at a single evening gala, the biggest single fundraising haul of the campaign so far. Your finance director calls it a turning point.", f:25, s:0},
+    {t:"Local news runs a flattering profile on your campaign's ground game, following volunteers as they knock on doors block by block. The segment airs right before prime time.", f:10, s:10},
+    {t:"A well-timed op-ed under your name runs in a major newspaper the morning after a big news cycle. Cable news spends the rest of the day debating your argument.", f:10, s:15},
+    {t:"Your campaign bus makes an unscheduled stop at a diner, and the resulting photo of you pouring coffee for a trucker runs on front pages nationwide.", f:10, s:10},
   ]
 };
 
 const SCANDAL_CARDS = {
   D:[
-    {t:"Opponents accuse your campaign of flip-flopping on trade policy.", f:-10, s:-10},
-    {t:"A leaked memo shows internal disagreement over your climate plan's cost.", f:-5, s:-15},
-    {t:"An old staffer tweet resurfaces, embarrassing the campaign.", f:-10, s:-5},
-    {t:"Your position on gun policy draws criticism from moderate voters in swing districts.", f:-5, s:-15},
-    {t:"A super PAC ad twists your record on taxes.", f:-15, s:-5},
-    {t:"You're criticized for a scheduling gaffe that skipped a key labor rally.", f:-5, s:-10},
+    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop. Your communications team scrambles to respond before the evening news.", f:-10, s:-10},
+    {t:"A leaked internal memo shows your own staff arguing over how to pay for your climate plan. Reporters describe the mood on the call as 'tense.'", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces from years before the campaign, and it dominates a full news cycle. You spend the day fielding questions about it instead of talking policy.", f:-10, s:-5},
+    {t:"Your position on gun policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall. A local paper runs the headline the next morning.", f:-5, s:-15},
+    {t:"A super PAC ad twists an old vote on taxes into something it wasn't, and it's airing constantly in three battleground states. Your team can't get it pulled before the weekend news cycle.", f:-15, s:-5},
+    {t:"You're photographed missing a major labor rally because of a scheduling mix-up, and organizers publicly note your absence from the stage.", f:-5, s:-10},
+    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster than the original claim ever did.", f:-10, s:-10},
+    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, and the footage runs on every network that night.", f:-5, s:-10},
   ],
   R:[
-    {t:"Opponents accuse your campaign of flip-flopping on trade policy.", f:-10, s:-10},
-    {t:"A leaked memo shows internal disagreement over your tax plan's cost.", f:-5, s:-15},
-    {t:"An old staffer tweet resurfaces, embarrassing the campaign.", f:-10, s:-5},
-    {t:"Your position on health care policy draws criticism from moderate voters in swing districts.", f:-5, s:-15},
-    {t:"A super PAC ad twists your record on spending.", f:-15, s:-5},
-    {t:"You're criticized for a scheduling gaffe that skipped a key veterans' event.", f:-5, s:-10},
+    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop. Your communications team scrambles to respond before the evening news.", f:-10, s:-10},
+    {t:"A leaked internal memo shows your own staff arguing over how to pay for your tax plan. Reporters describe the mood on the call as 'tense.'", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces from years before the campaign, and it dominates a full news cycle. You spend the day fielding questions about it instead of talking policy.", f:-10, s:-5},
+    {t:"Your position on health care policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall. A local paper runs the headline the next morning.", f:-5, s:-15},
+    {t:"A super PAC ad twists an old vote on spending into something it wasn't, and it's airing constantly in three battleground states. Your team can't get it pulled before the weekend news cycle.", f:-15, s:-5},
+    {t:"You're photographed missing a major veterans' event because of a scheduling mix-up, and organizers publicly note your absence from the stage.", f:-5, s:-10},
+    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster than the original claim ever did.", f:-10, s:-10},
+    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, and the footage runs on every network that night.", f:-5, s:-10},
   ],
   N:[
-    {t:"A gaffe at a press conference goes viral for the wrong reasons.", f:-10, s:-10},
-    {t:"Fact-checkers flag a claim from your latest ad.", f:-5, s:-15},
-    {t:"Low turnout at a rally leads to unflattering photos in the press.", f:-10, s:-5},
-    {t:"You lose your voice mid-speech at a nationally televised event.", f:-5, s:-10},
+    {t:"A gaffe at a press conference goes viral for the wrong reasons, and it's the only clip anyone's talking about by dinnertime.", f:-10, s:-10},
+    {t:"Fact-checkers flag a claim from your latest ad, and the correction runs almost as often as the ad itself.", f:-5, s:-15},
+    {t:"Low turnout at a rally leads to unflattering wide-angle photos in the next morning's papers.", f:-10, s:-5},
+    {t:"You lose your voice mid-speech at a nationally televised event, and an aide has to finish your remarks for you.", f:-5, s:-10},
+    {t:"A technical glitch cuts your live-streamed town hall short right as you're answering the toughest question of the night.", f:-10, s:-5},
+    {t:"An old interview resurfaces where you struggled to answer a basic question about your own policy plan.", f:-5, s:-10},
   ]
 };
 
 const ENDORSEMENT_CARDS = {
   D:[
-    {t:"A major labor union formally endorses your campaign.", f:15, s:20},
-    {t:"A coalition of environmental groups throws its support behind you.", f:10, s:20},
-    {t:"A former primary rival endorses you and joins you on the trail.", f:20, s:15},
-    {t:"A prominent civil rights organization endorses your candidacy.", f:15, s:20},
+    {t:"A major labor union's executive board votes unanimously to endorse your campaign, and its members are already organizing phone banks in your name. The union's president joins you on stage for the announcement.", f:15, s:20},
+    {t:"A coalition of environmental groups throws its full support behind you after reviewing your climate plan line by line. Their volunteer network is one of the largest in the country.", f:10, s:20},
+    {t:"A former primary rival endorses you at a joint press conference and agrees to join you on the campaign trail. Their supporters start showing up at your events within days.", f:20, s:15},
+    {t:"A prominent civil rights organization endorses your candidacy, citing your record on voting rights. Local chapters immediately begin registering voters in your name.", f:15, s:20},
+    {t:"A network of nurses' associations endorses you after a series of listening sessions on health care staffing. They pledge to canvass hospitals and clinics on your behalf.", f:15, s:18},
   ],
   R:[
-    {t:"A major business association formally endorses your campaign.", f:15, s:20},
-    {t:"A coalition of law enforcement groups throws its support behind you.", f:10, s:20},
-    {t:"A former primary rival endorses you and joins you on the trail.", f:20, s:15},
-    {t:"A prominent veterans' organization endorses your candidacy.", f:15, s:20},
+    {t:"A major business association's board votes unanimously to endorse your campaign, and its members are already organizing outreach in your name. The association's president joins you on stage for the announcement.", f:15, s:20},
+    {t:"A coalition of law enforcement groups throws its full support behind you after reviewing your public safety plan. Their membership network is one of the largest in the country.", f:10, s:20},
+    {t:"A former primary rival endorses you at a joint press conference and agrees to join you on the campaign trail. Their supporters start showing up at your events within days.", f:20, s:15},
+    {t:"A prominent veterans' organization endorses your candidacy, citing your record on national defense. Local chapters immediately begin phone-banking in your name.", f:15, s:20},
+    {t:"A network of farm bureaus endorses you after a series of listening sessions on agricultural policy. They pledge to canvass rural counties on your behalf.", f:15, s:18},
   ],
   N:[
-    {t:"Your hometown newspaper endorses your candidacy.", f:10, s:15},
-    {t:"A popular podcast host praises your authenticity to millions of listeners.", f:15, s:15},
-    {t:"A respected retired general says you have what it takes to be Commander-in-Chief.", f:10, s:20},
+    {t:"Your hometown newspaper's editorial board endorses your candidacy, praising your record in detail across two full pages. Local news picks up the story within the hour.", f:10, s:15},
+    {t:"A popular podcast host spends an entire episode praising your authenticity to millions of listeners. Downloads of the episode spike for days afterward.", f:15, s:15},
+    {t:"A respected retired general says publicly that you have what it takes to be Commander-in-Chief. The endorsement leads that night's national news broadcast.", f:10, s:20},
+    {t:"A well-known late-night host, known for staying neutral, jokes that you're 'annoyingly likeable' — and the clip does more for your campaign than a formal endorsement would.", f:12, s:15},
   ]
 };
 
-const MILESTONES = {
-  iowa:{
-    label:"Iowa Caucus",
-    variants:[
-      "The first-in-the-nation contest is decided not by secret ballot but by voters physically gathering in gyms and living rooms across the state.",
-      "Iowans caucus in person, standing in groups for their candidate — a strong showing here sets the tone for the whole race."
-    ],
-    f:15, s:25
-  },
-  nh:{
-    label:"New Hampshire Primary",
-    variants:[
-      "New Hampshire holds the first true primary of the race — a strong showing here can build unstoppable momentum.",
-      "Voters cast secret-ballot votes in the 'First in the Nation' primary, and the media narrative shifts overnight."
-    ],
-    f:15, s:25
-  },
-  superTuesday:{
-    label:"Super Tuesday",
-    variants:[
-      "More than a dozen states vote on the same day, awarding the largest single batch of delegates of the whole race.",
-      "Super Tuesday delivers results from coast to coast in a single night — the biggest swing of the primary calendar."
-    ],
-    f:25, s:40
-  },
-  convention:{
-    label:"National Convention",
-    variants:[
-      "Your party's delegates formally nominate you as their candidate, kicking off the general election campaign.",
-      "Balloons drop as your party officially makes you its nominee for President of the United States."
-    ],
-    f:30, s:30
-  }
-};
+const TRIVIA_SCENES = [
+  "The debate moderator turns the next question to you. Cameras zoom in as you consider your answer.",
+  "A young voter waves a hand-written sign your way and asks you a pointed question outside the venue.",
+  "A cable news anchor asks you to explain a basic fact about the U.S. election process, live on air.",
+  "Backstage before tonight's town hall, a reporter corners you for a quick pop quiz."
+];
 
 const TRIVIA = [
   {q:"How many electoral votes does a candidate need to win the presidency?", opts:["218","270","300","538"], correct:1},
@@ -614,10 +645,122 @@ const TRIVIA = [
   {q:"Which state currently has the most electoral votes of any state?", opts:["Texas","Florida","New York","California"], correct:3},
 ];
 
+const SWING_STATES = {
+  ohio:{
+    label:"Ohio",
+    text:"Ohio has voted for the eventual winner in nearly every election for the last century, and both parties know it. Local news is running wall-to-wall campaign coverage, and undecided voters here say they're still shopping around."
+  },
+  florida:{
+    label:"Florida",
+    text:"Florida is famous for razor-thin margins, and this year is shaping up no differently. Retirees, growing suburbs, and rural counties all want something different from the next president."
+  },
+  pennsylvania:{
+    label:"Pennsylvania",
+    text:"Pennsylvania's mix of union towns, suburban swing districts, and rural counties makes it one of the hardest states in the country to predict. Whoever wins the Keystone State has historically had a very good night."
+  },
+  arizona:{
+    label:"Arizona",
+    text:"Once reliably in one party's column, Arizona has become one of the most closely fought battlegrounds in the country. A late push here could tip the state either way."
+  }
+};
+
+const SPECIAL_TEXT = {
+  again:[
+    "A clip from your last stop goes viral overnight, and your team is riding the wave straight into the next event.",
+    "Your scheduler manages to squeeze in a surprise extra stop, giving you one more shot before the day is done."
+  ],
+  lose:[
+    "Your campaign bus breaks down outside a small town during a snowstorm, and the next scheduled stop has to be scrapped entirely.",
+    "A last-minute scheduling conflict strands your whole team at the airport, and you miss a full day of campaigning."
+  ]
+};
+
+// Choice archetypes reused across every Key Event for balance — only the flavor text changes.
+const CHOICE_ARCHETYPES = [
+  {key:'grassroots', label:'Grassroots Push', f:8,  s:30},
+  {key:'ads',         label:'Ad Campaign',     f:30, s:8},
+  {key:'balanced',    label:'Balanced Push',   f:18, s:18},
+];
+
+const KEY_EVENTS = [
+  {
+    key:'iowa', icon:'🌽', label:'Iowa Caucus',
+    variants:[
+      "The first-in-the-nation contest has arrived. Iowans will caucus in person tonight, standing in groups for their candidate in gyms and church basements across the state. Every campaign has spent months building a ground game for exactly this moment.",
+      "Snow is falling across Iowa as caucus-goers head to their precincts. Reporters are stationed in every county, ready to declare who has real momentum heading into New Hampshire."
+    ],
+    choices:[
+      {label:'Knock on Doors', desc:'Send volunteers to knock on doors in every precinct, turning out your most committed supporters.'},
+      {label:'Buy Local Airtime', desc:"Flood Iowa's TV and radio stations with ads in the final 48 hours before caucus night."},
+      {label:'Full-Court Press', desc:'Split your effort between door-knocking and last-minute advertising.'}
+    ]
+  },
+  {
+    key:'nh', icon:'🍁', label:'New Hampshire Primary',
+    variants:[
+      "New Hampshire holds the first true primary of the race, and this state takes its 'First in the Nation' status seriously. Voters here expect to meet candidates face-to-face at diners and town halls before deciding. A strong finish here can make or break momentum overnight.",
+      "Snow-covered town halls across New Hampshire are packed as voters cast secret ballots. Unlike Iowa's caucuses, this is a straightforward primary election, and the media narrative can shift by morning depending on the result."
+    ],
+    choices:[
+      {label:'Diner Tour', desc:'Spend the day shaking hands and taking questions one-on-one at diners across the state.'},
+      {label:'Statewide Ad Blitz', desc:'Buy up the remaining ad inventory on every local station before polls open.'},
+      {label:'Balanced Ground Game', desc:'Split your final push between retail politics and advertising.'}
+    ]
+  },
+  {
+    key:'superTuesday', icon:'🗺️', label:'Super Tuesday',
+    variants:[
+      "It's Super Tuesday: more than a dozen states are voting on the same day, awarding the single largest batch of delegates in the entire race. Campaigns across the country are stretched thin trying to compete everywhere at once.",
+      "Polls are open from coast to coast today. Winning big on Super Tuesday can put a candidate's nomination nearly out of reach — and a poor showing can end a campaign by nightfall."
+    ],
+    choices:[
+      {label:'Multi-State Canvassing', desc:'Fly volunteer coordinators into every voting state to organize last-minute turnout.'},
+      {label:'National Ad Buy', desc:'Run a single coordinated ad campaign across every market voting today.'},
+      {label:'Balanced National Push', desc:'Split resources evenly between organizing and advertising nationwide.'}
+    ]
+  },
+  {
+    key:'convention', icon:'🎉', label:'National Convention',
+    variants:[
+      "Balloons and confetti drop from the rafters as your party's delegates formally nominate you as their candidate for President of the United States. The primary season is over — now the general election campaign truly begins.",
+      "Delegates from all fifty states take the floor to cast their votes, one by one, until your nomination is official. You'll deliver your acceptance speech to a prime-time television audience tonight."
+    ],
+    choices:[
+      {label:'Work the Convention Floor', desc:'Spend the week connecting personally with delegates and state party leaders.'},
+      {label:'Prime-Time Ad Buy', desc:'Air your acceptance speech and a polished follow-up ad during the highest-rated hour of the week.'},
+      {label:'Balanced Convention Push', desc:'Split your time between the floor and the broadcast booth.'}
+    ]
+  },
+  {
+    key:'debate', icon:'🎙️', label:'General Election Debate',
+    variants:[
+      "Millions of Americans tune in as you step onto a nationally televised debate stage to face your opponent directly for the first time. Every answer will be fact-checked in real time and clipped for tomorrow's headlines.",
+      "The studio lights come up and the moderator calls the debate to order. This is the moment undecided voters have been waiting for — and how you spend the next 24 hours matters almost as much as the debate itself."
+    ],
+    choices:[
+      {label:'Own Social Media', desc:'Flood social platforms with your sharpest moments before the other side frames the narrative.'},
+      {label:'Reinforce with Ads', desc:'Buy ad time built entirely around your best debate lines.'},
+      {label:'Balanced Post-Debate Push', desc:'Split the follow-up between digital and paid advertising.'}
+    ]
+  },
+  {
+    key:'gotv', icon:'🚗', label:'Get-Out-The-Vote Blitz',
+    variants:[
+      "Election Day is days away, and campaigns everywhere are shifting from persuasion to turnout. It no longer matters how many voters support you if they don't actually show up to the polls.",
+      "Volunteers are staffing phone banks around the clock, texting reminders and arranging rides to the polls. Every campaign is racing to squeeze out the last few points of turnout before voting ends."
+    ],
+    choices:[
+      {label:'Rides to the Polls', desc:'Organize a volunteer network to physically get your supporters to their polling places.'},
+      {label:'Targeted Digital Reminders', desc:'Run a paid digital campaign reminding likely supporters exactly where and when to vote.'},
+      {label:'Balanced GOTV Push', desc:'Split resources between boots-on-the-ground turnout and digital reminders.'}
+    ]
+  }
+];
+
 const REFLECTION_QUESTIONS = [
   "Which mattered more to your success: fundraising, campaign events, or Debate Night answers? Why?",
   "Explain in your own words why a candidate needs 270 electoral votes — not just the most popular votes nationwide — to win the presidency.",
-  "Describe a moment you had to decide whether to spend funds in a Swing State or hold onto your cash. What did you decide, and why?",
+  "Describe a Key Event round (Iowa, Super Tuesday, a debate, etc.) where you had to choose between chasing funds, chasing support, or playing it balanced. What did you decide, and why?",
   "Compare a Scandal card you drew to a real historical or current campaign scandal. How did that real campaign respond, and was it similar to how you responded in the game?",
   "Endorsements are a real campaign strategy. Pick one endorsement you received and explain what real-world group might give an endorsement like it, and why it would matter.",
   "The Iowa Caucus and New Hampshire Primary are the first contests in a real presidential race. Why do you think these early states get so much attention from candidates and the media?",
@@ -632,11 +775,11 @@ const REFLECTION_QUESTIONS = [
 const FUNDS_TARGET = 150;
 const SUPPORT_TARGET = 270;
 const START_FUNDS = 10;
-const LAP_BONUS = 10;
 const SWING_COST = 15;
 const SWING_GAIN = 20;
+const KEY_EVENT_INTERVAL = 12;
 
-let state = null; // {players:[...], current, gameOver}
+let state = null;
 
 function newGameState(playerConfigs){
   return {
@@ -645,6 +788,9 @@ function newGameState(playerConfigs){
       funds:START_FUNDS, support:0, pos:0, skipNext:false
     })),
     current: 0,
+    totalTurns: 0,
+    keyEventCycle: 0,
+    keyEventActiveIdx: null,
     gameOver:false,
     winnerIdx:null
   };
@@ -669,7 +815,6 @@ for(let i=0;i<4;i++){
   `;
   setupGrid.appendChild(div);
 }
-// set default party selections
 document.querySelectorAll('.party-toggle').forEach(group=>{
   const idx = +group.dataset.idx;
   const def = defaultParties[idx];
@@ -696,6 +841,7 @@ document.getElementById('btn-start-game').addEventListener('click', ()=>{
   state = newGameState(configs);
   buildBoard();
   renderSidePanel();
+  updateKeyEventNote();
   goToScreen('screen-game');
   beginTurn();
 });
@@ -717,7 +863,6 @@ function goToScreen(id, from){
 
 const boardEl = document.getElementById('board');
 function buildBoard(){
-  // remove old squares (keep center-panel)
   boardEl.querySelectorAll('.square').forEach(el=>el.remove());
   SQUARES.forEach(sq=>{
     const {row,col} = coordsForIndex(sq.i);
@@ -752,9 +897,10 @@ function renderTokens(){
 const sidePanel = document.getElementById('side-panel');
 function renderSidePanel(){
   sidePanel.innerHTML = '';
+  const activeIdx = state.keyEventActiveIdx != null ? state.keyEventActiveIdx : state.current;
   state.players.forEach((p, idx)=>{
     const div = document.createElement('div');
-    div.className = 'pcard' + (idx===state.current && !state.gameOver ? ' active':'');
+    div.className = 'pcard' + (idx===activeIdx && !state.gameOver ? ' active':'');
     const fPct = Math.min(100, (p.funds/FUNDS_TARGET)*100);
     const sPct = Math.min(100, (p.support/SUPPORT_TARGET)*100);
     div.innerHTML = `
@@ -784,8 +930,15 @@ function escapeHtml(str){
   return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function updateKeyEventNote(){
+  const remaining = KEY_EVENT_INTERVAL - (state.totalTurns % KEY_EVENT_INTERVAL);
+  const note = document.getElementById('next-keyevent-note');
+  if(note) note.textContent = `Next Key Event in ${remaining} turn${remaining===1?'':'s'}`;
+}
+
 /* ================= TURN FLOW ================= */
 
+const turnBanner = document.getElementById('turn-banner');
 const turnName = document.getElementById('turn-name');
 const turnDot = document.getElementById('turn-dot');
 const rollBtn = document.getElementById('btn-roll');
@@ -794,13 +947,14 @@ const dieFace = document.getElementById('die-face');
 function currentPlayer(){ return state.players[state.current]; }
 
 function beginTurn(){
+  turnBanner.classList.remove('keyevent');
   const p = currentPlayer();
   if(p.skipNext){
     p.skipNext = false;
-    showModal({
+    showStory({
       icon:'⏸️', tag:'Lose a Turn', title:`${p.name} sits this one out`,
-      body:`Your campaign bus is stuck — no move this turn.`,
-      onClose: advanceToNextPlayer
+      narrative:`Your campaign bus is stuck — no move this turn.`,
+      onReveal: ()=>{ closeModalThen(()=> advanceToNextPlayer()); }
     });
     return;
   }
@@ -829,86 +983,45 @@ rollBtn.addEventListener('click', ()=>{
 function movePlayer(steps){
   const p = currentPlayer();
   let stepsLeft = steps;
-  let lapBonusGiven = false;
   const stepInterval = setInterval(()=>{
     p.pos = (p.pos+1) % BOARD_SIZE;
     stepsLeft--;
-    if(p.pos === 0 && !lapBonusGiven){
-      p.funds += LAP_BONUS;
-      lapBonusGiven = true;
-    }
     renderTokens();
-    renderSidePanel();
     if(stepsLeft<=0){
       clearInterval(stepInterval);
-      setTimeout(()=> resolveSquare(p, lapBonusGiven), 200);
+      setTimeout(()=> resolveSquare(p), 200);
     }
   }, 160);
 }
 
-function resolveSquare(p, gotLapBonus){
+function resolveSquare(p){
   const sq = SQUARES[p.pos];
-  const lapNote = gotLapBonus ? ` (+$${LAP_BONUS}M Get-Out-The-Vote bonus for passing Election Day)` : '';
-
   switch(sq.type){
-    case 'start':
-      showModal({
-        icon:'🗳️', tag:'Election Day', title:'Election Day',
-        body:`You land right on Election Day.${gotLapBonus?'':''} Collect your Get-Out-The-Vote bonus.`,
-        effects: gotLapBonus ? [] : [{label:`+$${LAP_BONUS}M`, cls:'pos'}],
-        onClose: ()=>{ if(!gotLapBonus){ p.funds += LAP_BONUS; } finishSquare(); }
-      });
-      break;
     case 'event': {
       const card = drawCard(EVENT_CARDS, p.party);
-      applyAndShow('💰','Campaign Event', card, lapNote);
+      showCardStory('💰','Campaign Event', card);
       break;
     }
     case 'scandal': {
       const card = drawCard(SCANDAL_CARDS, p.party);
-      applyAndShow('📰','Scandal', card, lapNote);
+      showCardStory('📰','Scandal', card);
       break;
     }
     case 'endorsement': {
       const card = drawCard(ENDORSEMENT_CARDS, p.party);
-      applyAndShow('🤝','Endorsement', card, lapNote);
-      break;
-    }
-    case 'milestone': {
-      const m = MILESTONES[sq.key];
-      const text = m.variants[Math.floor(Math.random()*m.variants.length)];
-      p.funds += m.f; p.support += m.s;
-      showModal({
-        icon:'🏛️', tag:'Milestone', title:m.label,
-        body: text + lapNote,
-        effects:[{label:`+$${m.f}M`, cls:'pos'},{label:`+${m.s} EV`, cls:'pos'}],
-        onClose: finishSquare
-      });
+      showCardStory('🤝','Endorsement', card);
       break;
     }
     case 'trivia': {
-      showTrivia(p, lapNote);
+      showTrivia(p);
       break;
     }
     case 'swing': {
-      showSwingState(p, sq, lapNote);
+      showSwingState(p, sq);
       break;
     }
     case 'special': {
-      if(sq.special==='again'){
-        showModal({
-          icon:'⏭️', tag:'Go Again', title:'You get to go again!',
-          body:`A viral clip of your speech has voters cheering.${lapNote}`,
-          onClose: ()=>{ closeModalThen(()=> beginTurn()); }
-        });
-      } else {
-        p.skipNext = true;
-        showModal({
-          icon:'⏸️', tag:'Lose a Turn', title:'Campaign bus breaks down',
-          body:`A snowstorm strands your bus. You'll lose your next turn.${lapNote}`,
-          onClose: finishSquare
-        });
-      }
+      showSpecial(p, sq);
       break;
     }
   }
@@ -922,22 +1035,55 @@ function drawCard(pool, party){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function applyAndShow(icon, tag, card, lapNote){
+/* ---- narrative-first card reveal: story, THEN the outcome ---- */
+
+function showStory({icon, tag, title, narrative, onReveal, buttonLabel}){
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">${icon}</div>
+    <div class="m-tag">${escapeHtml(tag)}</div>
+    <h3>${escapeHtml(title)}</h3>
+    <p class="m-body">${escapeHtml(narrative)}</p>
+    <button class="btn btn-primary" id="modal-reveal">${buttonLabel || 'See What Happens →'}</button>
+  `;
+  box.querySelector('#modal-reveal').addEventListener('click', onReveal);
+  overlay.classList.add('active');
+}
+
+function showOutcome({icon, tag, title, effects, note, onClose}){
+  const box = document.getElementById('modal-content');
+  box.innerHTML = `
+    <div class="m-icon">${icon}</div>
+    <div class="m-tag">${escapeHtml(tag)}</div>
+    <h3>${escapeHtml(title)}</h3>
+    ${note ? `<p class="m-body">${escapeHtml(note)}</p>` : ''}
+    ${effects && effects.length ? `<div class="m-effects">${effects.map(e=>`<span class="m-effect ${e.cls}">${e.label}</span>`).join('')}</div>` : ''}
+    <button class="btn btn-primary" id="modal-ok">Continue</button>
+  `;
+  box.querySelector('#modal-ok').addEventListener('click', ()=>{
+    closeModalThen(onClose);
+  });
+  renderSidePanel();
+}
+
+function showCardStory(icon, tag, card){
   const p = currentPlayer();
-  p.funds = Math.max(0, p.funds + card.f);
-  p.support = Math.max(0, p.support + card.s);
-  const effects = [];
-  if(card.f) effects.push({label:`${card.f>0?'+':''}$${card.f}M`, cls: card.f>=0?'pos':'neg'});
-  if(card.s) effects.push({label:`${card.s>0?'+':''}${card.s} EV`, cls: card.s>=0?'pos':'neg'});
-  showModal({
-    icon, tag, title: tag,
-    body: card.t + lapNote,
-    effects,
-    onClose: finishSquare
+  showStory({
+    icon, tag, title: tag, narrative: card.t,
+    onReveal: ()=>{
+      p.funds = Math.max(0, p.funds + card.f);
+      p.support = Math.max(0, p.support + card.s);
+      const effects = [];
+      if(card.f) effects.push({label:`${card.f>0?'+':''}$${card.f}M`, cls: card.f>=0?'pos':'neg'});
+      if(card.s) effects.push({label:`${card.s>0?'+':''}${card.s} EV`, cls: card.s>=0?'pos':'neg'});
+      showOutcome({icon, tag, title:'Outcome', effects, onClose: ()=> afterTurn('advance')});
+    }
   });
 }
 
-function showTrivia(p, lapNote){
+function showTrivia(p){
+  const scene = TRIVIA_SCENES[Math.floor(Math.random()*TRIVIA_SCENES.length)];
   const q = TRIVIA[Math.floor(Math.random()*TRIVIA.length)];
   const box = document.getElementById('modal-content');
   const overlay = document.getElementById('modal-overlay');
@@ -945,6 +1091,7 @@ function showTrivia(p, lapNote){
     <div class="m-icon">🎤</div>
     <div class="m-tag">Debate Night</div>
     <h3>${escapeHtml(q.q)}</h3>
+    <p class="m-body">${escapeHtml(scene)}</p>
     <div class="m-quiz-opts" id="quiz-opts"></div>
   `;
   const optsWrap = box.querySelector('#quiz-opts');
@@ -960,13 +1107,13 @@ function showTrivia(p, lapNote){
       const fGain = correct?15:5, sGain = correct?15:5;
       p.funds += fGain; p.support += sGain;
       setTimeout(()=>{
-        showModal({
+        showOutcome({
           icon: correct?'✅':'🤔',
           tag:'Debate Night',
           title: correct ? 'Strong answer!' : 'Not quite — but you held your own',
-          body: (correct ? `Correct! The right answer was "${q.opts[q.correct]}." ` : `The correct answer was "${q.opts[q.correct]}." `) + lapNote,
+          note: correct ? `Correct! The right answer was "${q.opts[q.correct]}."` : `The correct answer was "${q.opts[q.correct]}."`,
           effects:[{label:`+$${fGain}M`, cls:'pos'},{label:`+${sGain} EV`, cls:'pos'}],
-          onClose: finishSquare
+          onClose: ()=> afterTurn('advance')
         });
       }, 700);
     });
@@ -975,15 +1122,16 @@ function showTrivia(p, lapNote){
   overlay.classList.add('active');
 }
 
-function showSwingState(p, sq, lapNote){
+function showSwingState(p, sq){
+  const info = SWING_STATES[sq.state];
   const canAfford = p.funds >= SWING_COST;
   const box = document.getElementById('modal-content');
   const overlay = document.getElementById('modal-overlay');
   box.innerHTML = `
     <div class="m-icon">🏟️</div>
     <div class="m-tag">Battleground State</div>
-    <h3>${escapeHtml(sq.label)}</h3>
-    <p class="m-body">This state has flipped between parties in recent elections. Running ads here is expensive, but it moves real votes.${lapNote}</p>
+    <h3>${escapeHtml(info.label)}</h3>
+    <p class="m-body">${escapeHtml(info.text)}</p>
     <div class="m-effects"><span class="m-effect neg">-$${SWING_COST}M</span><span class="m-effect pos">+${SWING_GAIN} EV</span></div>
     <div style="display:flex; gap:10px; justify-content:center; margin-top:4px;">
       <button class="btn btn-secondary" id="swing-skip">Save Your Cash</button>
@@ -991,34 +1139,47 @@ function showSwingState(p, sq, lapNote){
     </div>
   `;
   box.querySelector('#swing-skip').addEventListener('click', ()=>{
-    closeModalThen(finishSquare);
+    closeModalThen(()=> afterTurn('advance'));
   });
   box.querySelector('#swing-spend').addEventListener('click', ()=>{
     if(p.funds < SWING_COST) return;
     p.funds -= SWING_COST;
     p.support += SWING_GAIN;
     renderSidePanel();
-    closeModalThen(finishSquare);
+    closeModalThen(()=> afterTurn('advance'));
   });
   overlay.classList.add('active');
 }
 
-function showModal({icon, tag, title, body, effects, onClose}){
-  const box = document.getElementById('modal-content');
-  const overlay = document.getElementById('modal-overlay');
-  box.innerHTML = `
-    <div class="m-icon">${icon}</div>
-    <div class="m-tag">${escapeHtml(tag)}</div>
-    <h3>${escapeHtml(title)}</h3>
-    <p class="m-body">${escapeHtml(body)}</p>
-    ${effects && effects.length ? `<div class="m-effects">${effects.map(e=>`<span class="m-effect ${e.cls}">${e.label}</span>`).join('')}</div>` : ''}
-    <button class="btn btn-primary" id="modal-ok">Continue</button>
-  `;
-  box.querySelector('#modal-ok').addEventListener('click', ()=>{
-    closeModalThen(onClose);
-  });
-  overlay.classList.add('active');
-  renderSidePanel();
+function showSpecial(p, sq){
+  const pool = SPECIAL_TEXT[sq.special];
+  const narrative = pool[Math.floor(Math.random()*pool.length)];
+  if(sq.special==='again'){
+    showStory({
+      icon:'⏭️', tag:'Go Again', title:'Go Again',
+      narrative,
+      buttonLabel:'See What Happens →',
+      onReveal: ()=>{
+        showOutcome({
+          icon:'⏭️', tag:'Go Again', title:'Take another turn!',
+          effects:[], onClose: ()=> afterTurn('again')
+        });
+      }
+    });
+  } else {
+    showStory({
+      icon:'⏸️', tag:'Lose a Turn', title:'Lose a Turn',
+      narrative,
+      buttonLabel:'See What Happens →',
+      onReveal: ()=>{
+        p.skipNext = true;
+        showOutcome({
+          icon:'⏸️', tag:'Lose a Turn', title:"You'll sit out your next turn",
+          effects:[], onClose: ()=> afterTurn('advance')
+        });
+      }
+    });
+  }
 }
 
 function closeModalThen(cb){
@@ -1026,14 +1187,28 @@ function closeModalThen(cb){
   if(cb) cb();
 }
 
-function finishSquare(){
+/* ---- turn completion, win checks, key events ---- */
+
+function checkWinFor(p){
+  return p.funds >= FUNDS_TARGET && p.support >= SUPPORT_TARGET;
+}
+
+function afterTurn(nextMode){
   renderSidePanel();
   const p = currentPlayer();
-  if(p.funds >= FUNDS_TARGET && p.support >= SUPPORT_TARGET){
+  if(checkWinFor(p)){
     endGame(state.current);
     return;
   }
-  advanceToNextPlayer();
+  state.totalTurns++;
+  updateKeyEventNote();
+  if(state.totalTurns % KEY_EVENT_INTERVAL === 0){
+    startKeyEventRound(nextMode);
+  } else if(nextMode === 'again'){
+    closeModalThen(()=> beginTurn());
+  } else {
+    advanceToNextPlayer();
+  }
 }
 
 function advanceToNextPlayer(){
@@ -1048,12 +1223,100 @@ function showPassInterstitial(){
   box.innerHTML = `
     <div class="m-icon">🤝</div>
     <div class="m-tag">Pass the device</div>
-    <h3><span class="pdot-big" style="background:${p.color}"></span>${escapeHtml(p.name)}'s turn</h3>
-    <p class="m-body">Hand the device to <b>${escapeHtml(p.name)}</b> (${PARTY_LABEL[p.party]}), then tap ready.</p>
+    <h3><span style="display:inline-block; width:16px; height:16px; border-radius:50%; background:${p.color}; margin-right:8px; vertical-align:-2px;"></span>${escapeHtml(p.name)}'s turn</h3>
+    <p class="m-body" style="text-align:center;">Hand the device to <b>${escapeHtml(p.name)}</b> (${PARTY_LABEL[p.party]}), then tap ready.</p>
     <button class="btn btn-primary" id="pass-ready">We're Ready</button>
   `;
   box.querySelector('#pass-ready').addEventListener('click', ()=>{
     closeModalThen(beginTurn);
+  });
+  overlay.classList.add('active');
+}
+
+/* ---- Key Event rounds ---- */
+
+let keyEventQueue = [];
+let keyEventNextMode = 'advance';
+let keyEventMilestone = null;
+
+function startKeyEventRound(nextMode){
+  keyEventNextMode = nextMode;
+  const cycleLen = KEY_EVENTS.length;
+  const cycleNum = Math.floor(state.keyEventCycle / cycleLen);
+  keyEventMilestone = KEY_EVENTS[state.keyEventCycle % cycleLen];
+  state.keyEventCycle++;
+
+  turnBanner.classList.add('keyevent');
+  turnName.textContent = `Key Event: ${keyEventMilestone.label}`;
+  turnDot.style.background = 'var(--gold-bright)';
+
+  keyEventQueue = state.players.map((_,i)=> (state.current+1+i) % state.players.length);
+
+  let narrative = keyEventMilestone.variants[Math.floor(Math.random()*keyEventMilestone.variants.length)];
+  if(keyEventMilestone.key === 'iowa' && cycleNum > 0){
+    narrative = "Another election cycle begins. " + narrative;
+  }
+  keyEventMilestone._narrative = narrative;
+
+  closeModalThen(()=> runNextKeyEventPlayer());
+}
+
+function runNextKeyEventPlayer(){
+  if(keyEventQueue.length === 0){
+    state.keyEventActiveIdx = null;
+    turnBanner.classList.remove('keyevent');
+    if(keyEventNextMode === 'again'){
+      beginTurn();
+    } else {
+      advanceToNextPlayer();
+    }
+    return;
+  }
+  const idx = keyEventQueue.shift();
+  state.keyEventActiveIdx = idx;
+  const player = state.players[idx];
+  const m = keyEventMilestone;
+  renderSidePanel();
+
+  const box = document.getElementById('modal-content');
+  const overlay = document.getElementById('modal-overlay');
+  box.innerHTML = `
+    <div class="m-icon">${m.icon}</div>
+    <div class="m-tag">Key Event · ${escapeHtml(player.name)} (${PARTY_LABEL[player.party]})</div>
+    <h3>${escapeHtml(m.label)}</h3>
+    <p class="m-body">${escapeHtml(m._narrative)}</p>
+    <div class="choice-opts" id="choice-opts"></div>
+  `;
+  const wrap = box.querySelector('#choice-opts');
+  m.choices.forEach((choice, i)=>{
+    const arche = CHOICE_ARCHETYPES[i];
+    const btn = document.createElement('button');
+    btn.className = 'choice-opt';
+    btn.innerHTML = `
+      <div class="co-label">${escapeHtml(choice.label)}</div>
+      <div class="co-desc">${escapeHtml(choice.desc)}</div>
+      <div class="co-vals">
+        <span class="co-val">+$${arche.f}M</span>
+        <span class="co-val">+${arche.s} EV</span>
+      </div>
+    `;
+    btn.addEventListener('click', ()=>{
+      player.funds += arche.f;
+      player.support += arche.s;
+      renderSidePanel();
+      showOutcome({
+        icon:m.icon, tag:`Key Event · ${player.name}`, title:`Chose: ${choice.label}`,
+        effects:[{label:`+$${arche.f}M`, cls:'pos'},{label:`+${arche.s} EV`, cls:'pos'}],
+        onClose: ()=>{
+          if(checkWinFor(player)){
+            endGame(idx);
+            return;
+          }
+          runNextKeyEventPlayer();
+        }
+      });
+    });
+    wrap.appendChild(btn);
   });
   overlay.classList.add('active');
 }
@@ -1063,6 +1326,7 @@ function showPassInterstitial(){
 function endGame(winnerIdx){
   state.gameOver = true;
   state.winnerIdx = winnerIdx;
+  state.keyEventActiveIdx = null;
   const winner = state.players[winnerIdx];
 
   document.getElementById('winner-heading').textContent =
