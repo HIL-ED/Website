@@ -191,8 +191,11 @@ p.screen-sub{ margin:0 0 18px; color:var(--ink-soft); font-size:.92rem; }
 .widget-note{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:8px; padding:10px 12px; font-size:.85rem; margin:6px 0 10px; }
 
 /* hotspots / map widget */
-.hotspot-frame{ position:relative; width:100%; height:260px; background:linear-gradient(180deg,#e9dcc0,#dcc99a); border:2px solid var(--wood); border-radius:8px; margin-bottom:8px; overflow:hidden; }
+.hotspot-frame{ position:relative; width:100%; aspect-ratio:2.5/1; background:linear-gradient(180deg,#e9dcc0,#dcc99a); border:2px solid var(--wood); border-radius:8px; margin-bottom:4px; overflow:hidden; }
+@supports not (aspect-ratio:1/1){ .hotspot-frame{ height:260px; } }
 .hotspot-frame.frame-map{ background:linear-gradient(180deg,#d8e6d8,#c3d8c3); }
+.scene-svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.scene-caption{ margin:0 0 8px; font-size:.7rem; font-style:italic; color:var(--ink-soft); text-align:right; }
 .hotspot-dot{
   position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%;
   background:var(--red); color:#fff; border:2px solid #fff; font-weight:700; font-size:.78rem;
@@ -539,11 +542,11 @@ DATA.evidence = [
       type: 'hotspots',
       intro: "Click each detail Revere chose to draw. Compare it with what depositions and trial testimony actually documented.",
       spots: [
-        { x: 50, y: 20, label: 'Captain Preston', note: "Accurate/Inaccurate: Revere draws an officer with his sword raised behind the line, arm extended as if signaling — implying a deliberate order. No trial witness, colonial or British, ever placed Preston in front of the muskets giving a visible hand signal." },
-        { x: 30, y: 32, label: 'The firing line', note: "Inaccurate: the soldiers stand in a crisp, straight rank firing in unison on command, like a battlefield volley. Witnesses described a ragged, scattered sequence of shots seconds apart, from soldiers being jostled and struck." },
-        { x: 70, y: 55, label: 'The crowd', note: "Inaccurate: the crowd is small, orderly, unarmed, and standing well back — several are even falling as if in a firing-squad execution. Depositions describe a dense, close crowd pressing the soldiers and swinging clubs." },
-        { x: 15, y: 70, label: 'Broad daylight', note: "Inaccurate: the shooting happened after 9 p.m. on a moonlit but snowy night. Revere shows a bright, clear sky so viewers can see every face and detail." },
-        { x: 85, y: 25, label: 'A dog, calmly seated', note: "Detail: a small dog sits undisturbed in the foreground. A minor touch, but it reinforces the print's overall message — this was calm, orderly murder, not chaos." }
+        { x: 53, y: 18, label: 'Captain Preston', note: "Accurate/Inaccurate: Revere draws an officer with his sword raised behind the line, arm extended as if signaling — implying a deliberate order. No trial witness, colonial or British, ever placed Preston in front of the muskets giving a visible hand signal." },
+        { x: 34, y: 34, label: 'The firing line', note: "Inaccurate: the soldiers stand in a crisp, straight rank firing in unison on command, like a battlefield volley. Witnesses described a ragged, scattered sequence of shots seconds apart, from soldiers being jostled and struck." },
+        { x: 72, y: 56, label: 'The crowd', note: "Inaccurate: the crowd is small, orderly, unarmed, and standing well back — several are even falling as if in a firing-squad execution. Depositions describe a dense, close crowd pressing the soldiers and swinging clubs." },
+        { x: 12, y: 12, label: 'Broad daylight', note: "Inaccurate: the shooting happened after 9 p.m. on a moonlit but snowy night. Revere shows a bright, clear sky so viewers can see every face and detail." },
+        { x: 90, y: 85, label: 'A dog, calmly seated', note: "Detail: a small dog sits undisturbed in the foreground. A minor touch, but it reinforces the print's overall message — this was calm, orderly murder, not chaos." }
       ]
     },
     suggested: { soldiers: 20, preston: 15, sons: 10 },
@@ -724,11 +727,11 @@ DATA.evidence = [
       type: 'map',
       intro: "Click each location to see what happened there.",
       points: [
-        { x: 50, y: 18, label: 'Custom House', note: "Where Private Hugh White stood sentry alone before Preston brought reinforcements — the building the soldiers had their backs against, with nowhere to retreat." },
-        { x: 50, y: 45, label: 'The Guard', note: "Preston and 7-8 privates formed a loose semicircle here, muskets loaded, packed shoulder to shoulder against the wall." },
-        { x: 30, y: 70, label: 'Dense Crowd', note: "Estimated at 50-400 people by different accounts, pressing in from King Street, some within arm's reach of the bayonets." },
-        { x: 75, y: 80, label: 'Royal Exchange Lane', note: "A narrow side street feeding more people into the crowd as church and fire bells drew them from across Boston." },
-        { x: 20, y: 30, label: 'Where the dead fell', note: "Attucks and Caldwell fell close to the soldiers' line; Gray, Maverick, and Carr further back in the crowd — a detail some historians use to question how threatening the crowd truly was at the moment of firing." }
+        { x: 50, y: 15, label: 'Custom House', note: "Where Private Hugh White stood sentry alone before Preston brought reinforcements — the building the soldiers had their backs against, with nowhere to retreat." },
+        { x: 52, y: 45, label: 'The Guard', note: "Preston and 7-8 privates formed a loose semicircle here, muskets loaded, packed shoulder to shoulder against the wall." },
+        { x: 18, y: 75, label: 'Dense Crowd', note: "Estimated at 50-400 people by different accounts, pressing in from King Street, some within arm's reach of the bayonets." },
+        { x: 84, y: 80, label: 'Royal Exchange Lane', note: "A narrow side street feeding more people into the crowd as church and fire bells drew them from across Boston." },
+        { x: 20, y: 31, label: 'Where the dead fell', note: "Attucks and Caldwell fell close to the soldiers' line; Gray, Maverick, and Carr further back in the crowd — a detail some historians use to question how threatening the crowd truly was at the moment of firing." }
       ]
     },
     suggested: { soldiers: 10, civilians: 10, chance: 10 },
@@ -1110,13 +1113,85 @@ function renderInteractive(e){
   }
 }
 
+/* Small reusable SVG pictogram — a head + body, optionally armed / arm raised / fallen.
+   Coordinates are in the same 0-100 space as hotspot x/y percentages, so a figure
+   drawn at (x,y) always sits directly under a marker placed at that same (x,y). */
+function figureMarkSVG(x, y, opts){
+  opts = opts || {};
+  const scale = opts.scale || 1;
+  const color = opts.color || '#241c12';
+  const rot = opts.fallen ? ' rotate(75)' : '';
+  let extra = '';
+  if (opts.armed) extra += `<line x1="1.3" y1="-1" x2="4.3" y2="-2.6" stroke="${color}" stroke-width="0.6" stroke-linecap="round"/>`;
+  if (opts.raisedArm) extra += `<line x1="1.1" y1="-2" x2="3.8" y2="-6.2" stroke="${color}" stroke-width="0.7" stroke-linecap="round"/>`;
+  return `<g transform="translate(${x},${y}) scale(${scale})${rot}">
+    <rect x="-1.3" y="-2.2" width="2.6" height="5" rx="0.7" fill="${color}"/>
+    <circle cx="0" cy="-3.3" r="1.15" fill="${color}"/>
+    ${extra}
+  </g>`;
+}
+
+/* The frame is a fixed 2.5:1 box (see .hotspot-frame in CSS). Its viewBox below
+   (0 0 100 40) matches that ratio exactly, so the SVG scales uniformly — no
+   squashing. x stays a plain 0-100 percent (matching hotspot dot placement
+   directly); Y() converts a "percent down the frame" position into this
+   viewBox's shorter 0-40 range. Only frame-relative *positions* go through Y() —
+   a figure's own local proportions (head/body offsets) are left alone, since
+   those already render correctly once the scale is uniform. */
+const SCENE_VB_H = 40;
+function Y(percent){ return +(percent * SCENE_VB_H / 100).toFixed(2); }
+
+/* A stylized recreation of the composition of Revere's engraving — not a literal
+   reproduction (which no CSS/SVG could honestly claim to be), but a diagram that
+   lets students see roughly where each disputed detail sits so the hotspots have
+   something to point at. */
+function engravingSceneSVG(){
+  const sunCx = 12, sunCy = Y(12);
+  const sun = `<circle cx="${sunCx}" cy="${sunCy}" r="4.5" fill="none" stroke="#a97d2f" stroke-width="1"/>` +
+    [0, 45, 90, 135, 180, 225, 270, 315].map(a => {
+      const rad = a * Math.PI / 180, r1 = 4.5, r2 = 7;
+      const x1 = (sunCx + r1 * Math.cos(rad)).toFixed(1), y1 = (sunCy + r1 * Math.sin(rad)).toFixed(1);
+      const x2 = (sunCx + r2 * Math.cos(rad)).toFixed(1), y2 = (sunCy + r2 * Math.sin(rad)).toFixed(1);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a97d2f" stroke-width="1"/>`;
+    }).join('');
+  const building = `<rect x="80" y="${Y(20)}" width="18" height="${Y(56)}" fill="#cbb789" stroke="#3a2a18" stroke-width="0.8"/>
+    <polygon points="78,${Y(20)} 89,${Y(8)} 100,${Y(20)}" fill="#a8926a" stroke="#3a2a18" stroke-width="0.8"/>
+    <rect x="86" y="${Y(58)}" width="6" height="${Y(18)}" fill="#3a2a18"/>`;
+  const ground = `<line x1="0" y1="${Y(88)}" x2="100" y2="${Y(88)}" stroke="#6b5636" stroke-width="0.6"/>`;
+  const soldiers = [18, 25, 32, 39, 46].map(x => figureMarkSVG(x, Y(34), { armed: true })).join('');
+  const officer = figureMarkSVG(53, Y(18), { scale: 1.15, raisedArm: true });
+  const crowd = [[58, 60], [64, 50], [71, 63], [77, 52], [83, 61], [65, 70]]
+    .map(([x, y], i) => figureMarkSVG(x, Y(y), { scale: 0.85, color: '#4a3d2a', fallen: i % 3 === 0 })).join('');
+  const dog = `<g transform="translate(90,${Y(85)})"><ellipse cx="0" cy="0" rx="4" ry="2" fill="#241c12"/><circle cx="4.4" cy="-1" r="1.3" fill="#241c12"/><line x1="-4" y1="0" x2="-6.2" y2="-2" stroke="#241c12" stroke-width="0.8" stroke-linecap="round"/></g>`;
+  return `<svg class="scene-svg" viewBox="0 0 100 ${SCENE_VB_H}" preserveAspectRatio="none" aria-hidden="true">${sun}${building}${ground}${soldiers}${officer}${crowd}${dog}</svg>`;
+}
+
+/* A schematic top-down reconstruction of King Street, built from trial testimony —
+   scenery for the "Map of the Street" exhibit's hotspots. */
+function mapSceneSVG(){
+  const street = `<rect x="0" y="${Y(58)}" width="100" height="${Y(38)}" fill="#c7b892" opacity="0.55"/>`;
+  const lane = `<polygon points="64,${Y(58)} 100,${Y(70)} 100,${Y(96)} 72,${Y(96)}" fill="#b6a578" opacity="0.6"/>`;
+  const building = `<rect x="38" y="${Y(4)}" width="24" height="${Y(22)}" fill="#cbb789" stroke="#3a2a18" stroke-width="0.8"/><rect x="47" y="${Y(16)}" width="6" height="${Y(10)}" fill="#3a2a18"/>`;
+  const sentryBox = `<rect x="32" y="${Y(18)}" width="4.5" height="${Y(9)}" fill="#8a6f45" stroke="#3a2a18" stroke-width="0.5"/>`;
+  const guard = [40, 46, 52, 58, 64].map(x => figureMarkSVG(x, Y(45), { armed: true })).join('');
+  const crowd = [[12, 62], [19, 70], [8, 76], [26, 78], [16, 85], [30, 66], [6, 65]]
+    .map(([x, y]) => figureMarkSVG(x, Y(y), { scale: 0.8, color: '#5a3a2a' })).join('');
+  const deadMarks = [[16, 27], [24, 33]].map(([x, y]) =>
+    `<g transform="translate(${x},${Y(y)})"><line x1="-1.8" y1="-1.8" x2="1.8" y2="1.8" stroke="#7a2118" stroke-width="1" stroke-linecap="round"/><line x1="-1.8" y1="1.8" x2="1.8" y2="-1.8" stroke="#7a2118" stroke-width="1" stroke-linecap="round"/></g>`
+  ).join('');
+  return `<svg class="scene-svg" viewBox="0 0 100 ${SCENE_VB_H}" preserveAspectRatio="none" aria-hidden="true">${street}${lane}${building}${sentryBox}${guard}${crowd}${deadMarks}</svg>`;
+}
+
 function hotspotsHTML(cfg, variant){
   const spots = cfg.spots || cfg.points;
   const activeIdx = ui.hotspot != null ? ui.hotspot : null;
+  const scene = variant === 'engraving' ? engravingSceneSVG() : (variant === 'map' ? mapSceneSVG() : '');
   return `<p class="widget-intro">${esc(cfg.intro)}</p>
   <div class="hotspot-frame frame-${variant}">
+    ${scene}
     ${spots.map((p, i) => `<button type="button" class="hotspot-dot ${activeIdx === i ? 'active' : ''}" style="left:${p.x}%;top:${p.y}%" data-action="hotspot" data-idx="${i}">${i + 1}</button>`).join('')}
   </div>
+  <p class="scene-caption">A simplified diagram for analysis — not a literal reproduction.</p>
   ${activeIdx != null
     ? `<div class="widget-note"><strong>${esc(spots[activeIdx].label)}.</strong> ${esc(spots[activeIdx].note)}</div>`
     : `<div class="widget-hint">Click a numbered marker to analyze that detail.</div>`}`;
