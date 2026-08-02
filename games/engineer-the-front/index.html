@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineer the Front — WWI Trench Engineering</title>
+
+<!--
+=======================================================================================
+ ENGINEER THE FRONT  —  A World War I trench-engineering strategy game
+ Single-file HTML5 / CSS / vanilla JS. No external assets or libraries.
+ Audience: high-school World History students studying WWI (Western Front).
+
+ TEACHERS — HOW TO CUSTOMISE
+ ---------------------------
+ Almost everything you'd want to change lives in the CONFIG object near the top of
+ the <script> block: starting resources, structure costs, combat tuning, the tech
+ unlock schedule, and the campaign calendar. The educational text lives in CONCEPTS.
+ Each system is commented and separated by a banner so you can find things quickly.
+=======================================================================================
+-->
+
+<style>
+/* =====================================================================================
+   DESIGN TOKENS  —  "Field Engineer's Ordnance Map" identity
+   Palette: trench mud, sandbag hessian, ordnance ochre, blueprint teal, chalk, rust.
+   ===================================================================================== */
+:root{
+  --mud-0:#1b1811;      /* deepest background */
+  --mud-1:#26221a;      /* panels */
+  --mud-2:#332d22;      /* raised panels */
+  --mud-3:#463d2d;      /* borders / dividers */
+  --sandbag:#c9b087;    /* warm hessian */
+  --sandbag-dk:#9a835f;
+  --ochre:#c79045;      /* map contour / highlight */
+  --blue:#4f97a8;       /* blueprint engineering accent */
+  --blue-dk:#2c5f6b;
+  --chalk:#ece6d6;      /* primary text on dark */
+  --chalk-dim:#a99f89;  /* secondary text */
+  --rust:#c04a33;       /* danger / enemy / alerts */
+  --rust-dk:#7d2e20;
+  --green:#7fa05a;      /* friendly / ok */
+  --gold:#e0b64a;
+  --shadow:0 6px 20px rgba(0,0,0,.45);
+  --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --disp: "Arial Narrow","Roboto Condensed","Helvetica Neue",sans-serif;
+  --body: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--body);
+  color:var(--chalk);
+  background:
+    /* faint topographic contour lines — the signature texture */
+    repeating-linear-gradient(115deg, transparent 0 38px, rgba(199,144,69,.035) 38px 39px),
+    repeating-linear-gradient(25deg,  transparent 0 46px, rgba(79,151,168,.03) 46px 47px),
+    radial-gradient(circle at 20% 0%, #2c2618 0%, var(--mud-0) 60%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:var(--disp);text-transform:uppercase;letter-spacing:.11em;margin:0;font-weight:700}
+button{font-family:var(--disp);text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
+.mono{font-family:var(--mono)}
+
+/* --- generic buttons --- */
+.btn{
+  background:linear-gradient(180deg,var(--mud-2),var(--mud-1));
+  color:var(--chalk); border:1px solid var(--mud-3);
+  padding:9px 15px; border-radius:4px; font-size:13px;
+  transition:.12s; box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.btn:hover{border-color:var(--ochre);color:#fff;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.btn.primary{background:linear-gradient(180deg,#356573,var(--blue-dk));border-color:var(--blue)}
+.btn.primary:hover{background:linear-gradient(180deg,#3e7787,#356573)}
+.btn.danger{background:linear-gradient(180deg,#8a3324,var(--rust-dk));border-color:var(--rust)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;border-color:var(--mud-3)}
+/* selected toggle button (e.g. difficulty picker) — clear, obvious highlight */
+.btn.sel{background:linear-gradient(180deg,#3e7787,var(--blue-dk));border-color:var(--blue);
+  color:#fff;font-weight:700;box-shadow:0 0 0 2px rgba(79,151,168,.35),var(--shadow)}
+.btn.diff.sel::after{content:"✓";margin-left:6px;font-weight:700}
+
+/* =====================================================================================
+   SCREENS
+   ===================================================================================== */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ---- Title screen ---- */
+#screen-title{display:none;place-items:center;min-height:100vh;padding:24px}
+#screen-title.active{display:grid}
+.title-card{max-width:720px;text-align:center}
+.title-emblem{
+  width:130px;height:130px;margin:0 auto 18px;position:relative;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,var(--mud-2),var(--mud-0));
+  border:2px solid var(--ochre); box-shadow:var(--shadow), inset 0 0 30px rgba(0,0,0,.6);
+}
+/* emblem: crossed shovels + a trench line, drawn in CSS */
+.title-emblem::before,.title-emblem::after{
+  content:"";position:absolute;left:50%;top:50%;width:8px;height:74px;border-radius:3px;
+  background:linear-gradient(var(--sandbag),var(--sandbag-dk));
+  transform-origin:center; box-shadow:0 0 4px rgba(0,0,0,.5);
+}
+.title-emblem::before{transform:translate(-50%,-50%) rotate(38deg)}
+.title-emblem::after{transform:translate(-50%,-50%) rotate(-38deg)}
+.title-emblem i{position:absolute;left:16px;right:16px;top:50%;height:0;
+  border-top:3px dashed var(--blue);transform:translateY(-50%);opacity:.9}
+.title-card h1{font-size:clamp(38px,7vw,68px);letter-spacing:.06em;
+  text-shadow:0 2px 0 #000, 0 0 24px rgba(199,144,69,.25);line-height:.95}
+.title-card .tag{color:var(--ochre);letter-spacing:.35em;font-family:var(--disp);
+  text-transform:uppercase;font-size:14px;margin-top:8px}
+.title-card p.lede{color:var(--chalk-dim);max-width:520px;margin:20px auto 26px;line-height:1.6;font-size:15px}
+.title-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.title-actions .btn{font-size:15px;padding:13px 26px}
+.title-foot{margin-top:34px;color:#6f6853;font-size:12px;font-family:var(--mono)}
+
+/* =====================================================================================
+   GAME LAYOUT
+   ===================================================================================== */
+#screen-game{padding:0}
+.topbar{
+  position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:8px 16px;background:linear-gradient(180deg,#2c2619,#211d15);
+  border-bottom:1px solid var(--mud-3);box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--ochre);
+  background:radial-gradient(circle at 50% 40%,var(--mud-2),var(--mud-0));position:relative}
+.brand .dot::after{content:"";position:absolute;inset:7px;border-top:2px dashed var(--blue)}
+.brand b{font-family:var(--disp);text-transform:uppercase;letter-spacing:.14em;font-size:15px}
+.brand span{color:var(--ochre);font-size:11px;font-family:var(--mono);display:block;margin-top:-2px}
+
+.calendar{font-family:var(--mono);font-size:12px;color:var(--chalk-dim);
+  border-left:1px solid var(--mud-3);padding-left:14px;line-height:1.3}
+.calendar b{color:var(--gold);font-size:14px}
+
+/* resource meters */
+.meters{display:flex;gap:6px;flex:1;flex-wrap:wrap;justify-content:flex-end}
+.meter{min-width:78px;background:var(--mud-1);border:1px solid var(--mud-3);border-radius:4px;
+  padding:4px 8px;position:relative;overflow:hidden}
+.meter .lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk-dim);font-family:var(--disp)}
+.meter .val{font-family:var(--mono);font-size:15px;font-weight:700;line-height:1.1}
+.meter .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--blue);transition:width .5s}
+.meter.eng .val{color:var(--blue)} .meter.eng .bar{background:var(--blue)}
+.meter.morale .val{color:var(--gold)} .meter.morale .bar{background:var(--gold)}
+.meter.man .val{color:var(--sandbag)} .meter.man .bar{background:var(--sandbag)}
+.meter.ammo .val{color:var(--rust)} .meter.ammo .bar{background:var(--rust)}
+.meter.food .val{color:var(--green)} .meter.food .bar{background:var(--green)}
+.meter.line .val{color:#fff} .meter.line .bar{background:#fff}
+.meter.cas .val{color:var(--rust)} .meter.cas .bar{background:var(--rust)}
+.meter .val .sub{font-size:9px;color:var(--chalk-dim);font-weight:600;margin-left:5px;
+  font-family:var(--disp);letter-spacing:.06em;text-transform:uppercase}
+
+.workspace{display:grid;grid-template-columns:230px 1fr 300px;gap:12px;padding:12px;align-items:start}
+@media (max-width:1080px){.workspace{grid-template-columns:1fr}}
+
+.panel{background:linear-gradient(180deg,var(--mud-1),#211d15);border:1px solid var(--mud-3);
+  border-radius:6px;box-shadow:var(--shadow)}
+.panel > h3{padding:10px 12px;font-size:13px;color:var(--ochre);border-bottom:1px solid var(--mud-3);
+  display:flex;align-items:center;justify-content:space-between}
+.panel-body{padding:10px 12px}
+
+/* ---- palette (left) ---- */
+.palette-cat{font-family:var(--disp);text-transform:uppercase;letter-spacing:.14em;font-size:10px;
+  color:var(--blue);margin:12px 0 6px;border-bottom:1px dotted var(--mud-3);padding-bottom:3px}
+.palette-cat:first-child{margin-top:0}
+.pitem{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:5px;margin-bottom:4px;
+  border:1px solid transparent;cursor:grab;transition:.1s;position:relative}
+.pitem:hover{background:var(--mud-2);border-color:var(--mud-3)}
+.pitem.sel{background:rgba(79,151,168,.16);border-color:var(--blue)}
+.pitem.locked{opacity:.4;cursor:not-allowed}
+.pitem.unafford .cost{color:var(--rust)}
+.pitem .meta{flex:1;min-width:0}
+.pitem .nm{font-size:12px;font-weight:600;line-height:1.15;font-family:var(--disp);letter-spacing:.03em;text-transform:uppercase}
+.pitem .cost{font-family:var(--mono);font-size:11px;color:var(--ochre)}
+.pitem .lockbadge{position:absolute;right:6px;top:6px;font-size:8px;font-family:var(--mono);
+  color:var(--rust);border:1px solid var(--rust-dk);border-radius:3px;padding:0 3px}
+.tool-row{display:flex;gap:6px;margin-bottom:10px}
+.tool-row .btn{flex:1;padding:7px;font-size:11px}
+
+/* ---- battlefield (center) ---- */
+.field-wrap{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--mud-3);
+  box-shadow:var(--shadow);background:#20211a}
+.field-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;font-family:var(--mono);
+  color:var(--chalk-dim);padding:8px 12px;background:var(--mud-1);border-bottom:1px solid var(--mud-3)}
+.field-legend span{display:flex;align-items:center;gap:5px}
+.lgd-swatch{width:11px;height:11px;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,.4)}
+
+#field{display:grid;position:relative;gap:2px;padding:10px;background:
+  repeating-linear-gradient(0deg,transparent 0 26px,rgba(0,0,0,.12) 26px 27px),
+  repeating-linear-gradient(90deg,transparent 0 26px,rgba(0,0,0,.12) 26px 27px),
+  #2a2b21;}
+.cell{position:relative;aspect-ratio:1/1;border-radius:3px;display:flex;align-items:center;justify-content:center;
+  transition:.1s;border:1px solid rgba(0,0,0,.25);min-height:26px;cursor:pointer;overflow:hidden}
+.cell:focus-visible{outline:2px solid var(--blue);outline-offset:1px;z-index:5}
+.cell.z-enemy{filter:saturate(.8)}
+.cell.z-noman::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 30% 40%,rgba(0,0,0,.25) 1px,transparent 2px),
+  radial-gradient(circle at 70% 65%,rgba(0,0,0,.2) 1px,transparent 2px);opacity:.6;pointer-events:none}
+.cell.buildable:hover{border-color:var(--blue);box-shadow:0 0 0 2px rgba(79,151,168,.4) inset}
+.cell.invalid-hover{box-shadow:0 0 0 2px rgba(192,74,51,.6) inset}
+.cell.enemy-mark{box-shadow:0 0 0 2px var(--rust) inset}
+
+/* ---- orientation: left rail labelling the three bands ---- */
+.field-rail-wrap{display:flex;align-items:stretch}
+.zone-rail{display:flex;flex-direction:column;width:22px;flex:none;gap:2px;padding:10px 0}
+.zr{writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--disp);font-size:9px;letter-spacing:.14em;text-transform:uppercase;border-radius:4px;
+  overflow:hidden;white-space:nowrap;line-height:1;padding:2px 0;user-select:none}
+.zr-enemy{background:rgba(150,45,33,.28);color:#e8b0a0;border:1px solid rgba(150,45,33,.5)}
+.zr-noman{background:rgba(0,0,0,.18);color:var(--chalk-dim);border:1px solid var(--mud-3)}
+.zr-player{background:rgba(79,151,168,.20);color:#bfe2ea;border:1px solid rgba(79,151,168,.5)}
+.field-inner{position:relative;flex:1;min-width:0}
+
+/* faint band tints via child overlay (avoids ::before conflicts with flooding) */
+.ztint{position:absolute;inset:0;pointer-events:none;z-index:0}
+.zt-enemy{background:rgba(150,45,33,.20)}
+.zt-player{background:rgba(79,151,168,.06)}
+
+/* ---- enemy encampment features (rust, non-interactive) ---- */
+.efeat{position:absolute;inset:2px;z-index:1;display:flex;align-items:center;justify-content:center;border-radius:2px}
+.efeat .lab{position:absolute;bottom:-1px;right:0;font-family:var(--mono);font-size:6.5px;color:#1a1a14;
+  background:rgba(210,150,120,.85);border-radius:2px;padding:0 1px;line-height:1.15;letter-spacing:0}
+.ef-etrench{background:repeating-linear-gradient(90deg,rgba(150,45,33,.8) 0 5px,transparent 5px 9px);
+  border-top:2px solid rgba(150,45,33,.95);border-bottom:2px solid rgba(150,45,33,.45)}
+.ef-ebunker{background:rgba(120,38,28,.9);border:1px solid rgba(0,0,0,.45)}
+.ef-ebunker::after{content:"";width:60%;height:3px;background:#141410;border-radius:1px}
+.ef-emg{background:radial-gradient(circle at 50% 58%,rgba(160,50,36,.95) 32%,rgba(90,28,20,.9) 56%,transparent 62%)}
+.ef-emg::after{content:"";position:absolute;top:1px;left:50%;transform:translateX(-50%);width:2px;height:48%;background:#141410}
+.ef-ehq{background:rgba(90,28,20,.9)}
+.ef-ehq::before{content:"";position:absolute;left:36%;top:14%;width:46%;height:26%;background:var(--rust)}
+.ef-ehq::after{content:"";position:absolute;left:35%;top:14%;width:2px;height:72%;background:#e8dcc0}
+.ef-ecamp{background:repeating-linear-gradient(45deg,rgba(120,38,28,.5) 0 3px,transparent 3px 7px)}
+/* terrain colours */
+.t-plain{background:#4a4632}
+.t-hill{background:#6b5f3c}
+.t-hill.e2{background:#7d6d40}
+.t-hill.e3{background:#8f7c46}
+.t-river{background:#2f5560}
+.t-forest{background:#33422a}
+.t-village{background:#5a4d3f}
+.t-crater{background:#3a352a}
+.cell.flooded{box-shadow:0 0 0 2px rgba(79,151,168,.5) inset}
+.cell.flooded::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(47,85,96,.55),rgba(47,85,96,.2));
+  animation:ripple 3s linear infinite;pointer-events:none}
+@keyframes ripple{0%{opacity:.3}50%{opacity:.6}100%{opacity:.3}}
+
+/* structure glyph inside a cell */
+.struct{position:absolute;inset:2px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.cell .ico{transform:scale(.82)}
+.cell .tag{position:absolute;bottom:0;right:1px;font-family:var(--mono);font-size:7px;color:#000;
+  background:rgba(255,255,255,.55);border-radius:2px;padding:0 1px;line-height:1.1}
+.cell.dmg{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+
+/* explosion / effect overlays injected during simulation */
+.fx{position:absolute;pointer-events:none;z-index:20}
+.fx-boom{width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,var(--gold) 25%,var(--rust) 55%,transparent 72%);
+  transform:translate(-50%,-50%) scale(.2);animation:boom .6s ease-out forwards;mix-blend-mode:screen}
+@keyframes boom{0%{transform:translate(-50%,-50%) scale(.2);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1.6);opacity:0}}
+.fx-flash{width:16px;height:16px;background:radial-gradient(circle,#fff,var(--gold),transparent);
+  transform:translate(-50%,-50%);animation:flash .25s ease-out forwards;border-radius:50%}
+@keyframes flash{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.3)}}
+.fx-gas{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,rgba(160,190,90,.7),transparent 70%);
+  transform:translate(-50%,-50%);animation:gas 1.4s ease-out forwards}
+@keyframes gas{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:.9}100%{opacity:0;transform:translate(-50%,-60%) scale(1.8)}}
+
+/* rolling chlorine/phosgene cloud — outer wrapper is moved by JS; inner puffs billow */
+.gaswrap{width:42px;height:34px}
+.gaspuff{position:absolute;inset:0;border-radius:50% 50% 45% 55%;
+  background:radial-gradient(circle at 45% 40%, rgba(210,224,96,.82), rgba(150,188,72,.5) 55%, rgba(120,150,60,.15) 78%, transparent 85%);
+  filter:blur(1.5px);mix-blend-mode:screen;animation:billow 2.1s ease-in-out forwards}
+@keyframes billow{0%{opacity:0;transform:scale(.35)}22%{opacity:.9;transform:scale(1)}
+  70%{opacity:.9;transform:scale(1.3)}100%{opacity:0;transform:scale(1.7)}}
+
+/* ---- battlefield combat animation layer (soldiers, gunfire, tanks) ---- */
+.battle-fx{position:absolute;inset:0;pointer-events:none;z-index:22;overflow:hidden}
+.spr{position:absolute;transform:translate(-50%,-50%);will-change:top,left,opacity}
+/* a little 2D infantryman: head + torso + rifle */
+.soldier{width:7px;height:11px}
+.soldier .hd{position:absolute;left:50%;top:0;width:4px;height:4px;border-radius:50%;transform:translateX(-50%);background:#d8c9a8}
+.soldier .bd{position:absolute;left:50%;top:3px;width:5px;height:8px;border-radius:2px;transform:translateX(-50%)}
+.soldier .rf{position:absolute;left:60%;top:4px;width:6px;height:1.5px;background:#20160e;transform-origin:left center;transform:rotate(8deg)}
+.soldier.enemy .bd{background:#7a3326}
+.soldier.enemy .hd{background:#caa07e}
+.soldier.friend .bd{background:#33707e}
+.soldier.run{animation:bob .28s steps(2) infinite}
+@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-1.5px}}
+.soldier.fall{animation:fall .5s ease-out forwards}
+@keyframes fall{0%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(85deg) scale(.9)}}
+/* muzzle flash from defenders / guns */
+.muzzle{width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff,#ffd67a 40%,transparent 70%);
+  transform:translate(-50%,-50%);animation:muzz .18s ease-out forwards;mix-blend-mode:screen}
+@keyframes muzz{0%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.4)}}
+/* tracer streak */
+.tracer{width:14px;height:2px;background:linear-gradient(90deg,transparent,#ffe08a,#fff);border-radius:2px;
+  transform-origin:left center;animation:tracer .22s linear forwards;opacity:.9}
+@keyframes tracer{0%{opacity:.9}100%{opacity:0}}
+/* little tank */
+.tank{width:16px;height:10px}
+.tank .hull{position:absolute;inset:0;background:#5b5136;border:1px solid #2a2416;border-radius:2px}
+.tank .trk{position:absolute;left:-1px;right:-1px;bottom:-1px;height:3px;background:repeating-linear-gradient(90deg,#20160e 0 2px,#4a4030 2px 4px);border-radius:2px}
+.tank .gun{position:absolute;top:3px;right:-6px;width:7px;height:2px;background:#20160e}
+/* mine eruption debris */
+.erupt{width:30px;height:30px;border-radius:50% 50% 40% 40%;
+  background:radial-gradient(circle at 50% 80%,#3a2c18,#6a4a24 45%,rgba(120,80,40,.4) 70%,transparent 80%);
+  transform:translate(-50%,-100%) scale(.3);animation:erupt .7s ease-out forwards}
+@keyframes erupt{0%{opacity:1;transform:translate(-50%,-30%) scale(.3)}60%{opacity:1;transform:translate(-50%,-95%) scale(1)}100%{opacity:0;transform:translate(-50%,-110%) scale(1.15)}}
+
+/* weather overlay */
+.weather{position:absolute;inset:0;pointer-events:none;z-index:15;overflow:hidden}
+.weather.rain::before{content:"";position:absolute;inset:-20% 0;background:
+  repeating-linear-gradient(105deg,transparent 0 6px,rgba(180,210,230,.20) 6px 7px);
+  animation:rain .5s linear infinite}
+@keyframes rain{0%{transform:translateY(-10%)}100%{transform:translateY(10%)}}
+.weather.snow::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle,#fff 1px,transparent 2px) 0 0/22px 22px,
+  radial-gradient(circle,#fff 1px,transparent 2px) 8px 11px/28px 28px;opacity:.5;animation:snow 6s linear infinite}
+@keyframes snow{0%{background-position:0 0,8px 11px}100%{background-position:6px 60px,14px 71px}}
+.weather.fog::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(210,205,190,.28),rgba(210,205,190,.08));animation:fog 8s ease-in-out infinite alternate}
+@keyframes fog{0%{opacity:.4}100%{opacity:.75}}
+
+/* ---- right column: log + intel ---- */
+.log{height:270px;overflow-y:auto;font-family:var(--mono);font-size:12px;line-height:1.5}
+.log .entry{padding:4px 6px;border-left:3px solid var(--mud-3);margin-bottom:3px;background:rgba(0,0,0,.15)}
+.log .entry.good{border-color:var(--green);color:#c7e0a8}
+.log .entry.bad{border-color:var(--rust);color:#e6a99a}
+.log .entry.info{border-color:var(--blue);color:#a9d4de}
+.log .entry.head{border-color:var(--ochre);color:var(--gold);font-family:var(--disp);
+  text-transform:uppercase;letter-spacing:.08em;font-size:11px;background:rgba(199,144,69,.08)}
+.intel{font-size:12px;line-height:1.5}
+.intel .row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dotted var(--mud-3)}
+.intel .row b{font-family:var(--mono)}
+.rating{display:inline-block;padding:1px 7px;border-radius:10px;font-family:var(--mono);font-size:11px}
+.r-good{background:rgba(127,160,90,.25);color:var(--green)}
+.r-mid{background:rgba(224,182,74,.2);color:var(--gold)}
+.r-bad{background:rgba(192,74,51,.22);color:var(--rust)}
+
+.actionbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;
+  position:sticky;bottom:0;background:linear-gradient(0deg,#211d15,rgba(33,29,21,.85));
+  border-top:1px solid var(--mud-3);z-index:30;backdrop-filter:blur(3px)}
+.actionbar .spacer{flex:1}
+.hint{font-family:var(--mono);font-size:11px;color:var(--chalk-dim)}
+
+/* =====================================================================================
+   CSS-DRAWN STRUCTURE ICONS  (no external images)
+   Each .ico is a 26px chip; child <i> and pseudo-elements form a distinct motif.
+   ===================================================================================== */
+.ico{position:relative;width:26px;height:26px;border-radius:5px;flex:0 0 auto;display:inline-block;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.3);overflow:hidden}
+.ico i{position:absolute;display:block}
+
+.ico-fire_trench{background:linear-gradient(#5a4a30,#3d3120)}
+.ico-fire_trench i{left:3px;right:3px;height:3px;background:var(--sandbag)}
+.ico-fire_trench i:nth-child(1){top:7px;clip-path:polygon(0 0,25% 100%,50% 0,75% 100%,100% 0,100% 100%,0 100%)}
+.ico-fire_trench i:nth-child(2){top:15px;clip-path:polygon(0 100%,25% 0,50% 100%,75% 0,100% 100%,100% 0,0 0)}
+
+.ico-comm_trench{background:linear-gradient(#6a5636,#463822)}
+.ico-comm_trench i{top:3px;bottom:3px;width:4px;left:11px;background:var(--sandbag);border-radius:2px}
+
+.ico-reserve_trench{background:linear-gradient(#4a3d28,#302818)}
+.ico-reserve_trench i{left:3px;right:3px;height:3px;background:var(--sandbag-dk)}
+.ico-reserve_trench i:nth-child(1){top:8px;background:repeating-linear-gradient(90deg,var(--sandbag) 0 3px,transparent 3px 6px)}
+.ico-reserve_trench i:nth-child(2){top:15px;background:repeating-linear-gradient(90deg,var(--sandbag) 0 3px,transparent 3px 6px)}
+
+.ico-dugout{background:linear-gradient(#3a3020,#241d12)}
+.ico-dugout i:nth-child(1){left:5px;right:5px;bottom:5px;height:9px;background:#1a150d;border-radius:2px 2px 0 0}
+.ico-dugout i:nth-child(2){left:3px;right:3px;top:6px;height:6px;background:var(--sandbag);
+  clip-path:polygon(50% 0,100% 100%,0 100%)}
+
+.ico-reinforced_dugout{background:linear-gradient(#3a3324,#211c12)}
+.ico-reinforced_dugout i:nth-child(1){left:4px;right:4px;bottom:4px;height:10px;background:#14100a;border-radius:2px}
+.ico-reinforced_dugout i:nth-child(2){left:3px;right:3px;top:5px;height:7px;
+  background:linear-gradient(#9a9488,#5a5548);clip-path:polygon(50% 0,100% 100%,0 100%)}
+
+.ico-concrete_bunker{background:linear-gradient(#7d7a70,#4c4a42)}
+.ico-concrete_bunker i:nth-child(1){inset:4px;background:#3a3830;border-radius:2px}
+.ico-concrete_bunker i:nth-child(2){left:6px;right:6px;top:11px;height:4px;background:#101010}
+
+.ico-sandbags{background:linear-gradient(#c9b087,#a68d63)}
+.ico-sandbags i{height:6px;border-radius:6px;background:#e2c99f;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.ico-sandbags i:nth-child(1){left:3px;right:9px;top:5px}
+.ico-sandbags i:nth-child(2){left:9px;right:3px;top:5px}
+.ico-sandbags::before{content:"";position:absolute;left:5px;right:5px;top:13px;height:6px;border-radius:6px;background:#e2c99f}
+.ico-sandbags::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:5px;border-radius:6px;background:#d3ba90}
+
+.ico-barbed_wire{background:linear-gradient(#4a4a4a,#2a2a2a)}
+.ico-barbed_wire i{left:2px;right:2px;height:0;border-top:2px solid #b9b9b9}
+.ico-barbed_wire i:nth-child(1){top:8px} .ico-barbed_wire i:nth-child(2){top:16px}
+.ico-barbed_wire::before,.ico-barbed_wire::after{content:"";position:absolute;width:6px;height:6px;
+  background:radial-gradient(#ddd 40%,transparent 45%);left:50%;transform:translateX(-50%)}
+.ico-barbed_wire::before{top:5px} .ico-barbed_wire::after{top:13px}
+
+.ico-mg_nest{background:linear-gradient(#43503a,#28311f)}
+.ico-mg_nest i:nth-child(1){left:5px;top:9px;width:4px;height:8px;background:#161a12;border-radius:2px}
+.ico-mg_nest i:nth-child(2){left:8px;top:11px;width:15px;height:4px;background:#2a2a2a;border-radius:0 2px 2px 0}
+
+.ico-mortar_pit{background:linear-gradient(#4c4a2e,#2c2a18)}
+.ico-mortar_pit i:nth-child(1){left:6px;bottom:5px;width:14px;height:4px;background:#1b1b12;
+  border-radius:2px;transform-origin:left;transform:rotate(-38deg)}
+.ico-mortar_pit i:nth-child(2){right:6px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--rust)}
+
+.ico-artillery{background:linear-gradient(#4a4d52,#292b30)}
+.ico-artillery i:nth-child(1){left:4px;bottom:6px;width:20px;height:4px;background:#14161a;
+  border-radius:2px;transform-origin:left;transform:rotate(-30deg)}
+.ico-artillery i:nth-child(2){left:4px;bottom:4px;width:8px;height:6px;background:#5a5d62;border-radius:2px}
+
+.ico-observation_post{background:linear-gradient(#3e4a55,#232a31)}
+.ico-observation_post i:nth-child(1){left:11px;top:4px;width:4px;bottom:5px;background:#12161a}
+.ico-observation_post i:nth-child(2){left:8px;top:5px;width:10px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#fff 1.5px,var(--blue) 2px,#12161a 55%)}
+
+.ico-listening_post{background:linear-gradient(#33504f,#1d2e2d)}
+.ico-listening_post i{border:2px solid var(--blue);border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}
+.ico-listening_post i:nth-child(1){width:8px;height:8px} .ico-listening_post i:nth-child(2){width:16px;height:16px;opacity:.6}
+
+.ico-medical_station{background:linear-gradient(#e7e2d6,#c9c3b4)}
+.ico-medical_station i:nth-child(1){left:11px;top:5px;width:4px;bottom:5px;background:var(--rust);border-radius:2px}
+.ico-medical_station i:nth-child(2){left:5px;top:11px;right:5px;height:4px;background:var(--rust);border-radius:2px}
+
+.ico-supply_depot{background:linear-gradient(#8a6d43,#5c472b)}
+.ico-supply_depot i:nth-child(1){inset:4px;background:#3d2f1c;border-radius:2px}
+.ico-supply_depot i:nth-child(2){left:4px;right:4px;top:12px;height:3px;background:#8a6d43}
+.ico-supply_depot::after{content:"";position:absolute;left:12px;top:4px;bottom:4px;width:3px;background:#8a6d43}
+
+.ico-drainage{background:linear-gradient(#2f5560,#1c353d)}
+.ico-drainage i{left:3px;right:3px;height:3px;border-radius:2px;background:var(--blue)}
+.ico-drainage i:nth-child(1){top:8px;clip-path:polygon(0 50%,25% 0,50% 50%,75% 100%,100% 50%,100% 100%,0 100%)}
+.ico-drainage i:nth-child(2){top:15px;clip-path:polygon(0 50%,25% 100%,50% 50%,75% 0,100% 50%,100% 0,0 0)}
+
+/* =====================================================================================
+   MODALS
+   ===================================================================================== */
+.modal-mask{position:fixed;inset:0;background:rgba(10,8,4,.72);z-index:100;display:none;
+  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal-mask.show{display:flex}
+.modal{background:linear-gradient(180deg,var(--mud-2),var(--mud-1));border:1px solid var(--ochre);
+  border-radius:8px;max-width:640px;width:100%;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+.modal.wide{max-width:900px}
+
+/* ---- tutorial ---- */
+.tut-progress{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap}
+.tut-progress .dot{width:22px;height:4px;border-radius:2px;background:var(--mud-3);transition:.2s;cursor:pointer}
+.tut-progress .dot.on{background:var(--ochre)}
+.tut-progress .dot.done{background:var(--blue)}
+.tut-step h3{color:var(--ochre);font-size:16px;margin-bottom:8px;font-family:var(--disp);letter-spacing:.03em}
+.tut-step p{font-size:14px;line-height:1.6;color:var(--chalk);margin-bottom:10px}
+.tut-step .hl{color:var(--blue);font-weight:600}
+.tut-step .warn{color:var(--rust);font-weight:600}
+.tut-lead{background:rgba(79,151,168,.08);border-left:3px solid var(--blue);border-radius:0 5px 5px 0;
+  padding:10px 12px;font-size:13px;color:var(--chalk-dim);line-height:1.55;margin:4px 0 14px}
+/* structure reference cards */
+.tut-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.tut-cards{grid-template-columns:1fr}}
+.tut-card{display:flex;gap:10px;background:var(--mud-1);border:1px solid var(--mud-3);border-radius:6px;padding:9px 10px}
+.tut-card .ico{flex:none;transform:scale(.95)}
+.tut-card .tc-body{min-width:0}
+.tut-card .tc-name{font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:12px;
+  color:var(--ochre);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.tut-card .tc-cost{font-family:var(--mono);font-size:10px;color:var(--blue);white-space:nowrap}
+.tut-card .tc-desc{font-size:12px;color:var(--chalk-dim);line-height:1.45;margin-top:2px}
+.tut-card .tc-zone{font-size:9px;font-family:var(--disp);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sandbag);margin-top:4px}
+/* mini map diagram for orientation step */
+.tut-map{display:grid;gap:3px;max-width:340px;margin:6px 0 12px}
+.tut-map .r{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.tut-map .c{aspect-ratio:1.6/1;border-radius:3px;font-size:8px;display:flex;align-items:center;
+  justify-content:center;color:#eee;font-family:var(--mono)}
+.tut-map .c.enemy{background:rgba(150,45,33,.55)}
+.tut-map .c.noman{background:#3a3527}
+.tut-map .c.you{background:rgba(79,151,168,.4)}
+.tut-map .lbl-row{font-size:10px;font-family:var(--disp);letter-spacing:.1em;text-transform:uppercase}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--mud-3);display:flex;
+  align-items:center;justify-content:space-between}
+.modal-head h2{font-size:18px;color:var(--ochre)}
+.modal-body{padding:18px}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--mud-3);display:flex;gap:10px;
+  justify-content:flex-end;flex-wrap:wrap}
+.close-x{background:none;border:none;color:var(--chalk-dim);font-size:22px;cursor:pointer;line-height:1}
+.close-x:hover{color:#fff}
+
+/* education modal styling */
+.edu-flag{display:inline-block;background:var(--rust-dk);color:#fff;font-family:var(--disp);
+  text-transform:uppercase;letter-spacing:.1em;font-size:11px;padding:3px 9px;border-radius:3px;margin-bottom:10px}
+.edu-body p{line-height:1.65;margin:0 0 12px;font-size:15px}
+.edu-history{background:rgba(79,151,168,.1);border-left:3px solid var(--blue);padding:12px 14px;
+  border-radius:4px;font-size:14px;line-height:1.6}
+.edu-history b{color:var(--blue)}
+
+/* ---- Nightly Status Report ---- */
+.rep-lead{font-size:14px;line-height:1.55;color:var(--chalk);margin-bottom:14px}
+.rep-lead b{color:var(--ochre)}
+.rep-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:18px}
+.rep-stat{background:var(--mud-1);border:1px solid var(--mud-3);border-radius:6px;padding:8px 10px}
+.rep-stat .rl{font-family:var(--disp);text-transform:uppercase;letter-spacing:.08em;font-size:9px;color:var(--chalk-dim)}
+.rep-stat .rv{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1.15;color:var(--chalk)}
+.rep-stat .rv.good{color:var(--green)} .rep-stat .rv.bad{color:var(--rust)}
+.rep-section-title{font-family:var(--disp);text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+  color:var(--blue);border-bottom:1px dotted var(--mud-3);padding-bottom:4px;margin:6px 0 10px}
+.rep-narrative{background:#1c1d16;border:1px solid var(--mud-3);border-radius:6px;padding:8px 10px;
+  max-height:180px;overflow:auto;margin-bottom:8px}
+.rep-line{font-family:var(--mono);font-size:12px;line-height:1.5;padding:2px 0;color:var(--chalk)}
+.rep-line.good{color:var(--green)} .rep-line.bad{color:#e8917c} .rep-line.info{color:var(--chalk-dim)}
+.rep-lesson{background:rgba(199,144,69,.07);border:1px solid var(--mud-3);border-left:3px solid var(--gold);
+  border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:10px}
+.rep-lesson h4{color:var(--gold);font-size:14px;margin-bottom:6px;font-family:var(--disp);letter-spacing:.03em}
+.rep-lesson p{font-size:13px;line-height:1.55;margin-bottom:8px;color:var(--chalk)}
+.rep-lesson .edu-history{font-size:12.5px;padding:9px 11px}
+
+/* ---- recommended layouts ---- */
+.layout-card{display:flex;gap:14px;align-items:center;background:var(--mud-1);border:1px solid var(--mud-3);
+  border-radius:6px;padding:12px 14px;margin-bottom:10px}
+.layout-card .lc-main{flex:1;min-width:0}
+.layout-card .lc-name{font-family:var(--disp);text-transform:uppercase;letter-spacing:.04em;font-size:14px;
+  color:var(--ochre);display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.layout-card .lc-cost{font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:0}
+.layout-card .lc-blurb{font-size:13px;line-height:1.5;color:var(--chalk);margin-bottom:5px}
+.layout-card .lc-teach{font-size:11.5px;color:var(--gold);font-style:italic;line-height:1.45}
+.layout-card .btn{flex:none;white-space:nowrap}
+@media(max-width:560px){.layout-card{flex-direction:column;align-items:stretch}.layout-card .btn{width:100%}}
+
+/* tech tree */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tech-card{border:1px solid var(--mud-3);border-radius:6px;padding:12px;background:var(--mud-1);position:relative}
+.tech-card.unlocked{border-color:var(--green)}
+.tech-card.available{border-color:var(--ochre)}
+.tech-card h4{font-size:13px;color:var(--chalk);margin-bottom:4px}
+.tech-card p{font-size:12px;color:var(--chalk-dim);line-height:1.45;margin:0 0 8px}
+.tech-status{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:10px}
+.tech-status.u{color:var(--green)} .tech-status.a{color:var(--ochre)} .tech-status.l{color:var(--chalk-dim)}
+
+/* dashboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.dash-grid{grid-template-columns:1fr}}
+.dash-stat{background:var(--mud-1);border:1px solid var(--mud-3);border-radius:6px;padding:12px}
+.dash-stat .big{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--gold)}
+.dash-stat .lbl{font-size:11px;color:var(--chalk-dim);text-transform:uppercase;letter-spacing:.1em;font-family:var(--disp)}
+.dash-list{font-size:13px;line-height:1.7}
+.dash-list li{margin-bottom:4px}
+.concept-chip{display:inline-block;background:rgba(199,144,69,.15);border:1px solid var(--ochre);
+  color:var(--gold);border-radius:12px;padding:2px 10px;font-size:11px;margin:0 4px 6px 0;font-family:var(--mono)}
+.reflect{background:rgba(79,151,168,.08);border-left:3px solid var(--blue);padding:10px 14px;
+  border-radius:4px;margin-top:8px}
+.reflect ol{margin:6px 0 0;padding-left:20px;line-height:1.7;font-size:14px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:44px;margin-top:6px}
+.spark span{flex:1;background:var(--gold);border-radius:1px 1px 0 0;min-height:2px;opacity:.85}
+
+/* setup modal */
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.mode-cards{grid-template-columns:1fr}}
+.mode-card{border:1px solid var(--mud-3);border-radius:6px;padding:16px;cursor:pointer;transition:.12s;background:var(--mud-1)}
+.mode-card:hover{border-color:var(--ochre);transform:translateY(-2px)}
+.mode-card.sel{border-color:var(--blue);background:rgba(79,151,168,.1)}
+.mode-card h4{color:var(--ochre);margin-bottom:6px}
+.mode-card p{font-size:13px;color:var(--chalk-dim);line-height:1.5;margin:0}
+
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:120;
+  background:var(--mud-2);border:1px solid var(--ochre);color:var(--chalk);padding:10px 18px;
+  border-radius:6px;font-size:13px;box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;font-family:var(--mono)}
+.toast.show{opacity:1;bottom:80px}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================================ TITLE SCREEN ================================ -->
+<section id="screen-title" class="screen active">
+  <div class="title-card">
+    <div class="title-emblem"><i></i></div>
+    <h1>Engineer<br>the Front</h1>
+    <div class="tag">Western Front · 1915 – 1918</div>
+    <p class="lede">You are the engineering officer of a front-line sector. Every spade of earth,
+    coil of wire, and gun position is a decision. Design your trenches, defend them against
+    bombardment, gas, and assault — and discover <em>why</em> the trenches of the Great War
+    took the strange, zig-zagging, layered shapes they did.</p>
+    <div class="title-actions">
+      <button class="btn primary" onclick="openTutorial(0)">Start Training</button>
+      <button class="btn" onclick="openSetup()">New Deployment</button>
+      <button class="btn" onclick="startSandbox()">Sandbox</button>
+      <button class="btn ghost" onclick="showHelp()">Quick Reference</button>
+    </div>
+    <div class="title-foot">A classroom simulation · outcomes reflect your engineering, not dice.</div>
+  </div>
+</section>
+
+<!-- ================================ GAME SCREEN ================================ -->
+<section id="screen-game" class="screen">
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div><b>Engineer the Front</b><span id="mode-label">Campaign</span></div>
+    </div>
+    <div class="calendar" id="calendar">
+      <b id="cal-date">Spring 1915</b><br>Day <span id="cal-day">1</span> · Round <span id="cal-round">1</span>
+    </div>
+    <div class="meters" id="meters"><!-- resource meters injected --></div>
+  </div>
+
+  <div class="workspace">
+    <!-- LEFT: build palette -->
+    <div class="panel">
+      <h3>Engineering Stores <span class="mono" style="font-size:11px;color:var(--blue)" id="eng-avail">0 EP</span></h3>
+      <div class="panel-body">
+        <button class="btn primary" style="width:100%;margin-bottom:8px;font-size:12px" onclick="openLayouts()">★ Recommended Layouts</button>
+        <div class="tool-row">
+          <button class="btn" id="btn-demolish" onclick="toggleDemolish()">Demolish</button>
+          <button class="btn" onclick="clearSelection()">Deselect</button>
+        </div>
+        <div id="palette"><!-- palette items injected --></div>
+      </div>
+    </div>
+
+    <!-- CENTER: battlefield -->
+    <div>
+      <div class="field-wrap">
+        <div class="field-legend" id="legend">
+          <span><i class="lgd-swatch" style="background:rgba(150,45,33,.7)"></i>Enemy line — they attack downward ↓</span>
+          <span><i class="lgd-swatch" style="background:rgba(79,151,168,.5)"></i>Your ground — build here</span>
+          <span><i class="lgd-swatch t-plain"></i>Plain</span>
+          <span><i class="lgd-swatch t-hill"></i>High ground</span>
+          <span><i class="lgd-swatch t-river"></i>Water / marsh</span>
+          <span><i class="lgd-swatch t-forest"></i>Wood</span>
+          <span><i class="lgd-swatch t-village"></i>Ruins</span>
+          <span><i class="lgd-swatch t-crater"></i>Crater</span>
+        </div>
+        <div class="field-rail-wrap">
+          <div class="zone-rail" aria-hidden="true">
+            <div class="zr zr-enemy" style="flex:2">Enemy line</div>
+            <div class="zr zr-noman" style="flex:3">No Man's Land</div>
+            <div class="zr zr-player" style="flex:5">Your sector · build here</div>
+          </div>
+          <div class="field-inner">
+            <div id="field"></div>
+            <div class="weather" id="weather"></div>
+            <div class="battle-fx" id="battle-fx"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn" onclick="openTech()">Technology</button>
+        <button class="btn" onclick="openDashboard()">Teacher Dashboard</button>
+        <button class="btn ghost" onclick="showHelp()">Help</button>
+        <button class="btn ghost" onclick="quitToTitle()">Quit</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: intel + log -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="panel">
+        <h3>Sector Assessment</h3>
+        <div class="panel-body intel" id="intel"></div>
+      </div>
+      <div class="panel">
+        <h3>Field Telegraph</h3>
+        <div class="panel-body"><div class="log" id="log"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actionbar">
+    <span class="hint" id="phase-hint">Build phase — place structures, then advance the day.</span>
+    <span class="spacer"></span>
+    <button class="btn" id="btn-raid" onclick="launchRaid()" title="A small night raid across No Man's Land: intel and prisoners if you dominate No Man's Land, casualties if you don't.">⚔ Trench Raid</button>
+    <button class="btn" id="btn-attack" onclick="launchAttack()" title="A set-piece assault on the enemy line. Deadly without an artillery barrage to cut their wire.">⚑ Over the Top</button>
+    <button class="btn primary" id="btn-advance" onclick="advanceDay()">Advance the Day ▸</button>
+  </div>
+</section>
+
+<!-- ================================ MODALS ================================ -->
+<div class="modal-mask" id="modal-setup">
+  <div class="modal">
+    <div class="modal-head"><h2>New Deployment</h2><button class="close-x" onclick="closeModal('modal-setup')">×</button></div>
+    <div class="modal-body">
+      <p style="color:var(--chalk-dim);font-size:14px;line-height:1.5;margin-top:0">
+        Choose how you'll play. Campaign takes you from the early digging of 1915 to the
+        combined-arms battles of 1918. Sandbox gives you unlimited stores to experiment.</p>
+      <div class="mode-cards">
+        <div class="mode-card sel" id="mc-campaign" onclick="pickMode('campaign')">
+          <h4>Campaign 1915–1918</h4>
+          <p>Limited engineering points each round. Survive escalating tactics as the war evolves.
+          Historical feedback teaches you why designs succeed or fail.</p>
+        </div>
+        <div class="mode-card" id="mc-sandbox" onclick="pickMode('sandbox')">
+          <h4>Sandbox</h4>
+          <p>Unlimited stores, all technology unlocked. Build any layout and launch test attacks
+          to see how it holds. Great for demonstrations.</p>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <label style="font-family:var(--disp);text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--blue)">Difficulty</label>
+        <div class="tool-row" style="margin-top:6px">
+          <button class="btn diff sel" data-diff="cadet" onclick="pickDiff(this)">Cadet</button>
+          <button class="btn diff" data-diff="officer" onclick="pickDiff(this)">Officer</button>
+          <button class="btn diff" data-diff="general" onclick="pickDiff(this)">General</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal('modal-setup')">Cancel</button>
+      <button class="btn primary" onclick="beginGame()">Take Command</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-report">
+  <div class="modal wide">
+    <div class="modal-head"><h2 id="report-title">Night Report</h2></div>
+    <div class="modal-body" id="report-body"></div>
+    <div class="modal-foot" id="report-foot"></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-layouts">
+  <div class="modal wide">
+    <div class="modal-head"><h2>Recommended Layouts</h2><button class="close-x" onclick="closeModal('modal-layouts')">×</button></div>
+    <div class="modal-body">
+      <p class="hint" style="font-size:13px;line-height:1.55;margin-bottom:14px">These are starting scaffolds, <b>not</b> finished defences — each one deliberately leaves weaknesses for you to spot and improve. Applying a layout clears your current sector first (refunding those points), then builds what your budget allows.</p>
+      <div id="layouts-list"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-layouts')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-offense">
+  <div class="modal">
+    <div class="modal-head"><h2 id="offense-title">Operation Report</h2><button class="close-x" onclick="closeModal('modal-offense')">×</button></div>
+    <div class="modal-body" id="offense-body"></div>
+    <div class="modal-foot"><button class="btn primary" onclick="closeModal('modal-offense')">Understood</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-tech">
+  <div class="modal wide">
+    <div class="modal-head"><h2>Engineering Technology</h2><button class="close-x" onclick="closeModal('modal-tech')">×</button></div>
+    <div class="modal-body"><div class="tech-grid" id="tech-grid"></div></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-tech')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-dash">
+  <div class="modal wide">
+    <div class="modal-head"><h2>Teacher Dashboard</h2><button class="close-x" onclick="closeModal('modal-dash')">×</button></div>
+    <div class="modal-body" id="dash-content"></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-dash')">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-help">
+  <div class="modal">
+    <div class="modal-head"><h2>How to Play</h2><button class="close-x" onclick="closeModal('modal-help')">×</button></div>
+    <div class="modal-body" id="help-content"></div>
+    <div class="modal-foot"><button class="btn primary" onclick="closeModal('modal-help')">Got it</button></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-tut">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h2 id="tut-title">Basic Training</h2>
+      <button class="close-x" onclick="closeModal('modal-tut')">×</button>
+    </div>
+    <div class="tut-progress" id="tut-progress"></div>
+    <div class="modal-body" id="tut-body" style="min-height:280px"></div>
+    <div class="modal-foot" style="justify-content:space-between">
+      <button class="btn ghost" onclick="closeModal('modal-tut')">Skip</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn" id="tut-back" onclick="tutStep(-1)">Back</button>
+        <button class="btn primary" id="tut-next" onclick="tutStep(1)">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modal-end">
+  <div class="modal">
+    <div class="modal-head"><h2 id="end-title">Report</h2></div>
+    <div class="modal-body" id="end-content"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="openDashboard()">View Dashboard</button>
+      <button class="btn primary" onclick="quitToTitle()">Return to Title</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================================================
+   SECTION 1 — CONFIG  (teacher-tunable)
+   Change numbers here to rebalance the whole game. Nothing else needs editing.
+   ===================================================================================== */
+const CONFIG = {
+  grid: { cols: 14, rows: 10 },
+  // zone rows: enemy holds the top, then No Man's Land, then the player's buildable ground.
+  zones: { enemyRows:[0,1], nomanRows:[2,3,4], playerRows:[5,6,7,8,9] },
+
+  // Starting resources per difficulty. EP = engineering points (the build budget).
+  // firstRound EP is larger — you inherit a partly-prepared sector and dig hard on arrival.
+  difficulty: {
+    cadet:   { epPerRound:30, firstRound:64, morale:82, manpower:130, ammo:85, food:85, enemy:0.75, reinforce:15 },
+    officer: { epPerRound:26, firstRound:56, morale:74, manpower:118, ammo:75, food:75, enemy:0.95, reinforce:12 },
+    general: { epPerRound:22, firstRound:48, morale:66, manpower:108, ammo:65, food:65, enemy:1.15, reinforce:10 },
+  },
+
+  // Combat tuning knobs (all outcomes scale from these; randomness is small & bounded).
+  combat: {
+    noiseBand: 0.12,        // +/- fraction of bounded randomness on each clash
+    repelEnemyLoss: 18,     // enemy losses when an assault is repelled by good defence
+    bombardBase: 7,         // base bombardment casualties before protection
+    floodMoraleHit: 8,
+    diseaseManpowerLoss: 4,
+    gasCasualties: 9,
+    reinforceEvery: 2,      // rounds between the larger reinforcement drafts
+    replacementsPerRound: 7,// steady stream of replacements every round
+    breachManpowerLoss: 8, // troops lost when a sector is breached
+  },
+
+  // Player offensive operations. Deliberately costly: they teach the ATTACKER'S side of
+  // the same lesson — that crossing No Man's Land into wire and machine guns is deadly,
+  // and that a set-piece attack only works with artillery preparation. Never a win button.
+  offense: {
+    raid:   { manpower:8,  ammo:6 },                  // small night raid
+    attack: { manpowerMin:24, manpowerCommit:36, ammo:20 }, // set-piece "over the top"
+    enemyLineBase: 2.6,       // strength of the enemy trench (wire + MGs) at the start...
+    enemyLineGrowth: 0.16,    // ...growing each round of the campaign
+    prepWithArtillery: 1.7,   // barrage cuts wire & suppresses guns → big multiplier
+    prepWithoutArtillery: 0.7,// attacking into uncut wire → a slaughter
+    successDisrupt: 0.32,     // a successful attack cuts the enemy's NEXT assault strength
+  },
+
+  // Campaign calendar: each entry is one "round". Difficulty & available enemy tactics grow.
+  campaign: [
+    { date:"Spring 1915", year:1915, tactics:["bombard","assault","sniper","raid"] },
+    { date:"Summer 1915", year:1915, tactics:["bombard","assault","sniper","raid","gas"] },
+    { date:"Autumn 1915", year:1915, tactics:["bombard","assault","raid","gas","mine"] },
+    { date:"Spring 1916", year:1916, tactics:["bombard","assault","gas","mine","raid"] },
+    { date:"Summer 1916", year:1916, tactics:["bombard","assault","gas","mine","tank"] },
+    { date:"Winter 1916", year:1916, tactics:["bombard","assault","gas","raid","tank"] },
+    { date:"Spring 1917", year:1917, tactics:["bombard","assault","gas","tank","mine"] },
+    { date:"Autumn 1917", year:1917, tactics:["bombard","assault","gas","tank","raid"] },
+    { date:"Spring 1918", year:1918, tactics:["bombard","assault","gas","tank","infiltrate"] },
+    { date:"Summer 1918", year:1918, tactics:["bombard","assault","tank","infiltrate","gas"] },
+  ],
+};
+
+/* =====================================================================================
+   SECTION 2 — STRUCTURE CATALOG
+   Each structure lists cost (EP), upkeep (EP/round), which zones it may occupy, the
+   tech required to unlock it, and the defensive contributions it makes. The `stats`
+   are read by the analysis + combat engine. Keep these data-driven so combat stays
+   explainable to students.
+   ===================================================================================== */
+const STRUCTURES = {
+  fire_trench:     { name:"Fire Trench",       cat:"Trenches", cost:3, upkeep:0, zones:["player"],
+    desc:"The front-line fighting trench. Build in a ZIG-ZAG — long straight runs invite enfilade fire.",
+    stats:{ trench:1, cover:0.5, frontline:1 } },
+  comm_trench:     { name:"Communication Trench", cat:"Trenches", cost:2, upkeep:0, zones:["player"],
+    desc:"Runs front-to-rear so troops and supplies move under cover. Connects your lines.",
+    stats:{ comm:1 } },
+  reserve_trench:  { name:"Reserve Trench",    cat:"Trenches", cost:3, upkeep:0, zones:["player"],
+    desc:"A second/third line to the rear. Holds reserves that counter-attack a breach — defence in depth.",
+    stats:{ trench:1, reserve:1, depth:1 } },
+  dugout:          { name:"Dugout",            cat:"Shelter", cost:4, upkeep:0, zones:["player"],
+    desc:"Underground shelter. Keeps troops alive through bombardment and preserves morale.",
+    stats:{ bombProt:0.35, morale:2 } },
+  reinforced_dugout:{ name:"Reinforced Dugout",cat:"Shelter", cost:6, upkeep:1, zones:["player"], tech:"deep_dugouts",
+    desc:"Deep, timber-and-steel shelter. Survives heavy shelling almost intact.",
+    stats:{ bombProt:0.6, morale:3 } },
+  concrete_bunker: { name:"Concrete Bunker",   cat:"Shelter", cost:9, upkeep:1, zones:["player"], tech:"concrete",
+    desc:"Hardened pillbox. Excellent bombardment protection and a strong firing point vs tanks.",
+    stats:{ bombProt:0.7, cover:1.2, firepower:1, antitank:0.6, morale:2 } },
+  sandbags:        { name:"Sandbag Parapet",   cat:"Protection", cost:1, upkeep:0, zones:["player"],
+    desc:"Absorbs bullets and shell splinters, raising cover for the trench it fronts.",
+    stats:{ cover:0.8 } },
+  barbed_wire:     { name:"Barbed Wire",       cat:"Protection", cost:2, upkeep:0, zones:["player","noman"],
+    desc:"Entangles attackers in No Man's Land, holding them under your guns. Watch for GAPS.",
+    stats:{ wire:1 } },
+  drainage:        { name:"Drainage / Duckboards", cat:"Protection", cost:2, upkeep:0, zones:["player"], 
+    desc:"Sumps, ditches and duckboards keep the trench dry — prevents flooding, trench-foot and disease.",
+    stats:{ drainage:1 } },
+  mg_nest:         { name:"Machine-Gun Nest",  cat:"Weapons", cost:5, upkeep:1, zones:["player"],
+    desc:"Sweeps No Man's Land with enfilade fire. Deadliest sited to cover your wire from the flank.",
+    stats:{ firepower:2.4, mg:1 } },
+  mortar_pit:      { name:"Trench Mortar Pit", cat:"Weapons", cost:4, upkeep:1, zones:["player"],
+    desc:"Short-range high-angle fire. Breaks up assembling assaults and answers enemy raids.",
+    stats:{ firepower:1.3 } },
+  artillery:       { name:"Artillery Position",cat:"Weapons", cost:8, upkeep:2, zones:["player"],
+    desc:"Rear guns that shell the enemy and, with counter-battery, suppress THEIR bombardment.",
+    stats:{ firepower:1.6, counterBattery:0.4 } },
+  observation_post:{ name:"Observation Post",  cat:"Support", cost:3, upkeep:0, zones:["player","noman"],
+    desc:"Eyes on No Man's Land. Warns of assaults and directs guns; reduces surprise.",
+    stats:{ observation:1, firepower:0.3 } },
+  listening_post:  { name:"Listening Post",    cat:"Support", cost:2, upkeep:0, zones:["noman"],
+    desc:"A forward hole in No Man's Land. Detects raids, patrols and enemy mining before they strike.",
+    stats:{ listening:1, observation:0.5 } },
+  medical_station: { name:"Medical Station",   cat:"Support", cost:4, upkeep:1, zones:["player"],
+    desc:"Aid post. Returns lightly wounded to duty and blunts disease and casualty losses.",
+    stats:{ medical:1 } },
+  supply_depot:    { name:"Supply Depot",      cat:"Support", cost:4, upkeep:0, zones:["player"],
+    desc:"Stores ammunition and food. MUST be linked rearward by communication trenches or it's exposed.",
+    stats:{ supply:1 } },
+};
+
+/* Category display order for the palette */
+const CAT_ORDER = ["Trenches","Shelter","Protection","Weapons","Support"];
+
+/* =====================================================================================
+   SECTION 3 — TECH TREE
+   `year` = campaign year it becomes available. In sandbox everything is unlocked.
+   ===================================================================================== */
+const TECH = {
+  improved_drainage:{ name:"Improved Drainage", year:1915, desc:"Better sumps and pumps — drainage protects a wider area and resists heavy rain." },
+  deep_dugouts:     { name:"Reinforced Dugouts", year:1915, desc:"Unlocks deep timber-and-steel dugouts that shrug off bombardment." },
+  gas_protection:   { name:"Gas Protection", year:1916, desc:"Box respirators and gas discipline sharply cut casualties from gas attacks." },
+  concrete:         { name:"Concrete Bunkers", year:1916, desc:"Unlocks hardened pillboxes for shelter and defence in depth." },
+  aircraft_obs:     { name:"Aircraft Observation", year:1916, desc:"Aerial spotting reveals enemy build-ups earlier, boosting every observation post." },
+  counter_battery:  { name:"Counter-Battery Fire", year:1916, desc:"Your artillery can locate and suppress enemy guns, reducing bombardment." },
+  antitank:         { name:"Anti-Tank Defences", year:1917, desc:"Anti-tank ditches, guns and mined lanes blunt tank attacks." },
+  elastic_defence:  { name:"Elastic Defence in Depth", year:1918, desc:"Doctrine: lightly held front, strong reserves. Boosts value of reserve trenches & depth." },
+};
+
+/* =====================================================================================
+   SECTION 4 — CONCEPTS (educational content)
+   Triggered when the player's design causes a historically recognisable outcome.
+   Each has a short explanation and a reflection question for the Teacher Dashboard.
+   ===================================================================================== */
+// Readable names for enemy tactics, used in the Nightly Status Report narrative.
+const TACTIC_NAMES = {
+  bombard:"an artillery bombardment", assault:"an infantry assault", gas:"a gas attack",
+  tank:"a tank attack", mine:"underground mining", raid:"a trench raid",
+  sniper:"sniper harassment", infiltrate:"infiltration through gaps"
+};
+const CONCEPTS = {
+  enfilade: {
+    title:"Straight trenches and enfilade fire",
+    body:"Your front line ran straight for a long stretch. When attackers reached it, or a shell burst inside it, fire and blast travelled the whole length unobstructed.",
+    history:"Real trenches were dug in a <b>zig-zag of firebays and traverses</b>. Those bends stopped an enemy who got into one bay from shooting straight down the line (enfilade), and contained shell blast to a short section. A straight trench is a shooting gallery.",
+    reflect:"Why did a few metres of zig-zag save so many lives compared with a straight ditch?" },
+  drainage: {
+    title:"Water, mud and trench foot",
+    body:"Rain filled your undrained trenches. Standing water meant flooding, trench-foot and sickness — men were lost without a shot being fired.",
+    history:"On the low, wet ground of Flanders, armies invested heavily in <b>sumps, pumps and duckboards</b>. Drainage wasn't glamorous, but flooding and disease could disable a battalion faster than the enemy. Engineering the water was as vital as engineering the defence.",
+    reflect:"Why might drainage matter more than an extra machine gun on certain ground?" },
+  depth: {
+    title:"One line is no line",
+    body:"A sector was overrun and there was nothing behind it. With no reserve trench, a single breakthrough opened your whole position.",
+    history:"Armies moved to <b>defence in depth</b>: a front line, a support line, and a reserve line. If the front fell, reserves counter-attacked from prepared positions. By 1917 the Germans made the front deliberately thin and the depth deep — the 'elastic defence'.",
+    reflect:"What is the trade-off between packing the front line vs holding troops in reserve?" },
+  comm: {
+    title:"Moving under cover",
+    body:"Your lines weren't linked by communication trenches, so reinforcing or resupplying meant crossing open ground under fire.",
+    history:"<b>Communication trenches</b> ran front-to-rear, letting troops, wounded, ammunition and food move without being exposed. Without them, a sector could be cut off and starved even while still 'held'. Networks, not single lines, won trench fights.",
+    reflect:"How does a trench you never fight from still decide a battle?" },
+  wire: {
+    title:"Wire and the killing ground",
+    body:"Gaps in your barbed wire let attackers cross No Man's Land quickly and reach the trench before your fire could stop them.",
+    history:"Belts of <b>barbed wire</b> weren't meant to stop men outright — they were meant to <i>delay</i> them in the open, funnelling attackers into lanes swept by machine guns. Wire and guns worked as a system; a gap in the wire was a gap in the whole defence.",
+    reflect:"Why is wire described as a weapon even though it can't hurt anyone by itself?" },
+  mg: {
+    title:"Machine guns and interlocking fire",
+    body:"Attackers crossed sectors your machine guns couldn't reach. Guns placed without overlapping fields of fire left lanes open.",
+    history:"Machine guns were sited for <b>enfilade and interlocking fire</b> — firing across the front from the flank so their beaten zones overlapped. One gun covering its own front is weak; several covering each other's fronts are a wall of fire. Placement mattered more than numbers.",
+    reflect:"Why site a machine gun to fire sideways across the front rather than straight ahead?" },
+  supply: {
+    title:"An army marches on its stomach",
+    body:"Your supply depot was exposed or unlinked, and shelling cut your ammunition and food.",
+    history:"Front-line strength depended on the <b>logistics tail</b>: shells, rations, water and men flowing forward through protected routes. Break the supply line and the strongest trench falls silent. Defenders protected depots and kept communication trenches open for this reason.",
+    reflect:"How can an attacker defeat a trench without ever assaulting it?" },
+  observation: {
+    title:"Surprise in No Man's Land",
+    body:"Raids and patrols hit you by surprise because nothing was watching No Man's Land.",
+    history:"<b>Observation and listening posts</b> gave early warning of raids, patrols and mining. Knowing an attack was coming let defenders man the parapet and call down fire in time. Blind trenches were raided at will.",
+    reflect:"Why did both sides spend so much effort simply watching and listening?" },
+  gas: {
+    title:"Gas and protection",
+    body:"A gas attack caused heavy casualties because your troops lacked protection.",
+    history:"After gas appeared in 1915, armies developed <b>respirators and gas discipline</b>. Protection turned a war-winning weapon back into a nuisance. Technology and training, not just trenches, decided who suffered.",
+    reflect:"Why did chemical weapons fail to break the deadlock despite their terror?" },
+  mine: {
+    title:"The war underground",
+    body:"The enemy tunnelled beneath a trench and blew it apart — you had no listening posts to detect the digging.",
+    history:"Both sides <b>mined</b> — tunnelling under enemy trenches to pack them with explosives. Defenders dug counter-mines and posted listeners to catch the sound of enemy digging. The largest mines (Messines, 1917) were heard in London.",
+    reflect:"How did trench warfare push the fighting downward as well as forward?" },
+  tank: {
+    title:"The tank answer",
+    body:"Tanks crossed your wire and trench where you had no anti-tank defence.",
+    history:"Tanks (from 1916) were built to cross wire and trenches that stopped infantry. Defenders answered with <b>wider trenches, anti-tank guns and hardened bunkers</b>. Each new weapon forced a new engineering response — the arms race that shaped the whole war.",
+    reflect:"Why does every new offensive weapon tend to produce a new defensive design?" },
+  bombardment: {
+    title:"Living through the shelling",
+    body:"Bombardment inflicted heavy losses because too few troops had deep shelter.",
+    history:"Prolonged shelling was the signature terror of the Western Front. The answer was to <b>go deep</b> — dugouts and later bunkers let defenders wait out the barrage underground, then rush up to man the parapet before the assault arrived.",
+    reflect:"Why did going deeper underground become the key to surviving above ground?" },
+  over_the_top: {
+    title:"Over the top — why the offensives bled",
+    body:"Your men attacked across No Man's Land into the enemy's wire and machine guns. Without a barrage to cut the wire and silence the guns first, the attack was cut down in the open.",
+    history:"This was the central tragedy of the Western Front. Sending infantry against intact wire and machine guns produced catastrophic losses for little ground — the first day of the Somme cost nearly 60,000 British casualties. Armies learned that attacks needed a <b>creeping barrage</b>: artillery cutting the wire and suppressing the defenders while the infantry advanced close behind it. Firepower, not courage, moved the line.",
+    reflect:"Why did artillery preparation matter more than the number of men sent forward?" },
+  raiding: {
+    title:"Raiding and dominating No Man's Land",
+    body:"Your raid slipped across No Man's Land to strike the enemy line and return.",
+    history:"Both sides mounted <b>trench raids</b> — small night operations to take prisoners, gather intelligence, and dominate No Man's Land so the enemy could not. They depended on knowing the ground: patrols, observation and listening posts. A side that owned No Man's Land saw the enemy's preparations; a side that didn't was raided in turn.",
+    reflect:"How does controlling the ground between the trenches change what each side can see and do?" },
+};
+
+/* =====================================================================================
+   SECTION 5 — GAME STATE
+   ===================================================================================== */
+let S = null; // the live game state object
+
+function newState(mode, diff){
+  const d = CONFIG.difficulty[diff];
+  return {
+    mode, diff,
+    roundIndex:0, day:1,
+    res:{ ep:0, morale:d.morale, manpower:d.manpower, ammo:d.ammo, food:d.food },
+    epPerRound: mode==="sandbox" ? 999 : d.epPerRound,
+    enemyMult: mode==="sandbox" ? 0 : d.enemy,
+    grid:[], cols:CONFIG.grid.cols, rows:CONFIG.grid.rows,
+    weather:"clear",
+    selected:null, demolish:false,
+    tech: new Set(),
+    eduSeen: new Set(), eduSkip:false,
+    log:[],
+    gameOver:false, victory:false,
+    lastEnemyPlan:null,
+    animating:false,
+    raidUsed:false, attackUsed:false, attackDisrupt:0, // offensive operations
+    // stats for teacher dashboard
+    stats:{ built:{}, demolished:0, epSpent:0, casualties:0, enemyCasualties:0,
+            concepts:new Set(), moraleHistory:[d.morale], breaches:0, floods:0,
+            gasHits:0, roundsSurvived:0, decisions:[], raids:0, attacks:0 },
+  };
+}
+
+/* =====================================================================================
+   SECTION 6 — PROCEDURAL BATTLEFIELD
+   Generates terrain that meaningfully affects play: elevation (defence & drainage),
+   rivers/marsh (flood risk, movement), woods (cover, concealment), villages (strong
+   points), craters (partial cover). No two battlefields are the same.
+   ===================================================================================== */
+function generateBattlefield(){
+  const {cols, rows} = S;
+  const g = [];
+  // 1) base elevation field via a couple of smooth "ridges"
+  const ridge = randInt(2, rows-3);
+  const ridge2 = randInt(2, cols-3);
+  for(let y=0;y<rows;y++){
+    const row=[];
+    for(let x=0;x<cols;x++){
+      // elevation: higher near a horizontal ridge line and a diagonal, plus noise
+      let e = 0;
+      e += Math.max(0, 2 - Math.abs(y-ridge))*0.6;
+      e += Math.max(0, 2 - Math.abs((x)-(ridge2)))*0.4;
+      e += (Math.random()-0.5)*0.8;
+      let elev = Math.max(0, Math.min(3, Math.round(e)));
+      row.push({ x,y, terrain:"plain", elevation:elev, structure:null,
+                 flooded:false, hp:100, zone:zoneOf(y), enemyMark:false, enemyFeature:null });
+    }
+    g.push(row);
+  }
+  // 2) a river / marsh snaking down one side (low ground → flood-prone)
+  let rx = randInt(1, cols-2);
+  for(let y=0;y<rows;y++){
+    if(Math.random()<0.8){ g[y][rx].terrain="river"; g[y][rx].elevation=0; }
+    rx += randInt(-1,1); rx = Math.max(0, Math.min(cols-1, rx));
+  }
+  // 3) a wood cluster
+  scatterCluster(g,"forest",randInt(3,6));
+  // 4) a ruined village (strong point)
+  scatterCluster(g,"village",randInt(2,4));
+  // 5) shell craters sprinkled in No Man's Land
+  for(let i=0;i<randInt(5,9);i++){
+    const y = CONFIG.zones.nomanRows[randInt(0,CONFIG.zones.nomanRows.length-1)];
+    const x = randInt(0,cols-1);
+    if(g[y][x].terrain==="plain"){ g[y][x].terrain="crater"; }
+  }
+  // 6) mark hills where elevation is high
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+    if(g[y][x].terrain==="plain" && g[y][x].elevation>=1) g[y][x].terrain="hill";
+  }
+  // 7) ENEMY ENCAMPMENT — a visible hostile line across the top so students immediately
+  //    see where the enemy is (top) and where their own buildable ground is (bottom).
+  //    These features are decorative/orientational; the enemy zone is never buildable.
+  const eRows = CONFIG.zones.enemyRows;
+  const frontE = Math.max(...eRows);        // enemy front row, facing No Man's Land
+  const rearE  = Math.min(...eRows);        // enemy rear / support row
+  for(let x=0;x<cols;x++) g[frontE][x].enemyFeature = "etrench";   // continuous enemy front trench
+  [Math.floor(cols*0.18), Math.floor(cols*0.5), Math.floor(cols*0.82)]
+    .forEach(x=>{ g[frontE][x].enemyFeature = "emg"; });           // enemy machine-gun posts
+  const hqx = Math.floor(cols*0.5);
+  for(let x=0;x<cols;x++){
+    g[rearE][x].enemyFeature = (x===hqx) ? "ehq" : (x%4===1 ? "ebunker" : "ecamp");
+  }
+  S.grid = g;
+}
+function scatterCluster(g,type,n){
+  const {cols,rows}=S;
+  let cx=randInt(1,cols-2), cy=randInt(1,rows-2);
+  for(let i=0;i<n;i++){
+    const x=Math.max(0,Math.min(cols-1,cx+randInt(-1,1)));
+    const y=Math.max(0,Math.min(rows-1,cy+randInt(-1,1)));
+    if(g[y][x].terrain==="plain"||g[y][x].terrain==="hill") g[y][x].terrain=type;
+  }
+}
+function zoneOf(y){
+  if(CONFIG.zones.enemyRows.includes(y)) return "enemy";
+  if(CONFIG.zones.nomanRows.includes(y)) return "noman";
+  return "player";
+}
+
+/* =====================================================================================
+   SECTION 7 — RENDERING
+   ===================================================================================== */
+const el = id => document.getElementById(id);
+
+function renderAll(){
+  renderCalendar(); renderMeters(); renderPalette(); renderField(); renderIntel(); renderLog();
+  renderOffense();
+  el("eng-avail").textContent = (S.mode==="sandbox"?"∞":S.res.ep)+" EP";
+  el("mode-label").textContent = S.mode==="sandbox" ? "Sandbox" : "Campaign · "+S.diff;
+}
+
+function renderCalendar(){
+  const c = CONFIG.campaign[S.roundIndex] || CONFIG.campaign[CONFIG.campaign.length-1];
+  el("cal-date").textContent = S.mode==="sandbox" ? "Sandbox Range" : c.date;
+  el("cal-day").textContent = S.day;
+  el("cal-round").textContent = (S.roundIndex+1);
+}
+
+function meterDef(){
+  const totCas=S.stats.casualties+S.stats.enemyCasualties;
+  return [
+    {k:"ep",   cls:"eng",    lbl:"Engineering", max:S.epPerRound, val:S.mode==="sandbox"?"∞":S.res.ep},
+    {k:"morale",cls:"morale", lbl:"Morale",     max:100, val:Math.round(S.res.morale)},
+    {k:"manpower",cls:"man",  lbl:"Manpower",   max:150, val:Math.round(S.res.manpower)},
+    {k:"cas", cls:"cas",      lbl:"Casualties", val:S.stats.casualties, sub:"foe "+S.stats.enemyCasualties,
+       pct: totCas>0 ? (S.stats.casualties/totCas)*100 : 0,
+       tip:"Your losses vs the enemy's. Good defences make the enemy pay more — a shorter red bar means a better exchange."},
+    {k:"ammo", cls:"ammo",    lbl:"Ammunition", max:100, val:Math.round(S.res.ammo)},
+    {k:"food", cls:"food",    lbl:"Food",       max:100, val:Math.round(S.res.food)},
+    {k:"line", cls:"line",    lbl:"Front Held", max:S.cols, val:sectorsHeld()+"/"+S.cols},
+  ];
+}
+function renderMeters(){
+  const wrap = el("meters"); wrap.innerHTML="";
+  meterDef().forEach(m=>{
+    const pct = m.pct!=null ? Math.max(0,Math.min(100,m.pct))
+      : (typeof m.val==="string" && m.val.includes("/")
+          ? (parseInt(m.val)/m.max*100)
+          : (m.val==="∞"?100:Math.max(0,Math.min(100, (parseFloat(m.val)/m.max)*100))));
+    const d=document.createElement("div");
+    d.className="meter "+m.cls;
+    if(m.tip) d.title=m.tip;
+    const sub = m.sub ? `<span class="sub">${m.sub}</span>` : "";
+    d.innerHTML=`<div class="lbl">${m.lbl}</div><div class="val">${m.val}${sub}</div>`;
+    const bar=document.createElement("div"); bar.className="bar"; bar.style.width=pct+"%";
+    d.appendChild(bar); wrap.appendChild(d);
+  });
+}
+
+function isUnlocked(key){
+  const s=STRUCTURES[key];
+  if(!s.tech) return true;
+  if(S.mode==="sandbox") return true;
+  return S.tech.has(s.tech);
+}
+function canAfford(key){ return S.mode==="sandbox" || S.res.ep >= STRUCTURES[key].cost; }
+
+function renderPalette(){
+  const wrap=el("palette"); wrap.innerHTML="";
+  CAT_ORDER.forEach(cat=>{
+    const items=Object.keys(STRUCTURES).filter(k=>STRUCTURES[k].cat===cat);
+    if(!items.length) return;
+    const h=document.createElement("div"); h.className="palette-cat"; h.textContent=cat; wrap.appendChild(h);
+    items.forEach(key=>{
+      const s=STRUCTURES[key];
+      const unlocked=isUnlocked(key), afford=canAfford(key);
+      const item=document.createElement("div");
+      item.className="pitem"+(S.selected===key?" sel":"")+(unlocked?"":" locked")+(afford?"":" unafford");
+      item.setAttribute("draggable", unlocked?"true":"false");
+      item.dataset.key=key;
+      item.title=s.desc;
+      item.innerHTML=`<span class="ico ico-${key}"><i></i><i></i></span>
+        <div class="meta"><div class="nm">${s.name}</div>
+        <div class="cost">${s.cost} EP${s.upkeep?` · upkeep ${s.upkeep}`:""}</div></div>`;
+      if(!unlocked){ const b=document.createElement("span"); b.className="lockbadge"; b.textContent=TECH[s.tech]?.year||"LOCK"; item.appendChild(b); }
+      if(unlocked){
+        item.addEventListener("click", ()=>selectStructure(key));
+        item.addEventListener("dragstart", e=>{ selectStructure(key); e.dataTransfer.setData("text/plain",key); });
+      }
+      wrap.appendChild(item);
+    });
+  });
+}
+
+function renderField(){
+  const f=el("field"); f.innerHTML="";
+  f.style.gridTemplateColumns=`repeat(${S.cols}, 1fr)`;
+  for(let y=0;y<S.rows;y++)for(let x=0;x<S.cols;x++){
+    const c=S.grid[y][x];
+    const cell=document.createElement("div");
+    let cls="cell t-"+c.terrain+" z-"+c.zone;
+    if(c.terrain==="hill"){ cls+=c.elevation>=3?" e3":c.elevation>=2?" e2":""; }
+    if(c.zone==="player" || (c.zone==="noman")) cls+=" buildable";
+    if(c.flooded) cls+=" flooded";
+    if(c.enemyMark) cls+=" enemy-mark";
+    cell.className=cls;
+    cell.tabIndex=0;
+    cell.dataset.x=x; cell.dataset.y=y;
+    // faint band tint (enemy = hostile red, your ground = buildable teal)
+    if(c.zone==="enemy"){ const z=document.createElement("div"); z.className="ztint zt-enemy"; cell.appendChild(z); }
+    else if(c.zone==="player"){ const z=document.createElement("div"); z.className="ztint zt-player"; cell.appendChild(z); }
+    // enemy encampment feature (decorative, non-buildable)
+    if(c.enemyFeature){
+      const ef=document.createElement("div"); ef.className="efeat ef-"+c.enemyFeature;
+      if(c.enemyFeature==="ehq"){ const l=document.createElement("span"); l.className="lab"; l.textContent="HQ"; ef.appendChild(l); }
+      else if(c.enemyFeature==="emg"){ const l=document.createElement("span"); l.className="lab"; l.textContent="MG"; ef.appendChild(l); }
+      cell.appendChild(ef);
+      cell.title="Enemy line — the attack comes from here. You cannot build in enemy territory.";
+    }
+    // structure glyph
+    if(c.structure){
+      const st=STRUCTURES[c.structure];
+      const g=document.createElement("div"); g.className="struct";
+      g.innerHTML=`<span class="ico ico-${c.structure}"><i></i><i></i></span>`;
+      const tag=document.createElement("span"); tag.className="tag"; tag.textContent=st.name.slice(0,3).toUpperCase();
+      g.appendChild(tag); cell.appendChild(g);
+    } else if(c.elevation>=2 && c.zone!=="enemy"){
+      // faint elevation contour label for the map feel
+      const t=document.createElement("span"); t.className="tag"; t.style.background="rgba(199,144,69,.35)";
+      t.textContent="▲"; cell.appendChild(t);
+    }
+    // interactions
+    cell.addEventListener("click", ()=>onCellClick(x,y));
+    cell.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); onCellClick(x,y);} });
+    cell.addEventListener("dragover", e=>{ e.preventDefault();
+      cell.classList.toggle("invalid-hover", !placementValid(S.selected,x,y).ok); });
+    cell.addEventListener("dragleave", ()=>cell.classList.remove("invalid-hover"));
+    cell.addEventListener("drop", e=>{ e.preventDefault(); cell.classList.remove("invalid-hover");
+      const key=e.dataTransfer.getData("text/plain")||S.selected; if(key){ selectStructure(key); placeAt(x,y);} });
+    f.appendChild(cell);
+  }
+}
+
+function renderIntel(){
+  const a=analyzeDefenses();
+  const rate=(v,g,m)=> v>=g?`<span class="rating r-good">Strong</span>`
+                    : v>=m?`<span class="rating r-mid">Fair</span>`
+                    : `<span class="rating r-bad">Weak</span>`;
+  const rows=[
+    ["Front-line coverage", rate(a.frontCoverage,0.7,0.4)],
+    ["Zig-zag (anti-enfilade)", a.enfilade? `<span class="rating r-bad">Straight!</span>`:`<span class="rating r-good">Good</span>`],
+    ["Barbed wire belt", rate(a.wireCoverage,0.6,0.3)],
+    ["Machine-gun cover", rate(a.mgCoverage,0.6,0.3)],
+    ["Defence in depth", rate(a.depthScore,0.6,0.3)],
+    ["Communication routes", a.commLinked?`<span class="rating r-good">Linked</span>`:`<span class="rating r-bad">Broken</span>`],
+    ["Bombardment shelter", rate(a.bombProt,0.5,0.25)],
+    ["Drainage", a.floodRisk<0.3?`<span class="rating r-good">Dry</span>`: a.floodRisk<0.6?`<span class="rating r-mid">Damp</span>`:`<span class="rating r-bad">Flooding</span>`],
+    ["Observation", rate(a.observation,0.5,0.2)],
+    ["Supply security", a.supplySecure?`<span class="rating r-good">Secure</span>`:`<span class="rating r-bad">Exposed</span>`],
+  ];
+  el("intel").innerHTML = rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("")
+    + `<div class="row" style="border:none;margin-top:6px"><span>Weather</span><b>${weatherLabel()}</b></div>`
+    + `<div style="margin-top:8px;font-size:11px;color:var(--chalk-dim);line-height:1.5">Upkeep next round: <b class="mono">${totalUpkeep()} EP</b></div>`;
+}
+
+function renderLog(){
+  const l=el("log");
+  l.innerHTML = S.log.slice(-60).map(e=>`<div class="entry ${e.cls}">${e.txt}</div>`).join("");
+  l.scrollTop=l.scrollHeight;
+}
+function log(txt, cls="info"){ S.log.push({txt,cls}); if(el("log")) renderLog(); }
+function logHead(txt){ log(txt,"head"); }
+
+/* =====================================================================================
+   SECTION 8 — PLACEMENT (drag + click)
+   ===================================================================================== */
+function selectStructure(key){
+  S.demolish=false; el("btn-demolish").classList.remove("primary");
+  S.selected = (S.selected===key)? null : key;
+  renderPalette();
+  el("phase-hint").textContent = S.selected
+    ? `Placing: ${STRUCTURES[S.selected].name} — ${STRUCTURES[S.selected].desc}`
+    : "Build phase — select a structure, then click a tile.";
+}
+function clearSelection(){ S.selected=null; S.demolish=false; el("btn-demolish").classList.remove("primary"); renderPalette();
+  el("phase-hint").textContent="Build phase — place structures, then advance the day."; }
+function toggleDemolish(){ S.demolish=!S.demolish; S.selected=null;
+  el("btn-demolish").classList.toggle("primary",S.demolish); renderPalette();
+  el("phase-hint").textContent=S.demolish?"Demolish mode — click a structure to remove it (50% refund).":"Build phase.";
+}
+
+function placementValid(key,x,y){
+  if(!key) return {ok:false,msg:"Nothing selected."};
+  const c=S.grid[y][x];
+  const s=STRUCTURES[key];
+  if(c.zone==="enemy") return {ok:false,msg:"That's enemy ground."};
+  if(!s.zones.includes(c.zone)) return {ok:false,
+    msg:`${s.name} can only go in the ${s.zones.join(" or ")} area.`};
+  if(c.structure) return {ok:false,msg:"Tile already occupied."};
+  if(c.terrain==="river" && !["barbed_wire"].includes(key)) return {ok:false,msg:"Can't build in water/marsh (drain or bridge it — try wire only)."};
+  if(!isUnlocked(key)) return {ok:false,msg:"Not yet researched."};
+  if(!canAfford(key)) return {ok:false,msg:"Not enough engineering points."};
+  return {ok:true};
+}
+
+function onCellClick(x,y){
+  if(S.gameOver) return;
+  if(S.demolish){ demolishAt(x,y); return; }
+  if(!S.selected){ // clicking a structure with nothing selected → show its info
+    const c=S.grid[y][x];
+    if(c.structure){ toast(STRUCTURES[c.structure].name+": "+STRUCTURES[c.structure].desc); }
+    else if(c.zone==="enemy"){ toast("Enemy line — the assault comes from up here. Build your defences in your own sector at the bottom."); }
+    else if(c.zone==="noman"){ toast("No Man's Land — only forward wire, observation and listening posts go here."); }
+    return;
+  }
+  placeAt(x,y);
+}
+function placeAt(x,y){
+  const key=S.selected;
+  const v=placementValid(key,x,y);
+  if(!v.ok){ toast(v.msg); return; }
+  const s=STRUCTURES[key];
+  if(S.mode!=="sandbox") S.res.ep -= s.cost;
+  S.stats.epSpent += s.cost;
+  S.grid[y][x].structure=key;
+  S.stats.built[key]=(S.stats.built[key]||0)+1;
+  spawnFx(x,y,"flash");
+  renderMeters(); renderField(); renderIntel(); renderPalette();
+  el("eng-avail").textContent=(S.mode==="sandbox"?"∞":S.res.ep)+" EP";
+}
+function demolishAt(x,y){
+  const c=S.grid[y][x];
+  if(!c.structure){ return; }
+  const s=STRUCTURES[c.structure];
+  if(S.mode!=="sandbox") S.res.ep += Math.floor(s.cost*0.5);
+  S.stats.demolished++;
+  c.structure=null;
+  renderMeters(); renderField(); renderIntel(); renderPalette();
+  el("eng-avail").textContent=(S.mode==="sandbox"?"∞":S.res.ep)+" EP";
+}
+
+/* =====================================================================================
+   SECTION 8b — RECOMMENDED STARTER LAYOUTS
+   Premade scaffolds a student can drop in to get going. They are deliberately
+   INCOMPLETE — each leaves obvious weaknesses to discover and fix — so applying one is
+   a head-start, never an auto-win. Each `plan(cols,pr,nm)` returns an ordered list of
+   [structureKey, x, y]; higher-priority pieces come first so that if the budget runs
+   out, the essentials are placed and the extras are left for the student to add.
+   Teachers can freely add, remove or edit these.
+   ===================================================================================== */
+const LAYOUTS = [
+  { id:"firing_line", name:"Beginner Firing Line",
+    blurb:"A single front-line trench with two machine guns and a thin belt of wire. The simplest way to start — but it runs dead straight, its wire has gaps, and there is nothing behind it.",
+    teaches:"Left for you to fix: zig-zag the line, thicken the wire, dig shelters, add reserves and drainage.",
+    plan:(cols,pr,nm)=>{ const b=[];
+      for(let x=1;x<=10;x++) b.push(["fire_trench",x,pr[0]]);      // long straight run (enfilade risk)
+      [3,8].forEach(x=>b.push(["mg_nest",x,pr[1]]));               // only two guns
+      [1,4,7,10].forEach(x=>b.push(["barbed_wire",x,nm[2]]));      // gappy wire belt
+      b.push(["supply_depot",6,pr[4]]);                            // depot with no comm link (exposed)
+      return b; } },
+
+  { id:"depth", name:"Defence in Depth (starter)",
+    blurb:"A jogged front line that resists enfilade, a reserve trench behind it, communication trenches linking the two, a dugout and some wire. Good bones — but it only covers part of the sector, leaving an open flank, with little shelter or drainage.",
+    teaches:"Left for you to fix: extend the line across the whole front, add dugouts, more wire and drainage.",
+    plan:(cols,pr,nm)=>{ const b=[];
+      for(let x=0;x<=7;x++){ const row=(x===3||x===6)?pr[1]:pr[0]; b.push(["fire_trench",x,row]); } // two jogs break the run
+      [2,6].forEach(x=>b.push(["reserve_trench",x,pr[3]]));
+      [2,6].forEach(x=>b.push(["comm_trench",x,pr[2]]));
+      [1,5].forEach(x=>b.push(["mg_nest",x,pr[1]]));
+      b.push(["dugout",0,pr[2]]);
+      [1,4].forEach(x=>b.push(["barbed_wire",x,nm[2]]));
+      b.push(["supply_depot",5,pr[4]]);
+      return b; } },
+
+  { id:"strongpoints", name:"Strongpoint Line",
+    blurb:"Three independent strongpoints — each a short trench with a machine gun, a dugout and wire — spaced across the sector. Strong where they sit, but the enemy will probe the undefended gaps between and around them.",
+    teaches:"Left for you to fix: close the gaps so the guns cover each other's front.",
+    plan:(cols,pr,nm)=>{ const b=[]; [2,7,11].forEach(cx=>{
+      [cx,cx+1].forEach(x=>{ if(x<cols) b.push(["fire_trench",x,pr[0]]); });
+      b.push(["mg_nest",cx,pr[1]]);
+      b.push(["dugout",cx,pr[2]]);
+      b.push(["barbed_wire",cx,nm[2]]);
+    }); return b; } },
+];
+
+function layoutCost(L){
+  const plan=L.plan(CONFIG.grid.cols, CONFIG.zones.playerRows, CONFIG.zones.nomanRows);
+  return plan.reduce((s,e)=>s+STRUCTURES[e[0]].cost,0);
+}
+function openLayouts(){
+  if(!S || S.gameOver) return;
+  el("layouts-list").innerHTML = LAYOUTS.map(L=>`
+    <div class="layout-card">
+      <div class="lc-main">
+        <div class="lc-name">${L.name}<span class="lc-cost">~${layoutCost(L)} EP</span></div>
+        <div class="lc-blurb">${L.blurb}</div>
+        <div class="lc-teach">${L.teaches}</div>
+      </div>
+      <button class="btn primary" onclick="applyLayout('${L.id}')">Apply</button>
+    </div>`).join("");
+  openModal("modal-layouts");
+}
+function applyLayout(id){
+  if(!S || S.gameOver) return;
+  const L=LAYOUTS.find(l=>l.id===id); if(!L) return;
+  const pr=CONFIG.zones.playerRows, nm=CONFIG.zones.nomanRows;
+  // clear current player/No-Man's-Land placements, refunding their full cost
+  for(let y=0;y<S.rows;y++) for(let x=0;x<S.cols;x++){
+    const c=S.grid[y][x];
+    if(c.structure && (c.zone==="player"||c.zone==="noman")){
+      if(S.mode!=="sandbox") S.res.ep += STRUCTURES[c.structure].cost;
+      c.structure=null;
+    }
+  }
+  // place the preset in priority order; skip anything invalid or unaffordable
+  const plan=L.plan(S.cols,pr,nm);
+  let placed=0, skipped=0;
+  for(const [key,x,y] of plan){
+    if(x<0||x>=S.cols||y<0||y>=S.rows){ skipped++; continue; }
+    const v=placementValid(key,x,y);
+    if(v.ok){
+      if(S.mode!=="sandbox") S.res.ep -= STRUCTURES[key].cost;
+      S.stats.epSpent += STRUCTURES[key].cost;
+      S.grid[y][x].structure=key;
+      S.stats.built[key]=(S.stats.built[key]||0)+1;
+      placed++;
+    } else skipped++;
+  }
+  S.selected=null; S.demolish=false; el("btn-demolish").classList.remove("primary");
+  closeModal("modal-layouts");
+  renderMeters(); renderField(); renderIntel(); renderPalette();
+  el("eng-avail").textContent=(S.mode==="sandbox"?"∞":S.res.ep)+" EP";
+  let msg=`Applied “${L.name}” — placed ${placed} structures.`;
+  if(skipped>0 && (S.mode!=="sandbox") && S.res.ep<3) msg+=" You ran low on points, so the rest is left for you to build.";
+  else if(skipped>0) msg+=" A few pieces didn't fit the ground and were skipped.";
+  toast(msg);
+  log(`Applied recommended layout “${L.name}”. Treat it as a starting point — study its weaknesses and improve it.`,"info");
+}
+/* =====================================================================================
+   SECTION 9 — DEFENCE ANALYSIS
+   Turns the current layout into scores the AI + combat use, and flags weaknesses.
+   This is the heart of the "learning through design" loop: every score maps to a
+   real trench-warfare principle.
+   ===================================================================================== */
+function eachStruct(cb){
+  for(let y=0;y<S.rows;y++)for(let x=0;x<S.cols;x++){
+    const c=S.grid[y][x]; if(c.structure) cb(c,STRUCTURES[c.structure],x,y);
+  }
+}
+function structAt(x,y){ if(x<0||y<0||x>=S.cols||y>=S.rows) return null; return S.grid[y][x].structure; }
+
+function analyzeDefenses(){
+  const cols=S.cols;
+  const a={
+    perLane:[], enfilade:false, frontCoverage:0, wireCoverage:0, mgCoverage:0,
+    depthScore:0, commLinked:false, bombProt:0, floodRisk:0, observation:0,
+    supplySecure:false, counterBattery:0, antitank:0, firepowerTotal:0,
+    weaknesses:new Set(), medical:0, hasReserve:false, hasComm:false, hasSupply:false,
+  };
+
+  // ---- per-lane (column) metrics: gives placement spatial meaning ----
+  let frontLanes=0, wireLanes=0, mgLanes=0, depthLanes=0;
+  for(let x=0;x<cols;x++){
+    const lane={ front:false, wire:0, mg:0, lines:0, cover:0, bombProt:0, reserve:false, obs:0, terrainDef:0, defScore:0 };
+    let lineRows=new Set();
+    for(const y of CONFIG.zones.playerRows){
+      const c=S.grid[y][x], key=c.structure;
+      // terrain defensive bonus (elevation, forest, village)
+      lane.terrainDef += c.elevation*0.15 + (c.terrain==="forest"?0.3:0) + (c.terrain==="village"?0.5:0);
+      if(!key) continue;
+      const st=STRUCTURES[key], sd=st.stats;
+      if(sd.frontline) lane.front=true;
+      if(sd.trench){ lineRows.add(y); }
+      if(sd.reserve){ lane.reserve=true; }
+      if(sd.mg) lane.mg += 1;
+      lane.cover += (sd.cover||0);
+      lane.bombProt = Math.max(lane.bombProt, sd.bombProt||0);
+      lane.obs += (sd.observation||0);
+    }
+    // machine guns also cover ADJACENT lanes (interlocking / enfilade fire)
+    for(const dx of [-1,0,1]){
+      const nx=x+dx; if(nx<0||nx>=cols) continue;
+      for(const y of CONFIG.zones.playerRows){
+        const key=S.grid[y][nx].structure;
+        if(key && STRUCTURES[key].stats.mg) lane.mg += (dx===0?0:0.7);
+      }
+    }
+    // wire in this lane (front rows + no man's land)
+    for(const y of [...CONFIG.zones.playerRows.slice(0,1), ...CONFIG.zones.nomanRows]){
+      const key=S.grid[y][x].structure;
+      if(key===("barbed_wire")) lane.wire += 1;
+    }
+    lane.lines=lineRows.size;
+    // lane defensive score (bounded, explainable)
+    lane.defScore =
+        (lane.front?1.0:0) + Math.min(1.2,lane.wire*0.5) + Math.min(2.4,lane.mg*1.1) +
+        Math.min(1.5,lane.cover*0.5) + lane.lines*0.5 + (lane.reserve?0.8:0) +
+        lane.obs*0.3 + lane.terrainDef + lane.bombProt*0.6;
+    a.perLane.push(lane);
+    if(lane.front) frontLanes++;
+    if(lane.wire>0) wireLanes++;
+    if(lane.mg>0) mgLanes++;
+    if(lane.lines>=2||lane.reserve) depthLanes++;
+  }
+  a.frontCoverage = frontLanes/cols;
+  a.wireCoverage  = wireLanes/cols;
+  a.mgCoverage    = mgLanes/cols;
+  a.depthScore    = depthLanes/cols;
+
+  // ---- enfilade detection: long straight runs of fire trench in a single row ----
+  for(const y of CONFIG.zones.playerRows){
+    let run=0;
+    for(let x=0;x<cols;x++){
+      if(S.grid[y][x].structure==="fire_trench"){ run++; if(run>=4){ a.enfilade=true; } }
+      else run=0;
+    }
+  }
+
+  // ---- global tallies ----
+  let bombCells=0, bombSum=0, floodable=0, floodProtected=0, obs=0, med=0, cb=0, at=0, fp=0;
+  eachStruct((c,st,x,y)=>{
+    const sd=st.stats;
+    if(sd.reserve) a.hasReserve=true;
+    if(sd.comm) a.hasComm=true;
+    if(sd.supply) a.hasSupply=true;
+    if(sd.bombProt){ bombSum+=sd.bombProt; bombCells++; }
+    if(sd.observation) obs+=sd.observation + (S.tech.has("aircraft_obs")?0.4:0);
+    if(sd.medical) med+=sd.medical;
+    if(sd.counterBattery) cb+=sd.counterBattery + (S.tech.has("counter_battery")?0.4:0);
+    if(sd.antitank) at+=sd.antitank;
+    if(sd.firepower) fp+=sd.firepower;
+    // flooding: trench cells on low ground need drainage nearby
+    if((sd.trench||sd.frontline) && c.elevation<=1){ floodable++;
+      if(nearbyDrainage(x,y)) floodProtected++;
+    }
+  });
+  // bombardment protection = how much of the front is covered by dugouts/bunkers (0..1)
+  a.bombProt = Math.min(1, bombSum / Math.max(2, cols*0.4));
+  a.observation = Math.min(1, obs/ Math.max(3, cols*0.35));
+  a.medical = med;
+  a.counterBattery = Math.min(0.8, cb);
+  a.antitank = at + (S.tech.has("antitank")?0.5:0);
+  a.firepowerTotal = fp;
+
+  // flood risk depends on undrained low trenches AND weather
+  const wetness = S.weather==="rain"?1 : S.weather==="snow"?0.5 : S.weather==="fog"?0.2 : 0.05;
+  const undrained = floodable? (floodable-floodProtected)/floodable : 0;
+  a.floodRisk = Math.min(1, undrained*wetness*1.4);
+
+  // communication linkage: is there at least one comm trench connecting front to reserve?
+  a.commLinked = a.hasComm && (a.hasReserve|| a.frontCoverage>0);
+  // supply security: a depot must be protected by a communication trench, or it's exposed
+  a.supplySecure = a.hasSupply ? a.hasComm : true; // no depot built yet = nothing exposed
+
+  // ---- weakness flags (for AI targeting + education) ----
+  if(a.enfilade) a.weaknesses.add("enfilade");
+  if(a.wireCoverage<0.35) a.weaknesses.add("wire");
+  if(a.mgCoverage<0.3) a.weaknesses.add("mg");
+  if(a.depthScore<0.25 || !a.hasReserve) a.weaknesses.add("depth");
+  if(!a.commLinked) a.weaknesses.add("comm");
+  if(!a.supplySecure) a.weaknesses.add("supply");
+  if(a.observation<0.25) a.weaknesses.add("observation");
+  if(a.bombProt<0.25) a.weaknesses.add("bombardment");
+  if(a.floodRisk>0.5) a.weaknesses.add("drainage");
+  if(a.antitank<0.4) a.weaknesses.add("tank");
+
+  return a;
+}
+function nearbyDrainage(x,y){
+  const R=S.tech.has("improved_drainage")?2:1;
+  for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){
+    const k=structAt(x+dx,y+dy); if(k==="drainage") return true;
+  }
+  return false;
+}
+function totalUpkeep(){ let u=0; eachStruct((c,st)=>u+=st.upkeep||0); return u; }
+function sectorsHeld(){ // columns with any surviving front/reserve trench = "held"
+  let n=0;
+  for(let x=0;x<S.cols;x++){
+    let held=false;
+    for(const y of CONFIG.zones.playerRows){ const k=S.grid[y][x].structure;
+      if(k && (STRUCTURES[k].stats.trench||STRUCTURES[k].stats.frontline)) held=true; }
+    if(held) n++;
+  }
+  return n;
+}
+
+/* =====================================================================================
+   SECTION 10 — WEATHER
+   ===================================================================================== */
+function rollWeather(){
+  const c=CONFIG.campaign[S.roundIndex];
+  const year=c?c.year:1916;
+  // winters/autumns wetter — simple seasonal bias by date string
+  const wet = /Winter|Autumn/.test(c?.date||"") ? 0.55 : 0.3;
+  const r=Math.random();
+  if(r<wet*0.6) S.weather="rain";
+  else if(r<wet*0.75) S.weather="snow";
+  else if(r<wet*0.9) S.weather="fog";
+  else S.weather="clear";
+  applyWeatherVisual();
+}
+function weatherLabel(){ return {clear:"Clear",rain:"Rain",snow:"Snow",fog:"Fog"}[S.weather]; }
+function applyWeatherVisual(){
+  const w=el("weather"); w.className="weather"+(S.weather==="clear"?"":" "+S.weather);
+}
+
+/* =====================================================================================
+   SECTION 11 — ADAPTIVE ENEMY AI
+   Reads analyzeDefenses(), targets the weakest lanes, and picks tactics that exploit
+   detected weaknesses and what the calendar makes available this round.
+   ===================================================================================== */
+function enemyPlan(a){
+  const c=CONFIG.campaign[S.roundIndex]||CONFIG.campaign[CONFIG.campaign.length-1];
+  const available = (S.mode==="sandbox") ? ["bombard","assault","gas","tank","mine","raid","sniper","infiltrate"] : c.tactics.slice();
+  // Enemy pressure starts gentle in 1915 and grows across the campaign, so early
+  // rounds are a teaching space rather than an instant wipe.
+  let intensity = S.enemyMult * (0.55 + S.roundIndex*0.06);
+  intensity *= (1 - (S.attackDisrupt||0)); // a successful attack of ours disrupts them this round
+
+  // rank lanes weakest-first; the enemy concentrates on your softest sectors
+  const lanes = a.perLane.map((l,i)=>({i,score:l.defScore})).sort((p,q)=>p.score-q.score);
+  const focusCount = Math.max(2, Math.round(S.cols*(0.17 + S.roundIndex*0.012)));
+  const focus = lanes.slice(0, focusCount).map(o=>o.i);
+
+  // choose tactics weighted by weaknesses
+  const chosen=new Set();
+  chosen.add("bombard"); // there is almost always a bombardment
+  if(available.includes("assault")) chosen.add("assault");
+  if(a.weaknesses.has("observation") && (available.includes("raid")||available.includes("infiltrate")))
+    chosen.add(available.includes("infiltrate")?"infiltrate":"raid");
+  if(a.weaknesses.has("bombardment") && available.includes("gas") && Math.random()<0.6) chosen.add("gas");
+  else if(available.includes("gas") && Math.random()<0.35) chosen.add("gas");
+  if((a.weaknesses.has("observation")||a.weaknesses.has("depth")) && available.includes("mine") && Math.random()<0.5) chosen.add("mine");
+  if(a.weaknesses.has("tank") && available.includes("tank")) chosen.add("tank");
+  else if(available.includes("tank") && Math.random()<0.4) chosen.add("tank");
+  if(available.includes("sniper") && Math.random()<0.5) chosen.add("sniper");
+
+  return { focus, tactics:[...chosen], intensity, date:c.date };
+}
+
+/* =====================================================================================
+   SECTION 12 — COMBAT SIMULATION (the daily phases)
+   Sequenced with light animation. Outcomes are driven by the analysis, terrain,
+   weather, logistics and morale — randomness is small and bounded.
+   ===================================================================================== */
+function advanceDay(){
+  if(S.gameOver){ return; }
+  if(S.animating){ return; } // ignore extra clicks while the battle plays out
+  // pay upkeep first
+  const upkeep=totalUpkeep();
+  if(S.mode!=="sandbox"){ S.res.ep=Math.max(0,S.res.ep-upkeep); }
+
+  const a=analyzeDefenses();
+  const plan=enemyPlan(a);
+  S.lastEnemyPlan=plan;
+  const triggered=new Set(); // concepts to teach this round
+  let breachedThisRound=0;   // sectors broken into this round (function scope)
+  const fxEvents=[];         // battle animation script collected as combat resolves
+
+  logHead(`— ${plan.date} · Day ${S.day} —`);
+  markEnemyFocus(plan.focus,true);
+
+  // snapshot for the Nightly Status Report (deltas measured against these)
+  const snap={ logStart:S.log.length, cas:S.stats.casualties, enemyCas:S.stats.enemyCasualties,
+    morale:S.res.morale, held:sectorsHeld(), breaches:S.stats.breaches, floods:S.stats.floods,
+    date:plan.date, tactics:plan.tactics.slice(), focus:plan.focus.slice() };
+
+  // run phases with staggered visuals, then resolve bookkeeping
+  const noise=()=> 1 + (Math.random()*2-1)*CONFIG.combat.noiseBand;
+
+  // PHASE A — Weather & flooding
+  if(a.floodRisk>0.45){
+    const hit=Math.round(CONFIG.combat.floodMoraleHit*a.floodRisk);
+    S.res.morale-=hit; S.stats.floods++;
+    floodLowTrenches();
+    log(`Rain and mud: trenches flooding. Morale −${hit}. Trench-foot spreads.`,"bad");
+    triggered.add("drainage");
+  } else if(S.weather!=="clear"){
+    log(`Weather: ${weatherLabel()}. Visibility and movement affected.`,"info");
+  }
+
+  // PHASE B — Disease (flood + poor medical)
+  const diseaseRisk=(S.stats.floods>0?0.3:0.08) + (a.medical?0:0.12);
+  if(Math.random()<diseaseRisk){
+    let loss=CONFIG.combat.diseaseManpowerLoss*(a.medical?0.5:1);
+    loss=Math.round(loss); S.res.manpower-=loss; S.stats.casualties+=loss;
+    log(`Sickness in the line: ${loss} men to the aid post${a.medical?" (medical station limits it)":" — no medical station!"}.`,"bad");
+  }
+
+  // PHASE C — Bombardment
+  if(plan.tactics.includes("bombard")){
+    let intensity=CONFIG.combat.bombardBase*plan.intensity*noise();
+    intensity*= (1 - a.counterBattery); // your artillery suppresses theirs
+    const protFactor=(1-a.bombProt);
+    let cas=Math.round(intensity*protFactor);
+    cas=clamp(cas,0,60);
+    S.res.manpower-=cas; S.stats.casualties+=cas;
+    S.res.morale-= Math.round(cas*0.25);
+    plan.focus.forEach(x=>fxEvents.push({type:"bombard",lane:x}));
+    log(`Bombardment! ${cas} casualties${a.bombProt>0.4?" — deep shelter saved many":a.bombProt<0.2?" — too few dugouts, men caught in the open":""}.${a.counterBattery>0?" Counter-battery fire eased the shelling.":""}`, cas>18?"bad":"info");
+    if(a.bombProt<0.25) triggered.add("bombardment");
+  }
+
+  // PHASE D — Gas
+  if(plan.tactics.includes("gas")){
+    const prot=S.tech.has("gas_protection")?0.75:0;
+    let cas=Math.round(CONFIG.combat.gasCasualties*plan.intensity*(1-prot)*noise());
+    S.res.manpower-=cas; S.stats.casualties+=cas; S.stats.gasHits++;
+    plan.focus.forEach(x=>fxEvents.push({type:"gas",lane:x}));
+    log(`Gas attack! ${cas} casualties${prot?" — respirators held the line":" — no gas protection, men overcome"}.`, cas>10?"bad":"info");
+    if(!S.tech.has("gas_protection")) triggered.add("gas");
+  }
+
+  // PHASE E — Mining
+  if(plan.tactics.includes("mine")){
+    const detected = a.observation>0.4 || hasListeningNear(plan.focus);
+    if(detected){
+      log("Miners heard tunnelling — a camouflet collapses the enemy gallery. Mine averted.","good");
+    } else {
+      const x=plan.focus[0];
+      const destroyed=destroyLaneTrench(x);
+      const cas=randInt(6,12); S.res.manpower-=cas; S.stats.casualties+=cas; S.res.morale-=6;
+      fxEvents.push({type:"mine",lane:x});
+      log(`A mine erupts under sector ${x+1}! ${destroyed?"Trench destroyed. ":""}${cas} casualties.`,"bad");
+      triggered.add("mine");
+    }
+  }
+
+  // PHASE F — Infantry assault (resolved per focus lane) + tanks + infiltration
+  if(plan.tactics.includes("assault")||plan.tactics.includes("tank")||plan.tactics.includes("infiltrate")){
+    let breaches=0, enemyLoss=0, ownLoss=0;
+    const tankBonus=plan.tactics.includes("tank")? Math.max(0, 1.1 - a.antitank) : 0;
+    const infil=plan.tactics.includes("infiltrate");
+    plan.focus.forEach((x,idx)=>{
+      const lane=a.perLane[x];
+      // attack strength vs lane defence
+      let attack=(1.6+plan.intensity)*noise();
+      attack*= (1 + tankBonus);
+      if(infil && a.observation<0.4) attack*=1.35; // stormtrooper infiltration through gaps
+      // wire + MG make the lane a killing ground → big defensive multiplier
+      let defence=lane.defScore + (S.tech.has("elastic_defence")? (lane.reserve?0.8:0):0);
+      defence*= noise();
+      const laneTank = tankBonus>0.4;
+      // attackers always pay a price crossing wire and machine-gun fire, win or lose
+      const killZone = Math.min(1,lane.wire*0.4)+Math.min(1,lane.mg*0.45);
+      if(attack>defence*1.15){
+        // breach — but reserves + a communication trench let you counter-attack and hold
+        if(lane.reserve && a.commLinked){
+          const cas=randInt(5,9); ownLoss+=cas; enemyLoss+=randInt(10,16);
+          fxEvents.push({type:"assault",lane:x,outcome:"counter",tank:laneTank,mg:lane.mg,wire:lane.wire});
+          log(`Sector ${x+1} broken into — reserves counter-attack through the communication trench and retake it. −${cas} men.`,"info");
+        } else {
+          breaches++; S.stats.breaches++;
+          ownLoss+=CONFIG.combat.breachManpowerLoss;
+          // the enemy still bleeds crossing your obstacles, even in a successful assault
+          enemyLoss+=Math.round(6+killZone*10);
+          fxEvents.push({type:"assault",lane:x,outcome:"breach",tank:laneTank,mg:lane.mg,wire:lane.wire});
+          log(`Sector ${x+1} is stormed and the front line briefly falls before we scrape it back. Heavy losses.`,"bad");
+          if(!lane.reserve) triggered.add("depth");
+          if(!a.commLinked) triggered.add("comm");
+        }
+      } else {
+        // repelled — wire + interlocking machine-gun fire turn No Man's Land into a killing ground.
+        // Defenders in a good trench take light losses; the attackers pay the butcher's bill.
+        const enl=Math.round(CONFIG.combat.repelEnemyLoss*(0.7+killZone)*noise());
+        enemyLoss+=enl; ownLoss+=randInt(1,3);
+        fxEvents.push({type:"assault",lane:x,outcome:"repel",tank:laneTank,mg:lane.mg,wire:lane.wire});
+        if(lane.wire<0.5) triggered.add("wire");
+        if(lane.mg<0.5) triggered.add("mg");
+      }
+    });
+    S.res.manpower-=ownLoss; S.stats.casualties+=ownLoss;
+    S.stats.enemyCasualties+=enemyLoss;
+    if(enemyLoss>0) log(`Assault repelled along parts of the front — enemy losses ~${enemyLoss}. Our losses ${ownLoss}.`, breaches?"bad":"good");
+    if(a.enfilade && breaches>0) triggered.add("enfilade");
+    if(tankBonus>0.4 && breaches>0) triggered.add("tank");
+    if(breaches>0){ S.res.morale-=breaches*4; }
+    else if(enemyLoss>0){ S.res.morale+=3; } // holding the line and bloodying the enemy lifts spirits
+    breachedThisRound=breaches;
+  }
+
+  // PHASE G — Raids / sniper
+  if(plan.tactics.includes("raid")||plan.tactics.includes("sniper")){
+    if(a.observation>0.5){
+      fxEvents.push({type:"raid",lane:plan.focus[0],spotted:true});
+      log("A night raid is spotted by our observers and driven off before it reaches the wire.","good");
+    } else {
+      const cas=randInt(3,8); S.res.manpower-=cas; S.res.morale-=3;
+      fxEvents.push({type:"raid",lane:plan.focus[0],spotted:false});
+      if(!a.supplySecure && Math.random()<0.5){ S.res.ammo-=8; S.res.food-=8;
+        log(`Trench raid! ${cas} casualties and a supply dump is wrecked — supplies exposed.`,"bad"); triggered.add("supply"); }
+      else log(`Trench raid slips through unseen: ${cas} casualties, prisoners taken. Morale −5.`,"bad");
+      triggered.add("observation");
+    }
+  }
+
+  // ---- consumption & recovery ----
+  S.res.ammo=clamp(S.res.ammo - Math.round(2+a.firepowerTotal*1.5),0,100);
+  S.res.food=clamp(S.res.food - Math.round(3+S.res.manpower/40),0,100);
+  if(a.medical){ const rec=randInt(4,7)*Math.min(2,a.medical); S.res.manpower+=rec; log(`Medical stations return ${rec} recovered men to duty.`,"good"); }
+  // low supplies sap morale
+  if(S.res.ammo<20){ S.res.morale-=4; log("Ammunition running low — anxiety in the line.","bad"); }
+  if(S.res.food<20){ S.res.morale-=4; log("Short rations — morale suffers.","bad"); }
+  // ...but good conditions let the men recover: dry dugouts, hot food, ammunition to hand.
+  if(S.res.food>50 && S.res.ammo>50) S.res.morale+=2;
+  if(a.bombProt>0.5 && a.floodRisk<0.4) S.res.morale+=2; // dry, deep shelter is a huge morale factor
+  if(breachedThisRound===0) S.res.morale+=1;
+  // supply security check even without a raid
+  if(!a.supplySecure) triggered.add("supply");
+  if(a.floodRisk>0.5) triggered.add("drainage");
+
+  // clamp resources
+  S.res.morale=clamp(S.res.morale,0,100);
+  S.res.manpower=Math.max(0,Math.round(S.res.manpower));
+  S.stats.moraleHistory.push(Math.round(S.res.morale));
+
+  markEnemyFocus(plan.focus,false);
+  renderMeters(); renderField(); renderIntel();
+
+  // record concepts + fire the first educational popup (rest queue silently)
+  const newConcepts=[...triggered].filter(k=>CONCEPTS[k]);
+  newConcepts.forEach(k=>S.stats.concepts.add(k));
+  recordDecisionSnapshot(a,plan);
+
+  // Play the combat animation over the field, then show the night report once the
+  // fighting has visibly played out. advanceDay is locked (S.animating) until then.
+  const dur = playBattle(fxEvents, plan);
+  S.animating = true;
+  const adv=el("btn-advance"); if(adv) adv.disabled=true;
+  setTimeout(()=>{
+    S.animating = false;
+    if(checkGameOver()) return;
+    showNightlyReport(newConcepts, snap);
+  }, dur);
+}
+
+/* Visual helpers ------------------------------------------------------------------ */
+function cellEl(x,y){ return el("field").children[y*S.cols+x]; }
+function spawnFx(x,y,type){
+  const c=cellEl(x,y); if(!c) return;
+  const fx=document.createElement("div"); fx.className="fx fx-"+type;
+  fx.style.left="50%"; fx.style.top="50%"; fx.style.position="absolute";
+  c.style.overflow="visible"; c.appendChild(fx);
+  setTimeout(()=>fx.remove(), type==="gas"?1400:700);
+}
+function bombardVisual(x,big){ /* retained shim: single shell burst on a lane */
+  boomAt((x+0.5)/S.cols*100, (CONFIG.zones.playerRows[0]+0.5)/S.rows*100, big?1.3:1);
+  const c=cellEl(x,CONFIG.zones.playerRows[0]); if(c){ c.classList.add("dmg"); setTimeout(()=>c.classList.remove("dmg"),400); }
+}
+
+/* ---- Battle animation engine ------------------------------------------------------
+   Turns the list of combat events collected during resolution into a short, readable
+   animation: shells burst, gas drifts, little infantry sprites run across No Man's Land,
+   the defenders' guns flash, and attackers either fall in the wire or reach the trench.
+   Purely cosmetic — it reads state that combat already decided. Returns the total
+   animation length in ms so the round can pause for it before the report appears. ---- */
+function bfxLayer(){ const L=el("battle-fx"); return L; }
+function clearBattle(){ const L=bfxLayer(); if(L) L.innerHTML=""; }
+function pctX(x){ return (x+0.5)/S.cols*100; }
+function pctY(y){ return (y+0.5)/S.rows*100; }
+function addSpr(cls, xPct, yPct, inner){
+  const L=bfxLayer(); if(!L) return null;
+  const s=document.createElement("div"); s.className="spr "+cls;
+  s.style.left=xPct+"%"; s.style.top=yPct+"%";
+  if(inner) s.innerHTML=inner;
+  L.appendChild(s); return s;
+}
+function removeSpr(s,delay){ if(!s) return; setTimeout(()=>{ if(s.remove) s.remove(); }, delay||0); }
+function boomAt(xPct,yPct,scale){
+  const s=addSpr("fx-boom","","",""); if(!s) return;
+  s.className="spr fx-boom"; s.style.left=xPct+"%"; s.style.top=yPct+"%";
+  if(scale && scale!==1) s.style.width=s.style.height=(40*scale)+"px";
+  removeSpr(s,650);
+}
+function muzzleAt(xPct,yPct){ const s=addSpr("muzzle",xPct,yPct); removeSpr(s,200); }
+function soldierHTML(){ return '<span class="hd"></span><span class="bd"></span><span class="rf"></span>'; }
+function runTo(spr, toXPct, toYPct, ms){
+  if(!spr) return;
+  setTimeout(()=>{ if(!spr.style) return;
+    spr.style.transition=`top ${ms}ms linear, left ${ms}ms linear`;
+    spr.style.top=toYPct+"%"; spr.style.left=toXPct+"%";
+  }, 20);
+}
+
+function playBattle(events, plan){
+  clearBattle();
+  if(!events || !events.length) return 700;
+  const eRow=Math.max(...CONFIG.zones.enemyRows);      // enemy jump-off row
+  const frontRow=CONFIG.zones.playerRows[0];           // defenders' front trench
+  const midRow=CONFIG.zones.nomanRows[1];              // middle of No Man's Land
+  let dur=900;
+
+  const hasAssault = events.some(e=>e.type==="assault");
+  const hasGas = events.some(e=>e.type==="gas");
+  const hasBombard = events.some(e=>e.type==="bombard"||e.type==="mine");
+
+  // 1) Bombardment — shells burst along the front
+  events.filter(e=>e.type==="bombard").forEach((e,i)=>{
+    setTimeout(()=>{ boomAt(pctX(e.lane), pctY(frontRow+randInt(0,2)-0), 1);
+      const c=cellEl(e.lane,frontRow); if(c){ c.classList.add("dmg"); setTimeout(()=>c.classList.remove("dmg"),400);} }, 100+120*i);
+  });
+  if(hasBombard) dur=Math.max(dur,1300);
+
+  // 2) Mine — a great eruption throws up earth
+  events.filter(e=>e.type==="mine").forEach(e=>{
+    setTimeout(()=>{ const s=addSpr("erupt",pctX(e.lane),pctY(frontRow)); removeSpr(s,700);
+      boomAt(pctX(e.lane),pctY(frontRow),1.6);
+      const c=cellEl(e.lane,frontRow); if(c){ c.classList.add("dmg"); setTimeout(()=>c.classList.remove("dmg"),500);} }, 300);
+  });
+
+  // 3) Gas — a billowing yellow-green cloud rolls out of No Man's Land and over the trench
+  events.filter(e=>e.type==="gas").forEach((e,i)=>{
+    setTimeout(()=>{
+      const startY=pctY(CONFIG.zones.nomanRows[0]);
+      const endY=pctY(CONFIG.zones.playerRows[1]);
+      // a mass of a few overlapping puffs so it reads as a rolling cloud, not a dot
+      const s=addSpr("gaswrap", pctX(e.lane), startY,
+        '<span class="gaspuff"></span>'+
+        '<span class="gaspuff" style="left:9px;top:5px;animation-delay:.15s"></span>'+
+        '<span class="gaspuff" style="left:-9px;top:7px;animation-delay:.3s"></span>');
+      runTo(s, pctX(e.lane), endY, 1700);      // drift downward over the line
+      removeSpr(s, 2300);
+    }, 350+150*i);
+  });
+  if(hasGas) dur=Math.max(dur,2300);
+
+  // 4) Raids — a couple of figures creep forward, then vanish or are cut down
+  events.filter(e=>e.type==="raid").forEach(e=>{
+    const startT=500;
+    for(let k=0;k<2;k++){
+      setTimeout(()=>{ const sx=pctX(e.lane)+(k? 2:-2);
+        const s=addSpr("soldier enemy run", sx, pctY(eRow), soldierHTML());
+        runTo(s, sx, pctY(midRow+1), 900);
+        setTimeout(()=>{ if(!s) return; s.classList.remove("run");
+          if(e.spotted){ muzzleAt(pctX(e.lane),pctY(frontRow)); s.classList.add("fall"); }
+          removeSpr(s, e.spotted?500:250);
+        }, 950);
+      }, startT+k*120);
+    }
+    dur=Math.max(dur,1700);
+  });
+
+  // 5) Infantry assault — the centrepiece. Soldiers charge; the guns answer.
+  const assaults=events.filter(e=>e.type==="assault");
+  if(assaults.length){
+    const START=700, RUN=1200;
+    assaults.forEach(e=>{
+      const nSol = e.tank?3:4;
+      // defenders' gunfire: muzzle flashes from the front trench (and harder if MGs present)
+      const flashes = e.mg>0.5? 9 : 5;
+      for(let f=0; f<flashes; f++){
+        setTimeout(()=>{ muzzleAt(pctX(e.lane)+(Math.random()*2-1), pctY(frontRow));
+          if(e.mg>0.5) muzzleAt(pctX(e.lane)+(Math.random()*3-1.5), pctY(frontRow)); // MG = extra fire
+        }, START+150+f*140);
+      }
+      // a tank leads if this lane faced armour
+      if(e.tank){
+        setTimeout(()=>{ const t=addSpr("tank", pctX(e.lane), pctY(eRow),
+            '<span class="hull"></span><span class="trk"></span><span class="gun"></span>');
+          runTo(t, pctX(e.lane), pctY(e.outcome==="repel"?midRow:frontRow-0.3), RUN+400);
+          removeSpr(t, RUN+900);
+        }, START);
+      }
+      // the infantry
+      for(let k=0;k<nSol;k++){
+        setTimeout(()=>{
+          const sx=pctX(e.lane)+(k-(nSol-1)/2)*2.2;
+          const s=addSpr("soldier enemy run", sx, pctY(eRow), soldierHTML());
+          let endY, endX=sx;
+          if(e.outcome==="repel"){ endY=pctY(midRow+ (Math.random()<0.5?0:1)); }        // cut down in the open
+          else if(e.outcome==="counter"){ endY=pctY(frontRow-0.4); }                      // reach it, then thrown back
+          else { endY=pctY(frontRow-0.2); }                                               // breach — into the trench
+          runTo(s, endX, endY, RUN);
+          setTimeout(()=>{ if(!s) return; s.classList.remove("run");
+            if(e.outcome==="repel"){ s.classList.add("fall"); removeSpr(s,500); }
+            else if(e.outcome==="counter"){ muzzleAt(endX,pctY(frontRow)); s.classList.add("fall"); removeSpr(s,500); }
+            else { // breach: a flash at the trench, shake the sector, sprite fades
+              boomAt(endX, pctY(frontRow), .8);
+              const c=cellEl(e.lane,frontRow); if(c){ c.classList.add("dmg"); setTimeout(()=>c.classList.remove("dmg"),400);}
+              removeSpr(s,350);
+            }
+          }, RUN+20+k*40);
+        }, START+k*120);
+      }
+    });
+    dur=Math.max(dur, START+RUN+700);
+  }
+
+  // safety: wipe the layer once everything has played
+  setTimeout(clearBattle, dur+150);
+  return dur+200;
+}
+
+function gasVisual(x){ /* retained shim */ const s=addSpr("fx-gas",pctX(x),pctY(CONFIG.zones.playerRows[0])); removeSpr(s,1400); }
+function markEnemyFocus(focus,on){
+  focus.forEach(x=>{ for(const y of [...CONFIG.zones.nomanRows]){ if(S.grid[y]&&S.grid[y][x]) S.grid[y][x].enemyMark=on; } });
+  renderField();
+}
+
+/* =====================================================================================
+   SECTION 12b — PLAYER OFFENSIVE OPERATIONS
+   Optional, costly attacks that teach the ATTACKER'S side of trench warfare: raids for
+   intel/dominance of No Man's Land, and the "over the top" set-piece assault whose whole
+   lesson is that it is a slaughter without an artillery barrage to cut the wire. These
+   are deliberately not a path to easy victory — see CONFIG.offense to retune.
+   ===================================================================================== */
+function offenseAvailable(){ return S && !S.gameOver && !S.animating; }
+function countStructures(key){ let n=0; eachStruct((c)=>{ if(c.structure===key) n++; }); return n; }
+function randFloat(a,b){ return a+Math.random()*(b-a); }
+
+function launchRaid(){
+  if(!offenseAvailable()){ return; }
+  if(S.raidUsed){ toast("Your raiders have already gone out this round."); return; }
+  const cfg=CONFIG.offense.raid;
+  if(S.mode!=="sandbox" && S.res.manpower < cfg.manpower+5){ toast("Not enough men to mount a raid."); return; }
+  S.raidUsed=true; S.stats.raids=(S.stats.raids||0)+1;
+  const a=analyzeDefenses();
+  if(S.mode!=="sandbox") S.res.ammo=clamp(S.res.ammo-cfg.ammo,0,100);
+  const edge = a.observation*0.7 + a.wireCoverage*0.2;                 // seeing + owning the ground
+  const success = Math.random() < clamp(0.35+edge, 0.2, 0.9);
+  const dur=playOffensive([{type:"raid_out", lane:pickRaidLane(a), success}]);
+  lockDuringAnim(dur, ()=>{
+    if(success){
+      const cas=randInt(1,3); if(S.mode!=="sandbox") S.res.manpower=Math.max(0,S.res.manpower-cas);
+      S.stats.casualties+=cas; S.res.morale=clamp(S.res.morale+3,0,100);
+      const plan=enemyPlan(a); const sectors=plan.focus.map(x=>x+1).slice(0,3).join(", ");
+      log(`Raid succeeds: prisoners taken (−${cas} men), morale lifts. They talk — the enemy is massing against sector(s) ${sectors}.`,"good");
+      offenseResult("Trench Raid — success",
+        `Your raiders crossed under cover, seized prisoners and slipped back for the loss of ${cas} men. The prisoners reveal the enemy is preparing to strike <b>sector(s) ${sectors}</b> next. Morale rises.`, "raiding");
+    } else {
+      const cas=randInt(4,9); if(S.mode!=="sandbox") S.res.manpower=Math.max(0,S.res.manpower-cas);
+      S.stats.casualties+=cas; S.res.morale=clamp(S.res.morale-3,0,100);
+      log(`Raid caught in the wire: ${cas} men lost for nothing — poor observation left them blind.`,"bad");
+      offenseResult("Trench Raid — repulsed",
+        `Without command of No Man's Land your raiders were spotted and caught in the wire, losing ${cas} men for no gain. Observation and listening posts are what make raiding pay.`, "raiding");
+    }
+    renderAll();
+  });
+}
+
+function launchAttack(){
+  if(!offenseAvailable()){ return; }
+  if(S.attackUsed){ toast("You have already gone over the top this round."); return; }
+  const cfg=CONFIG.offense.attack;
+  if(S.mode!=="sandbox" && S.res.manpower < cfg.manpowerMin){ toast(`You need at least ${cfg.manpowerMin} men to mount an attack.`); return; }
+  if(!S._attackConfirm){ S._attackConfirm=true;
+    toast("Going over the top is very costly without an artillery barrage. Press again to commit.");
+    setTimeout(()=>{ S._attackConfirm=false; },4000); return; }
+  S._attackConfirm=false; S.attackUsed=true; S.stats.attacks=(S.stats.attacks||0)+1;
+  const a=analyzeDefenses();
+  const committed = S.mode==="sandbox"? cfg.manpowerCommit : Math.min(cfg.manpowerCommit, S.res.manpower-4);
+  if(S.mode!=="sandbox") S.res.ammo=clamp(S.res.ammo-cfg.ammo,0,100);
+  const hasArtillery = countStructures("artillery")>0 || a.counterBattery>0;
+  const prep = hasArtillery? CONFIG.offense.prepWithArtillery : CONFIG.offense.prepWithoutArtillery;
+  const enemyLine = CONFIG.offense.enemyLineBase + S.roundIndex*CONFIG.offense.enemyLineGrowth;
+  const moraleFactor = 0.7 + S.res.morale/200;
+  const noise=1+(Math.random()*2-1)*0.15;
+  const attack = (committed/12) * prep * moraleFactor * noise;
+  const success = attack > enemyLine*1.1;
+  let ownLoss, enemyLoss;
+  if(success){ ownLoss=Math.round(committed*randFloat(0.2,0.32));  enemyLoss=Math.round(committed*randFloat(0.5,0.8))+randInt(6,14); }
+  else       { ownLoss=Math.round(committed*randFloat(0.45,0.65)); enemyLoss=randInt(4,12); }
+  const lanes=enemyFocusLanesForAttack(a);
+  const dur=playOffensive(lanes.map(x=>({type:"attack_out", lane:x, success})));
+  lockDuringAnim(dur, ()=>{
+    if(S.mode!=="sandbox") S.res.manpower=Math.max(0,S.res.manpower-ownLoss);
+    S.stats.casualties+=ownLoss; S.stats.enemyCasualties+=enemyLoss;
+    if(success){
+      S.res.morale=clamp(S.res.morale+6,0,100); S.attackDisrupt=CONFIG.offense.successDisrupt;
+      log(`Over the top — the barrage told. Your men take the enemy's forward trench: ~${enemyLoss} enemy losses to our ${ownLoss}. Their next blow will be weaker.`,"good");
+      offenseResult("Over the Top — ground gained",
+        `Supported by your guns, the attack cut the wire and stormed the enemy's forward trench. Enemy losses ~${enemyLoss}; yours ~${ownLoss}. Their next assault on you will be disrupted. Even in success the price in men is heavy — this was the reality of every Western Front offensive.`, "over_the_top");
+    } else {
+      S.res.morale=clamp(S.res.morale-8,0,100);
+      log(`Over the top — a catastrophe. ${ownLoss} men lost in the wire for ${enemyLoss} enemy casualties.${hasArtillery?"":" No barrage cut the wire."}`,"bad");
+      offenseResult("Over the Top — cut down",
+        `Your men went over the top ${hasArtillery?"but the barrage was too thin to cut the wire":"with no artillery barrage to cut the wire"}, and were caught in the open by machine guns. ${ownLoss} lost for ${enemyLoss} enemy casualties — a few metres of shell-torn ground. This is why the great offensives failed.`, "over_the_top");
+    }
+    renderAll();
+  });
+}
+
+function pickRaidLane(a){
+  for(let x=0;x<S.cols;x++){ for(const y of CONFIG.zones.nomanRows){ const k=structAt(x,y); if(k==="observation_post"||k==="listening_post") return x; } }
+  return Math.floor(S.cols/2);
+}
+function enemyFocusLanesForAttack(a){
+  const ranked=a.perLane.map((l,i)=>({i,s:l.defScore})).sort((p,q)=>q.s-p.s);
+  return ranked.slice(0,3).map(o=>o.i);
+}
+function lockDuringAnim(dur, cb){
+  S.animating=true; setOffenseButtons(false);
+  const adv=el("btn-advance"); if(adv) adv.disabled=true;
+  setTimeout(()=>{ S.animating=false;
+    const adv2=el("btn-advance"); if(adv2) adv2.disabled=false;
+    cb(); if(!S.gameOver) checkGameOver();
+  }, dur);
+}
+function setOffenseButtons(enabled){ const r=el("btn-raid"),at=el("btn-attack");
+  if(r) r.disabled=!enabled; if(at) at.disabled=!enabled; }
+function renderOffense(){
+  const r=el("btn-raid"), at=el("btn-attack"); if(!r||!at) return;
+  const cfg=CONFIG.offense, sb=S.mode==="sandbox";
+  r.disabled = !(offenseAvailable() && !S.raidUsed && (sb || S.res.manpower>=cfg.raid.manpower+5));
+  at.disabled= !(offenseAvailable() && !S.attackUsed && (sb || S.res.manpower>=cfg.attack.manpowerMin));
+  r.textContent  = S.raidUsed? "⚔ Raid sent" : "⚔ Trench Raid";
+  at.textContent = S.attackUsed? "⚑ Attacked" : "⚑ Over the Top";
+}
+function offenseResult(title, html, conceptKey){
+  el("offense-title").textContent=title;
+  let lesson="";
+  if(conceptKey && CONCEPTS[conceptKey]){
+    if(!S.eduSkip && !S.eduSeen.has(conceptKey)){
+      const c=CONCEPTS[conceptKey];
+      lesson=`<div class="rep-lesson" style="margin-top:14px"><h4>${c.title}</h4><p>${c.body}</p><div class="edu-history">${c.history}</div></div>`;
+    }
+    S.eduSeen.add(conceptKey); S.stats.concepts.add(conceptKey);
+  }
+  el("offense-body").innerHTML=`<p style="font-size:14px;line-height:1.6">${html}</p>${lesson}`;
+  openModal("modal-offense");
+}
+
+/* friendly attack animation — our soldiers charge UP toward the enemy line, their guns answer */
+function playOffensive(events){
+  clearBattle();
+  if(!events||!events.length) return 700;
+  const eRow=Math.max(...CONFIG.zones.enemyRows);
+  const frontRow=CONFIG.zones.playerRows[0];
+  const midRow=CONFIG.zones.nomanRows[1];
+  const START=250;
+  events.forEach(e=>{
+    const isRaid=e.type==="raid_out";
+    const RUN=isRaid?1100:1300;
+    const nSol=isRaid?2:4;
+    const flashes=isRaid?3:8;
+    for(let f=0;f<flashes;f++){ setTimeout(()=>muzzleAt(pctX(e.lane)+(Math.random()*2-1), pctY(eRow)), START+200+f*150); }
+    for(let k=0;k<nSol;k++){
+      setTimeout(()=>{
+        const sx=pctX(e.lane)+(k-(nSol-1)/2)*2.2;
+        const s=addSpr("soldier friend run", sx, pctY(frontRow), soldierHTML());
+        const endY = e.success? pctY(eRow+0.3) : pctY(midRow+(Math.random()<0.5?0:1));
+        runTo(s, sx, endY, RUN);
+        setTimeout(()=>{ if(!s) return; s.classList.remove("run");
+          if(e.success){ boomAt(sx,pctY(eRow),.8); removeSpr(s,400); }
+          else { s.classList.add("fall"); removeSpr(s,500); }
+        }, RUN+20+k*40);
+      }, START+k*120);
+    }
+  });
+  const dur=START+1300+700;
+  setTimeout(clearBattle, dur+150);
+  return dur+150;
+}
+
+/* State mutation helpers ---------------------------------------------------------- */
+function floodLowTrenches(){
+  eachStruct((c,st,x,y)=>{ if((st.stats.trench||st.stats.frontline)&&c.elevation<=1&&!nearbyDrainage(x,y)) c.flooded=true; });
+}
+function destroyLaneTrench(x){
+  // remove the forward-most trench structure in a lane (simulates it being taken/blown)
+  for(const y of CONFIG.zones.playerRows){
+    const c=S.grid[y][x], k=c.structure;
+    if(k && (STRUCTURES[k].stats.frontline||STRUCTURES[k].stats.trench)){ c.structure=null; return true; }
+  }
+  return false;
+}
+function hasListeningNear(focus){
+  for(const x of focus){ for(let dx=-1;dx<=1;dx++){ for(let y=0;y<S.rows;y++){
+    const k=structAt(x+dx,y); if(k==="listening_post") return true; } } }
+  return false;
+}
+
+/* =====================================================================================
+   SECTION 13 — EDUCATION ENGINE  (Nightly Status Report)
+   Everything that happened this round — the combat summary plus any newly-triggered
+   Field Lessons — is gathered onto ONE screen shown between rounds, instead of a stack
+   of separate pop-ups. The player reviews it, then presses Continue to start the next
+   night's build phase.
+   ===================================================================================== */
+function showNightlyReport(newConcepts, snap){
+  // deltas for this round
+  const ownCas   = S.stats.casualties    - snap.cas;
+  const enemyCas = S.stats.enemyCasualties - snap.enemyCas;
+  const breaches = S.stats.breaches       - snap.breaches;
+  const floods   = S.stats.floods         - snap.floods;
+  const dMorale  = Math.round(S.res.morale - snap.morale);
+  const held     = sectorsHeld();
+
+  // which lessons to show as full cards (respect the "skip lessons" preference)
+  const lessons = S.eduSkip ? [] : newConcepts.filter(k=>!S.eduSeen.has(k) && CONCEPTS[k]);
+  lessons.forEach(k=>S.eduSeen.add(k));
+
+  // human-readable narrative = this round's telegraph lines
+  const lines = S.log.slice(snap.logStart).filter(e=>e.cls!=="head");
+  const narrative = lines.length
+    ? lines.map(e=>`<div class="rep-line ${e.cls}">${e.txt}</div>`).join("")
+    : `<div class="rep-line info">A quiet night along the sector. No major action.</div>`;
+
+  const moraleTxt = dMorale===0 ? "steady" : (dMorale>0? `+${dMorale} ▲` : `${dMorale} ▼`);
+  const moraleCls = dMorale>0?"good":(dMorale<0?"bad":"");
+  const exchange = (ownCas+enemyCas)>0
+    ? `${ownCas} yours · ${enemyCas} enemy`
+    : "no casualties";
+
+  const stats = `
+    <div class="rep-stats">
+      <div class="rep-stat"><div class="rl">Your casualties</div><div class="rv bad">${ownCas}</div></div>
+      <div class="rep-stat"><div class="rl">Enemy casualties</div><div class="rv good">${enemyCas}</div></div>
+      <div class="rep-stat"><div class="rl">Sectors breached</div><div class="rv ${breaches>0?"bad":""}">${breaches}</div></div>
+      <div class="rep-stat"><div class="rl">Morale change</div><div class="rv ${moraleCls}">${moraleTxt}</div></div>
+      <div class="rep-stat"><div class="rl">Front still held</div><div class="rv">${held}/${S.cols}</div></div>
+      ${floods>0?`<div class="rep-stat"><div class="rl">Flooded sections</div><div class="rv bad">${floods}</div></div>`:""}
+    </div>`;
+
+  const enemyDid = snap.tactics.map(t=>TACTIC_NAMES[t]||t).join(", ");
+
+  const lessonHtml = lessons.length ? `
+    <div class="rep-section-title">Field Lessons — why real armies did it differently</div>
+    ${lessons.map(k=>{const c=CONCEPTS[k];return `
+      <div class="rep-lesson">
+        <h4>${c.title}</h4>
+        <p>${c.body}</p>
+        <div class="edu-history">${c.history}</div>
+      </div>`;}).join("")}` : "";
+
+  const skipRow = `
+    <label class="hint" style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-right:auto">
+      <input type="checkbox" id="rep-skip" ${S.eduSkip?"checked":""}> Skip Field Lessons from now on
+      <span style="color:var(--chalk-dim)">(the status report still appears)</span>
+    </label>`;
+
+  el("report-title").textContent = `Night Report · ${snap.date}`;
+  el("report-body").innerHTML = `
+    <div class="rep-lead">The enemy came on with <b>${enemyDid||"probing attacks"}</b>. Here is the sector at dawn.</div>
+    ${stats}
+    <div class="rep-section-title">The night's telegraph</div>
+    <div class="rep-narrative">${narrative}</div>
+    ${lessonHtml}`;
+  el("report-foot").innerHTML = skipRow +
+    `<button class="btn primary" onclick="continueFromReport()">Continue to next night ▸</button>`;
+  openModal("modal-report");
+}
+
+function continueFromReport(){
+  const sk=el("rep-skip"); if(sk) S.eduSkip=sk.checked;
+  closeModal("modal-report");
+  const adv=el("btn-advance"); if(adv) adv.disabled=false;
+  endRound();
+}
+
+/* =====================================================================================
+   SECTION 14 — ROUND / CAMPAIGN FLOW
+   ===================================================================================== */
+function recordDecisionSnapshot(a,plan){
+  S.stats.decisions.push({
+    round:S.roundIndex+1, date:plan.date, morale:Math.round(S.res.morale),
+    manpower:Math.round(S.res.manpower), held:sectorsHeld(),
+    frontCoverage:+a.frontCoverage.toFixed(2), wire:+a.wireCoverage.toFixed(2),
+    mg:+a.mgCoverage.toFixed(2), depth:+a.depthScore.toFixed(2), flood:+a.floodRisk.toFixed(2),
+    tactics:plan.tactics.join(",")
+  });
+}
+function endRound(){
+  S.stats.roundsSurvived++;
+  // reset per-round offensive operations; the enemy-disruption from a successful attack
+  // has now been applied to the round that just resolved, so clear it too.
+  S.raidUsed=false; S.attackUsed=false; S.attackDisrupt=0;
+  // clear flood marks that were near drainage next round; keep others (they recover slowly)
+  for(let y=0;y<S.rows;y++)for(let x=0;x<S.cols;x++){ if(S.grid[y][x].flooded && Math.random()<0.6) S.grid[y][x].flooded=false; }
+
+  // advance calendar
+  S.roundIndex++; S.day++;
+  if(S.mode==="campaign" && S.roundIndex>=CONFIG.campaign.length){
+    return victoryEnd();
+  }
+  // unlock tech by year
+  unlockTechForYear();
+  // resource replenishment
+  if(S.mode!=="sandbox"){
+    S.res.ep=S.epPerRound;
+    // a steady trickle of replacements arrives every round...
+    const trickle=CONFIG.combat.replacementsPerRound;
+    S.res.manpower+=trickle;
+    // ...with a larger reinforcement draft every few rounds
+    if(S.roundIndex % CONFIG.combat.reinforceEvery===0){
+      const r=CONFIG.difficulty[S.diff].reinforce;
+      S.res.manpower+=r; S.res.morale=clamp(S.res.morale+4,0,100);
+      log(`Reinforcement draft arrives: +${r+trickle} men. Morale lifts.`,"good");
+    } else {
+      log(`Replacement drafts bring +${trickle} men into the line.`,"info");
+    }
+    // resupply
+    S.res.ammo=clamp(S.res.ammo+30,0,100); S.res.food=clamp(S.res.food+30,0,100);
+  }
+  rollWeather();
+  logHead(`New round — ${CONFIG.campaign[Math.min(S.roundIndex,CONFIG.campaign.length-1)].date}. Build phase.`);
+  renderAll();
+}
+function unlockTechForYear(){
+  if(S.mode==="sandbox") return;
+  const c=CONFIG.campaign[Math.min(S.roundIndex,CONFIG.campaign.length-1)];
+  const year=c.year;
+  Object.keys(TECH).forEach(k=>{
+    if(!S.tech.has(k) && TECH[k].year<=year){ S.tech.add(k);
+      log(`New technology available: ${TECH[k].name}.`,"good"); toast("Unlocked: "+TECH[k].name); }
+  });
+}
+
+function checkGameOver(){
+  if(S.mode==="sandbox") return false;
+  if(S.res.morale<=0){ defeatEnd("Morale has collapsed — the sector can no longer be held."); return true; }
+  if(S.res.manpower<=0){ defeatEnd("The garrison is destroyed. The line falls."); return true; }
+  if(sectorsHeld()<=0){ defeatEnd("Every sector has been overrun. The front is broken."); return true; }
+  return false;
+}
+function defeatEnd(msg){
+  S.gameOver=true; S.victory=false;
+  el("end-title").textContent="The Line is Lost";
+  el("end-content").innerHTML=`<p style="font-size:15px;line-height:1.6">${msg}</p>
+    <p style="color:var(--chalk-dim)">You held for <b>${S.stats.roundsSurvived}</b> round(s) and inflicted about
+    <b>${S.stats.enemyCasualties}</b> enemy casualties. Review the dashboard to see which engineering
+    lessons your design revealed — then try a new layout.</p>`;
+  openModal("modal-end");
+}
+function victoryEnd(){
+  S.gameOver=true; S.victory=true;
+  el("end-title").textContent="Sector Held — 1918";
+  el("end-content").innerHTML=`<p style="font-size:15px;line-height:1.6">Your engineering carried the sector from the
+    early digging of 1915 to the great battles of 1918. The line held.</p>
+    <p style="color:var(--chalk-dim)">Casualties suffered: <b>${S.stats.casualties}</b> · Enemy casualties: <b>${S.stats.enemyCasualties}</b> ·
+    Concepts demonstrated: <b>${S.stats.concepts.size}</b>. Open the Teacher Dashboard for the full report.</p>`;
+  openModal("modal-end");
+}
+
+/* =====================================================================================
+   SECTION 15 — TECH PANEL
+   ===================================================================================== */
+function openTech(){
+  const g=el("tech-grid"); g.innerHTML="";
+  const curYear=(CONFIG.campaign[Math.min(S.roundIndex,CONFIG.campaign.length-1)]||{}).year||1918;
+  Object.keys(TECH).forEach(k=>{
+    const t=TECH[k];
+    const unlocked=S.tech.has(k)||S.mode==="sandbox";
+    const available=!unlocked && t.year<=curYear;
+    const card=document.createElement("div");
+    card.className="tech-card"+(unlocked?" unlocked":available?" available":"");
+    const status=unlocked?`<span class="tech-status u">● Unlocked</span>`
+      :available?`<span class="tech-status a">◆ Available</span>`
+      :`<span class="tech-status l">◇ ${t.year}</span>`;
+    card.innerHTML=`${status}<h4>${t.name}</h4><p>${t.desc}</p>
+      <div class="mono" style="font-size:11px;color:var(--chalk-dim)">First fielded: ${t.year}</div>`;
+    g.appendChild(card);
+  });
+  openModal("modal-tech");
+}
+
+/* =====================================================================================
+   SECTION 16 — TEACHER DASHBOARD
+   ===================================================================================== */
+function openDashboard(){
+  closeModal("modal-end");
+  const st=S.stats;
+  const builtRows=Object.keys(st.built).map(k=>`<li>${STRUCTURES[k]?.name||k}: <b>${st.built[k]}</b></li>`).join("")||"<li>None yet</li>";
+  const conceptChips=[...st.concepts].map(k=>`<span class="concept-chip">${CONCEPTS[k].title}</span>`).join("")||"<span style='color:var(--chalk-dim)'>None demonstrated yet</span>";
+  const reflect=[...st.concepts].map(k=>`<li>${CONCEPTS[k].reflect}</li>`).join("")
+    || "<li>Which single engineering decision most affected your survival, and why?</li>";
+  // morale sparkline
+  const mh=st.moraleHistory; const spark=mh.map(v=>`<span style="height:${Math.max(4,v)}%"></span>`).join("");
+  const held=sectorsHeld();
+
+  el("dash-content").innerHTML=`
+    <div class="dash-grid">
+      <div class="dash-stat"><div class="lbl">Rounds Survived</div><div class="big">${st.roundsSurvived}</div></div>
+      <div class="dash-stat"><div class="lbl">Front Held Now</div><div class="big">${held}/${S.cols}</div></div>
+      <div class="dash-stat"><div class="lbl">Own Casualties</div><div class="big">${st.casualties}</div></div>
+      <div class="dash-stat"><div class="lbl">Enemy Casualties</div><div class="big">${st.enemyCasualties}</div></div>
+      <div class="dash-stat"><div class="lbl">Sector Breaches</div><div class="big">${st.breaches}</div></div>
+      <div class="dash-stat"><div class="lbl">Flood Events</div><div class="big">${st.floods}</div></div>
+      <div class="dash-stat"><div class="lbl">Engineering Spent</div><div class="big">${st.epSpent}</div></div>
+      <div class="dash-stat"><div class="lbl">Gas Attacks Endured</div><div class="big">${st.gasHits}</div></div>
+      <div class="dash-stat"><div class="lbl">Raids Launched</div><div class="big">${st.raids||0}</div></div>
+      <div class="dash-stat"><div class="lbl">Attacks Launched</div><div class="big">${st.attacks||0}</div></div>
+    </div>
+
+    <h3 style="margin:20px 0 8px;color:var(--ochre)">Morale over time</h3>
+    <div class="spark">${spark}</div>
+
+    <div class="dash-grid" style="margin-top:20px">
+      <div>
+        <h3 style="margin-bottom:8px;color:var(--ochre)">Structures Built</h3>
+        <ul class="dash-list">${builtRows}</ul>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px;color:var(--ochre)">Engineering Decisions</h3>
+        <ul class="dash-list">
+          <li>Demolitions/redesigns: <b>${st.demolished}</b></li>
+          <li>Technologies unlocked: <b>${S.mode==="sandbox"?"all":S.tech.size}</b></li>
+          <li>Difficulty: <b>${S.diff}</b> · Mode: <b>${S.mode}</b></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin:20px 0 8px;color:var(--ochre)">Historical Concepts Demonstrated</h3>
+    <div>${conceptChips}</div>
+
+    <div class="reflect">
+      <b style="font-family:var(--disp);letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--blue)">Reflection Questions</b>
+      <ol>${reflect}</ol>
+      <p style="font-size:13px;color:var(--chalk-dim);margin:10px 0 0">Discussion prompt: The Western Front's trenches
+      were the sum of thousands of decisions like the ones above. Which of your choices matched what the real armies did —
+      and which mistakes did the war force everyone to learn the hard way?</p>
+    </div>`;
+  openModal("modal-dash");
+}
+
+/* =====================================================================================
+   SECTION 17 — MENUS / MODALS / SETUP
+   ===================================================================================== */
+let pending={mode:"campaign",diff:"cadet"};
+
+/* ---- TUTORIAL / BASIC TRAINING ---------------------------------------------------
+   A stepped, skippable walkthrough. The structure-reference steps are generated from
+   the STRUCTURES catalog, so they always match the game (and any teacher edits). ---- */
+function zoneLabel(zones){
+  const map={player:"Your sector", noman:"No Man's Land", enemy:"Enemy"};
+  return zones.map(z=>map[z]||z).join(" or ");
+}
+function structCard(key){
+  const s=STRUCTURES[key];
+  const lock = s.tech ? ` · unlocks ${TECH[s.tech]?TECH[s.tech].year:""}` : "";
+  return `<div class="tut-card">
+    <span class="ico ico-${key}"><i></i><i></i></span>
+    <div class="tc-body">
+      <div class="tc-name"><span>${s.name}</span><span class="tc-cost">${s.cost} EP${s.upkeep?` · ${s.upkeep}/rd`:""}</span></div>
+      <div class="tc-desc">${s.desc}</div>
+      <div class="tc-zone">${zoneLabel(s.zones)}${lock}</div>
+    </div></div>`;
+}
+function catStep(cat, intro){
+  const keys=Object.keys(STRUCTURES).filter(k=>STRUCTURES[k].cat===cat);
+  return {title:cat, html:()=>`<div class="tut-step">
+    <h3>${cat}</h3>
+    <div class="tut-lead">${intro}</div>
+    <div class="tut-cards">${keys.map(structCard).join("")}</div>
+  </div>`};
+}
+const TUTORIAL = [
+  {title:"Welcome", html:()=>`<div class="tut-step">
+    <h3>Welcome, Engineering Officer</h3>
+    <p>You command the defence of one sector of the Western Front. Round by round, from 1915 to 1918,
+    you'll <span class="hl">dig, wire, and fortify</span> — then watch the enemy test your work with
+    bombardment, gas, and infantry assault.</p>
+    <p>There are no dice deciding your fate. <span class="hl">Every outcome flows from your engineering</span> —
+    the shape of your trenches, where you put your machine guns, whether your dugouts are deep and your
+    ground is drained. This short training explains the controls and every structure you can build.</p>
+    <div class="tut-lead">Tip: you can leave training at any time with <b>Skip</b>, and reopen it later from the
+    title screen or the <b>Help</b> button.</div>
+  </div>`},
+  {title:"The map", html:()=>`<div class="tut-step">
+    <h3>Reading the battlefield</h3>
+    <p>The map is three bands. The <span class="warn">enemy line is along the top</span> — their trench,
+    machine-gun posts and headquarters. Their attacks always come <span class="warn">downward</span>.</p>
+    <div class="tut-map">
+      <div class="lbl-row" style="color:#e8b0a0">▲ Enemy line — attacks come from here</div>
+      <div class="r">${Array(7).fill('<div class="c enemy">✕</div>').join("")}</div>
+      <div class="lbl-row" style="color:var(--chalk-dim)">No Man's Land — wire &amp; observation only</div>
+      <div class="r">${Array(7).fill('<div class="c noman"></div>').join("")}</div>
+      <div class="lbl-row" style="color:#bfe2ea">Your sector — build your defences here</div>
+      <div class="r">${Array(7).fill('<div class="c you">⚒</div>').join("")}</div>
+    </div>
+    <p>The labelled rail on the left of the real map shows these same three bands. Terrain matters too:
+    <span class="hl">high ground</span> helps defence and drains well, <span class="hl">water and marsh</span>
+    flood, <span class="hl">woods and ruins</span> give cover, and <span class="hl">craters</span> pock No Man's Land.</p>
+  </div>`},
+  {title:"Each day", html:()=>`<div class="tut-step">
+    <h3>How a round works</h3>
+    <p><b class="hl">1 · Build.</b> Each round you get <span class="hl">Engineering Points (EP)</span> — your budget.
+    Spend them on structures. You get a big budget the first round (you're inheriting a position) and a smaller
+    top-up each round after.</p>
+    <p><b class="hl">2 · Advance the Day.</b> When your defences are ready, press <b>Advance the Day</b>. The enemy
+    studies your line, picks your <span class="warn">weakest sectors</span>, and attacks.</p>
+    <p><b class="hl">3 · Read the result.</b> The meters along the top track <span class="hl">Morale, Manpower,
+    Casualties</span> (yours vs the enemy's), Ammunition, Food and how much of the Front you still Hold. Watch the
+    <span class="hl">Casualties</span> meter — a short red bar means you're making the enemy pay far more than you.</p>
+  </div>`},
+  {title:"Building", html:()=>`<div class="tut-step">
+    <h3>Placing structures</h3>
+    <p>In the <b>Engineering Stores</b> panel on the left, <span class="hl">click a structure to select it</span>
+    (or drag it), then <span class="hl">click a tile in your sector</span> to build. The tile highlights blue
+    if the placement is legal, red if it isn't.</p>
+    <p>Most things go in <span class="hl">your own rows</span>. A few — barbed wire, observation posts and
+    listening posts — can be pushed <span class="hl">forward into No Man's Land</span>. You cannot build on the
+    enemy line, and you can't build in water without draining it first.</p>
+    <p>Made a mistake? Use <b>Demolish</b> to remove a structure and get <span class="hl">half its cost refunded</span>.
+    The next steps explain what every structure actually does.</p>
+  </div>`},
+  catStep("Trenches", "The skeleton of your defence. Note the <b>fire trench</b> tip: build it in a <b>zig-zag</b>, not a straight line — a straight trench lets a single shell or machine gun fire straight down its length (an <i>enfilade</i>). Add <b>reserve</b> and <b>communication</b> trenches for depth and to move troops safely."),
+  catStep("Shelter", "Deep shelter is what saves men from bombardment — the single biggest killer. The deeper and more reinforced your dugouts, the fewer casualties when the shells fall. Concrete comes later in the war."),
+  catStep("Protection", "Obstacles and groundwork. <b>Barbed wire</b> in No Man's Land slows attackers in the open, right where your machine guns can catch them. <b>Drainage</b> keeps low ground from flooding — wet trenches mean disease and collapse."),
+  catStep("Weapons", "Firepower. A <b>machine-gun nest</b> covering a wired approach is the deadliest thing on the field, especially when two of them cover the same ground (interlocking fire). Artillery can suppress the enemy's own guns."),
+  catStep("Support", "The things that keep a position alive: <b>observation</b> and <b>listening posts</b> warn you of raids and mining before they strike, <b>medical stations</b> return wounded men to duty, and a <b>supply depot</b> — protected by a communication trench — keeps ammunition and food flowing."),
+  {title:"Learning", html:()=>`<div class="tut-step">
+    <h3>Why designs succeed or fail</h3>
+    <p>You're not meant to know the perfect layout yet — you're meant to <span class="hl">discover it</span>.
+    When a choice causes a historically real failure, a short <b>Field Lesson</b> pops up explaining what the
+    real armies did instead. For example:</p>
+    <p style="color:var(--chalk-dim);font-size:13px;line-height:1.6">• A straight trench gets raked by enfilade fire → build zig-zags.<br>
+    • A single line with no reserves gets overrun → build <i>defence in depth</i>.<br>
+    • Low ground with no drainage floods → duckboards and drainage.<br>
+    • An unwatched front invites night raids and mining → observation and listening posts.</p>
+    <p>You can switch these lessons off after the first one. The <b>Teacher Dashboard</b> tracks every concept
+    demonstrated, casualties, and reflection questions.</p>
+  </div>`},
+  {title:"Ready", html:()=>`<div class="tut-step">
+    <h3>You're ready to take command</h3>
+    <p>Start with <span class="hl">Cadet</span> difficulty if this is your first time — it's forgiving while you
+    learn. <b>Sandbox</b> gives you unlimited stores to experiment with no risk of defeat.</p>
+    <p>Remember the essentials: <span class="hl">zig-zag your trenches, dig deep, wire the front, cover it with
+    machine guns, drain your ground, and keep your supply safe.</span> Good luck.</p>
+    <div class="tut-lead">Press <b>Start a Campaign</b> to choose your mode and difficulty.</div>
+  </div>`},
+];
+let tutIndex=0;
+function openTutorial(i){ tutIndex=i||0; renderTut(); openModal("modal-tut"); }
+function tutStep(delta){
+  const next=tutIndex+delta;
+  if(next<0) return;
+  if(next>=TUTORIAL.length){ closeModal("modal-tut"); openSetup(); return; } // finished → setup
+  tutIndex=next; renderTut();
+}
+function renderTut(){
+  const step=TUTORIAL[tutIndex];
+  el("tut-title").textContent="Basic Training · "+step.title;
+  el("tut-body").innerHTML = typeof step.html==="function"? step.html() : step.html;
+  el("tut-body").scrollTop=0;
+  // progress dots
+  const prog=el("tut-progress"); prog.innerHTML="";
+  TUTORIAL.forEach((s,i)=>{
+    const d=document.createElement("div");
+    d.className="dot"+(i===tutIndex?" on":(i<tutIndex?" done":""));
+    d.title=s.title; d.onclick=()=>{ tutIndex=i; renderTut(); };
+    prog.appendChild(d);
+  });
+  el("tut-back").disabled = tutIndex===0;
+  el("tut-next").textContent = tutIndex===TUTORIAL.length-1 ? "Start a Campaign" : "Next";
+}
+
+
+function openSetup(){ pending={mode:"campaign",diff:"cadet"}; pickMode("campaign"); openModal("modal-setup"); }
+function pickMode(m){ pending.mode=m;
+  el("mc-campaign").classList.toggle("sel",m==="campaign");
+  el("mc-sandbox").classList.toggle("sel",m==="sandbox"); }
+function pickDiff(btn){ pending.diff=btn.dataset.diff;
+  document.querySelectorAll(".diff").forEach(b=>b.classList.toggle("sel",b===btn)); }
+function beginGame(){ closeModal("modal-setup"); startGame(pending.mode,pending.diff); }
+function startSandbox(){ startGame("sandbox","cadet"); }
+
+function startGame(mode,diff){
+  S=newState(mode,diff);
+  S.animating=false;
+  const adv=el("btn-advance"); if(adv) adv.disabled=false;
+  generateBattlefield();
+  if(mode==="sandbox"){ Object.keys(TECH).forEach(k=>S.tech.add(k)); S.res.ep=999; }
+  else { S.res.ep=CONFIG.difficulty[diff].firstRound; unlockTechForYear(); }
+  rollWeather();
+  el("screen-title").classList.remove("active");
+  el("screen-game").classList.add("active");
+  S.log=[];
+  logHead(mode==="sandbox"?"Sandbox — unlimited stores, all tech unlocked.":`Campaign begins — ${CONFIG.campaign[0].date}.`);
+  log("Build your defences, then Advance the Day to face the enemy. Watch the Sector Assessment.","info");
+  if(mode==="sandbox") log("Tip: build a layout, then Advance to launch a test attack. No permanent defeat here.","info");
+  renderAll();
+}
+
+function quitToTitle(){
+  closeModal("modal-end"); closeModal("modal-dash");
+  el("screen-game").classList.remove("active");
+  el("screen-title").classList.add("active");
+}
+
+function showHelp(){
+  el("help-content").innerHTML=`
+   <div style="font-size:14px;line-height:1.65">
+   <p><b style="color:var(--ochre)">Goal.</b> Design and defend a trench sector. In Campaign, survive from 1915 to 1918.
+   Outcomes come from your engineering — terrain, layout, logistics, morale — not luck.</p>
+   <p><b style="color:var(--ochre)">Build.</b> Pick a structure from the left (or drag it), then click a tile in your zone
+   (the lower rows). Wire and listening/observation posts can go forward into No Man's Land. Each structure costs
+   Engineering Points (EP). Use <b>Demolish</b> to remove and refund.</p>
+   <p><b style="color:var(--ochre)">Fight.</b> Press <b>Advance the Day</b>. The enemy studies your defences, attacks your
+   weakest sectors, and you see the result in the Field Telegraph.</p>
+   <p><b style="color:var(--ochre)">Learn.</b> When a design choice causes a historically real failure, a short Field Lesson
+   explains what the real armies did instead. You can switch these off after the first one.</p>
+   <p style="color:var(--chalk-dim)"><b>Key ideas to discover:</b> zig-zag trenches (enfilade), defence in depth (reserve +
+   communication trenches), wire + machine-gun kill zones, drainage vs flooding, protecting your supply, and watching
+   No Man's Land.</p>
+   </div>`;
+  openModal("modal-help");
+}
+
+/* =====================================================================================
+   SECTION 18 — SMALL UTILITIES + WIRING
+   ===================================================================================== */
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function openModal(id){ el(id).classList.add("show"); }
+function closeModal(id){ el(id).classList.remove("show"); }
+let toastT=null;
+function toast(msg){ const t=el("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
+
+// close modals on backdrop click / Escape. The Night Report is special: it must be
+// dismissed via Continue (which advances the round), so backdrop/Escape route there.
+document.querySelectorAll(".modal-mask").forEach(m=>{
+  m.addEventListener("click",e=>{ if(e.target===m){
+    if(m.id==="modal-report"){ continueFromReport(); } else { closeModal(m.id); }
+  }});
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){
+  const rep=el("modal-report");
+  if(rep && rep.classList.contains("show")){ continueFromReport(); return; }
+  document.querySelectorAll(".modal-mask.show").forEach(m=>closeModal(m.id)); }});
+
+// expose functions used by inline handlers (they're already global via function declarations)
+
+// Offer Basic Training automatically the first time the page loads, so students get the
+// walkthrough before they start. It's fully skippable and won't reappear on Quit-to-title.
+window.addEventListener("DOMContentLoaded",()=>{ try{ openTutorial(0); }catch(e){} });
+</script>
+</body>
+</html>

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Delta's Bargain: Land, Sea &amp; Livelihood</title>
+<meta name="description" content="An AP Human Geography land-and-sea management simulation on deforestation, aquaculture, and sustainability, built around CED Topics 5.9-5.11. Balance land health, community wellbeing, and profit across a decade of decisions, then practice with AP-style questions.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --water:#1b3a1f; --water2:#14301a; --water3:#0d2010;
+  --lagoon:#4f7942; --lagoon2:#5f8f4f;
+  --mangrove:#2f5d2a; --mangrove2:#1f3f1c; --mangrove-light:#5c9450;
+  --sand:#e6d9b8; --sand-dark:#d4c092; --parchment:#f8f2e0;
+  --mud:#6b4a2e; --mud-dark:#4a3220;
+  --coral:#9c4a2a; --coral2:#7a3720;
+  --gold:#b98a2e; --gold2:#d1a83e;
+  --ink:#2b3320; --ink-soft:#4f5a3f;
+  --line:rgba(43,51,32,0.15);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--sand); color:var(--ink);
+  font-family:'Figtree',system-ui,sans-serif; font-size:16px; line-height:1.55;
+  min-height:100vh;
+}
+h1,h2,h3{ font-family:'Bitter',serif; font-weight:700; margin:0 0 .5em; color:var(--water3); }
+p{margin:0 0 1em;}
+button{font-family:inherit;}
+a{color:var(--coral);}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
+
+/* ══ HEADER ══ */
+#game-header{
+  background:linear-gradient(180deg,var(--water3),var(--water));
+  color:var(--parchment); text-align:center; padding:22px 16px 18px;
+  border-bottom:5px solid var(--gold);
+  box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  position:relative;
+}
+#game-header h1{
+  color:var(--gold2); margin:0; font-size:clamp(20px,4vw,32px);
+  text-shadow:2px 2px 0 rgba(0,0,0,0.35); letter-spacing:.5px;
+}
+#game-header .subtitle{ color:#cfe0c4; font-size:13.5px; margin-top:6px; letter-spacing:.3px; }
+#glossary-btn{
+  position:absolute; right:16px; top:18px; background:var(--lagoon); color:#f2f8ea;
+  border:none; border-radius:999px; padding:9px 16px; font-weight:700; font-size:13px;
+  cursor:pointer; box-shadow:0 3px 0 var(--water2);
+}
+#glossary-btn:hover{ background:var(--lagoon2); }
+#glossary-btn:active{ box-shadow:0 1px 0 var(--water2); transform:translateY(2px); }
+
+/* ══ LAYOUT ══ */
+#app{ max-width:1080px; margin:0 auto; padding:20px 16px 60px; }
+.screen{ display:none; }
+.screen.active{ display:block; animation:fadeIn .25s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+.panel{
+  background:var(--parchment); border:1px solid var(--line); border-radius:14px;
+  padding:24px 28px; margin-bottom:18px;
+  box-shadow:0 3px 10px rgba(37,50,31,0.1);
+}
+.panel h2{ font-size:22px; }
+.panel h3{ font-size:16px; color:var(--coral2); margin-top:1.2em; }
+
+.btn{
+  display:inline-block; border:none; border-radius:999px; cursor:pointer;
+  font-family:'Figtree',sans-serif; font-weight:700; font-size:14px;
+  padding:12px 22px; transition:transform .1s ease, box-shadow .1s ease;
+  letter-spacing:.2px;
+}
+.btn:active{ transform:translateY(1px); }
+.btn:disabled{ opacity:.4; cursor:not-allowed; }
+.btn-primary{ background:var(--coral); color:#fff2ec; box-shadow:0 3px 0 var(--coral2); }
+.btn-primary:hover:not(:disabled){ background:#cd5f47; }
+.btn-primary:active:not(:disabled){ box-shadow:0 1px 0 var(--coral2); }
+.btn-gold{ background:var(--gold); color:#2a1d10; box-shadow:0 3px 0 #96701f; }
+.btn-gold:hover:not(:disabled){ background:var(--gold2); }
+.btn-jade{ background:var(--mangrove); color:#eef7e2; box-shadow:0 3px 0 var(--mangrove2); }
+.btn-jade:hover:not(:disabled){ background:var(--mangrove-light); }
+.btn-ghost{ background:transparent; color:var(--mud); border:2px solid var(--mud); box-shadow:none; padding:10px 20px; }
+.btn-ghost:hover{ background:var(--mud); color:#fff; }
+.btn-small{ padding:7px 14px; font-size:12px; }
+
+/* ══ VOCAB TERMS ══ */
+.vocab{
+  border-bottom:2px dotted var(--coral); font-weight:700; color:var(--coral2);
+  cursor:help; position:relative; white-space:nowrap;
+}
+.vocab-tags{ margin-top:14px; display:flex; flex-wrap:wrap; gap:8px; }
+.vocab-pill{
+  background:var(--lagoon); color:#f2f8ea; font-size:11.5px; font-weight:700;
+  padding:5px 12px; border-radius:999px; letter-spacing:.3px;
+}
+
+/* ══ INTRO SCREEN ══ */
+.hero{
+  background:linear-gradient(160deg,var(--mangrove2),var(--water3) 70%);
+  color:#eef3e0; border-radius:16px; padding:30px 30px 26px; margin-bottom:20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+.hero h2{ color:var(--gold2); font-size:26px; }
+.hero p{ color:#e3ecd4; }
+.role-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0; }
+.role-card{
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:12px;
+  padding:14px 16px; text-align:center;
+}
+.role-card .icon{ font-size:30px; display:block; margin-bottom:6px; }
+.role-card h4{ margin:0 0 4px; color:var(--gold2); font-family:'Bitter',serif; font-size:15px; }
+.role-card p{ margin:0; font-size:13px; color:#dce6ce; }
+@media (max-width:640px){ .role-grid{grid-template-columns:1fr;} }
+
+/* ══ METERS ══ */
+#meter-bar{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px;
+  position:sticky; top:0; z-index:5; padding-top:4px;
+}
+.meter{
+  background:var(--parchment); border:1px solid var(--line); border-radius:12px;
+  padding:12px 14px; box-shadow:0 2px 8px rgba(37,50,31,.08);
+}
+.meter .m-head{ display:flex; justify-content:space-between; align-items:center; font-weight:800; font-size:13px; margin-bottom:6px; }
+.meter .m-head .m-name{ display:flex; align-items:center; gap:6px; }
+.meter .m-val{ font-family:'Bitter',serif; }
+.meter .m-track{ background:#ddd0ab; border-radius:999px; height:10px; overflow:hidden; }
+.meter .m-fill{ height:100%; border-radius:999px; transition:width .5s ease; }
+.m-land .m-fill{ background:linear-gradient(90deg,var(--mangrove2),var(--mangrove-light)); }
+.m-community .m-fill{ background:linear-gradient(90deg,var(--mud-dark),var(--mud)); }
+.m-profit .m-fill{ background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+@media (max-width:640px){ #meter-bar{grid-template-columns:1fr;} }
+
+/* ══ ROUND HEADER ══ */
+.round-tag{
+  display:inline-block; background:var(--water3); color:var(--gold2); font-weight:800;
+  font-size:12.5px; letter-spacing:.6px; padding:5px 14px; border-radius:999px; margin-bottom:10px;
+}
+.card-title{ font-size:22px; margin-bottom:6px; }
+.card-scenario{ font-size:15.5px; }
+
+/* ══ CHOICES ══ */
+.choice-list{ display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+.choice-btn{
+  text-align:left; background:#fff; border:2px solid var(--line); border-radius:12px;
+  padding:14px 16px; cursor:pointer; transition:border-color .15s ease, transform .1s ease, box-shadow .15s ease;
+  font-family:'Figtree',sans-serif;
+}
+.choice-btn:hover{ border-color:var(--lagoon); box-shadow:0 3px 10px rgba(79,121,66,.2); transform:translateY(-1px); }
+.choice-btn .c-label{ font-weight:800; color:var(--water3); font-size:15px; margin-bottom:4px; display:block; }
+.choice-btn .c-desc{ font-size:13.5px; color:var(--ink-soft); margin-bottom:8px; }
+.choice-btn .c-effects{ display:flex; gap:12px; flex-wrap:wrap; }
+.eff{ font-size:12.5px; font-weight:800; padding:3px 9px; border-radius:999px; }
+.eff-arrow{ font-size:13px; }
+.eff-pos{ background:#dcf0dc; color:#1f7a2e; }
+.eff-neg{ background:#fbe0dc; color:#c23b26; }
+.eff-zero{ background:#eee; color:#777; }
+
+/* ══ CONSEQUENCE PANEL ══ */
+.consequence{ background:#fff; border-left:5px solid var(--lagoon); border-radius:10px; padding:16px 18px; margin-top:14px; }
+.consequence h4{ margin:0 0 8px; font-family:'Bitter',serif; color:var(--water3); font-size:16px; }
+.consequence .ced-note{
+  margin-top:10px; background:var(--parchment); border:1px dashed var(--coral); border-radius:8px;
+  padding:10px 12px; font-size:13.5px; color:var(--ink-soft);
+}
+.consequence .ced-note strong{ color:var(--coral2); }
+
+/* ══ REPORT SCREEN ══ */
+.ending-banner{
+  border-radius:14px; padding:22px 26px; text-align:center; margin-bottom:20px; color:#fff;
+}
+.ending-banner h2{ color:#fff; font-size:26px; }
+.ending-banner p{ color:rgba(255,255,255,.92); margin:0; }
+.ending-collapse{ background:linear-gradient(135deg,var(--coral2),#3f2313); }
+.ending-steward{ background:linear-gradient(135deg,var(--mangrove2),var(--lagoon)); }
+.ending-boom{ background:linear-gradient(135deg,#8a6a1e,var(--coral2)); }
+.ending-purist{ background:linear-gradient(135deg,var(--water3),var(--mangrove2)); }
+.ending-muddle{ background:linear-gradient(135deg,#5c4a30,#7a5f3a); }
+
+.report-meters{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:10px; }
+@media (max-width:640px){ .report-meters{grid-template-columns:1fr;} }
+
+.recap-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.recap-list li{ background:#fff; border-radius:10px; padding:10px 14px; border:1px solid var(--line); }
+.recap-list strong{ color:var(--coral2); }
+
+/* ══ EXAM PREP ══ */
+.exam-progress{ font-size:13px; font-weight:800; color:var(--water3); margin-bottom:8px; }
+.stimulus{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:14px; font-style:italic; color:var(--ink-soft); font-size:14.5px; }
+.mcq-choice{
+  display:block; width:100%; text-align:left; background:#fff; border:2px solid var(--line);
+  border-radius:10px; padding:11px 14px; margin-bottom:9px; cursor:pointer; font-size:14.5px;
+}
+.mcq-choice:hover{ border-color:var(--lagoon); }
+.mcq-choice.correct{ border-color:#2f8a3f; background:#e6f6e8; }
+.mcq-choice.incorrect{ border-color:var(--coral2); background:#f3ded0; }
+.mcq-choice:disabled{ cursor:default; }
+.mcq-feedback{ background:var(--parchment); border-left:5px solid var(--lagoon); border-radius:8px; padding:12px 14px; margin-top:10px; font-size:14px; }
+
+/* ══ MODAL (Field Guide) ══ */
+#glossary-modal{
+  display:none; position:fixed; inset:0; background:rgba(15,30,25,.65); z-index:50;
+  align-items:flex-start; justify-content:center; padding:40px 16px;
+}
+#glossary-modal.active{ display:flex; }
+.modal-box{
+  background:var(--parchment); border-radius:16px; max-width:700px; width:100%; max-height:85vh;
+  overflow-y:auto; padding:24px 26px 30px; box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+.modal-box h2{ display:flex; justify-content:space-between; align-items:center; }
+#glossary-close{ background:var(--coral); color:#fff; border:none; border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:16px; box-shadow:0 2px 0 var(--coral2); }
+.glossary-term{ border-bottom:1px solid var(--line); padding:10px 0; }
+.glossary-term:last-child{ border-bottom:none; }
+.glossary-term .g-term{ font-weight:800; color:var(--water3); font-family:'Bitter',serif; }
+.glossary-term .g-topic{ font-size:11px; font-weight:800; color:var(--coral2); background:#f3ded0; border-radius:999px; padding:2px 9px; margin-left:8px; }
+
+.footer-note{ text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:24px; }
+.center{ text-align:center; }
+.button-row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+</style>
+</head>
+<body>
+
+<div id="game-header">
+  <h1>The Delta's Bargain</h1>
+  <div class="subtitle">A Land, Sea &amp; Livelihood Simulation · AP Human Geography, Unit 5 (Topics 5.9–5.11)</div>
+  <button id="glossary-btn" type="button">📖 Field Guide</button>
+</div>
+
+<div id="app">
+
+  <!-- ══════════ INTRO SCREEN ══════════ -->
+  <section class="screen active" id="screen-intro">
+    <div class="hero">
+      <h2>Welcome to the Amara Delta</h2>
+      <p>The Amara Delta is a fictional river-mouth region modeled on real deltas around the world &mdash; places like the Mekong Delta, the Niger Delta, and coastal Ecuador &mdash; where a rainforest and <span class="vocab" data-term="Mangrove forest">mangrove forest</span> meet rich coastal fishing grounds. For generations, local families have farmed, fished, and lived off this land and water.</p>
+      <p>You've just been named the Delta's new Development Coordinator. Global markets want what the delta produces: shrimp, timber, palm oil, fish. Over the next <strong>10 years</strong>, you'll make the calls that decide whether the delta thrives, or collapses under the weight of its own bargain.</p>
+      <div class="role-grid">
+        <div class="role-card"><span class="icon">🌳</span><h4>Land Health</h4><p>Forest cover, soil quality, and the ecosystems the delta depends on.</p></div>
+        <div class="role-card"><span class="icon">👥</span><h4>Community Wellbeing</h4><p>Local jobs, food security, and whether families can stay and thrive.</p></div>
+        <div class="role-card"><span class="icon">💰</span><h4>Profit</h4><p>The money you need to invest, govern, and keep the delta running.</p></div>
+      </div>
+      <p style="margin-bottom:0;">Every decision moves all three. Let any one collapse to zero, and the whole system fails &mdash; no matter how well the other two are doing. Choices are tagged with the <span class="vocab" data-term="AP CED">AP Human Geography concepts</span> they demonstrate, so you're building exam-ready vocabulary as you play.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0;">How to play</h3>
+      <p>Each round presents a real decision development officers like you actually face &mdash; drawn straight from the environmental and economic issues in <strong>CED Topics 5.9 (The Global System of Agriculture), 5.10 (Consequences of Agricultural Practices), and 5.11 (Challenges of Contemporary Agriculture)</strong>. Pick a choice, see its effect on all three meters, and read why it matters before moving to the next year. Some crises only appear if your earlier choices set them up &mdash; the delta remembers.</p>
+      <p style="margin-bottom:0;">Plays in about 20&ndash;30 minutes. Grab a partner and talk through the trade-offs out loud &mdash; there's rarely a clean right answer.</p>
+    </div>
+    <div class="center">
+      <button class="btn btn-primary" id="btn-start" type="button" style="font-size:16px; padding:14px 32px;">Begin Year 1 →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ GAME SCREEN ══════════ -->
+  <section class="screen" id="screen-game">
+    <div id="meter-bar">
+      <div class="meter m-land">
+        <div class="m-head"><span class="m-name">🌳 Land Health</span><span class="m-val" id="val-land">60</span></div>
+        <div class="m-track"><div class="m-fill" id="fill-land" style="width:60%"></div></div>
+      </div>
+      <div class="meter m-community">
+        <div class="m-head"><span class="m-name">👥 Community</span><span class="m-val" id="val-community">60</span></div>
+        <div class="m-track"><div class="m-fill" id="fill-community" style="width:60%"></div></div>
+      </div>
+      <div class="meter m-profit">
+        <div class="m-head"><span class="m-name">💰 Profit</span><span class="m-val" id="val-profit">30</span></div>
+        <div class="m-track"><div class="m-fill" id="fill-profit" style="width:30%"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" id="round-panel">
+      <span class="round-tag" id="round-tag">YEAR 1 OF 10</span>
+      <h2 class="card-title" id="round-title">Title</h2>
+      <p class="card-scenario" id="round-scenario">Scenario text.</p>
+      <div class="choice-list" id="choice-list"></div>
+      <div class="consequence" id="consequence-box" style="display:none;">
+        <h4 id="consequence-head">What happened</h4>
+        <p id="consequence-text"></p>
+        <div class="ced-note" id="ced-note"></div>
+        <div class="vocab-tags" id="vocab-tags"></div>
+        <div class="button-row" style="justify-content:flex-start;">
+          <button class="btn btn-primary" id="btn-continue" type="button">Continue →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ REPORT SCREEN ══════════ -->
+  <section class="screen" id="screen-report">
+    <div class="ending-banner" id="ending-banner">
+      <h2 id="ending-title">Ending Title</h2>
+      <p id="ending-blurb">Ending blurb.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0;">Final Delta Report Card</h3>
+      <div class="report-meters">
+        <div class="meter m-land"><div class="m-head"><span class="m-name">🌳 Land Health</span><span class="m-val" id="rep-land">0</span></div><div class="m-track"><div class="m-fill" id="rep-fill-land" style="width:0%"></div></div></div>
+        <div class="meter m-community"><div class="m-head"><span class="m-name">👥 Community</span><span class="m-val" id="rep-community">0</span></div><div class="m-track"><div class="m-fill" id="rep-fill-community" style="width:0%"></div></div></div>
+        <div class="meter m-profit"><div class="m-head"><span class="m-name">💰 Profit</span><span class="m-val" id="rep-profit">0</span></div><div class="m-track"><div class="m-fill" id="rep-fill-profit" style="width:0%"></div></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0;">Concepts You Applied</h3>
+      <p>Every AP Human Geography term your choices touched this playthrough &mdash; review these before moving on to exam practice.</p>
+      <ul class="recap-list" id="recap-list"></ul>
+    </div>
+    <div class="center">
+      <button class="btn btn-gold" id="btn-to-exam" type="button" style="font-size:15px; padding:13px 28px;">Continue to AP Exam Practice →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ EXAM PREP SCREEN ══════════ -->
+  <section class="screen" id="screen-exam">
+    <div class="panel">
+      <h2 style="margin-top:0;">AP Exam Practice: Unit 5</h2>
+      <p>Six multiple-choice questions in the style of the AP Human Geography exam, built from the same concepts you just applied in the Amara Delta. Read each stimulus carefully.</p>
+      <div class="exam-progress" id="exam-progress">Question 1 of 6</div>
+      <div class="stimulus" id="exam-stimulus"></div>
+      <p id="exam-question" style="font-weight:700;"></p>
+      <div id="exam-choices"></div>
+      <div class="mcq-feedback" id="exam-feedback" style="display:none;"></div>
+      <div class="button-row" style="justify-content:flex-start;">
+        <button class="btn btn-primary" id="btn-next-question" type="button" style="display:none;">Next Question →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FINAL SCREEN ══════════ -->
+  <section class="screen" id="screen-final">
+    <div class="panel center">
+      <h2 style="margin-top:0;">Exam Practice Complete</h2>
+      <p id="final-score" style="font-size:20px; font-weight:800; color:var(--water3);"></p>
+      <p>Nice work reasoning through both the simulation and the exam-style questions. Talk with your partner or class about which decisions you'd change &mdash; and why &mdash; before you play again.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0;">Write About It (FRQ-Style Reflection)</h3>
+      <p>Using at least <strong>three</strong> of the following terms &mdash; <span class="vocab" data-term="Deforestation">deforestation</span>, <span class="vocab" data-term="Monoculture">monoculture</span>, <span class="vocab" data-term="Sustainable yield">sustainable yield</span>, <span class="vocab" data-term="Land tenure">land tenure</span>, <span class="vocab" data-term="Commodity chain">commodity chain</span> &mdash; explain how a region like the Amara Delta could pursue economic growth while minimizing environmental and social costs. Support your answer with at least one specific example from your playthrough.</p>
+    </div>
+    <div class="button-row">
+      <button class="btn btn-primary" id="btn-play-again" type="button">Play Again</button>
+      <button class="btn btn-ghost" id="btn-open-glossary-final" type="button">Review Field Guide</button>
+    </div>
+    <p class="footer-note">Built for AP Human Geography, Unit 5: Agriculture &amp; Rural Land-Use Patterns and Processes &mdash; Topics 5.9, 5.10, and 5.11.</p>
+  </section>
+
+</div>
+
+<!-- ══════════ GLOSSARY MODAL ══════════ -->
+<div id="glossary-modal">
+  <div class="modal-box">
+    <h2>Field Guide <button id="glossary-close" type="button" aria-label="Close field guide">✕</button></h2>
+    <div id="glossary-body"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // -----------------------------------------------------------------------
+  // Glossary — every CED-aligned term the game references.
+  // -----------------------------------------------------------------------
+  var GLOSSARY = [
+    { term: 'Deforestation', topic: '5.10', def: 'The clearing or removal of forest cover, usually to make way for farming, ranching, aquaculture ponds, or development.' },
+    { term: 'Mangrove forest', topic: '5.10', def: 'Salt-tolerant coastal forests that buffer shorelines from storms, filter runoff, and serve as nurseries for fish and shrimp.' },
+    { term: 'Ecosystem services', topic: '5.10', def: 'The natural benefits an ecosystem provides to people for free, like storm protection, water filtration, and soil formation, lost when that ecosystem is degraded.' },
+    { term: 'Land degradation', topic: '5.10', def: 'A decline in the quality or productivity of land, often caused by overuse, erosion, chemical buildup, or the loss of vegetation.' },
+    { term: 'Desertification', topic: '5.10', def: 'The process by which fertile land becomes increasingly arid and unproductive, often driven by overgrazing, deforestation, or drought.' },
+    { term: 'Soil/land salinization', topic: '5.10', def: 'The buildup of salts in soil, usually from evaporating irrigation water, which lowers fertility and crop yields over time (a key Aral Sea example).' },
+    { term: 'Monoculture', topic: '5.10', def: 'Growing or raising a single crop or species across a large area. It maximizes short-term yield but increases vulnerability to disease and pests.' },
+    { term: 'Biodiversity', topic: '5.10', def: 'The variety of species and genetic diversity within an ecosystem or farming system; higher biodiversity generally means more resilience.' },
+    { term: 'Aquaculture', topic: '5.11', def: 'The farming of fish, shrimp, or other aquatic species in controlled ponds or pens, rather than catching them wild.' },
+    { term: 'Overfishing', topic: '5.11', def: 'Harvesting fish or other aquatic species faster than their populations can naturally replenish, leading to stock collapse.' },
+    { term: 'Sustainable yield', topic: '5.10', def: 'The rate of harvesting a resource (like fish or timber) that allows the population or system to fully regenerate before the next harvest.' },
+    { term: 'Carrying capacity', topic: '5.10', def: 'The maximum population or level of resource use an environment can support indefinitely without being degraded.' },
+    { term: 'Commodity chain', topic: '5.9', def: 'The full network of steps, from raw production to processing to retail, that moves a good like shrimp, coffee, or palm oil from producer to consumer.' },
+    { term: 'Agribusiness', topic: '5.9', def: 'Large-scale, often multinational, corporate agricultural or aquacultural operations run for commercial profit rather than local subsistence.' },
+    { term: 'Subsistence agriculture', topic: '5.9', def: 'Farming primarily to feed one\'s own family or community, with little surplus produced for sale.' },
+    { term: 'Commercial agriculture', topic: '5.9', def: 'Farming conducted primarily to sell products for profit in regional, national, or global markets.' },
+    { term: 'GMO / biotechnology', topic: '5.11', def: 'Genetically modified organisms engineered for traits like drought resistance or higher yield; debated for both benefits and ecological/economic risks.' },
+    { term: 'Sustainable development', topic: '5.11', def: 'Development that meets present economic and social needs without compromising the environment\'s ability to meet the needs of future generations.' },
+    { term: 'Conservation', topic: '5.10', def: 'The planned management and protection of natural resources to prevent their depletion, destruction, or neglect.' },
+    { term: 'Land tenure', topic: '5.11', def: 'The legal or customary rights defining who may use, control, or own land, and for how long, often contested between smallholders and agribusiness.' },
+    { term: 'Food security', topic: '5.11', def: 'Consistent access to enough safe, affordable, nutritious food to meet a population\'s dietary needs.' },
+    { term: 'Food desert', topic: '5.11', def: 'An area, sometimes even a highly productive farming or fishing region, where residents lack access to affordable, healthy food.' },
+    { term: 'Farmland loss', topic: '5.11', def: 'The permanent conversion of productive agricultural or fishing land to non-agricultural uses, especially urban and suburban development.' },
+    { term: 'Ecotourism', topic: '5.11', def: 'Tourism centered on natural areas that aims to conserve the environment and improve the wellbeing of local communities.' },
+    { term: 'AP CED', topic: 'Info', def: 'The College Board\'s Course and Exam Description &mdash; the official framework listing exactly which topics and skills AP Human Geography tests.' }
+  ];
+  var GLOSSARY_MAP = {};
+  GLOSSARY.forEach(function (g) { GLOSSARY_MAP[g.term] = g; });
+
+  function renderGlossary() {
+    var body = document.getElementById('glossary-body');
+    body.innerHTML = '';
+    GLOSSARY.forEach(function (g) {
+      var div = document.createElement('div');
+      div.className = 'glossary-term';
+      div.innerHTML = '<span class="g-term">' + g.term + '</span><span class="g-topic">' + g.topic + '</span>' +
+        '<p style="margin:6px 0 0;">' + g.def + '</p>';
+      body.appendChild(div);
+    });
+  }
+  renderGlossary();
+
+  function openGlossary() { document.getElementById('glossary-modal').classList.add('active'); }
+  function closeGlossary() { document.getElementById('glossary-modal').classList.remove('active'); }
+  document.getElementById('glossary-btn').addEventListener('click', openGlossary);
+  document.getElementById('glossary-close').addEventListener('click', closeGlossary);
+  document.getElementById('glossary-modal').addEventListener('click', function (e) {
+    if (e.target.id === 'glossary-modal') closeGlossary();
+  });
+
+  // Hover/tap tooltip for inline .vocab spans using the title attribute.
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target.closest ? e.target.closest('.vocab') : null;
+    if (el && !el.title) {
+      var g = GLOSSARY_MAP[el.getAttribute('data-term')];
+      if (g) el.title = g.def;
+    }
+  });
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('.vocab') : null;
+    if (el) { openGlossary(); }
+  });
+
+  // -----------------------------------------------------------------------
+  // Screen management
+  // -----------------------------------------------------------------------
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // -----------------------------------------------------------------------
+  // Game state
+  // -----------------------------------------------------------------------
+  var TOTAL_ROUNDS = 10;
+  var state;
+
+  function newState() {
+    return {
+      round: 1,
+      land: 60, community: 60, profit: 30,
+      flags: {},
+      appliedVocab: [],
+      collapsed: false
+    };
+  }
+
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+
+  function applyEffects(effects) {
+    state.land = clamp(state.land + (effects.land || 0));
+    state.community = clamp(state.community + (effects.community || 0));
+    state.profit = clamp(state.profit + (effects.profit || 0));
+  }
+
+  function renderMeters() {
+    document.getElementById('val-land').textContent = state.land;
+    document.getElementById('val-community').textContent = state.community;
+    document.getElementById('val-profit').textContent = state.profit;
+    document.getElementById('fill-land').style.width = state.land + '%';
+    document.getElementById('fill-community').style.width = state.community + '%';
+    document.getElementById('fill-profit').style.width = state.profit + '%';
+  }
+
+  // -----------------------------------------------------------------------
+  // Round data. getRound(n) returns a card object for round n, resolved
+  // against current state for the two branching rounds (5 and 6).
+  // -----------------------------------------------------------------------
+  function getRound(n) {
+    switch (n) {
+      case 1: return {
+        title: 'The Offer',
+        scenario: 'A multinational seafood exporter wants to lease 500 hectares of river-mouth ' + vocabSpan('Mangrove forest') + ' to build industrial shrimp ponds. They\'re offering a large upfront payment, and clearing crews are already on standby.',
+        choices: [
+          {
+            label: 'Accept the full lease', desc: 'Clear all 500 hectares for intensive, single-species shrimp ponds.',
+            effects: { land: -25, community: -5, profit: 30 }, vocab: ['Deforestation', 'Monoculture', 'Agribusiness'], flag: 'monoShrimp',
+            consequence: 'The bulldozers move in fast. Within months, the mangrove fringe is gone and rows of identical shrimp ponds line the river mouth. The payment clears your treasury\'s books for years, but the coast now has no natural buffer left.',
+            ced: vocabSpan('Deforestation') + ' is the clearing of forest for other land uses. Because you replaced a diverse mangrove ecosystem with a single farmed species, you\'ve also created a ' + vocabSpan('Monoculture') + ' &mdash; efficient now, but fragile later.'
+          },
+          {
+            label: 'Negotiate a partial lease', desc: 'Clear half the tract and require a protected mangrove buffer strip along the coast.',
+            effects: { land: -10, community: 0, profit: 15 }, vocab: ['Sustainable development', 'Conservation'],
+            consequence: 'The exporter grumbles about the smaller footprint but signs anyway — shrimp prices are good enough to make even a partial lease worthwhile. The remaining mangrove strip keeps doing its quiet work along the shore.',
+            ced: 'Balancing present economic use against future ecological cost is the core idea behind ' + vocabSpan('Sustainable development') + '.'
+          },
+          {
+            label: 'Decline, invite an ecotourism operator instead', desc: 'Keep the mangroves intact and develop a small nature-based tourism venture.',
+            effects: { land: 5, community: 5, profit: 5 }, vocab: ['Ecotourism', 'Conservation'],
+            consequence: 'It\'s a smaller, slower income stream, but boardwalk tours through the mangroves start bringing in modest, steady revenue, and the forest keeps growing back.',
+            ced: vocabSpan('Ecotourism') + ' tries to generate income from a landscape\'s conservation rather than its removal.'
+          }
+        ]
+      };
+      case 2: return {
+        title: 'Whose Fish?',
+        scenario: 'Coastal waters off the delta are thick with wild fish stocks. An industrial trawler fleet wants exclusive fishing rights; local small-boat fishers want the same waters protected for their own use.',
+        choices: [
+          {
+            label: 'License the industrial trawlers', desc: 'Their nets pull in high volume fast, but sweep up everything in their path.',
+            effects: { land: -15, community: -10, profit: 20 }, vocab: ['Overfishing', 'Commodity chain'], flag: 'overfished',
+            consequence: 'Landings spike immediately, feeding a global seafood ' + vocabSpan('Commodity chain') + '. But local fishers report emptier waters within the season, and their own catch starts to shrink.',
+            ced: vocabSpan('Overfishing') + ' occurs when harvest rates outpace a species\' ability to reproduce and replenish its population.'
+          },
+          {
+            label: 'License local fishers with a seasonal quota', desc: 'Smaller boats, slower harvest, but a cap that lets fish stocks recover each year.',
+            effects: { land: -2, community: 10, profit: 8 }, vocab: ['Sustainable yield', 'Carrying capacity'],
+            consequence: 'It\'s a modest income stream, but local families keep their livelihoods, and the catch stays roughly steady year over year.',
+            ced: 'A harvest quota set at the ' + vocabSpan('Sustainable yield') + ' keeps use within the ecosystem\'s ' + vocabSpan('Carrying capacity') + '.'
+          },
+          {
+            label: 'Declare a no-fishing marine protected zone', desc: 'Give the coastal waters a full year to recover before any fishing resumes.',
+            effects: { land: 12, community: -5, profit: 0 }, vocab: ['Conservation', 'Carrying capacity'],
+            consequence: 'Local fishers are frustrated by a lost season, but by year\'s end the waters are visibly more abundant.',
+            ced: vocabSpan('Conservation') + ' sometimes means short-term sacrifice in exchange for a resource base that lasts.'
+          }
+        ]
+      };
+      case 3: return {
+        title: 'The Cash Crop',
+        scenario: 'Upland forest above the delta could be cleared for export agriculture. A palm oil buyer offers a long-term supply contract if you clear and plant now.',
+        choices: [
+          {
+            label: 'Convert the upland forest to a palm oil monoculture', desc: 'Maximize export volume with a single high-value crop.',
+            effects: { land: -20, community: 5, profit: 25 }, vocab: ['Monoculture', 'Commodity chain', 'Deforestation'], flag: 'monoLand',
+            consequence: 'New jobs open up on the plantation, and export income climbs fast. But the watershed above the delta no longer holds water and soil the way a mixed forest did.',
+            ced: 'Export crops like palm oil move through global ' + vocabSpan('Commodity chain') + 's, but planting a single species across a huge area recreates the risks of ' + vocabSpan('Monoculture') + '.'
+          },
+          {
+            label: 'Support smallholder, diversified farming', desc: 'Local families grow food crops alongside a modest cash crop.',
+            effects: { land: -5, community: 10, profit: 8 }, vocab: ['Subsistence agriculture', 'Biodiversity'],
+            consequence: 'Growth is slower and less flashy, but families are feeding themselves while still selling a little surplus at market.',
+            ced: 'Mixing food crops for the household with a cash crop for market blends ' + vocabSpan('Subsistence agriculture') + ' with limited ' + vocabSpan('Commercial agriculture') + ', preserving more ' + vocabSpan('Biodiversity') + ' than a single-crop field.'
+          },
+          {
+            label: 'Protect the upland forest as a watershed reserve', desc: 'No new clearing; the forest keeps feeding clean water down to the delta.',
+            effects: { land: 10, community: 0, profit: 0 }, vocab: ['Ecosystem services', 'Conservation'],
+            consequence: 'No new income this year, but the rivers running down to the delta stay clear, and erosion downstream slows noticeably.',
+            ced: 'Intact forests provide ' + vocabSpan('Ecosystem services') + ' like water filtration and flood control that are easy to lose and expensive to replace.'
+          }
+        ]
+      };
+      case 4: return {
+        title: 'Seeds of Doubt',
+        scenario: 'A biotech firm offers subsidized, drought-resistant genetically modified seed and shrimp fry, in exchange for an exclusive multi-year supply contract.',
+        choices: [
+          {
+            label: 'Adopt GMO stock across all farmland and ponds', desc: 'Maximum short-term yield, tied to one supplier long-term.',
+            effects: { land: -5, community: 5, profit: 18 }, vocab: ['GMO / biotechnology', 'Commodity chain'], flag: 'gmoFull',
+            consequence: 'Yields jump right away. But every farm and pond in the delta is now growing genetically identical stock from a single company.',
+            ced: vocabSpan('GMO / biotechnology') + ' can raise yields, but full adoption also raises dependence on a single supplier within the ' + vocabSpan('Commodity chain') + '.'
+          },
+          {
+            label: 'Adopt GMO stock on half the land, keep traditional varieties elsewhere', desc: 'Hedge your bet between new technology and older, diverse stock.',
+            effects: { land: 0, community: 5, profit: 8 }, vocab: ['GMO / biotechnology', 'Biodiversity'],
+            consequence: 'Yields rise moderately, and if anything goes wrong with the new stock, the traditional fields and ponds are still there as a backup.',
+            ced: 'Keeping a mix of varieties preserves ' + vocabSpan('Biodiversity') + ' as a hedge against any single crop or species failing.'
+          },
+          {
+            label: 'Decline, and fund a local seed and fry bank', desc: 'Preserve traditional varieties bred for this specific delta over generations.',
+            effects: { land: 5, community: 8, profit: 0 }, vocab: ['Biodiversity', 'Sustainable development'],
+            consequence: 'No yield boost this year, but the delta keeps control over its own seed and fry stock instead of renting it from a distant company.',
+            ced: 'Protecting locally-adapted varieties is a quiet but important piece of ' + vocabSpan('Sustainable development') + '.'
+          }
+        ]
+      };
+      case 5: return getRound5();
+      case 6: return getRound6();
+      case 7: return {
+        title: 'Land Tenure Dispute',
+        scenario: 'Families who have farmed and fished the same plots for generations never registered formal title to the land. An agribusiness firm wants to buy them out and consolidate the parcels.',
+        choices: [
+          {
+            label: 'Side with the agribusiness buyout', desc: 'Formalize ownership under the company and clear the families for compensation.',
+            effects: { land: -5, community: -15, profit: 15 }, vocab: ['Land tenure', 'Commodity chain'],
+            consequence: 'The deal closes fast and cash flows in, but dozens of families who\'ve lived here for generations are displaced with nowhere nearby to go.',
+            ced: 'Disputes over ' + vocabSpan('Land tenure') + ', who legally controls land, are common wherever agribusiness expands into land held only by informal, customary right.'
+          },
+          {
+            label: 'Broker a community land trust compromise', desc: 'Protect local access while allowing limited, shared commercial use.',
+            effects: { land: 0, community: 10, profit: 5 }, vocab: ['Land tenure', 'Sustainable development'],
+            consequence: 'It takes months of meetings, but families keep their homes and a share of any commercial income from the land.',
+            ced: 'Resolving ' + vocabSpan('Land tenure') + ' disputes through shared agreements is one path toward ' + vocabSpan('Sustainable development') + ' that keeps both people and profit in the picture.'
+          },
+          {
+            label: 'Reject the buyout, formalize local titles instead', desc: 'Give long-time families legal ownership of the land they already work.',
+            effects: { land: 5, community: 15, profit: 0 }, vocab: ['Land tenure'],
+            consequence: 'No new investment arrives this year, but families finally hold legal title to land they\'ve worked for generations, and can\'t be displaced by the next offer.',
+            ced: 'Formal ' + vocabSpan('Land tenure') + ' gives smallholders legal standing they can use to resist future displacement.'
+          }
+        ]
+      };
+      case 8: return {
+        title: 'Feeding the Delta',
+        scenario: 'The Amara Delta now exports enormous volumes of shrimp, palm oil, and fish, yet local market shelves are stocked mostly with imported processed food, and fresh local seafood has become too expensive for many delta families to buy.',
+        choices: [
+          {
+            label: 'Keep exporting everything', desc: 'Global buyers pay more than the local market ever could.',
+            effects: { land: 0, community: -10, profit: 15 }, vocab: ['Commodity chain', 'Food desert'],
+            consequence: 'Export revenue keeps climbing, but delta families increasingly can\'t afford the very shrimp and fish their own waters produce.',
+            ced: 'A region can be a top global producer and still contain a ' + vocabSpan('Food desert') + ' if that production is entirely routed into export ' + vocabSpan('Commodity chain') + 's.'
+          },
+          {
+            label: 'Require a share of catch and harvest for local markets', desc: 'Set aside a fixed portion for local sale at fair prices.',
+            effects: { land: 0, community: 12, profit: 5 }, vocab: ['Food security'],
+            consequence: 'Export profit dips slightly, but local families can once again afford fish and shrimp from their own coastline.',
+            ced: 'Guaranteeing reliable local access to food produced nearby directly strengthens ' + vocabSpan('Food security') + '.'
+          },
+          {
+            label: 'Fund a local cooperative market', desc: 'Subsidize a fair-price market run by and for delta communities.',
+            effects: { land: 0, community: 15, profit: 0 }, vocab: ['Food security', 'Sustainable development'],
+            consequence: 'It costs money with no direct export return, but the cooperative market becomes a reliable source of affordable food and a point of local pride.',
+            ced: 'Investing profit back into local ' + vocabSpan('Food security') + ' is one concrete way regions pursue ' + vocabSpan('Sustainable development') + '.'
+          }
+        ]
+      };
+      case 9: return {
+        title: 'Farmland Under the City',
+        scenario: 'The nearby city is booming, and developers want to buy delta farmland and fish ponds to build new suburban housing.',
+        choices: [
+          {
+            label: 'Sell productive farmland to developers', desc: 'A one-time payout far larger than years of farm income.',
+            effects: { land: -15, community: -10, profit: 30 }, vocab: ['Farmland loss'],
+            consequence: 'The payout is enormous, but the delta\'s most productive farmland disappears under concrete within a year, and the families who worked it lose their livelihood for good.',
+            ced: vocabSpan('Farmland loss') + ' to suburban development is often permanent: once paved, agricultural land essentially never returns to production.'
+          },
+          {
+            label: 'Zone only marginal, already-degraded land for development', desc: 'Protect the best farmland; let the city expand onto lower-quality plots.',
+            effects: { land: -3, community: 5, profit: 10 }, vocab: ['Farmland loss', 'Sustainable development'],
+            consequence: 'The city still grows, but the delta\'s core farmland and fish ponds stay in production.',
+            ced: 'Directing growth toward already-degraded land is a planning strategy that limits ' + vocabSpan('Farmland loss') + ' while still allowing development.'
+          },
+          {
+            label: 'Reject the development entirely', desc: 'Keep every hectare in agriculture and conservation.',
+            effects: { land: 5, community: 0, profit: 0 }, vocab: ['Conservation'],
+            consequence: 'Developers look elsewhere, and the delta\'s farmland stays fully intact, though the city\'s growth pressure hasn\'t gone away, just moved down the coast.',
+            ced: 'Blocking development entirely protects land now, but doesn\'t resolve the underlying demand driving ' + vocabSpan('Farmland loss') + ' regionally.'
+          }
+        ]
+      };
+      case 10: return {
+        title: 'The Decade Ahead',
+        scenario: 'Your ten years as Development Coordinator are ending. One final decision: how do you invest whatever profit and political capital remain, to set the delta\'s course for the next generation?',
+        choices: [
+          {
+            label: 'Maximize extraction: expand ponds and plantations further', desc: 'Squeeze the last available growth out of land and water.',
+            effects: { land: -20, community: -10, profit: 25 }, vocab: ['Monoculture', 'Commodity chain'],
+            consequence: 'Profit peaks one final time, but the delta enters its second decade with less forest, fewer fish, and a workforce increasingly uneasy about what comes next.',
+            ced: 'Continued expansion of ' + vocabSpan('Monoculture') + ' extraction can maximize short-term output while quietly eroding the resource base the next decade depends on.'
+          },
+          {
+            label: 'Invest in a balanced plan', desc: 'Certified sustainable aquaculture, mangrove replanting, diversified crops, and local schools and clinics.',
+            effects: { land: 8, community: 8, profit: 8 }, vocab: ['Sustainable development'],
+            consequence: 'No single number jumps dramatically, but land, people, and profit all move upward together as your term ends.',
+            ced: 'This is the textbook definition of ' + vocabSpan('Sustainable development') + ' in action: meeting present needs without sacrificing the ability to meet future ones.'
+          },
+          {
+            label: 'Pivot fully toward conservation and ecotourism', desc: 'Wind down extraction, restore habitat, and build a tourism-based economy.',
+            effects: { land: 20, community: 5, profit: -5 }, vocab: ['Ecotourism', 'Conservation'],
+            consequence: 'Profit takes a real hit in the short term, but the delta\'s forests and waters recover faster than at any point in the past decade.',
+            ced: vocabSpan('Ecotourism') + ' and ' + vocabSpan('Conservation') + ' can rebuild an environment\'s long-term value, even when it costs money right now.'
+          }
+        ]
+      };
+      default: return null;
+    }
+  }
+
+  function vocabSpan(term) {
+    return '<span class="vocab" data-term="' + term + '">' + term.toLowerCase() + '</span>';
+  }
+
+  function getRound5() {
+    var monoculture = state.flags.monoShrimp || state.flags.monoLand;
+    if (monoculture) {
+      return {
+        title: 'Disease in the Ponds',
+        preEffects: { profit: -20, community: -5 },
+        preNote: 'A fast-moving disease has swept through the delta\'s single-species ponds and fields. Because so much of the delta was planted or stocked with the same organism, the outbreak spreads almost unchecked. Profit drops sharply and workers go unpaid for weeks.',
+        scenario: 'With losses mounting, how do you respond to the outbreak?',
+        choices: [
+          {
+            label: 'Double down with chemical treatment', desc: 'Heavy pesticide and antibiotic use to save what\'s left of this year\'s stock.',
+            effects: { land: -10, community: 0, profit: 10 }, vocab: ['Land degradation'],
+            consequence: 'The chemicals save part of the harvest, but runoff leaves the soil and water noticeably worse off than before the outbreak.',
+            ced: 'Heavy chemical inputs used to prop up a failing system are a common driver of ' + vocabSpan('Land degradation') + '.'
+          },
+          {
+            label: 'Diversify into polyculture', desc: 'Mix species and rotate crops so no single disease can wipe out everything at once.',
+            effects: { land: 8, community: 5, profit: 2 }, vocab: ['Biodiversity', 'Sustainable yield'],
+            consequence: 'Recovery is slower, but the more varied ponds and fields prove far more resistant the next time disease strikes.',
+            ced: 'Diversifying species and crops directly counters the vulnerability created by ' + vocabSpan('Monoculture') + ' and supports a more ' + vocabSpan('Sustainable yield') + '.'
+          },
+          {
+            label: 'Exit aquaculture, sell to a conservation NGO', desc: 'Cut losses and let the ponds be restored to mangrove.',
+            effects: { land: 15, community: 0, profit: 5 }, vocab: ['Conservation'],
+            consequence: 'It\'s a smaller payout than the ponds once promised, but within a season mangrove seedlings are already reclaiming the old pond walls.',
+            ced: vocabSpan('Conservation') + ' projects sometimes offer a practical exit ramp from a monoculture system that has stopped paying off.'
+          }
+        ]
+      };
+    }
+    return {
+      title: 'A Better Price',
+      preEffects: { profit: 5 },
+      preNote: 'Global demand for sustainably-certified seafood and produce has risen, and because the delta never committed everything to one crop or species, it\'s in a strong position to respond.',
+      scenario: 'How do you use this opportunity?',
+      choices: [
+        {
+          label: 'Launch a modest eco-certified export line', desc: 'Brand part of the delta\'s output as sustainably produced for a premium price.',
+          effects: { land: -3, community: 5, profit: 12 }, vocab: ['Sustainable development'],
+          consequence: 'Buyers pay a premium for the certification, and the modest expansion barely dents the land.',
+          ced: 'Certification schemes are one market-based tool that rewards ' + vocabSpan('Sustainable development') + ' with higher prices.'
+        },
+        {
+          label: 'Reinvest profits into community infrastructure', desc: 'Schools, clinics, and roads funded by this year\'s stronger prices.',
+          effects: { land: 0, community: 12, profit: -5 }, vocab: ['Sustainable development'],
+          consequence: 'The new clinic and schoolhouse open by year\'s end, and community trust in your leadership grows.',
+          ced: 'Reinvesting economic gains into local wellbeing is a direct expression of ' + vocabSpan('Sustainable development') + '.'
+        },
+        {
+          label: 'Save the windfall in a reserve fund', desc: 'Bank the extra profit for a future crisis rather than spending it now.',
+          effects: { land: 0, community: 0, profit: 8 }, vocab: ['Commodity chain'],
+          consequence: 'It\'s not exciting, but the delta now has a cushion the next time global commodity prices swing.',
+          ced: 'Because delta income depends on volatile global ' + vocabSpan('Commodity chain') + ' prices, a reserve fund is a hedge against the next downturn.'
+        }
+      ]
+    };
+  }
+
+  function getRound6() {
+    var severe = state.land < 40;
+    return {
+      title: 'The Storm',
+      preEffects: severe ? { community: -20, profit: -15 } : { community: -5, profit: -5 },
+      preNote: severe
+        ? 'A major storm surge hits the coast. With so little mangrove forest left to absorb the impact, waves push far inland, flooding homes, ponds, and fields. The damage is severe.'
+        : 'A major storm surge hits the coast. The delta\'s remaining mangrove forest absorbs much of the wave energy, and while there\'s damage, it\'s far less than it could have been.',
+      scenario: 'As the water recedes, how do you rebuild?',
+      choices: [
+        {
+          label: 'Rebuild with concrete seawalls', desc: 'Hard infrastructure to physically block the next surge.',
+          effects: { land: 0, community: 5, profit: -12 }, vocab: ['Land degradation'],
+          consequence: 'The seawall is expensive and does nothing for the ecosystem, but it does hold back the next few storms.',
+          ced: 'Hard infrastructure can substitute for lost natural defenses, but it doesn\'t restore the ' + vocabSpan('Ecosystem services') + ' the land used to provide for free.'
+        },
+        {
+          label: 'Replant mangroves along the coast', desc: 'Slower, cheaper, and it restores the delta\'s natural storm buffer.',
+          effects: { land: 15, community: 5, profit: -6 }, vocab: ['Ecosystem services', 'Conservation', 'Mangrove forest'],
+          consequence: 'Seedlings take a few years to mature, but replanted mangroves start rebuilding the delta\'s natural defense, at a fraction of the seawall\'s cost.',
+          ced: 'Restoring a ' + vocabSpan('Mangrove forest') + ' rebuilds the ' + vocabSpan('Ecosystem services') + ' &mdash; like storm buffering &mdash; that the coast lost when it was cleared.'
+        },
+        {
+          label: 'Rebuild informally, without a plan', desc: 'Let families rebuild on their own with whatever materials they have.',
+          effects: { land: 0, community: -5, profit: 0 }, vocab: ['Land degradation'],
+          consequence: 'It costs nothing from the treasury, but rebuilding is slow, uneven, and many families remain vulnerable to the very next storm.',
+          ced: 'Without any buffer, human or natural, communities remain exposed to the next shock &mdash; a preview of what happens when adaptation is left entirely to chance.'
+        }
+      ]
+    };
+  }
+
+  // -----------------------------------------------------------------------
+  // Round rendering & choice handling
+  // -----------------------------------------------------------------------
+  var currentCard = null;
+
+  function loadRound(n) {
+    currentCard = getRound(n);
+    document.getElementById('round-tag').textContent = 'YEAR ' + n + ' OF ' + TOTAL_ROUNDS;
+    document.getElementById('round-title').textContent = currentCard.title;
+
+    var scenarioHtml = '';
+    if (currentCard.preNote) {
+      applyEffects(currentCard.preEffects || {});
+      renderMeters();
+      scenarioHtml += '<strong>' + currentCard.preNote + '</strong><br><br>';
+      if (checkCollapse()) return;
+    }
+    scenarioHtml += currentCard.scenario;
+    document.getElementById('round-scenario').innerHTML = scenarioHtml;
+
+    var list = document.getElementById('choice-list');
+    list.innerHTML = '';
+    list.style.display = 'flex';
+    document.getElementById('consequence-box').style.display = 'none';
+
+    currentCard.choices.forEach(function (choice, idx) {
+      var btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.type = 'button';
+      var effHtml = '';
+      ['land', 'community', 'profit'].forEach(function (key) {
+        var v = choice.effects[key] || 0;
+        var cls = v > 0 ? 'eff-pos' : (v < 0 ? 'eff-neg' : 'eff-zero');
+        var icon = key === 'land' ? '🌳' : (key === 'community' ? '👥' : '💰');
+        var arrow = v > 0 ? '▲' : (v < 0 ? '▼' : '–');
+        var srText = v > 0 ? 'increase' : (v < 0 ? 'decrease' : 'no change');
+        effHtml += '<span class="eff ' + cls + '">' + icon + ' <span class="eff-arrow" aria-hidden="true">' + arrow + '</span><span class="sr-only">' + srText + '</span></span>';
+      });
+      btn.innerHTML = '<span class="c-label">' + choice.label + '</span>' +
+        '<span class="c-desc">' + choice.desc + '</span>' +
+        '<span class="c-effects">' + effHtml + '</span>';
+      btn.addEventListener('click', function () { chooseOption(choice); });
+      list.appendChild(btn);
+    });
+  }
+
+  function chooseOption(choice) {
+    applyEffects(choice.effects);
+    if (choice.flag) state.flags[choice.flag] = true;
+    choice.vocab.forEach(function (v) {
+      if (state.appliedVocab.indexOf(v) === -1) state.appliedVocab.push(v);
+    });
+    renderMeters();
+    document.getElementById('choice-list').style.display = 'none';
+
+    var box = document.getElementById('consequence-box');
+    box.style.display = 'block';
+    document.getElementById('consequence-head').textContent = 'What happened';
+    document.getElementById('consequence-text').textContent = choice.consequence;
+    document.getElementById('ced-note').innerHTML = '<strong>AP CED connection:</strong> ' + choice.ced;
+    var tags = document.getElementById('vocab-tags');
+    tags.innerHTML = '';
+    choice.vocab.forEach(function (v) {
+      var pill = document.createElement('span');
+      pill.className = 'vocab-pill';
+      pill.textContent = v;
+      tags.appendChild(pill);
+    });
+
+    if (checkCollapse()) return;
+  }
+
+  function checkCollapse() {
+    if (state.land <= 0) { endGame('collapse-land'); return true; }
+    if (state.community <= 0) { endGame('collapse-community'); return true; }
+    if (state.profit <= 0 && state.round > 3) { endGame('collapse-profit'); return true; }
+    return false;
+  }
+
+  document.getElementById('btn-continue').addEventListener('click', function () {
+    state.round += 1;
+    if (state.round > TOTAL_ROUNDS) {
+      endGame('final');
+    } else {
+      loadRound(state.round);
+    }
+  });
+
+  // -----------------------------------------------------------------------
+  // Endings
+  // -----------------------------------------------------------------------
+  var ENDINGS = {
+    'collapse-land': {
+      cls: 'ending-collapse', title: 'Ecological Collapse',
+      blurb: 'Land health hit zero. Forest, soil, and mangrove buffer are gone past the point of natural recovery, this is what desertification and land degradation look like when they run unchecked. Storms now hit the coast directly, farmland won\'t hold water, and the delta can no longer support the industries built on top of it.'
+    },
+    'collapse-community': {
+      cls: 'ending-collapse', title: 'Exodus',
+      blurb: 'Community wellbeing hit zero. Displaced, unpaid, or food-insecure, families have left the delta faster than any policy could replace them. Without a local workforce, every farm, pond, and plantation you built stands empty.'
+    },
+    'collapse-profit': {
+      cls: 'ending-collapse', title: 'Bankruptcy & Buyout',
+      blurb: 'The treasury ran dry. With no funds to invest, govern, or respond to the next crisis, an outside agribusiness consortium steps in and takes over the delta\'s economy on its own terms, terms that rarely favor the people who live there.'
+    },
+    'steward': {
+      cls: 'ending-steward', title: 'Sustainable Steward',
+      blurb: 'You leave the Amara Delta genuinely healthier than you found it: forests and fisheries intact, communities fed and employed, and a treasury strong enough to keep investing. This is what sustainable development looks like when it actually works.'
+    },
+    'boom': {
+      cls: 'ending-boom', title: 'Boom-and-Bust Extractor',
+      blurb: 'Profit is way up, but land and community paid for it. The delta made a lot of money fast, extracting more than it could sustainably replace. Whoever inherits this region next will face the environmental and social bill you deferred.'
+    },
+    'purist': {
+      cls: 'ending-purist', title: 'Conservation Purist',
+      blurb: 'Land and community are thriving, the delta\'s forests, fisheries, and people are in great shape. But the treasury is thin, and without a stronger economic base, it may be hard to fund the next decade of conservation work.'
+    },
+    'muddle': {
+      cls: 'ending-muddle', title: 'Muddling Through the Delta',
+      blurb: 'No single meter collapsed, and none is thriving either. The Amara Delta survived its first decade of development, but it\'s a fragile, middling balance that could tip either way depending on what its next coordinator decides.'
+    }
+  };
+
+  function computeFinalEnding() {
+    if (state.land >= 60 && state.community >= 60 && state.profit >= 40) return 'steward';
+    if (state.profit >= 60 && (state.land < 50 || state.community < 50)) return 'boom';
+    if (state.land >= 70 && state.community >= 60 && state.profit < 30) return 'purist';
+    return 'muddle';
+  }
+
+  function endGame(kind) {
+    state.collapsed = (kind !== 'final');
+    var endingKey = kind === 'final' ? computeFinalEnding() : kind;
+    var ending = ENDINGS[endingKey];
+
+    var banner = document.getElementById('ending-banner');
+    banner.className = 'ending-banner ' + ending.cls;
+    document.getElementById('ending-title').textContent = ending.title;
+    document.getElementById('ending-blurb').textContent = ending.blurb;
+
+    document.getElementById('rep-land').textContent = state.land;
+    document.getElementById('rep-community').textContent = state.community;
+    document.getElementById('rep-profit').textContent = state.profit;
+    document.getElementById('rep-fill-land').style.width = state.land + '%';
+    document.getElementById('rep-fill-community').style.width = state.community + '%';
+    document.getElementById('rep-fill-profit').style.width = state.profit + '%';
+
+    var recap = document.getElementById('recap-list');
+    recap.innerHTML = '';
+    if (state.appliedVocab.length === 0) {
+      recap.innerHTML = '<li>No decisions were recorded this playthrough.</li>';
+    } else {
+      state.appliedVocab.forEach(function (term) {
+        var g = GLOSSARY_MAP[term];
+        var li = document.createElement('li');
+        li.innerHTML = '<strong>' + term + '</strong> (Topic ' + (g ? g.topic : '?') + ') &mdash; ' + (g ? g.def : '');
+        recap.appendChild(li);
+      });
+    }
+
+    showScreen('screen-report');
+  }
+
+  // -----------------------------------------------------------------------
+  // AP Exam Practice
+  // -----------------------------------------------------------------------
+  var EXAM_QUESTIONS = [
+    {
+      stimulus: '"A coastal government has converted thousands of hectares of mangrove forest into shrimp aquaculture ponds to boost export earnings."',
+      question: 'Which of the following is the most likely long-term environmental consequence of this land-use change?',
+      choices: [
+        'Increased fish nursery habitat along the coastline',
+        'Reduced storm-surge protection and increased coastal erosion',
+        'Higher biodiversity along the coastline',
+        'Improved soil fertility for future rice paddies'
+      ],
+      correct: 1,
+      explanation: 'Mangrove forests provide ecosystem services including storm buffering and serving as fish nurseries. Removing them for aquaculture increases coastal vulnerability to erosion and storm damage (Topic 5.10).'
+    },
+    {
+      stimulus: '"Farmers in an intensively irrigated dry region report white crusts forming on their fields and declining crop yields over several decades."',
+      question: 'This scenario is best described as a consequence of which process?',
+      choices: ['Desertification', 'Soil/land salinization', 'Eutrophication', 'Afforestation'],
+      correct: 1,
+      explanation: 'Repeated irrigation in dry climates causes water to evaporate and leave mineral salts behind, a process called salinization that reduces soil fertility over time, a classic case being the Aral Sea region (Topic 5.10).'
+    },
+    {
+      stimulus: '"A large share of a country\'s shrimp farms plant a single high-yield species across nearly all available ponds to maximize short-term export profit."',
+      question: 'Which of the following is the greatest risk created by this practice?',
+      choices: [
+        'Increased genetic diversity among farmed species',
+        'Vulnerability to disease outbreaks across the entire stock',
+        'Reduced reliance on global commodity markets',
+        'Improved long-term soil fertility'
+      ],
+      correct: 1,
+      explanation: 'Monoculture, whether in crops or aquaculture, concentrates genetically similar organisms, so a single disease or pest can devastate the entire stock at once (Topic 5.10).'
+    },
+    {
+      stimulus: '"Coastal communities using small-scale, seasonal fishing quotas see wild fish populations stabilize, while nearby communities using unregulated industrial trawling see catches collapse within a decade."',
+      question: 'This contrast best illustrates the importance of which concept?',
+      choices: ['Commodity chains', 'Sustainable yield and carrying capacity management', 'Land tenure reform', 'The Green Revolution'],
+      correct: 1,
+      explanation: 'Harvesting at or below a resource\'s sustainable yield keeps use within its carrying capacity, allowing the population to replenish; unregulated harvest can exceed that capacity and cause collapse (Topics 5.10-5.11).'
+    },
+    {
+      stimulus: '"As global demand for tropical hardwoods, palm oil, and farmed shrimp has grown, agribusiness firms have purchased large tracts of land from smallholder families who lacked formal legal title."',
+      question: 'This scenario best illustrates a challenge related to which concept?',
+      choices: ['Land tenure and land rights', 'The Second Agricultural Revolution', 'Ecotourism development', 'Food deserts'],
+      correct: 0,
+      explanation: 'Disputes over who has legal or customary rights to use and control land, especially between smallholders without formal title and large agribusiness firms, are a core land tenure challenge (Topic 5.11).'
+    },
+    {
+      stimulus: '"Although a coastal delta produces some of the highest volumes of shrimp, palm oil, and fish in the world, most of this production is exported, and local store shelves are dominated by imported processed foods while fresh local seafood is unaffordable for residents."',
+      question: 'This situation is best described as an example of which of the following?',
+      choices: [
+        'A food desert existing alongside high agricultural productivity',
+        'A failure of the Green Revolution',
+        'A subsistence agriculture pattern',
+        'Desertification'
+      ],
+      correct: 0,
+      explanation: 'A food desert can exist even in a highly productive agricultural or fishing region if that production is routed almost entirely into export markets rather than local consumption (Topic 5.11).'
+    }
+  ];
+  var examIndex = 0, examScore = 0;
+
+  function loadExamQuestion(i) {
+    var q = EXAM_QUESTIONS[i];
+    document.getElementById('exam-progress').textContent = 'Question ' + (i + 1) + ' of ' + EXAM_QUESTIONS.length;
+    document.getElementById('exam-stimulus').textContent = q.stimulus;
+    document.getElementById('exam-question').textContent = q.question;
+    document.getElementById('exam-feedback').style.display = 'none';
+    document.getElementById('btn-next-question').style.display = 'none';
+
+    var wrap = document.getElementById('exam-choices');
+    wrap.innerHTML = '';
+    q.choices.forEach(function (choiceText, idx) {
+      var btn = document.createElement('button');
+      btn.className = 'mcq-choice';
+      btn.type = 'button';
+      btn.textContent = String.fromCharCode(65 + idx) + '. ' + choiceText;
+      btn.addEventListener('click', function () { answerExam(idx); });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function answerExam(idx) {
+    var q = EXAM_QUESTIONS[examIndex];
+    var buttons = document.querySelectorAll('#exam-choices .mcq-choice');
+    buttons.forEach(function (b, i) {
+      b.disabled = true;
+      if (i === q.correct) b.classList.add('correct');
+      else if (i === idx) b.classList.add('incorrect');
+    });
+    if (idx === q.correct) examScore += 1;
+    var fb = document.getElementById('exam-feedback');
+    fb.style.display = 'block';
+    fb.innerHTML = (idx === q.correct ? '<strong>Correct.</strong> ' : '<strong>Not quite.</strong> ') + q.explanation;
+    var nextBtn = document.getElementById('btn-next-question');
+    nextBtn.style.display = 'inline-block';
+    nextBtn.textContent = (examIndex === EXAM_QUESTIONS.length - 1) ? 'See Final Results →' : 'Next Question →';
+  }
+
+  document.getElementById('btn-next-question').addEventListener('click', function () {
+    examIndex += 1;
+    if (examIndex >= EXAM_QUESTIONS.length) {
+      document.getElementById('final-score').textContent = 'You scored ' + examScore + ' out of ' + EXAM_QUESTIONS.length + ' on the AP-style practice questions.';
+      showScreen('screen-final');
+    } else {
+      loadExamQuestion(examIndex);
+    }
+  });
+
+  document.getElementById('btn-to-exam').addEventListener('click', function () {
+    examIndex = 0; examScore = 0;
+    loadExamQuestion(0);
+    showScreen('screen-exam');
+  });
+
+  // -----------------------------------------------------------------------
+  // Start / restart
+  // -----------------------------------------------------------------------
+  function startGame() {
+    state = newState();
+    renderMeters();
+    loadRound(1);
+    showScreen('screen-game');
+  }
+
+  document.getElementById('btn-start').addEventListener('click', startGame);
+  document.getElementById('btn-play-again').addEventListener('click', startGame);
+  document.getElementById('btn-open-glossary-final').addEventListener('click', openGlossary);
+
+})();
+</script>
+</body>
+</html>
