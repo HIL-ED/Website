@@ -15,32 +15,38 @@
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 :root {
-  --paper: #f1ead9;
-  --paper-dark: #e5dac0;
-  --card: #fbf6ea;
-  --ink: #22201b;
-  --ink-soft: #5d5646;
-  --navy: #16305c;
-  --navy-light: #24447a;
-  --gold: #b6892e;
-  --line: rgba(34,32,27,0.14);
-  --us: #2c4d8a;
-  --us-bg: #e3ebf7;
-  --france: #7a1f2b;
-  --france-bg: #f5e2e0;
-  --britain: #3b5c47;
-  --britain-bg: #e3ede2;
-  --good: #2f7d4f;
-  --bad: #a3392a;
+  --paper: #f6e7c3;
+  --paper-dark: #ecd39a;
+  --card: #fffbf0;
+  --ink: #241c14;
+  --ink-soft: #6b5636;
+  --navy: #123a6b;
+  --navy-light: #1f5aa8;
+  --gold: #c9932e;
+  --gold-bright: #f2c14e;
+  --line: rgba(36,28,20,0.16);
+  --us: #1c56b8;
+  --us-bg: #dce9fc;
+  --france: #b0223f;
+  --france-bg: #fbdde3;
+  --britain: #0d7a63;
+  --britain-bg: #d3f3ea;
+  --good: #2f9d5c;
+  --bad: #d1502c;
 }
 html,body { margin:0; padding:0; }
 body {
   min-height:100vh; color:var(--ink); background:var(--paper);
   font-family:'Figtree', system-ui, sans-serif;
   background-image:
-    radial-gradient(circle at 10% 15%, rgba(182,137,46,0.08), transparent 40%),
-    radial-gradient(circle at 90% 10%, rgba(122,31,43,0.05), transparent 38%),
-    radial-gradient(circle at 80% 85%, rgba(22,48,92,0.06), transparent 45%);
+    radial-gradient(circle at 8% 12%, rgba(201,147,46,0.16), transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(176,34,63,0.12), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(18,58,107,0.14), transparent 46%),
+    radial-gradient(circle at 8% 92%, rgba(13,122,99,0.12), transparent 42%);
+}
+.flag-bar {
+  height:7px; width:100%;
+  background: linear-gradient(90deg, var(--us) 0 33.33%, var(--france) 33.33% 66.66%, var(--britain) 66.66% 100%);
 }
 h1,h2,h3,.serif { font-family:'Playfair Display', serif; }
 a { color:var(--navy); }
@@ -59,14 +65,17 @@ button { font-family:inherit; cursor:pointer; }
 #screen-intro .lede { max-width:680px; margin:0 auto 22px; font-size:1.06rem; line-height:1.8; color:var(--ink); }
 #screen-intro .lede p { margin:0 0 14px; }
 .stamp-row { display:flex; justify-content:center; gap:14px; margin:26px 0 30px; flex-wrap:wrap; }
-.stamp { font-size:0.78rem; font-weight:700; padding:8px 16px; border-radius:999px; border:1.5px solid var(--line); color:var(--ink-soft); background:var(--paper-dark); }
+.stamp { font-size:0.78rem; font-weight:700; padding:8px 16px; border-radius:999px; border:1.5px solid var(--line); color:#fff; }
+.stamp:nth-child(1) { background:var(--us); }
+.stamp:nth-child(2) { background:var(--france); }
+.stamp:nth-child(3) { background:var(--britain); }
 
 .btn-primary {
-  background:var(--navy); color:#fdf6ea; border:none; padding:14px 32px;
+  background:linear-gradient(135deg, var(--navy-light), var(--navy) 70%); color:#fdf6ea; border:none; padding:14px 32px;
   font-size:1rem; font-weight:700; border-radius:6px; letter-spacing:0.02em;
   box-shadow:0 3px 0 #0d1f3d;
 }
-.btn-primary:hover { background:var(--navy-light); }
+.btn-primary:hover { background:linear-gradient(135deg, #2a68c4, var(--navy-light) 70%); }
 .btn-primary:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; }
 .btn-secondary {
   background:transparent; color:var(--navy); border:1.5px solid var(--navy);
@@ -81,7 +90,7 @@ button { font-family:inherit; cursor:pointer; }
 .mode-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-bottom:24px; }
 .mode-card { padding:24px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition:transform .15s, box-shadow .15s; }
 .mode-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(34,32,27,0.16); }
-.mode-card.selected { outline:2.5px solid var(--gold); }
+.mode-card.selected { outline:2.5px solid var(--gold); background:#fdf1d6; }
 .mode-card h3 { margin:0; color:var(--navy); font-size:1.15rem; }
 .mode-card p { margin:0; font-size:0.92rem; line-height:1.55; color:var(--ink-soft); }
 .diff-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 28px; }
@@ -94,16 +103,23 @@ button { font-family:inherit; cursor:pointer; }
 
 /* ── ROLE SELECT ── */
 .role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
-.role-card { padding:22px; display:flex; flex-direction:column; gap:8px; border-top:5px solid var(--navy); }
-.role-card.us { border-top-color:var(--us); }
-.role-card.france { border-top-color:var(--france); }
-.role-card.britain { border-top-color:var(--britain); }
-.role-card .flag { font-size:1.8rem; }
+.role-card { padding:22px; display:flex; flex-direction:column; gap:8px; border-top:6px solid var(--navy); transition:transform .15s, box-shadow .15s; }
+.role-card:hover { transform:translateY(-3px); box-shadow:0 10px 22px rgba(34,32,27,0.18); }
+.role-card.us { border-top-color:var(--us); background:var(--us-bg); }
+.role-card.france { border-top-color:var(--france); background:var(--france-bg); }
+.role-card.britain { border-top-color:var(--britain); background:var(--britain-bg); }
+.role-card .flag { font-size:2.1rem; }
 .role-card h3 { margin:2px 0 0; font-size:1.15rem; color:var(--ink); }
-.role-card .leader { font-size:0.85rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.03em; }
+.role-card .leader { font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; }
+.role-card.us .leader { color:var(--us); }
+.role-card.france .leader { color:var(--france); }
+.role-card.britain .leader { color:var(--britain); }
 .role-card p { margin:4px 0 0; font-size:0.92rem; line-height:1.6; color:var(--ink); flex:1; }
-.role-card button { margin-top:10px; align-self:flex-start; background:var(--navy); color:#fdf6ea; border:none; padding:9px 18px; border-radius:6px; font-size:0.85rem; font-weight:700; }
-.role-card button:hover { background:var(--navy-light); }
+.role-card button { margin-top:10px; align-self:flex-start; color:#fdf6ea; border:none; padding:9px 18px; border-radius:6px; font-size:0.85rem; font-weight:700; }
+.role-card.us button { background:var(--us); }
+.role-card.france button { background:var(--france); }
+.role-card.britain button { background:var(--britain); }
+.role-card button:hover { filter:brightness(1.12); }
 .pass-note { max-width:600px; margin:0 auto 20px; text-align:center; font-size:0.9rem; color:var(--ink-soft); }
 
 /* ── NEGOTIATE ── */
@@ -133,13 +149,16 @@ button { font-family:inherit; cursor:pointer; }
   padding:14px 18px; font-size:0.95rem; color:var(--ink); display:flex; justify-content:space-between; align-items:center; gap:14px;
 }
 .option-btn:hover { border-color:var(--gold); }
-.option-btn.chosen { border-color:var(--navy); background:#e9eef7; }
+.option-btn.chosen { border-color:var(--gold); border-width:2px; background:#fdf1d6; box-shadow:inset 3px 0 0 var(--gold); }
 .option-btn .opt-label { font-weight:700; }
 .option-btn .opt-tag { font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap; }
 .option-btn.disabled { opacity:.5; cursor:default; }
 
 .delegate-panels { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
-.delegate-panel { padding:16px 18px; }
+.delegate-panel { padding:16px 18px; border-left:5px solid var(--navy); }
+.delegate-panel.us { background:var(--us-bg); border-left-color:var(--us); }
+.delegate-panel.france { background:var(--france-bg); border-left-color:var(--france); }
+.delegate-panel.britain { background:var(--britain-bg); border-left-color:var(--britain); }
 .delegate-panel .dp-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
 .delegate-panel .dp-name { font-weight:700; font-size:0.95rem; }
 .delegate-panel.us .dp-name { color:var(--us); }
@@ -155,10 +174,10 @@ button { font-family:inherit; cursor:pointer; }
 
 .vote-toggle-row { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px; }
 .vote-toggle { flex:1; min-width:150px; padding:12px; border-radius:10px; border:1.5px solid var(--line); text-align:center; }
-.vote-toggle .vt-name { font-weight:700; font-size:0.88rem; margin-bottom:8px; }
-.vote-toggle.us { border-top:4px solid var(--us); }
-.vote-toggle.france { border-top:4px solid var(--france); }
-.vote-toggle.britain { border-top:4px solid var(--britain); }
+.vote-toggle .vt-name { font-weight:800; font-size:0.88rem; margin-bottom:8px; }
+.vote-toggle.us { border-top:5px solid var(--us); background:var(--us-bg); }
+.vote-toggle.france { border-top:5px solid var(--france); background:var(--france-bg); }
+.vote-toggle.britain { border-top:5px solid var(--britain); background:var(--britain-bg); }
 .vt-btns { display:flex; gap:6px; justify-content:center; }
 .vt-btns button { flex:1; padding:7px 0; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); font-size:0.82rem; font-weight:700; }
 .vt-btns button.picked-yes { background:var(--good); color:#fff; border-color:var(--good); }
@@ -172,16 +191,21 @@ button { font-family:inherit; cursor:pointer; }
 /* ── RESULTS ── */
 #screen-results h2 { text-align:center; color:var(--navy); font-size:1.7rem; margin-bottom:4px; }
 .score-row { display:flex; justify-content:center; gap:16px; margin:20px 0 28px; flex-wrap:wrap; }
-.score-card { padding:18px 26px; text-align:center; min-width:200px; }
+.score-card { padding:18px 26px; text-align:center; min-width:200px; border-top:5px solid var(--gold); }
+.score-card.role-accent.us { border-top-color:var(--us); }
+.score-card.role-accent.france { border-top-color:var(--france); }
+.score-card.role-accent.britain { border-top-color:var(--britain); }
 .score-card .big { font-family:'Playfair Display', serif; font-size:2.1rem; color:var(--navy); font-weight:800; }
 .score-card .label { font-size:0.82rem; color:var(--ink-soft); font-weight:600; margin-top:2px; }
 table.treaty-table { width:100%; border-collapse:collapse; margin-bottom:26px; font-size:0.88rem; }
 table.treaty-table th, table.treaty-table td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
 table.treaty-table th { color:var(--ink-soft); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; }
+table.treaty-table tr.match-row td { background:rgba(47,157,92,0.10); }
+table.treaty-table tr.nomatch-row td { background:rgba(209,80,44,0.08); }
 table.treaty-table td.match { color:var(--good); font-weight:700; }
 table.treaty-table td.nomatch { color:var(--bad); font-weight:700; }
 .debrief-list { padding-left:0; list-style:none; }
-.debrief-list li { padding:12px 16px; background:var(--paper-dark); border-radius:8px; margin-bottom:8px; font-size:0.92rem; line-height:1.5; }
+.debrief-list li { padding:12px 16px 12px 18px; background:var(--paper-dark); border-left:4px solid var(--gold); border-radius:8px; margin-bottom:8px; font-size:0.92rem; line-height:1.5; }
 .results-actions { text-align:center; margin-top:24px; }
 
 footer.site { text-align:center; padding:26px 20px; font-size:0.78rem; color:var(--ink-soft); }
@@ -200,6 +224,7 @@ footer.site a { color:var(--ink-soft); }
 </style>
 </head>
 <body>
+<div class="flag-bar" aria-hidden="true"></div>
 <div class="wrap">
 
   <!-- ═══════════════ INTRO ═══════════════ -->
@@ -751,7 +776,7 @@ function showResults(){
       possible += 3;
       if(r.optionIdx !== null) earned += issue.scores[state.role][r.optionIdx];
     });
-    scoreCards += `<div class="card score-card"><div class="big">${earned} / ${possible}</div><div class="label">Points won for ${COUNTRIES[state.role].name}</div></div>`;
+    scoreCards += `<div class="card score-card role-accent ${state.role}"><div class="big">${earned} / ${possible}</div><div class="label">Points won for ${COUNTRIES[state.role].name}</div></div>`;
   }
   document.getElementById('score-row').innerHTML = scoreCards;
 
@@ -761,7 +786,7 @@ function showResults(){
     const yourAnswer = r.optionIdx===null ? 'No agreement reached' : issue.options[r.optionIdx].label;
     const histAnswer = issue.options[issue.historical].label;
     const isMatch = r.optionIdx === issue.historical;
-    rows += `<tr><td><strong>${issue.title}</strong></td><td>${yourAnswer}${r.imposed?' <em>(imposed)</em>':''}</td><td>${histAnswer}</td><td class="${isMatch?'match':'nomatch'}">${r.optionIdx===null?'&mdash;':(isMatch?'Match':'Different')}</td></tr>`;
+    rows += `<tr class="${isMatch?'match-row':'nomatch-row'}"><td><strong>${issue.title}</strong></td><td>${yourAnswer}${r.imposed?' <em>(imposed)</em>':''}</td><td>${histAnswer}</td><td class="${isMatch?'match':'nomatch'}">${r.optionIdx===null?'&mdash;':(isMatch?'Match':'Different')}</td></tr>`;
   });
   document.getElementById('treaty-table').innerHTML = rows;
 
