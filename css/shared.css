@@ -1,0 +1,103 @@
+/* ==========================================================================
+   Humanities Immersed Learning — shared site shell
+   Canonical header, page container, and footer used on every marketing/
+   content page (index, teachers, games hub, blog, about, contact).
+   Individual game-play pages are self-contained apps and do not use this.
+   ========================================================================== */
+
+:root {
+  --gutter: 48px;
+  --ink: #201e1d;
+  --card: #f5ead8;
+  --navbar: #f9f4ed;
+  --hairline: rgba(32, 30, 29, 0.08);
+  --blue: #16305c;
+  --orange: #cc6b31;
+  --orange-dark: #9f3f20;
+}
+
+@media (max-width: 1024px) {
+  :root { --gutter: 32px; }
+}
+@media (max-width: 700px) {
+  :root { --gutter: 24px; }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0; min-height: 100vh;
+  background: var(--card); color: var(--ink);
+  font-family: 'Figtree', system-ui, sans-serif;
+}
+
+a { color: var(--orange); }
+a:hover { color: var(--orange-dark); }
+::selection { background: rgba(198, 113, 57, 0.3); }
+
+/* ---------- Page shell ---------- */
+.page {
+  width: 100%; min-height: 100vh;
+  background: var(--card);
+}
+
+/* ---------- Header / navigation ---------- */
+.nav {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; column-gap: 20px;
+  padding: 20px var(--gutter); background: var(--navbar);
+  border-bottom: 1px solid var(--hairline);
+}
+.nav .logo {
+  grid-column: 1; justify-self: start;
+  display: flex; align-items: center;
+}
+.nav .logo img { height: 72px; width: auto; display: block; }
+.nav .navlinks {
+  grid-column: 2; justify-self: center;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  column-gap: 20px; row-gap: 10px;
+}
+.nav a.navlink {
+  text-decoration: none; color: var(--ink);
+  font-size: 14px; font-weight: 600;
+}
+.nav a.navlink:hover { color: var(--orange-dark); }
+.nav a.navlink.active,
+.nav a.navlink[aria-current="page"] {
+  color: var(--blue);
+  font-weight: 700;
+}
+.nav .cta {
+  grid-column: 3; justify-self: end;
+  text-decoration: none; white-space: nowrap;
+  font-family: 'Caprasimo', serif; font-size: 14px;
+  color: var(--card); background: var(--orange);
+  padding: 9px 20px; border-radius: 999px;
+}
+.nav .cta:hover { filter: brightness(0.94); color: var(--card); }
+
+@media (max-width: 700px) {
+  .nav {
+    grid-template-columns: 1fr;
+    justify-items: center; row-gap: 12px;
+  }
+  .nav .logo { grid-column: 1; justify-self: center; }
+  .nav .navlinks { grid-column: 1; justify-self: center; }
+  .nav .cta { grid-column: 1; justify-self: center; }
+}
+
+/* ---------- Footer ---------- */
+footer.site-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+  padding: 22px var(--gutter); background: var(--navbar);
+  border-top: 1px solid var(--hairline);
+  font-size: 13px; opacity: .7;
+}
+footer.site-footer a { text-decoration: none; }
+footer.site-footer .links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+@media (max-width: 700px) {
+  footer.site-footer { flex-direction: column; text-align: center; }
+}
