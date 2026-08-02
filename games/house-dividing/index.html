@@ -356,10 +356,10 @@ const STOPS = [
   question:{
     prompt:"Why did the cotton gin make slavery MORE central to the Southern economy, not less?",
     choices:[
-      { text:"It made cotton farming so profitable that planters wanted to grow much more of it, which meant they wanted more enslaved workers to plant and pick it.", correct:true, feedback:"Exactly. The gin only sped up cleaning the cotton — growing, planting, and picking it still took a huge amount of forced labor, and planters expanded slavery to do more of it." },
-      { text:"It replaced human workers with a machine, so plantations needed fewer enslaved people.", correct:false, feedback:"Not quite. The gin only cleaned cotton of its seeds. Someone still had to plant, tend, and pick every plant by hand, and that work fell to enslaved people." },
-      { text:"The federal government required every cotton plantation to use enslaved labor.", correct:false, feedback:"No law did this. Planters chose to expand slavery because it was profitable, not because they were required to." },
-      { text:"Northern factories refused to buy cotton unless enslaved people grew it.", correct:false, feedback:"Northern textile mills bought cotton because it was cheap and plentiful — they didn't investigate how it was grown, which is its own troubling part of this story." }
+      { text:"The gin only cleaned cotton faster — planting and picking it still took hand labor, so planters bought more enslaved workers to grow more cotton.", correct:true, feedback:"Exactly. The gin only sped up cleaning the cotton — growing, planting, and picking it still took a huge amount of forced labor, and planters expanded slavery to do more of it." },
+      { text:"The gin's inventor personally freed all of his own enslaved workers once the machine proved capable enough to handle their labor without further human help.", correct:false, feedback:"Not quite. The gin only cleaned cotton of its seeds. Someone still had to plant, tend, and pick every plant by hand, and that work fell to enslaved people." },
+      { text:"A new federal law passed in 1793 required every Southern cotton grower to keep using enslaved labor no matter how much technology improved.", correct:false, feedback:"No law did this. Planters chose to expand slavery because it was profitable, not because they were required to." },
+      { text:"Northern cotton mill owners refused to buy any cotton unless a plantation could prove it had been picked entirely by enslaved workers.", correct:false, feedback:"Northern textile mills bought cotton because it was cheap and plentiful — they didn't investigate how it was grown, which is its own troubling part of this story." }
     ]
   },
   deltas:{economic:20, political:0, attitudes:0},
@@ -376,10 +376,10 @@ const STOPS = [
   question:{
     prompt:"Why does the Missouri Compromise matter, even though it kept the peace in 1820?",
     choices:[
-      { text:"It showed that Congress could only manage the conflict over slavery's expansion by dividing more territory, not by resolving the underlying disagreement.", correct:true, feedback:"Right. The compromise was a temporary patch, not a solution, and it set the pattern that every new territory would reignite the same fight." },
-      { text:"It ended slavery in the United States forever.", correct:false, feedback:"It didn't — it only decided where slavery could expand in one part of the Louisiana Territory. Slavery remained fully legal in the existing Southern states." },
-      { text:"It gave the North permanent control of the Senate.", correct:false, feedback:"Not quite — adding Maine alongside Missouri was specifically designed to keep the Senate balanced, not tip it." },
-      { text:"It settled the argument over slavery so completely that Congress never had to compromise on it again.", correct:false, feedback:"The opposite happened — this was the first of several major compromises over the next 40 years, each one more strained than the last." }
+      { text:"It showed Congress could only manage conflict over slavery's expansion by dividing more territory, not by resolving the real disagreement underneath it.", correct:true, feedback:"Right. The compromise was a temporary patch, not a solution, and it set the pattern that every new territory would reignite the same fight." },
+      { text:"The compromise immediately ended slavery across the entire United States, including in every state where it had existed before 1820.", correct:false, feedback:"It didn't — it only decided where slavery could expand in one part of the Louisiana Territory. Slavery remained fully legal in the existing Southern states." },
+      { text:"Admitting Maine alongside Missouri permanently shifted the Senate so free-state senators outnumbered slave-state senators from that point forward.", correct:false, feedback:"Not quite — adding Maine alongside Missouri was specifically designed to keep the Senate balanced, not tip it." },
+      { text:"The line Congress drew across the map settled the slavery question so completely that no similar compromise was ever needed again.", correct:false, feedback:"The opposite happened — this was the first of several major compromises over the next 40 years, each one more strained than the last." }
     ]
   },
   deltas:{economic:0, political:15, attitudes:5},
@@ -396,10 +396,10 @@ const STOPS = [
   question:{
     prompt:"What does the shift from calling slavery a “necessary evil” to a “positive good” tell historians?",
     choices:[
-      { text:"That some Southern leaders had stopped viewing slavery as something to eventually end, and instead were building a permanent defense of it, making future compromise much harder.", correct:true, feedback:"Yes. When one side sees a moral wrong as merely unfortunate, compromise is possible. When it's defended as good and permanent, common ground becomes much harder to find." },
-      { text:"That slavery was becoming less common in the South during the 1830s.", correct:false, feedback:"The opposite was true — the enslaved population and the size of the plantation economy were both growing quickly during this period." },
-      { text:"That Northern and Southern leaders were becoming more alike in their views on slavery.", correct:false, feedback:"They were moving in opposite directions: the North's abolitionist movement was growing louder while the South's defense of slavery was hardening." },
-      { text:"That Nat Turner's uprising convinced most Southerners to support ending slavery.", correct:false, feedback:"It had the reverse effect — most Southern states responded by tightening restrictions on enslaved and free Black people even further." }
+      { text:"Some Southern leaders stopped viewing slavery as something to eventually end and instead built a permanent defense of it, making future compromise much harder.", correct:true, feedback:"Yes. When one side sees a moral wrong as merely unfortunate, compromise is possible. When it's defended as good and permanent, common ground becomes much harder to find." },
+      { text:"It shows slavery was already fading out across the South by the 1830s, just as some of the nation's founders had once quietly hoped and predicted.", correct:false, feedback:"The opposite was true — the enslaved population and the size of the plantation economy were both growing quickly during this period." },
+      { text:"It shows Northern and Southern political leaders were quietly drifting toward the same shared opinion about whether slavery was right or wrong.", correct:false, feedback:"They were moving in opposite directions: the North's abolitionist movement was growing louder while the South's defense of slavery was hardening." },
+      { text:"It shows that Nat Turner's uprising convinced most white Southerners that slavery should be phased out over the following decade.", correct:false, feedback:"It had the reverse effect — most Southern states responded by tightening restrictions on enslaved and free Black people even further." }
     ]
   },
   deltas:{economic:0, political:4, attitudes:18},
@@ -416,10 +416,10 @@ const STOPS = [
   question:{
     prompt:"Why is it significant that Congress tried to ban debate about slavery, rather than just voting it down?",
     choices:[
-      { text:"It shows the conflict had moved beyond disagreeing on policy — one side was trying to prevent the other from even raising the issue, a sign of a much deeper breakdown in the ability to compromise.", correct:true, feedback:"Correct. Refusing to even discuss an issue is a stronger sign of conflict than losing a vote on it — it suggests the two sides no longer trusted normal political debate to settle things." },
-      { text:"It shows that most Northerners didn't actually care about ending slavery.", correct:false, feedback:"Petitions against slavery were flooding into Congress by the thousands — that's exactly why Southern representatives wanted to block them from being read at all." },
-      { text:"It proves Congress had already voted to end slavery and just needed to finalize the paperwork.", correct:false, feedback:"Not at all — the gag rule did the opposite, blocking anti-slavery petitions from being considered." },
-      { text:"It was a minor procedural rule with no real impact on the national debate.", correct:false, feedback:"It was a big deal at the time — a former U.S. president spent eight years fighting to overturn it in Congress." }
+      { text:"It shows one side trying to stop the other from even raising the issue, not just losing a vote on it.", correct:true, feedback:"Correct. Refusing to even discuss an issue is a stronger sign of conflict than losing a vote on it — it suggests the two sides no longer trusted normal political debate to settle things." },
+      { text:"It shows that most Northerners signing the petitions didn't actually care whether slavery continued or was eventually abolished.", correct:false, feedback:"Petitions against slavery were flooding into Congress by the thousands — that's exactly why Southern representatives wanted to block them from being read at all." },
+      { text:"It proves Congress had already voted to abolish slavery nationwide and only needed to finish some routine paperwork.", correct:false, feedback:"Not at all — the gag rule did the opposite, blocking anti-slavery petitions from being considered." },
+      { text:"It was a minor, forgettable procedural rule that barely anyone in Congress or the country paid attention to.", correct:false, feedback:"It was a big deal at the time — a former U.S. president spent eight years fighting to overturn it in Congress." }
     ]
   },
   deltas:{economic:0, political:10, attitudes:6},
@@ -436,10 +436,10 @@ const STOPS = [
   question:{
     prompt:"Why did the question of slavery in NEW territories cause such intense conflict?",
     choices:[
-      { text:"Every new state admitted to the Union could shift the delicate balance of power between free and slave states in Congress, so both sides fought hard over every new territory.", correct:true, feedback:"Exactly right. With the Senate evenly balanced, each new state's status could tip the entire chamber, which is why both sides treated every new territory as a high-stakes fight." },
-      { text:"Because slavery was already illegal everywhere else in the country by 1846.", correct:false, feedback:"Slavery remained fully legal across the South in 1846 — the fight here was specifically about whether it would expand into new land." },
-      { text:"Because Mexico required the U.S. to ban slavery as a condition of the peace treaty.", correct:false, feedback:"Mexico had no say in this internal U.S. debate — the treaty ending the war didn't set slavery's status in the new territories." },
-      { text:"Because Congress had already agreed new territories would automatically become slave states.", correct:false, feedback:"There was no such agreement — that's precisely why the fight over the Wilmot Proviso dragged on for years." }
+      { text:"Every new state could tip the delicate balance of free and slave states in the Senate, so both sides fought over it.", correct:true, feedback:"Exactly right. With the Senate evenly balanced, each new state's status could tip the entire chamber, which is why both sides treated every new territory as a high-stakes fight." },
+      { text:"Slavery had already been made illegal in every part of the country by the time the war with Mexico finally ended in 1848.", correct:false, feedback:"Slavery remained fully legal across the South in 1846 — the fight here was specifically about whether it would expand into new land." },
+      { text:"The peace treaty ending the Mexican-American War required the United States to ban slavery across every acre of the newly won territory without exception.", correct:false, feedback:"Mexico had no say in this internal U.S. debate — the treaty ending the war didn't set slavery's status in the new territories." },
+      { text:"Congress had already passed a law guaranteeing that any new territory would automatically become a slave state once settled.", correct:false, feedback:"There was no such agreement — that's precisely why the fight over the Wilmot Proviso dragged on for years." }
     ]
   },
   deltas:{economic:6, political:12, attitudes:0},
@@ -456,10 +456,10 @@ const STOPS = [
   question:{
     prompt:"Why did the Fugitive Slave Act anger even many Northerners who weren't abolitionists?",
     choices:[
-      { text:"It forced ordinary Northern citizens, regardless of their own views, to actively help capture and return enslaved people, making slavery's enforcement personal even for people far from the South.", correct:true, feedback:"Right. Laws that only affected the South were easy for many Northerners to ignore. A law that could force YOU to help catch someone, or punish you for refusing, made the conflict impossible to ignore." },
-      { text:"Because it freed every enslaved person in the South immediately.", correct:false, feedback:"It did the opposite — it strengthened the enforcement of slavery by making it easier to recapture people who had escaped." },
-      { text:"Because it only applied to Southern states and had no effect in the North.", correct:false, feedback:"That's exactly backwards — its entire purpose was to force cooperation from Northern states and citizens." },
-      { text:"Because it gave accused runaways the right to a full jury trial.", correct:false, feedback:"The law denied accused individuals a jury trial, which was part of what made it so controversial." }
+      { text:"It forced ordinary Northern citizens to actively help capture and return enslaved people, making slavery's enforcement personal for people far from the South.", correct:true, feedback:"Right. Laws that only affected the South were easy for many Northerners to ignore. A law that could force YOU to help catch someone, or punish you for refusing, made the conflict impossible to ignore." },
+      { text:"The new law immediately freed every enslaved person living anywhere in the Southern United States as soon as it was signed.", correct:false, feedback:"It did the opposite — it strengthened the enforcement of slavery by making it easier to recapture people who had escaped." },
+      { text:"The Fugitive Slave Act applied only within Southern state borders and had no legal force anywhere in the North.", correct:false, feedback:"That's exactly backwards — its entire purpose was to force cooperation from Northern states and citizens." },
+      { text:"The law guaranteed every accused runaway a full jury trial before a judge could rule on their case.", correct:false, feedback:"The law denied accused individuals a jury trial, which was part of what made it so controversial." }
     ]
   },
   deltas:{economic:0, political:14, attitudes:10},
@@ -476,10 +476,10 @@ const STOPS = [
   question:{
     prompt:"What does the disputed Lincoln quote about Uncle Tom's Cabin teach about using historical sources carefully?",
     choices:[
-      { text:"That a story can be widely repeated and “feel true” without solid evidence it actually happened — good historians check whether a quote is documented before trusting it.", correct:true, feedback:"Exactly the kind of thinking historians use. A famous-sounding quote isn't automatically reliable just because it's often repeated, including claims about why the Civil War happened." },
-      { text:"That Lincoln definitely said this exact sentence to Stowe in person.", correct:false, feedback:"Most historians actually doubt this happened — there's no solid documentary evidence, which is the whole point of the lesson here." },
-      { text:"That novels can never be used as historical evidence.", correct:false, feedback:"Novels like Uncle Tom's Cabin ARE valuable historical evidence, of the culture and emotions of the time, even though a fictional story shouldn't be mistaken for a historical fact by itself." },
-      { text:"That the story proves Uncle Tom's Cabin had no real impact on Northern opinion.", correct:false, feedback:"The opposite is true — the book's massive sales and its effect on Northern readers are well documented, whether or not Lincoln ever said that specific line." }
+      { text:"A story can be widely repeated and feel true with no solid evidence behind it, so historians check before trusting it.", correct:true, feedback:"Exactly the kind of thinking historians use. A famous-sounding quote isn't automatically reliable just because it's often repeated, including claims about why the Civil War happened." },
+      { text:"Historians have found solid, well-documented proof in the historical record that Lincoln really did say this exact sentence to Stowe in person.", correct:false, feedback:"Most historians actually doubt this happened — there's no solid documentary evidence, which is the whole point of the lesson here." },
+      { text:"Novels and other fictional stories can never be treated as valid historical evidence of any kind, ever.", correct:false, feedback:"Novels like Uncle Tom's Cabin ARE valuable historical evidence, of the culture and emotions of the time, even though a fictional story shouldn't be mistaken for a historical fact by itself." },
+      { text:"The disputed quote proves that Uncle Tom's Cabin actually had very little real impact on Northern public opinion.", correct:false, feedback:"The opposite is true — the book's massive sales and its effect on Northern readers are well documented, whether or not Lincoln ever said that specific line." }
     ]
   },
   deltas:{economic:0, political:0, attitudes:12},
@@ -496,10 +496,10 @@ const STOPS = [
   question:{
     prompt:"What made “Bleeding Kansas” different from earlier political conflicts like the gag rule or the Wilmot Proviso debate?",
     choices:[
-      { text:"The disagreement stopped being only political and became physically violent, with settlers killing each other over slavery's future rather than just arguing about it in Congress.", correct:true, feedback:"Right. Earlier fights over slavery's expansion happened through speeches, laws, and votes. Kansas showed the conflict could turn into actual armed violence between ordinary Americans." },
-      { text:"It was the first time slavery's expansion into new territories was ever debated.", correct:false, feedback:"That debate had been going on for years already, through the Missouri Compromise, the Wilmot Proviso, and the Compromise of 1850." },
-      { text:"It permanently settled whether Kansas would be a free or slave state with no further conflict.", correct:false, feedback:"Kansas remained a violent, contested territory for years, and only entered the Union as a free state in 1861, right before the war began." },
-      { text:"It only affected people who lived in Kansas, with no wider national impact.", correct:false, feedback:"Newspapers across the country covered Bleeding Kansas closely, and it became a rallying point that hardened opinions on both sides nationwide." }
+      { text:"The disagreement stopped being only political and turned physically violent, with settlers killing each other over slavery.", correct:true, feedback:"Right. Earlier fights over slavery's expansion happened through speeches, laws, and votes. Kansas showed the conflict could turn into actual armed violence between ordinary Americans." },
+      { text:"Kansas-Nebraska marked the very first time Congress had ever debated whether slavery should expand into new territories.", correct:false, feedback:"That debate had been going on for years already, through the Missouri Compromise, the Wilmot Proviso, and the Compromise of 1850." },
+      { text:"The vote in Kansas permanently and peacefully settled its status as a free state, with no further conflict.", correct:false, feedback:"Kansas remained a violent, contested territory for years, and only entered the Union as a free state in 1861, right before the war began." },
+      { text:"The unrest in Kansas stayed entirely local and never became a story that interested newspapers anywhere else.", correct:false, feedback:"Newspapers across the country covered Bleeding Kansas closely, and it became a rallying point that hardened opinions on both sides nationwide." }
     ]
   },
   deltas:{economic:4, political:16, attitudes:8},
@@ -516,10 +516,10 @@ const STOPS = [
   question:{
     prompt:"Why did the Dred Scott decision push the country closer to war rather than settling anything?",
     choices:[
-      { text:"Instead of resolving the slavery question, it removed one of the North's remaining legal tools, banning slavery in territories, convincing many Northerners that compromise through the courts and Congress was running out.", correct:true, feedback:"Correct. When the nation's highest court sides completely with one position and strikes down existing compromises, the losing side often concludes that peaceful political solutions are running out." },
-      { text:"It freed Dred Scott and Harriet Scott and declared slavery unconstitutional everywhere.", correct:false, feedback:"The ruling did the opposite — it kept the Scotts enslaved and declared that Congress couldn't even ban slavery in the territories." },
-      { text:"It was a minor case that most Americans at the time never heard about.", correct:false, feedback:"It was front-page news nationwide and became one of the most talked-about Supreme Court decisions in the nation's history up to that point." },
-      { text:"It gave Congress new power to ban slavery anywhere in the country.", correct:false, feedback:"It ruled the opposite — that Congress had NO power to ban slavery in the territories, striking down the Missouri Compromise's ban." }
+      { text:"It removed one of the North's last legal tools against slavery's spread, a sign that compromise through the courts was running out.", correct:true, feedback:"Correct. When the nation's highest court sides completely with one position and strikes down existing compromises, the losing side often concludes that peaceful political solutions are running out." },
+      { text:"The ruling immediately freed both Dred and Harriet Scott and declared slavery unconstitutional in every remaining state and territory.", correct:false, feedback:"The ruling did the opposite — it kept the Scotts enslaved and declared that Congress couldn't even ban slavery in the territories." },
+      { text:"Dred Scott was a minor legal case that almost no newspaper or ordinary American ever heard about at the time.", correct:false, feedback:"It was front-page news nationwide and became one of the most talked-about Supreme Court decisions in the nation's history up to that point." },
+      { text:"The decision gave Congress broad new power to ban slavery in any territory it chose going forward.", correct:false, feedback:"It ruled the opposite — that Congress had NO power to ban slavery in the territories, striking down the Missouri Compromise's ban." }
     ]
   },
   deltas:{economic:0, political:10, attitudes:14},
@@ -536,10 +536,10 @@ const STOPS = [
   question:{
     prompt:"What was Lincoln actually arguing with his “house divided” metaphor?",
     choices:[
-      { text:"That the United States could not permanently remain half-slave and half-free — the conflict over slavery would eventually have to be resolved one way or the other, not stay balanced forever.", correct:true, feedback:"Yes. Lincoln wasn't predicting a literal civil war in this speech — he was arguing the country's half-and-half status on slavery was fundamentally unstable and couldn't last." },
-      { text:"That the Southern states should immediately secede from the Union.", correct:false, feedback:"Lincoln was arguing against the nation splitting apart, not for it — he wanted the Union to hold together, eventually as all free." },
-      { text:"That slavery should be allowed to expand into every new U.S. territory.", correct:false, feedback:"Lincoln opposed slavery's expansion into new territories throughout the debates — that was his central position against Douglas's popular sovereignty." },
-      { text:"That the debates were only about Illinois state issues with no national significance.", correct:false, feedback:"The opposite happened — newspapers across the country reprinted the debates, and they became a defining moment in the national argument over slavery." }
+      { text:"The country could not stay half-slave and half-free forever — it would eventually have to become one or the other.", correct:true, feedback:"Yes. Lincoln wasn't predicting a literal civil war in this speech — he was arguing the country's half-and-half status on slavery was fundamentally unstable and couldn't last." },
+      { text:"Lincoln was calling on the Southern states to secede from the Union immediately after he finished the speech.", correct:false, feedback:"Lincoln was arguing against the nation splitting apart, not for it — he wanted the Union to hold together, eventually as all free." },
+      { text:"Lincoln was arguing that slavery should be allowed to expand freely into every new U.S. territory without limit.", correct:false, feedback:"Lincoln opposed slavery's expansion into new territories throughout the debates — that was his central position against Douglas's popular sovereignty." },
+      { text:"The debates stayed a small, local Illinois race that almost no newspaper outside the state bothered to cover.", correct:false, feedback:"The opposite happened — newspapers across the country reprinted the debates, and they became a defining moment in the national argument over slavery." }
     ]
   },
   deltas:{economic:0, political:6, attitudes:10},
@@ -556,10 +556,10 @@ const STOPS = [
   question:{
     prompt:"Why did John Brown's raid deepen sectional distrust more than earlier political disagreements had?",
     choices:[
-      { text:"It showed Southerners that at least some Northerners were willing to use organized violence, not just political arguments, to attack slavery directly, confirming their worst fears about the North's intentions.", correct:true, feedback:"Right. Political disagreements can eventually be negotiated. An actual armed attempt to arm enslaved people confirmed Southern fears that compromise with the North might not be possible at all." },
-      { text:"Because it succeeded in freeing thousands of enslaved people across Virginia.", correct:false, feedback:"The raid failed almost immediately — Brown and his men were captured within about two days, before any large uprising could begin." },
-      { text:"Because Southern states responded by immediately ending slavery to avoid future raids.", correct:false, feedback:"Southern states did the opposite, tightening security, expanding militias, and growing more defensive of slavery, not less." },
-      { text:"Because most Northerners, including abolitionists, unanimously praised Brown's methods.", correct:false, feedback:"Reactions in the North were actually divided — many, including some abolitionists, condemned his violent methods even while sympathizing with his goal." }
+      { text:"It showed Southerners that some Northerners would use organized violence, not just arguments, against slavery, confirming their worst fears about the North.", correct:true, feedback:"Right. Political disagreements can eventually be negotiated. An actual armed attempt to arm enslaved people confirmed Southern fears that compromise with the North might not be possible at all." },
+      { text:"Brown's raid succeeded completely, freeing thousands of enslaved people across Virginia within just a few days of fighting.", correct:false, feedback:"The raid failed almost immediately — Brown and his men were captured within about two days, before any large uprising could begin." },
+      { text:"Southern state legislatures responded to the raid by voting to abolish slavery within their own borders soon after.", correct:false, feedback:"Southern states did the opposite, tightening security, expanding militias, and growing more defensive of slavery, not less." },
+      { text:"Nearly every Northern newspaper and abolitionist leader praised Brown's violent methods without a single word of criticism.", correct:false, feedback:"Reactions in the North were actually divided — many, including some abolitionists, condemned his violent methods even while sympathizing with his goal." }
     ]
   },
   deltas:{economic:0, political:6, attitudes:14},
@@ -576,10 +576,10 @@ const STOPS = [
   question:{
     prompt:"Why did Lincoln's election, even though he wasn't calling for slavery's immediate end, push the South toward secession?",
     choices:[
-      { text:"It proved a candidate opposed to slavery's expansion could now win the presidency using only Northern votes, showing Southern states they had permanently lost the political power to protect slavery's future through national elections.", correct:true, feedback:"Exactly. It wasn't just about what Lincoln planned to do immediately — it was proof the North's growing population could now control the presidency without any Southern support, a fundamental shift in political power." },
-      { text:"Because Lincoln had already announced plans to free every enslaved person in the South immediately after taking office.", correct:false, feedback:"Lincoln's actual 1860 platform only opposed slavery's expansion into new territories, not its abolition where it already existed, though many Southern leaders didn't trust that would last." },
-      { text:"Because Lincoln won a majority of the popular vote in Southern states.", correct:false, feedback:"Lincoln received almost no popular votes in the South and wasn't even on the ballot in ten Southern states." },
-      { text:"Because the Democratic Party stayed unified and simply lost a fair national election.", correct:false, feedback:"The Democratic Party actually split into Northern and Southern factions in 1860, dividing its own votes and helping clear Lincoln's path to victory." }
+      { text:"It proved a candidate opposed to slavery's expansion could win the presidency using only Northern votes.", correct:true, feedback:"Exactly. It wasn't just about what Lincoln planned to do immediately — it was proof the North's growing population could now control the presidency without any Southern support, a fundamental shift in political power." },
+      { text:"Lincoln had already announced detailed plans to free every enslaved person in the South within days of taking office.", correct:false, feedback:"Lincoln's actual 1860 platform only opposed slavery's expansion into new territories, not its abolition where it already existed, though many Southern leaders didn't trust that would last." },
+      { text:"Lincoln actually won a comfortable majority of the popular vote across most of the Southern states that November.", correct:false, feedback:"Lincoln received almost no popular votes in the South and wasn't even on the ballot in ten Southern states." },
+      { text:"The Democratic Party stayed completely unified behind one candidate and simply lost a close, ordinary election.", correct:false, feedback:"The Democratic Party actually split into Northern and Southern factions in 1860, dividing its own votes and helping clear Lincoln's path to victory." }
     ]
   },
   deltas:{economic:0, political:18, attitudes:0},
@@ -596,10 +596,10 @@ const STOPS = [
   question:{
     prompt:"Why do historians treat the secession declarations as such strong evidence for what caused the war?",
     choices:[
-      { text:"Because they are direct, public statements from the seceding states themselves, written at the time to explain their own reasons, rather than a later interpretation of their motives.", correct:true, feedback:"Correct. Primary sources written by the people who actually made the decision, explaining their own reasoning in their own words, are some of the strongest evidence historians can use." },
-      { text:"Because they were written by Northern politicians trying to make the South look bad.", correct:false, feedback:"These documents were written and published by the seceding Southern states themselves, as their own official public explanations." },
-      { text:"Because they focus entirely on tariffs and taxes, with no mention of slavery at all.", correct:false, feedback:"The opposite is true — slavery is the central, explicitly named issue in these declarations, as the quotations above show." },
-      { text:"Because no other evidence from this period has survived.", correct:false, feedback:"Plenty of other evidence survives from this period, letters, speeches, laws, but the secession declarations are especially direct because they explain the states' own stated reasons in their own words." }
+      { text:"They are direct, public statements from the seceding states themselves, explaining their own reasons in their own words.", correct:true, feedback:"Correct. Primary sources written by the people who actually made the decision, explaining their own reasoning in their own words, are some of the strongest evidence historians can use." },
+      { text:"These declarations were secretly written by Northern politicians and newspapers trying to make the South look bad.", correct:false, feedback:"These documents were written and published by the seceding Southern states themselves, as their own official public explanations." },
+      { text:"The declarations focus almost entirely on tariffs and taxes and barely mention slavery as an issue at all.", correct:false, feedback:"The opposite is true — slavery is the central, explicitly named issue in these declarations, as the quotations above show." },
+      { text:"No other letters, speeches, or official records survive from this period besides these secession declarations.", correct:false, feedback:"Plenty of other evidence survives from this period, letters, speeches, laws, but the secession declarations are especially direct because they explain the states' own stated reasons in their own words." }
     ]
   },
   deltas:{economic:8, political:12, attitudes:14},
@@ -617,10 +617,10 @@ const STOPS = [
   question:{
     prompt:"Looking back across this entire timeline, what was the true root cause of the Civil War?",
     choices:[
-      { text:"Slavery. Economic differences, political fights, and states' rights arguments were all real, but they consistently trace back to disagreements over slavery, its expansion, its legality, and eventually its existence.", correct:true, feedback:"This is what the historical evidence, including the seceding states' own declarations, supports. Economic and political factors mattered, but they were consistently entangled with, and driven by, the fight over slavery." },
-      { text:"Tariffs and taxes on manufactured goods, with slavery playing only a minor role.", correct:false, feedback:"Tariffs were a real point of tension, but the primary sources you've examined, especially the states' own secession declarations, name slavery specifically and repeatedly as the central issue, far more than tariffs." },
-      { text:"A simple disagreement over states' rights in general, unrelated to slavery.", correct:false, feedback:"Look back at the secession documents: the specific “state right” they named again and again was the right to keep enslaving people. States' rights was the argument's structure; slavery was its content." },
-      { text:"A sudden, unpredictable event with no earlier warning signs.", correct:false, feedback:"The opposite is true — this timeline traces over sixty years of escalating warning signs, compromises, court cases, and violence, all connected to slavery, building toward this moment." }
+      { text:"Slavery. Economic and political fights were real, but they trace back to disagreements over slavery again and again.", correct:true, feedback:"This is what the historical evidence, including the seceding states' own declarations, supports. Economic and political factors mattered, but they were consistently entangled with, and driven by, the fight over slavery." },
+      { text:"Tariffs and taxes on manufactured goods were the true main cause, with slavery only playing a minor supporting role.", correct:false, feedback:"Tariffs were a real point of tension, but the primary sources you've examined, especially the states' own secession declarations, name slavery specifically and repeatedly as the central issue, far more than tariffs." },
+      { text:"A general disagreement about states' rights caused the war, essentially unrelated to the topic of slavery itself.", correct:false, feedback:"Look back at the secession documents: the specific “state right” they named again and again was the right to keep enslaving people. States' rights was the argument's structure; slavery was its content." },
+      { text:"The war began suddenly and unpredictably, with no earlier warning signs across the previous sixty years.", correct:false, feedback:"The opposite is true — this timeline traces over sixty years of escalating warning signs, compromises, court cases, and violence, all connected to slavery, building toward this moment." }
     ]
   },
   deltas:{economic:0, political:10, attitudes:0},
@@ -645,8 +645,18 @@ let currentIndex = 0;   // stop currently displayed
 let furthestIndex = 0;  // highest stop index reached (0-based); STOPS.length means finished
 let stopStates = [];    // per-stop: null or { choiceIndex, correct }
 let logEntries = [];
+let shuffledChoices = []; // per-stop: that stop's choices in randomized display order
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function resetGame(){
   meters = Object.assign({}, START_METERS);
@@ -655,6 +665,9 @@ function resetGame(){
   furthestIndex = 0;
   stopStates = STOPS.map(()=>null);
   logEntries = [];
+  // Re-shuffle each question's answer order so the correct choice isn't always
+  // in the same position from one playthrough (or one stop) to the next.
+  shuffledChoices = STOPS.map(stop => shuffled(stop.question.choices));
 }
 
 /* =========================================================================
@@ -734,7 +747,7 @@ function renderStopCard(){
   card.innerHTML = html;
 
   const choiceList = document.getElementById("choiceList");
-  stop.question.choices.forEach((choice, ci)=>{
+  shuffledChoices[currentIndex].forEach((choice, ci)=>{
     const btn = document.createElement("button");
     btn.className = "choice-btn";
     btn.textContent = choice.text;
@@ -799,7 +812,7 @@ function renderAll(){
 function answerStop(choiceIndex){
   if(stopStates[currentIndex]) return;
   const stop = STOPS[currentIndex];
-  const choice = stop.question.choices[choiceIndex];
+  const choice = shuffledChoices[currentIndex][choiceIndex];
   stopStates[currentIndex] = { choiceIndex, correct: !!choice.correct };
   if(choice.correct) score += 1;
 
