@@ -14,6 +14,9 @@
     --navy:#0b2545;
     --navy-deep:#071a34;
     --navy-light:#123469;
+    --brand-orange:#cc6b31;
+    --brand-orange-dark:#9f3f20;
+    --bg-deep:#2b160b;
     --parchment:#f5efdc;
     --parchment-dark:#e6d9b4;
     --parchment-darker:#d8c795;
@@ -47,9 +50,9 @@
   body{
     min-height:100vh;
     background:
-      radial-gradient(1100px 700px at 10% -10%, #16305c 0%, transparent 55%),
-      radial-gradient(1100px 800px at 105% 5%, #142a52 0%, transparent 55%),
-      var(--navy-deep);
+      radial-gradient(1100px 700px at 10% -10%, var(--brand-orange) 0%, transparent 55%),
+      radial-gradient(1100px 800px at 105% 5%, var(--brand-orange-dark) 0%, transparent 55%),
+      var(--bg-deep);
     color:var(--parchment);
     font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
@@ -65,7 +68,7 @@
 
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
-    padding:14px 24px; background:rgba(7,26,52,.7);
+    padding:14px 24px; background:rgba(43,22,11,.7);
     border-bottom:1px solid rgba(240,193,75,.18);
   }
   .topbar .brand{
@@ -180,7 +183,7 @@
   @media (max-width:980px){ .game-layout{grid-template-columns:1fr;} }
 
   .board-wrap{
-    background:rgba(7,26,52,.4); border-radius:18px; padding:14px;
+    background:rgba(43,22,11,.4); border-radius:18px; padding:14px;
     border:1px solid rgba(240,193,75,.18);
     box-shadow:0 0 0 3px rgba(0,0,0,0), inset 0 0 0 1px rgba(255,255,255,.02);
     position:relative;
@@ -537,94 +540,94 @@ function coordsForIndex(i){
 
 const EVENT_CARDS = {
   D:[
-    {t:"A town hall at the union hall runs long as your health care plan draws round after round of applause. Volunteers say the sign-up sheet for local phone-banking filled up twice over.", f:15, s:10},
-    {t:"A youth voter registration drive built around your climate agenda visits three college campuses in a single day. Organizers report signing up thousands of new voters before the tables even closed.", f:5, s:20},
-    {t:"Teachers pack a school gymnasium to hear your public education funding proposal. Several announce on the spot that they're taking the day off next week to canvass for you.", f:15, s:15},
-    {t:"Your infrastructure jobs plan gets a standing ovation in a Rust Belt factory town that's been waiting decades for exactly this kind of investment. Local union leaders shake your hand for the cameras.", f:20, s:10},
-    {t:"A well-prepared answer on immigration reform at a community forum earns respectful applause from a normally skeptical crowd. Reporters call it one of the more substantive answers of the campaign so far.", f:10, s:15},
-    {t:"Small-dollar donations pour in overnight after clips of your speech on economic inequality spread online. Your finance team says it's the best 24 hours the campaign has had.", f:25, s:5},
-    {t:"A packed rally in a mid-sized city runs an hour past its scheduled end because the crowd keeps chanting for one more question. Local organizers say turnout blew past every projection.", f:10, s:20},
-    {t:"Your child care affordability plan gets picked up by a national parenting podcast with millions of listeners. Messages of support flood your campaign's accounts for days.", f:15, s:15},
+    {t:"The union hall is packed past capacity by the time you arrive, folding chairs lined three deep against the back wall. Your health care plan draws round after round of applause, and by the third question a shop steward is already sketching a phone-banking schedule on a napkin. Afterward, volunteers tell your field director the sign-up sheet filled up twice over before the doors even opened for the next event. You climb back onto the bus tired but energized, already thinking about the next town on the schedule.", f:15, s:10},
+    {t:"Your team rolls into three college campuses in a single day, folding tables and clipboards in tow, built around your climate agenda. Students line up between classes to register, and by the second stop the volunteers run out of forms and start writing names on the back of flyers. Organizers report signing up thousands of new voters before the tables even close for the night. It's the kind of day that reminds your staff why they signed on in the first place.", f:5, s:20},
+    {t:"A school gymnasium fills with teachers still in their lanyards, straight from the classroom, to hear your public education funding proposal. You walk them through the numbers slowly, and by the end several are nodding along instead of checking their phones. A few announce on the spot that they're taking a personal day next week to canvass for you. Your scheduler is already trying to figure out where to fit a follow-up visit.", f:15, s:15},
+    {t:"The factory floor is loud enough that you have to raise your voice over the machinery, but the crowd of union workers still leans in for every word of your infrastructure jobs plan. It's the kind of Rust Belt town that's been waiting decades for exactly this kind of investment, and you can feel it in the silence between your sentences. Local union leaders shake your hand for the cameras, and one pulls you aside afterward to talk logistics. You leave with a promise to come back before the primary.", f:20, s:10},
+    {t:"At a community forum that's usually more skeptical than friendly, you give a careful, detailed answer on immigration reform instead of a talking point. The room goes quiet in a way that feels like listening rather than waiting for you to finish. Reporters in the back row start typing before you're even done, and one calls it the most substantive answer of the campaign so far. You step off stage knowing tomorrow's headlines will be kinder than you expected.", f:10, s:15},
+    {t:"A single speech on economic inequality, recorded on someone's phone from the third row, ends up everywhere online by morning. Small donations start arriving in bursts of a few dollars at a time, the kind your finance team calls the best possible sign. By evening the tally is the strongest 24-hour stretch the campaign has had. Your staff spends the night refreshing the numbers instead of sleeping.", f:25, s:5},
+    {t:"The rally in a mid-sized downtown runs an hour past its scheduled end because the crowd keeps chanting for one more question. City officials start eyeing the growing line down the block with a mix of pride and mild alarm. Local organizers say turnout blew past every projection they'd made for the night. You leave hoarse, smiling, and already rebooking the venue for a bigger crowd next time.", f:10, s:20},
+    {t:"A national parenting podcast spends its entire episode walking through your child care affordability plan, host and guest going line by line. Clips get shared in parent group chats within the hour, tagged by people who've never once mentioned politics online before. Messages of support flood your campaign's accounts for days afterward. Your policy team can't stop smiling about it in the group chat.", f:15, s:15},
   ],
   R:[
-    {t:"A chamber of commerce breakfast runs long as your tax cut proposal draws round after round of applause from small business owners. Several attendees say they're organizing a fundraiser on your behalf before you've even left the building.", f:20, s:10},
-    {t:"A town hall in a border community gives you a respectful hearing on your border security plan. Reporters call it one of the more substantive answers of the campaign so far.", f:10, s:15},
-    {t:"Veterans pack an American Legion hall to hear your national defense plan, and several announce on the spot that they're volunteering to canvass for you.", f:15, s:15},
-    {t:"Your energy independence plan gets a standing ovation in an oil-and-gas town that's been waiting years for exactly this kind of investment. Local workers shake your hand for the cameras.", f:20, s:10},
-    {t:"A well-prepared answer on cutting regulation at a community forum earns respectful applause from local business owners. They say it's the most detail they've heard from any candidate all cycle.", f:10, s:15},
-    {t:"Major donations pour in overnight after clips of your speech on limited government spread online. Your finance team calls it the best 24 hours the campaign has had.", f:25, s:5},
-    {t:"A packed rally in a mid-sized city runs an hour past schedule because the crowd keeps chanting for one more question. Local organizers say turnout blew past every projection.", f:10, s:20},
-    {t:"Your small-business tax relief plan gets picked up by a popular business podcast with millions of listeners. Messages of support flood your campaign's accounts for days.", f:15, s:15},
+    {t:"The chamber of commerce breakfast is standing room only by the time you start speaking, coffee cups balanced on windowsills. Your tax cut proposal draws round after round of applause from small business owners who've been waiting years to hear it from a candidate directly. Several attendees are already organizing a fundraiser on your behalf before you've even left the building. You climb back into the car already thinking about the next stop on the schedule.", f:20, s:10},
+    {t:"In a border community that's grown wary of easy promises, you walk through your border security plan in careful, specific detail instead of a talking point. The room listens in a way that feels like consideration rather than politeness. Reporters in the back row are typing before you finish, and one calls it one of the more substantive answers of the campaign so far. You step off stage knowing tomorrow's headlines will be kinder than you expected.", f:10, s:15},
+    {t:"An American Legion hall fills past capacity with veterans still wearing their unit pins, folding chairs lined against the back wall. Your national defense plan draws careful nods rather than easy applause, the kind that means people are actually weighing it. Several announce on the spot that they're volunteering to canvass for you before the week is out. You leave with a promise to come back before the primary.", f:15, s:15},
+    {t:"The oil-and-gas town's community center is loud with the hum of trucks idling outside, but the room quiets fast for your energy independence plan. It's the kind of town that's been waiting years for exactly this kind of investment, and you can feel it in the silence between your sentences. Local workers shake your hand for the cameras, and one pulls you aside to talk logistics. You leave with a promise to return before the primary.", f:20, s:10},
+    {t:"At a community forum that's usually more skeptical than friendly, you give a careful, specific answer on cutting regulation instead of a talking point. Business owners in the crowd say afterward it's the most detail they've heard from any candidate all cycle. A few pull out notebooks halfway through to write things down. You step off stage knowing tomorrow's coverage will be kinder than you expected.", f:10, s:15},
+    {t:"A single speech on limited government, recorded on someone's phone from the third row, ends up everywhere online by morning. Donations start arriving in bursts, the kind your finance team calls the best possible sign. By evening the tally is the strongest 24-hour stretch the campaign has had. Your staff spends the night refreshing the numbers instead of sleeping.", f:25, s:5},
+    {t:"The rally in a mid-sized downtown runs an hour past its scheduled end because the crowd keeps chanting for one more question. City officials eye the growing line down the block with a mix of pride and mild alarm. Local organizers say turnout blew past every projection they'd made for the night. You leave hoarse, smiling, and already rebooking the venue for a bigger crowd next time.", f:10, s:20},
+    {t:"A popular business podcast spends its entire episode walking through your small-business tax relief plan, host and guest going line by line. Clips get shared in group chats within the hour, tagged by people who've never once mentioned politics online before. Messages of support flood your campaign's accounts for days afterward. Your policy team can't stop smiling about it.", f:15, s:15},
   ],
   N:[
-    {t:"Pundits across the spectrum call your debate performance 'confident and clear.' Even a few unfriendly commentators admit you had a good night.", f:10, s:15},
-    {t:"A viral moment from your rope-line handshake tour racks up millions of views overnight. Late-night hosts are already making jokes about it.", f:5, s:20},
-    {t:"You raise $25 million at a single evening gala, the biggest single fundraising haul of the campaign so far. Your finance director calls it a turning point.", f:25, s:0},
-    {t:"Local news runs a flattering profile on your campaign's ground game, following volunteers as they knock on doors block by block. The segment airs right before prime time.", f:10, s:10},
-    {t:"A well-timed op-ed under your name runs in a major newspaper the morning after a big news cycle. Cable news spends the rest of the day debating your argument.", f:10, s:15},
-    {t:"Your campaign bus makes an unscheduled stop at a diner, and the resulting photo of you pouring coffee for a trucker runs on front pages nationwide.", f:10, s:10},
+    {t:"Pundits across the spectrum spend the morning shows calling your debate performance 'confident and clear,' a rare point of agreement in an otherwise divided commentary lineup. Even a few unfriendly commentators admit, almost begrudgingly, that you had a good night. Clips of your best answer get replayed on a loop through the afternoon. Your communications team calls it the easiest morning-after briefing they've had all cycle.", f:10, s:15},
+    {t:"A rope-line handshake tour turns into an unplanned viral moment when someone catches you trading a joke with a kid on their parent's shoulders. The clip racks up millions of views before your team even sees it happen. Late-night hosts are already making jokes about it by the time you're back on the bus. Your social media team spends the rest of the night just watching the numbers climb.", f:5, s:20},
+    {t:"The evening gala runs long, but nobody in the room seems to mind as the fundraising total climbs on the screen behind the podium. By the time dessert is served, you've raised $25 million in a single night, the biggest single haul of the campaign so far. Your finance director calls it a turning point in a voice that sounds like relief. You leave the ballroom already mapping out how far the money can stretch.", f:25, s:0},
+    {t:"A local news crew spends the day trailing your volunteers as they knock on doors block by block, boots crunching through fall leaves. The resulting segment airs right before prime time, warm and unhurried in a way paid ads never manage. Neighbors mention it to each other the next morning at the coffee shop. Your field director calls it worth more than a week of ad spending.", f:10, s:10},
+    {t:"A well-timed op-ed under your name runs in a major newspaper the morning after a big news cycle, catching the conversation at exactly the right moment. Cable news spends the rest of the day debating your argument point by point. Your policy team fields calls from three different networks before lunch. By evening, the piece has been reprinted twice more elsewhere.", f:10, s:15},
+    {t:"Your campaign bus makes an unscheduled stop at a roadside diner when the driver needs a break, and you end up staying for coffee. A trucker at the counter asks for a photo, and the resulting shot of you pouring him a cup runs on front pages nationwide by morning. Nobody planned it, which is exactly why it works. Your press secretary can't stop replaying how it happened.", f:10, s:10},
   ]
 };
 
 const SCANDAL_CARDS = {
   D:[
-    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop. Your communications team scrambles to respond before the evening news.", f:-10, s:-10},
-    {t:"A leaked internal memo shows your own staff arguing over how to pay for your climate plan. Reporters describe the mood on the call as 'tense.'", f:-5, s:-15},
-    {t:"An old staffer tweet resurfaces from years before the campaign, and it dominates a full news cycle. You spend the day fielding questions about it instead of talking policy.", f:-10, s:-5},
-    {t:"Your position on gun policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall. A local paper runs the headline the next morning.", f:-5, s:-15},
-    {t:"A super PAC ad twists an old vote on taxes into something it wasn't, and it's airing constantly in three battleground states. Your team can't get it pulled before the weekend news cycle.", f:-15, s:-5},
-    {t:"You're photographed missing a major labor rally because of a scheduling mix-up, and organizers publicly note your absence from the stage.", f:-5, s:-10},
-    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster than the original claim ever did.", f:-10, s:-10},
-    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, and the footage runs on every network that night.", f:-5, s:-10},
+    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop through the evening. Your communications team scrambles to draft a response before the nightly broadcast locks its script. By the time the statement goes out, the clip has already looped a dozen times. Tomorrow's headlines are not going to be kind.", f:-10, s:-10},
+    {t:"A leaked internal memo shows your own staff arguing over how to pay for your climate plan, numbers scrawled in the margins in red pen. Reporters who obtain a copy describe the mood on the call as 'tense.' Your policy director spends the afternoon fielding the same question from five different outlets. It's not the story anyone on your team wanted running today.", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces from years before the campaign even started, and it dominates a full news cycle by lunchtime. You spend the day fielding questions about a joke someone else made instead of talking about your actual policy agenda. Your press team drafts three versions of a statement before settling on one. It's a frustrating way to lose a news day.", f:-10, s:-5},
+    {t:"Your position on gun policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall broadcast. A local paper runs the exchange as the next morning's headline, unflattering angle and all. Your field team fields a wave of concerned calls from local volunteers. It takes real effort to steer the conversation back to your core message.", f:-5, s:-15},
+    {t:"A super PAC ad twists an old vote on taxes into something it never actually was, and it's airing constantly across three battleground states. Your legal team can't get it pulled before the weekend news cycle locks in. Local volunteers report fielding the same misleading question at every door they knock. It's the kind of ad that's hard to out-argue in thirty seconds.", f:-15, s:-5},
+    {t:"You're photographed missing a major labor rally because of a scheduling mix-up nobody catches until it's too late. Organizers publicly note your absence from the stage, and a local reporter asks your team about it directly. Your scheduler spends the rest of the day apologizing to union contacts one by one. It's a quiet kind of setback, but it stings.", f:-5, s:-10},
+    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster online than the original claim ever did. Your policy team insists the number was close enough, but 'close enough' doesn't make for a great headline. Reporters ask about it at your next three stops in a row. You start double-checking every figure before it leaves your mouth.", f:-10, s:-10},
+    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, chants rising over your microphone mid-sentence. Security ushers the group out, but not before the footage runs on every network that night. Your team spends the next morning fielding questions about the protest instead of your policy rollout. It's not the coverage anyone planned for.", f:-5, s:-10},
   ],
   R:[
-    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop. Your communications team scrambles to respond before the evening news.", f:-10, s:-10},
-    {t:"A leaked internal memo shows your own staff arguing over how to pay for your tax plan. Reporters describe the mood on the call as 'tense.'", f:-5, s:-15},
-    {t:"An old staffer tweet resurfaces from years before the campaign, and it dominates a full news cycle. You spend the day fielding questions about it instead of talking policy.", f:-10, s:-5},
-    {t:"Your position on health care policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall. A local paper runs the headline the next morning.", f:-5, s:-15},
-    {t:"A super PAC ad twists an old vote on spending into something it wasn't, and it's airing constantly in three battleground states. Your team can't get it pulled before the weekend news cycle.", f:-15, s:-5},
-    {t:"You're photographed missing a major veterans' event because of a scheduling mix-up, and organizers publicly note your absence from the stage.", f:-5, s:-10},
-    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster than the original claim ever did.", f:-10, s:-10},
-    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, and the footage runs on every network that night.", f:-5, s:-10},
+    {t:"Opponents dig up an old speech where you took a different position on trade policy, and cable news runs a side-by-side comparison on a loop through the evening. Your communications team scrambles to draft a response before the nightly broadcast locks its script. By the time the statement goes out, the clip has already looped a dozen times. Tomorrow's headlines are not going to be kind.", f:-10, s:-10},
+    {t:"A leaked internal memo shows your own staff arguing over how to pay for your tax plan, numbers scrawled in the margins in red pen. Reporters who obtain a copy describe the mood on the call as 'tense.' Your policy director spends the afternoon fielding the same question from five different outlets. It's not the story anyone on your team wanted running today.", f:-5, s:-15},
+    {t:"An old staffer tweet resurfaces from years before the campaign even started, and it dominates a full news cycle by lunchtime. You spend the day fielding questions about a joke someone else made instead of talking about your actual policy agenda. Your press team drafts three versions of a statement before settling on one. It's a frustrating way to lose a news day.", f:-10, s:-5},
+    {t:"Your position on health care policy draws sharp pushback from moderate voters in a handful of swing districts during a live town hall broadcast. A local paper runs the exchange as the next morning's headline, unflattering angle and all. Your field team fields a wave of concerned calls from local volunteers. It takes real effort to steer the conversation back to your core message.", f:-5, s:-15},
+    {t:"A super PAC ad twists an old vote on spending into something it never actually was, and it's airing constantly across three battleground states. Your legal team can't get it pulled before the weekend news cycle locks in. Local volunteers report fielding the same misleading question at every door they knock. It's the kind of ad that's hard to out-argue in thirty seconds.", f:-15, s:-5},
+    {t:"You're photographed missing a major veterans' event because of a scheduling mix-up nobody catches until it's too late. Organizers publicly note your absence from the stage, and a local reporter asks your team about it directly. Your scheduler spends the rest of the day apologizing to contacts one by one. It's a quiet kind of setback, but it stings.", f:-5, s:-10},
+    {t:"A fact-checker flags a statistic you cited about your own economic plan, and the correction spreads faster online than the original claim ever did. Your policy team insists the number was close enough, but 'close enough' doesn't make for a great headline. Reporters ask about it at your next three stops in a row. You start double-checking every figure before it leaves your mouth.", f:-10, s:-10},
+    {t:"A protest breaks out at one of your rallies over your position on a hot-button issue, chants rising over your microphone mid-sentence. Security ushers the group out, but not before the footage runs on every network that night. Your team spends the next morning fielding questions about the protest instead of your policy rollout. It's not the coverage anyone planned for.", f:-5, s:-10},
   ],
   N:[
-    {t:"A gaffe at a press conference goes viral for the wrong reasons, and it's the only clip anyone's talking about by dinnertime.", f:-10, s:-10},
-    {t:"Fact-checkers flag a claim from your latest ad, and the correction runs almost as often as the ad itself.", f:-5, s:-15},
-    {t:"Low turnout at a rally leads to unflattering wide-angle photos in the next morning's papers.", f:-10, s:-5},
-    {t:"You lose your voice mid-speech at a nationally televised event, and an aide has to finish your remarks for you.", f:-5, s:-10},
-    {t:"A technical glitch cuts your live-streamed town hall short right as you're answering the toughest question of the night.", f:-10, s:-5},
-    {t:"An old interview resurfaces where you struggled to answer a basic question about your own policy plan.", f:-5, s:-10},
+    {t:"A gaffe at a press conference goes viral for exactly the wrong reasons, clipped down to eight seconds and captioned before you've even left the podium. It's the only thing anyone's talking about by dinnertime, no matter what else you said that day. Your press secretary spends the evening fielding the same question on repeat. Tomorrow, you'll try again.", f:-10, s:-10},
+    {t:"Fact-checkers flag a claim from your latest ad within hours of it airing, and the correction runs almost as often as the ad itself. Your media team debates pulling it entirely before deciding to let it run its course. It's the kind of story that lingers a day longer than it should. Lesson noted for the next round of ads.", f:-5, s:-15},
+    {t:"Low turnout at a rally leaves wide gaps in the risers behind you, and the next morning's papers run the least flattering wide-angle shot available. Your advance team insists the room looked fuller in person. Reporters ask about the empty seats at your next stop anyway. It's a hard image to shake in a single news cycle.", f:-10, s:-5},
+    {t:"You lose your voice mid-speech at a nationally televised event, the words trailing into a hoarse whisper mid-sentence. An aide has to step in and finish your remarks while you catch your breath backstage. The moment gets replayed more than the speech itself would have been. You spend the next day drinking tea and avoiding interviews.", f:-5, s:-10},
+    {t:"A technical glitch cuts your live-streamed town hall short right as you're answering the toughest question of the night, the feed freezing mid-sentence. Viewers flood the comments wondering what you were about to say. Your team scrambles to post the rest of the answer in writing, but it's not the same. It's the kind of bad luck nobody can plan around.", f:-10, s:-5},
+    {t:"An old interview resurfaces online where you visibly struggle to answer a basic question about your own policy plan, the pause stretching a beat too long. Clips of the silence circulate faster than any explanation your team can offer. Reporters ask a version of the same question at your next stop, just to see if you're ready this time. You make sure you are.", f:-5, s:-10},
   ]
 };
 
 const ENDORSEMENT_CARDS = {
   D:[
-    {t:"A major labor union's executive board votes unanimously to endorse your campaign, and its members are already organizing phone banks in your name. The union's president joins you on stage for the announcement.", f:15, s:20},
-    {t:"A coalition of environmental groups throws its full support behind you after reviewing your climate plan line by line. Their volunteer network is one of the largest in the country.", f:10, s:20},
-    {t:"A former primary rival endorses you at a joint press conference and agrees to join you on the campaign trail. Their supporters start showing up at your events within days.", f:20, s:15},
-    {t:"A prominent civil rights organization endorses your candidacy, citing your record on voting rights. Local chapters immediately begin registering voters in your name.", f:15, s:20},
-    {t:"A network of nurses' associations endorses you after a series of listening sessions on health care staffing. They pledge to canvass hospitals and clinics on your behalf.", f:15, s:18},
+    {t:"A major labor union's executive board meets behind closed doors for most of the afternoon before emerging with a unanimous vote to endorse your campaign. The union's president joins you on stage for the announcement, gripping your hand for the cameras a beat longer than usual. Within the hour, members are already organizing phone banks in your name across three states. Your field director calls it the best afternoon the campaign has had in weeks.", f:15, s:20},
+    {t:"A coalition of environmental groups spends a full week reviewing your climate plan line by line before announcing its support. Their volunteer network, one of the largest in the country, immediately starts folding your campaign into its existing outreach. The endorsement letter runs in full in a handful of major papers. Your policy team calls it validation they'd hoped for but weren't sure would come.", f:10, s:20},
+    {t:"A former primary rival calls your office directly, and within a day you're standing together at a joint press conference announcing their endorsement. They agree to join you on the campaign trail for the next leg of the schedule. Their supporters start showing up at your events within days, some still wearing gear from the old campaign. It's the kind of moment that reshapes a race overnight.", f:20, s:15},
+    {t:"A prominent civil rights organization endorses your candidacy after a lengthy review of your record on voting rights, citing specifics rather than generalities. Local chapters immediately begin registering voters in your name, tables set up outside churches and community centers within the week. The announcement leads local news coverage in several key cities. Your team calls it one of the more meaningful endorsements of the campaign.", f:15, s:20},
+    {t:"A network of nurses' associations, after a series of listening sessions on health care staffing, votes to endorse your campaign. They pledge to canvass hospitals and clinics on your behalf, distributing literature during shift changes. The announcement comes with personal stories from nurses who say your plan would change their daily work. Your health policy team calls it the endorsement they were hoping for most.", f:15, s:18},
   ],
   R:[
-    {t:"A major business association's board votes unanimously to endorse your campaign, and its members are already organizing outreach in your name. The association's president joins you on stage for the announcement.", f:15, s:20},
-    {t:"A coalition of law enforcement groups throws its full support behind you after reviewing your public safety plan. Their membership network is one of the largest in the country.", f:10, s:20},
-    {t:"A former primary rival endorses you at a joint press conference and agrees to join you on the campaign trail. Their supporters start showing up at your events within days.", f:20, s:15},
-    {t:"A prominent veterans' organization endorses your candidacy, citing your record on national defense. Local chapters immediately begin phone-banking in your name.", f:15, s:20},
-    {t:"A network of farm bureaus endorses you after a series of listening sessions on agricultural policy. They pledge to canvass rural counties on your behalf.", f:15, s:18},
+    {t:"A major business association's board meets behind closed doors for most of the afternoon before emerging with a unanimous vote to endorse your campaign. The association's president joins you on stage for the announcement, gripping your hand for the cameras a beat longer than usual. Within the hour, members are already organizing outreach in your name across three states. Your field director calls it the best afternoon the campaign has had in weeks.", f:15, s:20},
+    {t:"A coalition of law enforcement groups spends a full week reviewing your public safety plan line by line before announcing its support. Their membership network, one of the largest in the country, immediately starts folding your campaign into its existing outreach. The endorsement letter runs in full in a handful of major papers. Your policy team calls it validation they'd hoped for but weren't sure would come.", f:10, s:20},
+    {t:"A former primary rival calls your office directly, and within a day you're standing together at a joint press conference announcing their endorsement. They agree to join you on the campaign trail for the next leg of the schedule. Their supporters start showing up at your events within days, some still wearing gear from the old campaign. It's the kind of moment that reshapes a race overnight.", f:20, s:15},
+    {t:"A prominent veterans' organization endorses your candidacy after a lengthy review of your record on national defense, citing specifics rather than generalities. Local chapters immediately begin phone-banking in your name, working through member rosters within the week. The announcement leads local news coverage in several key cities. Your team calls it one of the more meaningful endorsements of the campaign.", f:15, s:20},
+    {t:"A network of farm bureaus, after a series of listening sessions on agricultural policy, votes to endorse your campaign. They pledge to canvass rural counties on your behalf, distributing literature at grain elevators and co-ops. The announcement comes with personal stories from farmers who say your plan would change their bottom line. Your policy team calls it the endorsement they were hoping for most.", f:15, s:18},
   ],
   N:[
-    {t:"Your hometown newspaper's editorial board endorses your candidacy, praising your record in detail across two full pages. Local news picks up the story within the hour.", f:10, s:15},
-    {t:"A popular podcast host spends an entire episode praising your authenticity to millions of listeners. Downloads of the episode spike for days afterward.", f:15, s:15},
-    {t:"A respected retired general says publicly that you have what it takes to be Commander-in-Chief. The endorsement leads that night's national news broadcast.", f:10, s:20},
-    {t:"A well-known late-night host, known for staying neutral, jokes that you're 'annoyingly likeable' — and the clip does more for your campaign than a formal endorsement would.", f:12, s:15},
+    {t:"Your hometown newspaper's editorial board spends a full meeting debating before endorsing your candidacy, praising your record in detail across two full pages. Local news picks up the story within the hour, running excerpts on the evening broadcast. Neighbors mention it to your parents at the grocery store the next morning. Your press secretary calls it the kind of hometown validation that money can't buy.", f:10, s:15},
+    {t:"A popular podcast host spends an entire episode praising your authenticity to millions of listeners, going long past the usual runtime. Downloads of the episode spike for days afterward, and clips circulate widely online. Listeners who've never donated to a campaign before start showing up at your events. Your digital team calls it one of the best organic moments of the race.", f:15, s:15},
+    {t:"A respected retired general says publicly, in a lengthy television interview, that you have what it takes to be Commander-in-Chief. The endorsement leads that night's national news broadcast, replacing the story that had dominated the morning cycle. Veterans' groups reach out to your campaign within the hour asking how to help. Your national security team calls it a genuine turning point.", f:10, s:20},
+    {t:"A well-known late-night host, known for staying carefully neutral, jokes on air that you're 'annoyingly likeable' during an otherwise apolitical monologue. The clip does more for your campaign than a formal endorsement would, shared far outside the usual political circles. Your social media team watches the numbers climb through the night. It's the kind of moment nobody could have scripted.", f:12, s:15},
   ]
 };
 
 const TRIVIA_SCENES = [
-  "The debate moderator turns the next question to you. Cameras zoom in as you consider your answer.",
-  "A young voter waves a hand-written sign your way and asks you a pointed question outside the venue.",
-  "A cable news anchor asks you to explain a basic fact about the U.S. election process, live on air.",
-  "Backstage before tonight's town hall, a reporter corners you for a quick pop quiz."
+  "The debate moderator turns the next question to you, and the studio goes quiet enough to hear the cameras refocus. Millions are watching, and there's no time to consult a briefing book.",
+  "A young voter waves a hand-written sign your way and asks you a pointed question outside the venue, phone already recording. A small crowd gathers to see if you'll actually answer.",
+  "A cable news anchor asks you, live and unscripted, to explain a basic fact about the U.S. election process. It's the kind of question every candidate should be ready for.",
+  "Backstage before tonight's town hall, a reporter corners you for a quick pop quiz while your staff tries to hurry you toward the stage. There's no ducking this one."
 ];
 
 const TRIVIA = [
@@ -648,30 +651,30 @@ const TRIVIA = [
 const SWING_STATES = {
   ohio:{
     label:"Ohio",
-    text:"Ohio has voted for the eventual winner in nearly every election for the last century, and both parties know it. Local news is running wall-to-wall campaign coverage, and undecided voters here say they're still shopping around."
+    text:"Ohio has voted for the eventual winner in nearly every election for the last century, and both parties know it down to the precinct level. Local news is running wall-to-wall campaign coverage, ads stacked back to back during every commercial break. Undecided voters here say, almost proudly, that they're still shopping around this late in the race. Whatever you do next in the Buckeye State will be watched closely by every campaign in the country."
   },
   florida:{
     label:"Florida",
-    text:"Florida is famous for razor-thin margins, and this year is shaping up no differently. Retirees, growing suburbs, and rural counties all want something different from the next president."
+    text:"Florida is famous for razor-thin margins, and this cycle is shaping up no differently than the last. Retirees in planned communities, growing suburban families, and rural conservatives up north all want something different from the next president. Turnout operations here run around the clock, phone banks lit long after most other states have gone quiet for the night. A single well-placed push could tip the state either way."
   },
   pennsylvania:{
     label:"Pennsylvania",
-    text:"Pennsylvania's mix of union towns, suburban swing districts, and rural counties makes it one of the hardest states in the country to predict. Whoever wins the Keystone State has historically had a very good night."
+    text:"Pennsylvania's mix of union towns, suburban swing districts, and rural counties makes it one of the hardest states in the country to predict from the outside. Local reporters joke that you can't understand the state without driving across all of it yourself. Whoever wins the Keystone State has historically had a very good night everywhere else, too. Your team treats every stop here like it matters more than the last."
   },
   arizona:{
     label:"Arizona",
-    text:"Once reliably in one party's column, Arizona has become one of the most closely fought battlegrounds in the country. A late push here could tip the state either way."
+    text:"Once reliably in one party's column for decades, Arizona has become one of the most closely fought battlegrounds in the country. Growing suburbs around Phoenix keep reshaping the electorate faster than either party's playbook can keep up with. Volunteers here say the door-knocking never really stops, even between elections. A late push in Arizona could tip the state either way on its own."
   }
 };
 
 const SPECIAL_TEXT = {
   again:[
-    "A clip from your last stop goes viral overnight, and your team is riding the wave straight into the next event.",
-    "Your scheduler manages to squeeze in a surprise extra stop, giving you one more shot before the day is done."
+    "A clip from your last stop goes viral overnight, shared far past your own campaign's usual reach. Your scheduler wakes up to a full inbox and a rare kind of problem: too many places wanting you at once. Riding the wave, the team squeezes in one more stop before the day's momentum fades.",
+    "Your scheduler manages to pull off the impossible, squeezing a surprise extra stop into an already packed day. It means a shorter lunch and a longer drive, but nobody on the bus is complaining. You get one more shot at the trail before the day is done."
   ],
   lose:[
-    "Your campaign bus breaks down outside a small town during a snowstorm, and the next scheduled stop has to be scrapped entirely.",
-    "A last-minute scheduling conflict strands your whole team at the airport, and you miss a full day of campaigning."
+    "Your campaign bus breaks down outside a small town in the middle of a snowstorm, steam rising off the engine on the shoulder of the highway. The next scheduled stop has to be scrapped entirely while a tow truck is called. Your advance team spends the afternoon apologizing to a room that's already filling with disappointed supporters.",
+    "A last-minute scheduling conflict strands your whole team at the airport, gate agents shaking their heads at a flight that isn't coming. You miss a full day of campaigning waiting on standby. It's the kind of lost day no amount of hustle can fully make up for."
   ]
 };
 
@@ -686,8 +689,8 @@ const KEY_EVENTS = [
   {
     key:'iowa', icon:'🌽', label:'Iowa Caucus',
     variants:[
-      "The first-in-the-nation contest has arrived. Iowans will caucus in person tonight, standing in groups for their candidate in gyms and church basements across the state. Every campaign has spent months building a ground game for exactly this moment.",
-      "Snow is falling across Iowa as caucus-goers head to their precincts. Reporters are stationed in every county, ready to declare who has real momentum heading into New Hampshire."
+      "The first-in-the-nation contest has finally arrived, months of ground-game building coming down to a single cold night. Iowans will caucus in person, standing in groups for their candidate in gyms and church basements across the state instead of casting a private ballot. Neighbors will try to talk each other into switching sides right there in the room, precinct captains counting heads as the numbers shift. National reporters are stationed in every county, ready to declare who has real momentum heading into New Hampshire before the night is even over.",
+      "Snow is falling steadily across Iowa as caucus-goers bundle up and head to their precincts after dinner. Unlike a normal primary, tonight's results depend on public persuasion as much as private conviction, with neighbors making their case to each other in real time. Camera crews from every network are stationed in the state's biggest counties, waiting for the numbers to start rolling in. Whatever happens tonight will be the story everyone is talking about by morning."
     ],
     choices:[
       {label:'Knock on Doors', desc:'Send volunteers to knock on doors in every precinct, turning out your most committed supporters.'},
@@ -698,8 +701,8 @@ const KEY_EVENTS = [
   {
     key:'nh', icon:'🍁', label:'New Hampshire Primary',
     variants:[
-      "New Hampshire holds the first true primary of the race, and this state takes its 'First in the Nation' status seriously. Voters here expect to meet candidates face-to-face at diners and town halls before deciding. A strong finish here can make or break momentum overnight.",
-      "Snow-covered town halls across New Hampshire are packed as voters cast secret ballots. Unlike Iowa's caucuses, this is a straightforward primary election, and the media narrative can shift by morning depending on the result."
+      "New Hampshire holds the first true primary of the race, and this state takes its 'First in the Nation' status seriously enough to put it on the license plates. Voters here expect to meet candidates face-to-face at diners and town halls before making up their minds, and plenty still say they're deciding in the voting booth itself. A strong finish tonight can build momentum that carries a campaign for weeks; a weak one can end it just as fast. Results are expected to start coming in not long after the polls close.",
+      "Snow-covered town halls across New Hampshire are packed as voters cast secret ballots after weeks of retail politics. Unlike Iowa's caucuses, this is a straightforward primary election, one voter and one vote at a time, and the media narrative can shift by morning depending on the margin. Local reporters who've covered a dozen of these primaries say this one feels unusually close. Every campaign in the race is watching the results roll in tonight."
     ],
     choices:[
       {label:'Diner Tour', desc:'Spend the day shaking hands and taking questions one-on-one at diners across the state.'},
@@ -710,8 +713,8 @@ const KEY_EVENTS = [
   {
     key:'superTuesday', icon:'🗺️', label:'Super Tuesday',
     variants:[
-      "It's Super Tuesday: more than a dozen states are voting on the same day, awarding the single largest batch of delegates in the entire race. Campaigns across the country are stretched thin trying to compete everywhere at once.",
-      "Polls are open from coast to coast today. Winning big on Super Tuesday can put a candidate's nomination nearly out of reach — and a poor showing can end a campaign by nightfall."
+      "It's Super Tuesday, and more than a dozen states are voting on the very same day, awarding the single largest batch of delegates in the entire primary calendar. Campaigns across the country are stretched thin trying to compete everywhere at once, staff splitting time between states that are hundreds of miles apart. Cable news has cleared its entire evening schedule to cover the results as they come in state by state. By tomorrow morning, the shape of the whole race could look very different.",
+      "Polls are open from coast to coast today, and results will start arriving in waves as different time zones close their voting. Winning big on Super Tuesday can put a candidate's nomination nearly out of reach for their rivals; a poor showing can end a campaign by nightfall. Every major outlet has reporters stationed in a dozen different states simultaneously. Whatever happens today will dominate the conversation for the rest of the week."
     ],
     choices:[
       {label:'Multi-State Canvassing', desc:'Fly volunteer coordinators into every voting state to organize last-minute turnout.'},
@@ -722,8 +725,8 @@ const KEY_EVENTS = [
   {
     key:'convention', icon:'🎉', label:'National Convention',
     variants:[
-      "Balloons and confetti drop from the rafters as your party's delegates formally nominate you as their candidate for President of the United States. The primary season is over — now the general election campaign truly begins.",
-      "Delegates from all fifty states take the floor to cast their votes, one by one, until your nomination is official. You'll deliver your acceptance speech to a prime-time television audience tonight."
+      "Balloons and confetti drop from the rafters as your party's delegates formally nominate you as their candidate for President of the United States, the arena roaring loud enough to drown out the band. The primary season is finally over, and the general election campaign begins the moment you step off this stage. Your acceptance speech tonight will reach more viewers than almost anything else you'll say all year. Somewhere backstage, your team is already reworking tomorrow's schedule around the bounce in the polls.",
+      "Delegates from all fifty states take the floor one by one, calling out their state's votes into microphones as the tally climbs toward your nomination. The roll call alone takes over an hour, but nobody in the arena seems to mind the wait. You'll deliver your acceptance speech tonight to a prime-time television audience larger than any crowd you've spoken to so far. The general election effectively starts the moment you walk off this stage."
     ],
     choices:[
       {label:'Work the Convention Floor', desc:'Spend the week connecting personally with delegates and state party leaders.'},
@@ -734,8 +737,8 @@ const KEY_EVENTS = [
   {
     key:'debate', icon:'🎙️', label:'General Election Debate',
     variants:[
-      "Millions of Americans tune in as you step onto a nationally televised debate stage to face your opponent directly for the first time. Every answer will be fact-checked in real time and clipped for tomorrow's headlines.",
-      "The studio lights come up and the moderator calls the debate to order. This is the moment undecided voters have been waiting for — and how you spend the next 24 hours matters almost as much as the debate itself."
+      "Millions of Americans tune in as you step onto a nationally televised debate stage to face your opponent directly for the first time all cycle. Every answer will be fact-checked in real time and clipped for tomorrow's headlines before you've even finished your closing statement. Spin room staff from both campaigns are already lined up backstage, ready to sprint to the cameras the moment the lights go down. How you spend the next 24 hours matters almost as much as anything you say on stage tonight.",
+      "The studio lights come up and the moderator calls the debate to order in front of the largest television audience of the campaign so far. This is the moment millions of undecided voters have reportedly been waiting for before making up their minds. Both campaigns know the post-debate spin will shape the story as much as the debate itself did. What you do in the hours right after matters just as much as the ninety minutes on stage."
     ],
     choices:[
       {label:'Own Social Media', desc:'Flood social platforms with your sharpest moments before the other side frames the narrative.'},
@@ -746,8 +749,8 @@ const KEY_EVENTS = [
   {
     key:'gotv', icon:'🚗', label:'Get-Out-The-Vote Blitz',
     variants:[
-      "Election Day is days away, and campaigns everywhere are shifting from persuasion to turnout. It no longer matters how many voters support you if they don't actually show up to the polls.",
-      "Volunteers are staffing phone banks around the clock, texting reminders and arranging rides to the polls. Every campaign is racing to squeeze out the last few points of turnout before voting ends."
+      "Election Day is only days away now, and campaigns everywhere are shifting hard from persuasion to turnout. It no longer matters how many voters say they support you if they don't actually show up at their polling place. Volunteers are working double shifts, and your field team has stopped sleeping in anything but short stretches. Every hour left on the calendar now gets spent trying to close the gap between support and votes actually cast.",
+      "Volunteers are staffing phone banks around the clock, texting reminders and arranging rides to the polls for anyone who asks. Every campaign in the race is racing to squeeze out the last few points of turnout before voting ends for good. Your field director keeps a running tally on a whiteboard that gets erased and rewritten every few hours. The next few days will decide whether all the earlier work on the trail actually turns into votes."
     ],
     choices:[
       {label:'Rides to the Polls', desc:'Organize a volunteer network to physically get your supporters to their polling places.'},
