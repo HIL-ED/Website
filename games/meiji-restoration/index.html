@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whose Japan? A Meiji Restoration Story</title>
+<title>A New Japan: A Meiji Restoration Story</title>
 <meta name="description" content="A branching narrative through the Meiji Restoration (1853-1889). Choose a role, live through the choices real Japanese people faced, and examine primary sources along the way.">
 <link rel="icon" type="image/png" href="../../images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -195,7 +195,7 @@ footer.site a { color:var(--ink-soft); }
   <section id="screen-title">
     <div class="center">
       <div class="kicker">A Branching History · 1853&ndash;1889</div>
-      <div class="titlehead"><span class="hanko">史</span><h1>Whose Japan?<br>A Meiji Restoration Story</h1></div>
+      <div class="titlehead"><span class="hanko">史</span><h1>A New Japan:<br>A Meiji Restoration Story</h1></div>
       <div class="sub">You will not play a game. You will live a choice, again and again, and see where it leads.</div>
       <div class="wave-divider"></div>
     </div>
@@ -933,7 +933,7 @@ function escHtml(str){
 
 function printJourney(){
   const role = ROLES[state.role];
-  let body = `<h1>Whose Japan? A Meiji Restoration Story</h1><h2>${escHtml(role.label)} (${escHtml(role.note)})</h2>`;
+  let body = `<h1>A New Japan: A Meiji Restoration Story</h1><h2>${escHtml(role.label)} (${escHtml(role.note)})</h2>`;
   body += `<div class="p-section"><h3>Path Through History</h3><ul>` + state.history.map(h=>`<li><strong>${escHtml(h.year)}:</strong> ${escHtml(h.label)}</li>`).join('') + `</ul></div>`;
   REFLECTIONS.forEach((r,idx)=>{
     body += `<div class="p-section"><h3>${escHtml(r.title)}</h3>`;
