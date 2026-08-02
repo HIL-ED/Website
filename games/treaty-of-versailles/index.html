@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treaty of Versailles: The Paris Peace Conference</title>
+<meta name="description" content="Play as the US, France, or Britain at the 1919 Paris Peace Conference. Negotiate seven real sticking points of the Treaty of Versailles against two rival delegations (AI or classmates) and see how close your treaty comes to history.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Treaty of Versailles: The Paris Peace Conference">
+<meta property="og:description" content="Choose the US, France, or Britain and negotiate the real terms of the 1919 Treaty of Versailles against two rival delegations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --paper: #f6e7c3;
+  --paper-dark: #ecd39a;
+  --card: #fffbf0;
+  --ink: #241c14;
+  --ink-soft: #6b5636;
+  --navy: #123a6b;
+  --navy-light: #1f5aa8;
+  --gold: #c9932e;
+  --gold-bright: #f2c14e;
+  --line: rgba(36,28,20,0.16);
+  --us: #1c56b8;
+  --us-bg: #dce9fc;
+  --france: #b0223f;
+  --france-bg: #fbdde3;
+  --britain: #0d7a63;
+  --britain-bg: #d3f3ea;
+  --good: #2f9d5c;
+  --bad: #d1502c;
+}
+html,body { margin:0; padding:0; }
+body {
+  min-height:100vh; color:var(--ink); background:var(--paper);
+  font-family:'Figtree', system-ui, sans-serif;
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(201,147,46,0.16), transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(176,34,63,0.12), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(18,58,107,0.14), transparent 46%),
+    radial-gradient(circle at 8% 92%, rgba(13,122,99,0.12), transparent 42%);
+}
+.flag-bar {
+  height:7px; width:100%;
+  background: linear-gradient(90deg, var(--us) 0 33.33%, var(--france) 33.33% 66.66%, var(--britain) 66.66% 100%);
+}
+h1,h2,h3,.serif { font-family:'Playfair Display', serif; }
+a { color:var(--navy); }
+button { font-family:inherit; cursor:pointer; }
+.hidden { display:none !important; }
+.wrap { max-width:920px; margin:0 auto; padding:32px 20px 70px; }
+.center { text-align:center; }
+.card {
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 3px 12px rgba(34,32,27,0.08);
+}
+
+/* ── INTRO ── */
+#screen-intro .kicker { font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px; }
+#screen-intro h1 { font-size:2.3rem; color:var(--navy); margin:0 0 14px; line-height:1.25; }
+#screen-intro .lede { max-width:680px; margin:0 auto 22px; font-size:1.06rem; line-height:1.8; color:var(--ink); }
+#screen-intro .lede p { margin:0 0 14px; }
+.stamp-row { display:flex; justify-content:center; gap:14px; margin:26px 0 30px; flex-wrap:wrap; }
+.stamp { font-size:0.78rem; font-weight:700; padding:8px 16px; border-radius:999px; border:1.5px solid var(--line); color:#fff; }
+.stamp:nth-child(1) { background:var(--us); }
+.stamp:nth-child(2) { background:var(--france); }
+.stamp:nth-child(3) { background:var(--britain); }
+
+.btn-primary {
+  background:linear-gradient(135deg, var(--navy-light), var(--navy) 70%); color:#fdf6ea; border:none; padding:14px 32px;
+  font-size:1rem; font-weight:700; border-radius:6px; letter-spacing:0.02em;
+  box-shadow:0 3px 0 #0d1f3d;
+}
+.btn-primary:hover { background:linear-gradient(135deg, #2a68c4, var(--navy-light) 70%); }
+.btn-primary:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; }
+.btn-secondary {
+  background:transparent; color:var(--navy); border:1.5px solid var(--navy);
+  padding:10px 22px; font-size:0.88rem; font-weight:700; border-radius:6px;
+}
+.btn-secondary:hover { background:var(--navy); color:#fdf6ea; }
+.btn-ghost { background:none; border:none; color:var(--ink-soft); font-size:0.85rem; text-decoration:underline; padding:6px; }
+
+/* ── MODE SELECT ── */
+#screen-mode h2, #screen-role h2 { text-align:center; color:var(--navy); font-size:1.6rem; margin:0 0 6px; }
+#screen-mode .sub, #screen-role .sub { text-align:center; color:var(--ink-soft); margin:0 0 26px; }
+.mode-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-bottom:24px; }
+.mode-card { padding:24px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition:transform .15s, box-shadow .15s; }
+.mode-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(34,32,27,0.16); }
+.mode-card.selected { outline:2.5px solid var(--gold); background:#fdf1d6; }
+.mode-card h3 { margin:0; color:var(--navy); font-size:1.15rem; }
+.mode-card p { margin:0; font-size:0.92rem; line-height:1.55; color:var(--ink-soft); }
+.diff-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:18px 0 28px; }
+.diff-btn {
+  background:var(--card); border:1.5px solid var(--line); border-radius:8px;
+  padding:10px 18px; font-size:0.88rem; font-weight:700; color:var(--ink);
+}
+.diff-btn.selected { border-color:var(--gold); background:#fff3d8; }
+.diff-note { text-align:center; font-size:0.82rem; color:var(--ink-soft); max-width:520px; margin:0 auto 20px; }
+
+/* ── ROLE SELECT ── */
+.role-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
+.role-card { padding:22px; display:flex; flex-direction:column; gap:8px; border-top:6px solid var(--navy); transition:transform .15s, box-shadow .15s; }
+.role-card:hover { transform:translateY(-3px); box-shadow:0 10px 22px rgba(34,32,27,0.18); }
+.role-card.us { border-top-color:var(--us); background:var(--us-bg); }
+.role-card.france { border-top-color:var(--france); background:var(--france-bg); }
+.role-card.britain { border-top-color:var(--britain); background:var(--britain-bg); }
+.role-card .flag { font-size:2.1rem; }
+.role-card h3 { margin:2px 0 0; font-size:1.15rem; color:var(--ink); }
+.role-card .leader { font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; }
+.role-card.us .leader { color:var(--us); }
+.role-card.france .leader { color:var(--france); }
+.role-card.britain .leader { color:var(--britain); }
+.role-card p { margin:4px 0 0; font-size:0.92rem; line-height:1.6; color:var(--ink); flex:1; }
+.role-card button { margin-top:10px; align-self:flex-start; color:#fdf6ea; border:none; padding:9px 18px; border-radius:6px; font-size:0.85rem; font-weight:700; }
+.role-card.us button { background:var(--us); }
+.role-card.france button { background:var(--france); }
+.role-card.britain button { background:var(--britain); }
+.role-card button:hover { filter:brightness(1.12); }
+.pass-note { max-width:600px; margin:0 auto 20px; text-align:center; font-size:0.9rem; color:var(--ink-soft); }
+
+/* ── NEGOTIATE ── */
+.progress-track { display:flex; justify-content:center; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+.prog-dot { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.05em; padding:5px 11px; border-radius:999px; background:var(--paper-dark); color:var(--ink-soft); border:1px solid var(--line); font-weight:700; }
+.prog-dot.active { background:var(--navy); color:#fdf6ea; border-color:var(--navy); }
+.prog-dot.done { background:var(--gold); color:#241f18; border-color:var(--gold); }
+
+.hud-row { display:flex; justify-content:center; align-items:center; gap:18px; margin-bottom:18px; flex-wrap:wrap; }
+.hud-chip { display:flex; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:7px 16px; font-size:0.82rem; font-weight:700; color:var(--ink-soft); }
+.hud-chip b { color:var(--navy); font-size:0.95rem; }
+.hud-chip.role-chip { color:#fff; }
+.hud-chip.role-chip.us { background:var(--us); }
+.hud-chip.role-chip.france { background:var(--france); }
+.hud-chip.role-chip.britain { background:var(--britain); }
+
+.issue-card { padding:28px 30px 26px; margin-bottom:18px; }
+.issue-kicker { font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:8px; }
+.issue-card h2 { margin:0 0 6px; color:var(--navy); font-size:1.4rem; }
+.issue-card .priority-tag { display:inline-block; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; margin-bottom:12px; background:var(--paper-dark); color:var(--ink-soft); }
+.issue-card .prompt { font-size:0.98rem; line-height:1.6; color:var(--ink); margin-bottom:18px; }
+.attempt-note { font-size:0.8rem; color:var(--bad); font-weight:700; margin-bottom:10px; }
+
+.option-list { display:flex; flex-direction:column; gap:10px; margin-bottom:8px; }
+.option-btn {
+  text-align:left; background:var(--paper); border:1.5px solid var(--line); border-radius:10px;
+  padding:14px 18px; font-size:0.95rem; color:var(--ink); display:flex; justify-content:space-between; align-items:center; gap:14px;
+}
+.option-btn:hover { border-color:var(--gold); }
+.option-btn.chosen { border-color:var(--gold); border-width:2px; background:#fdf1d6; box-shadow:inset 3px 0 0 var(--gold); }
+.option-btn .opt-label { font-weight:700; }
+.option-btn .opt-tag { font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap; }
+.option-btn.disabled { opacity:.5; cursor:default; }
+
+.delegate-panels { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
+.delegate-panel { padding:16px 18px; border-left:5px solid var(--navy); }
+.delegate-panel.us { background:var(--us-bg); border-left-color:var(--us); }
+.delegate-panel.france { background:var(--france-bg); border-left-color:var(--france); }
+.delegate-panel.britain { background:var(--britain-bg); border-left-color:var(--britain); }
+.delegate-panel .dp-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.delegate-panel .dp-name { font-weight:700; font-size:0.95rem; }
+.delegate-panel.us .dp-name { color:var(--us); }
+.delegate-panel.france .dp-name { color:var(--france); }
+.delegate-panel.britain .dp-name { color:var(--britain); }
+.dp-stance { font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; padding:3px 10px; border-radius:999px; }
+.dp-stance.yes { background:#e0f2e6; color:var(--good); }
+.dp-stance.no { background:#f8e2df; color:var(--bad); }
+.dp-line { font-size:0.88rem; line-height:1.55; color:var(--ink); font-style:italic; margin-bottom:10px; }
+.persuade-btn { font-size:0.78rem; font-weight:700; background:var(--gold); color:#241f18; border:none; padding:7px 13px; border-radius:6px; }
+.persuade-btn:disabled { background:var(--paper-dark); color:var(--ink-soft); cursor:not-allowed; }
+.persuade-btn.swayed { background:var(--good); color:#fff; }
+
+.vote-toggle-row { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px; }
+.vote-toggle { flex:1; min-width:150px; padding:12px; border-radius:10px; border:1.5px solid var(--line); text-align:center; }
+.vote-toggle .vt-name { font-weight:800; font-size:0.88rem; margin-bottom:8px; }
+.vote-toggle.us { border-top:5px solid var(--us); background:var(--us-bg); }
+.vote-toggle.france { border-top:5px solid var(--france); background:var(--france-bg); }
+.vote-toggle.britain { border-top:5px solid var(--britain); background:var(--britain-bg); }
+.vt-btns { display:flex; gap:6px; justify-content:center; }
+.vt-btns button { flex:1; padding:7px 0; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); font-size:0.82rem; font-weight:700; }
+.vt-btns button.picked-yes { background:var(--good); color:#fff; border-color:var(--good); }
+.vt-btns button.picked-no { background:var(--bad); color:#fff; border-color:var(--bad); }
+
+.action-row { display:flex; justify-content:center; gap:14px; margin-top:18px; flex-wrap:wrap; }
+.outcome-banner { text-align:center; padding:14px 18px; border-radius:10px; font-size:0.92rem; font-weight:600; margin-bottom:16px; }
+.outcome-banner.pass { background:#e0f2e6; color:var(--good); }
+.outcome-banner.imposed { background:#f8e2df; color:var(--bad); }
+
+/* ── RESULTS ── */
+#screen-results h2 { text-align:center; color:var(--navy); font-size:1.7rem; margin-bottom:4px; }
+.score-row { display:flex; justify-content:center; gap:16px; margin:20px 0 28px; flex-wrap:wrap; }
+.score-card { padding:18px 26px; text-align:center; min-width:200px; border-top:5px solid var(--gold); }
+.score-card.role-accent.us { border-top-color:var(--us); }
+.score-card.role-accent.france { border-top-color:var(--france); }
+.score-card.role-accent.britain { border-top-color:var(--britain); }
+.score-card .big { font-family:'Playfair Display', serif; font-size:2.1rem; color:var(--navy); font-weight:800; }
+.score-card .label { font-size:0.82rem; color:var(--ink-soft); font-weight:600; margin-top:2px; }
+table.treaty-table { width:100%; border-collapse:collapse; margin-bottom:26px; font-size:0.88rem; }
+table.treaty-table th, table.treaty-table td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+table.treaty-table th { color:var(--ink-soft); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; }
+table.treaty-table tr.match-row td { background:rgba(47,157,92,0.10); }
+table.treaty-table tr.nomatch-row td { background:rgba(209,80,44,0.08); }
+table.treaty-table td.match { color:var(--good); font-weight:700; }
+table.treaty-table td.nomatch { color:var(--bad); font-weight:700; }
+.debrief-list { padding-left:0; list-style:none; }
+.debrief-list li { padding:12px 16px 12px 18px; background:var(--paper-dark); border-left:4px solid var(--gold); border-radius:8px; margin-bottom:8px; font-size:0.92rem; line-height:1.5; }
+.results-actions { text-align:center; margin-top:24px; }
+
+footer.site { text-align:center; padding:26px 20px; font-size:0.78rem; color:var(--ink-soft); }
+footer.site a { color:var(--ink-soft); }
+
+@media print {
+  #screen-intro, #screen-mode, #screen-role, #screen-negotiate, footer.site, .results-actions { display:none !important; }
+  body { background:#fff; }
+  .card { box-shadow:none; border:1px solid #999; }
+}
+@media (max-width:640px) {
+  .delegate-panels { grid-template-columns:1fr; }
+  #screen-intro h1 { font-size:1.7rem; }
+  .issue-card { padding:20px 18px; }
+}
+</style>
+</head>
+<body>
+<div class="flag-bar" aria-hidden="true"></div>
+<div class="wrap">
+
+  <!-- ═══════════════ INTRO ═══════════════ -->
+  <section id="screen-intro" class="center">
+    <div class="kicker">Paris, 1919</div>
+    <h1>The Treaty of Versailles</h1>
+    <div class="lede">
+      <p>The Great War is over. Delegations from the United States, France, and Great Britain have gathered outside Paris to decide the terms Germany must accept. Each nation wants something different &mdash; and none of them can get it alone.</p>
+      <p>You will lead one delegation through seven real sticking points from the actual 1919 conference: war guilt, reparations, the German military, colonies, the Rhineland, Alsace-Lorraine, and the League of Nations. Every issue is decided by a vote of all three powers. Get two votes, and it's in the treaty.</p>
+    </div>
+    <div class="stamp-row">
+      <span class="stamp">7 negotiation points</span>
+      <span class="stamp">3 delegations</span>
+      <span class="stamp">1 treaty</span>
+    </div>
+    <button class="btn-primary" onclick="goTo('mode')">Enter the Conference</button>
+  </section>
+
+  <!-- ═══════════════ MODE SELECT ═══════════════ -->
+  <section id="screen-mode" class="hidden">
+    <h2>Choose Your Format</h2>
+    <p class="sub">How is your class playing this?</p>
+    <div class="mode-grid">
+      <div class="card mode-card" id="mode-ai" onclick="pickMode('ai')">
+        <h3>Negotiate vs. Delegates</h3>
+        <p>Play solo (or as one negotiating team). Choose one country; the other two delegations are run by the computer, arguing from their real 1919 positions.</p>
+      </div>
+      <div class="card mode-card" id="mode-pass" onclick="pickMode('pass')">
+        <h3>Pass &amp; Play (3 Students, 1 Device)</h3>
+        <p>Three students share one device, each representing a country. Negotiate out loud like the original classroom activity, then record your own votes.</p>
+      </div>
+    </div>
+    <div id="diff-section" class="hidden">
+      <div class="center" style="font-weight:700; color:var(--navy); margin-bottom:8px;">Delegate Difficulty</div>
+      <div class="diff-row">
+        <button class="diff-btn" id="diff-easy" onclick="pickDifficulty('easy')">Easy</button>
+        <button class="diff-btn" id="diff-normal" onclick="pickDifficulty('normal')">Normal</button>
+        <button class="diff-btn" id="diff-hard" onclick="pickDifficulty('hard')">Hard</button>
+      </div>
+      <p class="diff-note" id="diff-note-text">Normal: delegates hold firm on issues they care about and need real concessions to move.</p>
+    </div>
+    <div class="center">
+      <button class="btn-primary" id="mode-continue" onclick="goTo('role')" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ROLE SELECT ═══════════════ -->
+  <section id="screen-role" class="hidden">
+    <h2>Choose Your Delegation</h2>
+    <p class="sub" id="role-sub">Every choice below shaped what your country needed out of Paris.</p>
+    <p class="pass-note hidden" id="pass-note">In Pass &amp; Play, your group represents all three delegations. Read each briefing together, then begin &mdash; you'll negotiate every issue out loud before recording your votes.</p>
+    <div class="role-grid" id="role-grid"></div>
+    <div class="center hidden" id="pass-continue-wrap" style="margin-top:22px;">
+      <button class="btn-primary" onclick="beginNegotiation()">Begin Negotiating</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════ NEGOTIATE ═══════════════ -->
+  <section id="screen-negotiate" class="hidden">
+    <div class="progress-track" id="progress-track"></div>
+    <div class="hud-row" id="hud-row"></div>
+    <div class="card issue-card" id="issue-card"></div>
+  </section>
+
+  <!-- ═══════════════ RESULTS ═══════════════ -->
+  <section id="screen-results" class="hidden">
+    <h2>The Treaty of Versailles</h2>
+    <p class="sub center" id="results-sub"></p>
+    <div class="score-row" id="score-row"></div>
+    <div class="card" style="padding:22px 26px; overflow-x:auto;">
+      <table class="treaty-table" id="treaty-table"></table>
+    </div>
+    <h3 style="color:var(--navy); margin-top:30px;">Debrief: Think Like a Historian</h3>
+    <ul class="debrief-list" id="debrief-list"></ul>
+    <div class="results-actions">
+      <button class="btn-primary" onclick="window.print()">Print Treaty &amp; Debrief</button>
+      <button class="btn-secondary" onclick="restartGame()">Start a New Conference</button>
+    </div>
+  </section>
+
+</div>
+<footer class="site">Humanities Immersed Learning &middot; <a href="../">Back to Games</a></footer>
+
+<script>
+// ══════════════════════════ DATA: COUNTRIES ══════════════════════════
+const COUNTRIES = {
+  us: {
+    key:'us', flag:'🇺🇸', name:'The United States', leader:'Woodrow Wilson',
+    blurb:"An idealist reformer who entered the war promising “peace without victory.” Wilson wants a lasting peace built on his Fourteen Points, self-determination, and above all a League of Nations &mdash; not a treaty built on revenge."
+  },
+  france: {
+    key:'france', flag:'🇫🇷', name:'France', leader:'Georges Clemenceau',
+    blurb:"Nicknamed “The Tiger.” France lost 1.4 million people and watched the war get fought on its own soil twice in fifty years. Clemenceau wants Germany crippled, permanently, so it can never invade France again."
+  },
+  britain: {
+    key:'britain', flag:'🇬🇧', name:'Great Britain', leader:'David Lloyd George',
+    blurb:"Caught in the middle. The British public wants Germany punished, but Lloyd George also needs Germany healthy enough to keep trading, and fears France becoming too powerful if it gets everything it wants."
+  }
+};
+const ORDER = ['us','france','britain'];
+function others(role){ return ORDER.filter(k=>k!==role); }
+
+// ══════════════════════════ DATA: NEGOTIATION ISSUES ══════════════════════════
+// scores[country] = [scoreForOption0, scoreForOption1, scoreForOption2], each 0-3 (0=hated, 3=ideal)
+// historical = index of the option that actually appears in the real 1919 Treaty of Versailles
+const ISSUES = [
+  {
+    id:'warguilt', title:'War Guilt',
+    prompt:"Who should be officially blamed for starting the war? This decides the legal basis for making Germany pay reparations at all.",
+    options:[
+      {label:'Germany alone is to blame'},
+      {label:'Germany and Austria-Hungary share the blame'},
+      {label:'No single nation is to blame'}
+    ],
+    scores:{ us:[0,1,3], france:[3,2,0], britain:[2,3,0] },
+    reasons:{
+      us:"Wilson believes a war built on collective failure, not a single guilty party, is the only foundation for a peace that doesn't breed revenge.",
+      france:"Clemenceau needs Germany named the guilty party &mdash; without it, France has no legal claim to reparations for the destruction of its land.",
+      britain:"The British public was promised Germany would be punished, but Lloyd George doesn't need Germany singled out alone to satisfy them."
+    },
+    historical:0
+  },
+  {
+    id:'reparations', title:'Reparations',
+    prompt:"How much should Germany pay for the damage done to France and the other Allies?",
+    options:[
+      {label:'$12 billion'},
+      {label:'$33 billion'},
+      {label:'$100 billion'}
+    ],
+    scores:{ us:[3,1,0], france:[0,2,3], britain:[1,3,2] },
+    reasons:{
+      us:"Wilson worries crushing reparations will bankrupt Germany and breed the exact resentment that leads to the next war.",
+      france:"French farms, mines, and towns were destroyed. Clemenceau wants Germany to pay for every franc of it.",
+      britain:"Lloyd George campaigned on making Germany pay, including for widows and orphans &mdash; but Germany is also Britain's second-largest trading partner, and a bankrupt Germany buys nothing."
+    },
+    historical:1
+  },
+  {
+    id:'military', title:"Germany's Armed Forces",
+    prompt:"How powerful should the German military be allowed to remain?",
+    options:[
+      {label:'Reduced to 100,000 men, navy to 36 ships. No tanks, submarines, or aircraft.'},
+      {label:'Reduced to 250,000 men, navy to 50 ships. Some tanks, submarines, and aircraft allowed.'},
+      {label:'All forces returned to prewar levels. Nothing destroyed.'}
+    ],
+    scores:{ us:[2,3,0], france:[3,1,0], britain:[3,2,0] },
+    reasons:{
+      us:"Wilson's own Fourteen Points call for reduced armaments everywhere &mdash; enough to prevent future wars, not to humiliate.",
+      france:"A weak German army is the only real insurance policy France has against a third invasion in fifty years.",
+      britain:"Britain's Royal Navy has always meant to rule the seas. A gutted German fleet is worth more to Lloyd George than a gutted German army."
+    },
+    historical:0
+  },
+  {
+    id:'colonies', title:"Germany's Colonies",
+    prompt:"Germany controls territories across Africa and the Pacific. What happens to them?",
+    options:[
+      {label:'Germany keeps its colonies'},
+      {label:'Split between France and Britain'},
+      {label:'France gets them all'}
+    ],
+    scores:{ us:[1,2,0], france:[0,2,3], britain:[0,3,1] },
+    reasons:{
+      us:"Wilson opposes any Ally simply annexing German territory &mdash; he'd rather see it held in trust than handed outright to one empire.",
+      france:"More territory means more resources rebuilding France, and more insurance against Germany's return to power.",
+      britain:"The Empire has wanted a bigger foothold in Africa for decades, and Lloyd George isn't leaving Paris without a share of it."
+    },
+    historical:1
+  },
+  {
+    id:'rhineland', title:'The Rhineland',
+    prompt:"Germany's industrial heartland sits on the border with France. Who controls it?",
+    options:[
+      {label:'Taken over by France as part of war reparations'},
+      {label:'An international force occupies it under Allied supervision'},
+      {label:'Germany keeps full control'}
+    ],
+    scores:{ us:[0,3,2], france:[3,2,0], britain:[1,3,0] },
+    reasons:{
+      us:"Wilson opposes outright French annexation of German land, but supports temporary international oversight to keep the peace secure.",
+      france:"The Rhineland is France's best buffer zone. Clemenceau wants it under French control, permanently if he can manage it.",
+      britain:"An occupied, French-controlled Rhineland tips the balance of power too far toward France for Lloyd George's comfort."
+    },
+    historical:1
+  },
+  {
+    id:'alsace', title:'Alsace-Lorraine',
+    prompt:"Germany took this territory from France in 1870, fifty years ago. Who gets it now?",
+    options:[
+      {label:'Returned to France'},
+      {label:'Kept by Germany'},
+      {label:'Made an independent country'}
+    ],
+    scores:{ us:[3,0,2], france:[3,0,1], britain:[3,0,1] },
+    reasons:{
+      us:"Wilson's own Fourteen Points explicitly call for Alsace-Lorraine's return to France &mdash; this is one case where everyone already agrees.",
+      france:"Alsace-Lorraine is French soil, taken by force. Clemenceau will not leave Paris without it.",
+      britain:"There's no British interest at stake here &mdash; returning it to France is simply the fair, uncontroversial call."
+    },
+    historical:0
+  },
+  {
+    id:'league', title:'The League of Nations',
+    prompt:"Should an international body exist to prevent future wars? How much power should it have?",
+    options:[
+      {label:'No League of Nations'},
+      {label:'A League of Nations with no power to enforce its decisions'},
+      {label:'A League of Nations with the power to impose economic sanctions on its members'}
+    ],
+    scores:{ us:[0,1,3], france:[1,2,3], britain:[0,3,2] },
+    reasons:{
+      us:"The League is Wilson's signature idea &mdash; the entire reason, in his mind, that this war is worth ending peacefully instead of just militarily.",
+      france:"Clemenceau is skeptical the League can protect France the way real troops on the Rhine can, but a League with real teeth costs France nothing.",
+      britain:"Lloyd George wants to stay close to Wilson and the Americans, but worries a League with too much power could someday be turned against British interests."
+    },
+    historical:2
+  }
+];
+
+// ══════════════════════════ DATA: STANCE PHRASES (edit these for tone/reading level) ══════════════════════════
+const STANCE_PHRASES = {
+  us:      { 3:"Wilson enthusiastically supports this.", 2:"Wilson is willing to support this.", 1:"Wilson is reluctant, but could be persuaded.", 0:"Wilson firmly opposes this." },
+  france:  { 3:"Clemenceau enthusiastically supports this.", 2:"Clemenceau is willing to support this.", 1:"Clemenceau is reluctant, but could be persuaded.", 0:"Clemenceau firmly opposes this." },
+  britain: { 3:"Lloyd George enthusiastically supports this.", 2:"Lloyd George is willing to support this.", 1:"Lloyd George is reluctant, but could be persuaded.", 0:"Lloyd George firmly opposes this." }
+};
+
+// ══════════════════════════ DIFFICULTY (edit these to retune the whole game) ══════════════════════════
+const DIFFICULTY = {
+  easy:   { label:'Easy',   startCapital:16, costMultiplier:1, autoSupportThreshold:1, note:"Easy: delegates only need a light push to come around, and you start with plenty of Diplomatic Capital." },
+  normal: { label:'Normal', startCapital:10, costMultiplier:2, autoSupportThreshold:2, note:"Normal: delegates hold firm on issues they care about and need real concessions to move." },
+  hard:   { label:'Hard',   startCapital:6,  costMultiplier:3, autoSupportThreshold:3, note:"Hard: delegates only support what they already like. Persuading them off their real position is expensive." }
+};
+
+const DEBRIEF_QUESTIONS = [
+  "Why did the real 1919 Treaty end up so harsh on Germany, even though Woodrow Wilson wanted a lasting peace without revenge?",
+  "Which country got the most of what it wanted at the table &mdash; and which got the least? Why?",
+  "The League of Nations was created with the power to sanction its members, on paper. Why did it still fail to prevent World War II?",
+  "If you were a German delegate reading this treaty in 1919, which single term would upset you the most?",
+  "Where did your negotiation match the real Treaty of Versailles, and where did it go differently? What caused the difference?"
+];
+
+// ══════════════════════════ STATE ══════════════════════════
+let state = {};
+function freshState(){
+  return {
+    mode:null, difficulty:'normal', role:null,
+    issueIndex:0, attempt:1, capital:0,
+    proposedOption:null, swayed:{}, results:[]
+  };
+}
+state = freshState();
+
+function goTo(screen){
+  document.querySelectorAll('section[id^="screen-"]').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('screen-'+screen).classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ══════════════════════════ MODE + DIFFICULTY SELECT ══════════════════════════
+function pickMode(m){
+  state.mode = m;
+  document.getElementById('mode-ai').classList.toggle('selected', m==='ai');
+  document.getElementById('mode-pass').classList.toggle('selected', m==='pass');
+  document.getElementById('diff-section').classList.toggle('hidden', m!=='ai');
+  if(m==='ai' && !state.difficulty) state.difficulty = 'normal';
+  if(m==='ai') pickDifficulty(state.difficulty || 'normal');
+  document.getElementById('mode-continue').disabled = false;
+}
+function pickDifficulty(d){
+  state.difficulty = d;
+  ['easy','normal','hard'].forEach(k=>document.getElementById('diff-'+k).classList.toggle('selected', k===d));
+  document.getElementById('diff-note-text').textContent = DIFFICULTY[d].note;
+}
+
+// ══════════════════════════ ROLE SELECT ══════════════════════════
+document.getElementById('screen-role').addEventListener('transitionend', ()=>{});
+function renderRoleScreen(){
+  const grid = document.getElementById('role-grid');
+  grid.innerHTML = '';
+  ORDER.forEach(key=>{
+    const c = COUNTRIES[key];
+    const div = document.createElement('div');
+    div.className = 'card role-card '+key;
+    const btn = state.mode==='ai' ? `<button onclick="chooseRole('${key}')">Play as ${c.name}</button>` : '';
+    div.innerHTML = `<div class="flag">${c.flag}</div><h3>${c.name}</h3><div class="leader">${c.leader}</div><p>${c.blurb}</p>${btn}`;
+    grid.appendChild(div);
+  });
+  document.getElementById('pass-note').classList.toggle('hidden', state.mode!=='pass');
+  document.getElementById('pass-continue-wrap').classList.toggle('hidden', state.mode!=='pass');
+  document.getElementById('role-sub').classList.toggle('hidden', state.mode==='pass');
+}
+function chooseRole(key){
+  state.role = key;
+  beginNegotiation();
+}
+
+function beginNegotiation(){
+  state.issueIndex = 0;
+  state.attempt = 1;
+  state.results = [];
+  state.capital = state.mode==='ai' ? DIFFICULTY[state.difficulty].startCapital : 0;
+  goTo('negotiate');
+  renderIssue();
+}
+
+// ══════════════════════════ NEGOTIATE: SHARED ══════════════════════════
+function renderProgressAndHud(){
+  const track = document.getElementById('progress-track');
+  track.innerHTML = ISSUES.map((iss,i)=>{
+    let cls = 'prog-dot';
+    if(i < state.issueIndex) cls += ' done';
+    else if(i === state.issueIndex) cls += ' active';
+    return `<span class="${cls}">${i+1}. ${iss.title}</span>`;
+  }).join('');
+
+  const hud = document.getElementById('hud-row');
+  let chips = '';
+  if(state.mode==='ai'){
+    const c = COUNTRIES[state.role];
+    chips += `<span class="hud-chip role-chip ${state.role}">${c.flag} You are ${c.name}</span>`;
+    chips += `<span class="hud-chip">Diplomatic Capital <b>${state.capital}</b></span>`;
+    chips += `<span class="hud-chip">Difficulty <b>${DIFFICULTY[state.difficulty].label}</b></span>`;
+  } else {
+    chips += `<span class="hud-chip">🇺🇸 US &nbsp;+&nbsp; 🇫🇷 France &nbsp;+&nbsp; 🇬🇧 Britain</span>`;
+  }
+  hud.innerHTML = chips;
+}
+
+function priorityLabel(role, issue){
+  const s = issue.scores[role];
+  const spread = Math.max(...s) - Math.min(...s);
+  if(spread >= 3) return 'Core priority for you';
+  if(spread === 2) return 'Important to you';
+  return 'Minor interest for you';
+}
+
+// ══════════════════════════ NEGOTIATE: AI MODE ══════════════════════════
+function renderIssue(){
+  renderProgressAndHud();
+  const issue = ISSUES[state.issueIndex];
+  const card = document.getElementById('issue-card');
+  state.proposedOption = null;
+  state.swayed = {};
+
+  let attemptNote = '';
+  if(state.mode==='ai' && state.attempt > 1){
+    attemptNote = `<div class="attempt-note">Final attempt &mdash; if this fails too, the other two delegations will settle it without you.</div>`;
+  }
+
+  let priorityTag = '';
+  if(state.mode==='ai'){
+    priorityTag = `<span class="priority-tag">${priorityLabel(state.role, issue)}</span><br>`;
+  }
+
+  const optionsHtml = issue.options.map((opt,i)=>{
+    const chosen = state.proposedOption===i ? 'chosen' : '';
+    return `<button class="option-btn ${chosen}" onclick="proposeOption(${i})">
+      <span class="opt-label">${opt.label}</span>
+    </button>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="issue-kicker">Issue ${state.issueIndex+1} of ${ISSUES.length}</div>
+    <h2>${issue.title}</h2>
+    ${priorityTag}
+    <div class="prompt">${issue.prompt}</div>
+    ${attemptNote}
+    <div class="option-list" id="option-list">${optionsHtml}</div>
+    <div id="delegate-area"></div>
+    <div class="action-row" id="action-area"></div>
+  `;
+}
+
+function proposeOption(i){
+  state.proposedOption = i;
+  document.querySelectorAll('#option-list .option-btn').forEach((b,idx)=>b.classList.toggle('chosen', idx===i));
+  if(state.mode==='ai') renderDelegateReactions();
+  else renderPassPlayVotes();
+}
+
+function scoreToStance(score){ return score; } // 0-3
+
+function renderDelegateReactions(){
+  const issue = ISSUES[state.issueIndex];
+  const i = state.proposedOption;
+  const diff = DIFFICULTY[state.difficulty];
+  const opps = others(state.role);
+  const area = document.getElementById('delegate-area');
+
+  let html = '<div class="delegate-panels">';
+  opps.forEach(key=>{
+    const c = COUNTRIES[key];
+    const score = issue.scores[key][i];
+    const naturalYes = score >= diff.autoSupportThreshold;
+    const swayed = state.swayed[key] === i;
+    const isYes = naturalYes || swayed;
+    const cost = Math.max(0, (3-score) * diff.costMultiplier);
+    const canPersuade = !isYes && state.capital >= cost;
+    const line = STANCE_PHRASES[key][score] + " " + `<br><span style="font-style:normal;">&ldquo;${issue.reasons[key]}&rdquo;</span>`;
+    html += `<div class="card delegate-panel ${key}">
+      <div class="dp-head">
+        <span class="dp-name">${c.flag} ${c.leader}</span>
+        <span class="dp-stance ${isYes?'yes':'no'}">${isYes?'Yes':'No'}</span>
+      </div>
+      <div class="dp-line">${line}</div>
+      ${isYes ? '' : `<button class="persuade-btn" ${canPersuade?'':'disabled'} onclick="persuade('${key}', ${cost})">Spend ${cost} Capital to Persuade</button>`}
+      ${swayed ? '<div style="font-size:0.78rem; color:var(--good); font-weight:700; margin-top:6px;">Persuaded.</div>' : ''}
+    </div>`;
+  });
+  html += '</div>';
+  area.innerHTML = html;
+  renderActionRow();
+}
+
+function persuade(key, cost){
+  if(state.capital < cost) return;
+  state.capital -= cost;
+  state.swayed[key] = state.proposedOption;
+  document.getElementById('hud-row').querySelector('.hud-chip b').textContent = state.capital;
+  renderDelegateReactions();
+}
+
+function renderActionRow(){
+  const area = document.getElementById('action-area');
+  area.innerHTML = `<button class="btn-primary" onclick="finalizeVote()">Bring This Proposal to a Vote</button>`;
+}
+
+function finalizeVote(){
+  const issue = ISSUES[state.issueIndex];
+  const i = state.proposedOption;
+  const diff = DIFFICULTY[state.difficulty];
+  const opps = others(state.role);
+  let yesVotes = 1; // player always votes yes on their own proposal
+  opps.forEach(key=>{
+    const score = issue.scores[key][i];
+    const naturalYes = score >= diff.autoSupportThreshold;
+    const swayed = state.swayed[key] === i;
+    if(naturalYes || swayed) yesVotes++;
+  });
+
+  const card = document.getElementById('issue-card');
+  if(yesVotes >= 2){
+    recordResult(i, false);
+    card.insertAdjacentHTML('beforeend', `<div class="outcome-banner pass">Passed ${yesVotes}-${3-yesVotes}. ${issue.options[i].label} becomes part of the treaty.</div>`);
+    showContinueButton();
+  } else if(state.attempt === 1){
+    state.attempt = 2;
+    renderIssue();
+    document.getElementById('issue-card').insertAdjacentHTML('afterbegin', `<div class="outcome-banner imposed">Vote failed. You have one more attempt &mdash; try a different option.</div>`);
+  } else {
+    // impose fallback: whichever option maximizes the two AI's combined score
+    let bestIdx = 0, bestSum = -1;
+    issue.options.forEach((opt,idx)=>{
+      const sum = opps.reduce((acc,key)=>acc+issue.scores[key][idx],0);
+      if(sum > bestSum){ bestSum = sum; bestIdx = idx; }
+    });
+    recordResult(bestIdx, true);
+    card.insertAdjacentHTML('beforeend', `<div class="outcome-banner imposed">No consensus. ${COUNTRIES[opps[0]].name} and ${COUNTRIES[opps[1]].name} settled it without you: <strong>${issue.options[bestIdx].label}</strong>.</div>`);
+    showContinueButton();
+  }
+}
+
+function recordResult(optionIdx, imposed){
+  const issue = ISSUES[state.issueIndex];
+  state.results.push({ issueId:issue.id, optionIdx, imposed, playerScore: state.role ? issue.scores[state.role][optionIdx] : null });
+}
+
+function showContinueButton(){
+  document.getElementById('action-area').innerHTML = `<button class="btn-primary" onclick="advanceIssue()">Next Issue</button>`;
+}
+
+function advanceIssue(){
+  state.issueIndex++;
+  state.attempt = 1;
+  if(state.issueIndex >= ISSUES.length){
+    showResults();
+  } else {
+    renderIssue();
+  }
+}
+
+// ══════════════════════════ NEGOTIATE: PASS & PLAY MODE ══════════════════════════
+function renderPassPlayVotes(){
+  const area = document.getElementById('delegate-area');
+  let html = '<div class="vote-toggle-row">';
+  ORDER.forEach(key=>{
+    const c = COUNTRIES[key];
+    html += `<div class="card vote-toggle ${key}">
+      <div class="vt-name">${c.flag} ${c.name}</div>
+      <div class="vt-btns" id="vt-${key}">
+        <button onclick="setVote('${key}','yes')" id="vt-${key}-yes">Yea</button>
+        <button onclick="setVote('${key}','no')" id="vt-${key}-no">Nay</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  area.innerHTML = html;
+  state.votes = {};
+  document.getElementById('action-area').innerHTML = `<button class="btn-primary" id="cast-votes-btn" onclick="castVotes()" disabled>Cast Votes</button>
+    <button class="btn-secondary" onclick="renderIssue()">Try a Different Proposal</button>`;
+}
+function setVote(key, val){
+  state.votes[key] = val;
+  document.getElementById('vt-'+key+'-yes').classList.toggle('picked-yes', val==='yes');
+  document.getElementById('vt-'+key+'-no').classList.toggle('picked-no', val==='no');
+  const allSet = ORDER.every(k=>state.votes[k]);
+  document.getElementById('cast-votes-btn').disabled = !allSet;
+}
+function castVotes(){
+  const i = state.proposedOption;
+  const yesCount = ORDER.filter(k=>state.votes[k]==='yes').length;
+  const issue = ISSUES[state.issueIndex];
+  const card = document.getElementById('issue-card');
+  if(yesCount >= 2){
+    state.results.push({ issueId:issue.id, optionIdx:i, imposed:false, playerScore:null });
+    card.insertAdjacentHTML('beforeend', `<div class="outcome-banner pass">Passed ${yesCount}-${3-yesCount}. ${issue.options[i].label} becomes part of the treaty.</div>`);
+    document.getElementById('action-area').innerHTML = `<button class="btn-primary" onclick="advanceIssue()">Next Issue</button>`;
+  } else {
+    card.insertAdjacentHTML('beforeend', `<div class="outcome-banner imposed">Failed ${yesCount}-${3-yesCount}. Negotiate again and try a different proposal.</div>`);
+    document.querySelectorAll('#option-list .option-btn').forEach(b=>b.classList.remove('chosen'));
+    document.getElementById('delegate-area').innerHTML = '';
+    document.getElementById('action-area').innerHTML = `<button class="btn-secondary" onclick="renderIssue()">Try a Different Proposal</button> <button class="btn-secondary" onclick="skipIssue()">No Agreement &mdash; Move On</button>`;
+  }
+}
+function skipIssue(){
+  const issue = ISSUES[state.issueIndex];
+  state.results.push({ issueId:issue.id, optionIdx:null, imposed:true, playerScore:null });
+  advanceIssue();
+}
+
+// ══════════════════════════ RESULTS ══════════════════════════
+function showResults(){
+  goTo('results');
+  const matches = state.results.filter(r=>{
+    const issue = ISSUES.find(x=>x.id===r.issueId);
+    return r.optionIdx !== null && r.optionIdx === issue.historical;
+  }).length;
+
+  document.getElementById('results-sub').textContent = state.mode==='ai'
+    ? `You negotiated as ${COUNTRIES[state.role].name}.`
+    : `Your class negotiated all three delegations together.`;
+
+  let scoreCards = `<div class="card score-card"><div class="big">${matches} / ${ISSUES.length}</div><div class="label">Outcomes that matched the real 1919 treaty</div></div>`;
+  if(state.mode==='ai'){
+    let earned = 0, possible = 0;
+    state.results.forEach(r=>{
+      const issue = ISSUES.find(x=>x.id===r.issueId);
+      possible += 3;
+      if(r.optionIdx !== null) earned += issue.scores[state.role][r.optionIdx];
+    });
+    scoreCards += `<div class="card score-card role-accent ${state.role}"><div class="big">${earned} / ${possible}</div><div class="label">Points won for ${COUNTRIES[state.role].name}</div></div>`;
+  }
+  document.getElementById('score-row').innerHTML = scoreCards;
+
+  let rows = `<tr><th>Issue</th><th>Your Treaty</th><th>Real 1919 Treaty</th><th>Match?</th></tr>`;
+  state.results.forEach(r=>{
+    const issue = ISSUES.find(x=>x.id===r.issueId);
+    const yourAnswer = r.optionIdx===null ? 'No agreement reached' : issue.options[r.optionIdx].label;
+    const histAnswer = issue.options[issue.historical].label;
+    const isMatch = r.optionIdx === issue.historical;
+    rows += `<tr class="${isMatch?'match-row':'nomatch-row'}"><td><strong>${issue.title}</strong></td><td>${yourAnswer}${r.imposed?' <em>(imposed)</em>':''}</td><td>${histAnswer}</td><td class="${isMatch?'match':'nomatch'}">${r.optionIdx===null?'&mdash;':(isMatch?'Match':'Different')}</td></tr>`;
+  });
+  document.getElementById('treaty-table').innerHTML = rows;
+
+  document.getElementById('debrief-list').innerHTML = DEBRIEF_QUESTIONS.map(q=>`<li>${q}</li>`).join('');
+}
+
+function restartGame(){
+  state = freshState();
+  ['mode-ai','mode-pass'].forEach(id=>document.getElementById(id).classList.remove('selected'));
+  document.getElementById('diff-section').classList.add('hidden');
+  document.getElementById('mode-continue').disabled = true;
+  goTo('intro');
+}
+
+// re-render role grid whenever we land on that screen
+const roleScreenObserver = new MutationObserver(()=>{
+  if(!document.getElementById('screen-role').classList.contains('hidden')) renderRoleScreen();
+});
+roleScreenObserver.observe(document.getElementById('screen-role'), { attributes:true, attributeFilter:['class'] });
+</script>
+</body>
+</html>
