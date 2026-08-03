@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US History Connections | Humanities Immersed Learning</title>
+<meta name="description" content="A US History review game inspired by NYT Connections: sort 16 people, places, and terms into four hidden categories across ten eras of American history, from the Revolution to the Civil Rights Movement. Easy and Hard modes.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="US History Connections">
+<meta property="og:description" content="Sort 16 clues into four hidden categories across ten eras of American history. Easy and Hard modes. Free to play, no install.">
+<meta property="og:image" content="../../images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#16305c;
+    --navy-deep:#0f2242;
+    --orange:#cc6b31;
+    --orange-bright:#e4854a;
+    --cream:#f5ead8;
+    --cream-dark:#ebddc5;
+    --paper:#fbf5e9;
+    --ink:#201e1d;
+    --muted:#5a5650;
+    --font-display:'Caprasimo', serif;
+    --font-body:'Figtree', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+
+    --lvl0-bg:#e8c468; --lvl0-text:#4a3505;
+    --lvl1-bg:#9fbf8f; --lvl1-text:#1f3315;
+    --lvl2-bg:#8fb0d9; --lvl2-text:#142840;
+    --lvl3-bg:#c79bd9; --lvl3-text:#3a1f44;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--orange);}
+  button{font-family:var(--font-body); cursor:pointer;}
+  button:disabled{cursor:not-allowed; opacity:.45;}
+  ::selection{background:var(--orange-bright); color:#fff;}
+
+  .topnav{
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:14px 24px; background:var(--paper);
+    border-bottom:1px solid rgba(32,30,29,0.1);
+  }
+  .topnav .brand{
+    margin-right:auto; text-decoration:none;
+    font-family:var(--font-display); font-size:17px; color:var(--navy); font-weight:400;
+  }
+  .topnav .brand:hover{opacity:.85;}
+  .topnav a.navlink{ text-decoration:none; color:var(--ink); font-size:13.5px; font-weight:600; }
+  .topnav a.navlink:hover{ color:var(--orange); }
+
+  .screen{display:none; min-height:calc(100vh - 54px);}
+  .screen.active{display:block;}
+
+  /* ---------------- INSTRUCTIONS ---------------- */
+  #screen-instructions, #screen-select{ max-width:900px; margin:0 auto; padding:44px 22px 80px; }
+  .masthead{text-align:center; margin-bottom:6px;}
+  .masthead .eyebrow{
+    display:block; font-family:var(--font-mono); letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; color:var(--orange); margin-bottom:12px;
+  }
+  .masthead h1{
+    font-family:var(--font-display); font-weight:400;
+    font-size:clamp(30px, 6vw, 46px); margin:0; color:var(--navy);
+  }
+  .masthead p.sub{
+    max-width:620px; margin:14px auto 0; font-size:15.5px; line-height:1.6; color:var(--muted);
+  }
+
+  .rules-card{
+    max-width:680px; margin:32px auto 0; background:var(--paper);
+    border:1px solid var(--cream-dark); border-radius:14px;
+    padding:8px 28px 22px; font-size:14.5px; line-height:1.65;
+  }
+  .rules-card h4{ font-family:var(--font-display); font-weight:400; font-size:16px; margin:18px 0 6px; color:var(--navy); }
+  .rules-card p{margin:0;}
+  .rules-card ul{margin:6px 0 0; padding-left:20px;}
+  .rules-card li{margin-bottom:5px;}
+  .level-key{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+  .level-chip{
+    display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:11.5px;
+    padding:5px 11px; border-radius:20px; font-weight:600;
+  }
+  .level-chip i{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+  .continue-bar{display:flex; justify-content:center; margin:34px 0 6px;}
+  .btn-cta{
+    padding:15px 38px; border-radius:30px; border:1px solid var(--orange);
+    background:linear-gradient(180deg, var(--orange-bright), var(--orange));
+    color:#fff; font-weight:700; font-size:15px; letter-spacing:.02em;
+    box-shadow:0 8px 20px rgba(204,107,49,.3);
+  }
+  .btn-cta:hover{filter:brightness(1.05);}
+
+  /* ---------------- PUZZLE SELECT ---------------- */
+  .review-rules-bar{display:flex; justify-content:center; margin-top:8px;}
+  .btn-link{
+    background:transparent; border:none; color:var(--muted); font-family:var(--font-mono);
+    font-size:12px; letter-spacing:.04em; text-decoration:underline; padding:6px;
+  }
+  .btn-link:hover{color:var(--orange);}
+
+  .diff-toggle-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; margin:30px 0 6px; }
+  .diff-toggle{
+    display:inline-flex; background:var(--cream-dark); border-radius:26px; padding:4px; gap:2px;
+    border:1px solid #d8c6a2;
+  }
+  .diff-btn{
+    padding:9px 22px; border-radius:22px; border:none; background:transparent;
+    font-weight:700; font-size:13.5px; color:var(--muted); letter-spacing:.01em;
+  }
+  .diff-btn.active{ background:var(--navy); color:#fff; }
+  .diff-btn:hover:not(.active){ color:var(--ink); }
+  .diff-desc{ font-size:13px; color:var(--muted); text-align:center; max-width:520px; }
+
+  .puzzle-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:16px; margin-top:22px;
+  }
+  .puzzle-card{
+    text-align:left; display:flex; flex-direction:column; gap:8px;
+    background:var(--cream-dark); border:1px solid #d8c6a2; border-radius:16px;
+    padding:20px 20px 18px; box-shadow:0 3px 10px rgba(46,43,37,.14);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .puzzle-card:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(46,43,37,.2); }
+  .puzzle-card .icon{font-size:30px; line-height:1;}
+  .puzzle-card .era-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--navy); font-weight:700;
+  }
+  .puzzle-card h3{ font-family:var(--font-display); font-weight:400; font-size:19px; margin:2px 0 0; color:var(--ink); }
+  .puzzle-card p{ font-size:13px; line-height:1.5; color:var(--muted); margin:0; }
+  .puzzle-card .played{
+    align-self:flex-start; margin-top:2px; font-family:var(--font-mono); font-size:10px;
+    letter-spacing:.05em; text-transform:uppercase; color:#3f6f47; font-weight:700;
+  }
+
+  /* ---------------- GAME SCREEN ---------------- */
+  #screen-game{ max-width:680px; margin:0 auto; padding:24px 18px 70px; }
+  .game-topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  .game-eyebrow{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--orange); }
+  .game-topbar h2{ font-family:var(--font-display); font-weight:400; font-size:22px; margin:2px 0 0; color:var(--navy); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .diff-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 10px; border-radius:20px; font-weight:700; vertical-align:middle;
+  }
+  .diff-tag.easy{ background:#cfe3c9; color:#1f3d1f; }
+  .diff-tag.hard{ background:#e3b6b0; color:#4a1a14; }
+  .switch-link{ font-family:var(--font-mono); font-size:11px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:4px; white-space:nowrap; }
+  .switch-link:hover{ color:var(--orange); }
+
+  .game-instructions{ text-align:center; font-size:14px; color:var(--muted); margin:10px 0 16px; }
+
+  .mistakes-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:18px; font-family:var(--font-mono); font-size:12.5px; color:var(--muted); }
+  .dot{width:11px; height:11px; border-radius:50%; background:var(--navy); display:inline-block;}
+  .dot.used{background:transparent; border:2px solid #c9bda1;}
+  .dots{display:flex; gap:6px;}
+
+  .msg-area{ text-align:center; min-height:26px; margin-bottom:10px; }
+  .msg{
+    display:inline-block; font-family:var(--font-mono); font-size:12.5px; font-weight:600;
+    padding:6px 16px; border-radius:20px; background:var(--navy); color:#fff;
+    animation:msg-pop .18s ease;
+  }
+  .msg.err{background:#8a3a35;}
+  .msg.good{background:#3f6f47;}
+  @keyframes msg-pop{ from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+  .solved-bars{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+  .solved-bar{
+    border-radius:10px; padding:12px 16px; text-align:center;
+    animation:solved-in .35s ease;
+  }
+  @keyframes solved-in{ from{transform:scale(.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .solved-bar .cat-name{ font-weight:800; font-size:14.5px; letter-spacing:.01em; }
+  .solved-bar .cat-items{ font-size:12.5px; margin-top:3px; opacity:.9; }
+
+  .tile-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:16px;
+  }
+  @media (max-width:460px){ .tile-grid{grid-template-columns:repeat(2, 1fr);} }
+  .tile{
+    background:var(--cream-dark); border:2px solid #d8c6a2; border-radius:10px;
+    min-height:78px; padding:8px 6px; display:flex; align-items:center; justify-content:center;
+    text-align:center; font-weight:700; font-size:clamp(10.5px,2.4vw,13px); line-height:1.25;
+    color:var(--ink); user-select:none; transition:transform .1s ease, background .1s ease, border-color .1s ease;
+  }
+  .tile:hover{ border-color:var(--navy); }
+  .tile.selected{ background:var(--navy); color:#fff; border-color:var(--navy); transform:translateY(-2px); }
+  .tile.shake{ animation:shake .4s ease; }
+  @keyframes shake{
+    10%,90%{transform:translateX(-3px);} 20%,80%{transform:translateX(4px);}
+    30%,50%,70%{transform:translateX(-6px);} 40%,60%{transform:translateX(6px);}
+  }
+
+  .controls-row{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .ctrl-btn{
+    padding:11px 20px; border-radius:24px; border:1.5px solid var(--navy); background:transparent;
+    color:var(--navy); font-weight:700; font-size:13px; letter-spacing:.02em;
+  }
+  .ctrl-btn:hover:not(:disabled){ background:rgba(22,48,92,.08); }
+  .ctrl-btn.primary{ background:var(--navy); color:#fff; }
+  .ctrl-btn.primary:hover:not(:disabled){ background:var(--navy-deep); }
+
+  /* ---------------- END SCREEN ---------------- */
+  #screen-end{ max-width:680px; margin:0 auto; padding:56px 22px 80px; text-align:center; }
+  #screen-end .end-eyebrow{ font-family:var(--font-mono); letter-spacing:.18em; text-transform:uppercase; color:var(--orange); font-size:12px; }
+  #screen-end h1{ font-family:var(--font-display); font-weight:400; font-size:clamp(28px,5vw,42px); margin:10px 0 4px; color:var(--navy); }
+  #screen-end .end-sub{ font-size:14.5px; color:var(--muted); margin-bottom:26px; }
+  .end-bars{ display:flex; flex-direction:column; gap:10px; text-align:left; margin-bottom:28px; }
+  .end-bar{ border-radius:10px; padding:14px 18px; }
+  .end-bar .cat-name{ font-weight:800; font-size:14.5px; }
+  .end-bar .cat-items{ font-size:12.5px; margin-top:4px; opacity:.9; }
+  .end-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .end-actions button{ padding:13px 26px; border-radius:26px; font-weight:700; font-size:14px; border:1.5px solid var(--navy); }
+  .btn-primary-end{ background:var(--navy); color:#fff; }
+  .btn-primary-end:hover{ background:var(--navy-deep); }
+  .btn-secondary-end{ background:transparent; color:var(--navy); }
+  .btn-secondary-end:hover{ background:rgba(22,48,92,.08); }
+
+  @media (prefers-reduced-motion: reduce){
+    .tile, .solved-bar, .msg{ animation:none; transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <a class="brand" href="../../">Humanities Immersed Learning</a>
+  <a class="navlink" href="../">All Games</a>
+  <a class="navlink" href="../../teachers/">Teachers</a>
+</div>
+
+<!-- ============ INSTRUCTIONS SCREEN ============ -->
+<section id="screen-instructions" class="screen active">
+  <div class="masthead">
+    <span class="eyebrow">A US History Review Game</span>
+    <h1>US History Connections</h1>
+    <p class="sub">Inspired by the popular puzzle: find groups of four items that share a hidden historical connection. Ten eras to choose from, from the Revolution to the Civil Rights Movement, each with an Easy and a Hard version.</p>
+  </div>
+
+  <div class="rules-card">
+    <h4>How to play</h4>
+    <p>You'll see 16 people, places, events, and terms in a grid. They secretly belong to <b>four groups of four</b>. Select four tiles you think belong together, then hit Submit.</p>
+    <h4>Easy vs. Hard mode</h4>
+    <p>On the next screen, pick a mode for every puzzle you play. <b>Easy</b> groups are more direct: think "signers," "battles," "amendments." <b>Hard</b> groups cut across categories on purpose, they're built from shared years, nicknames, vocabulary, and specific wording, so a battle, a treaty, and an idea might belong together, and two similar-looking items might belong to different groups entirely.</p>
+    <h4>Difficulty colors</h4>
+    <p>Once you solve a group, it's revealed in one of four colors, from most straightforward to trickiest:</p>
+    <div class="level-key">
+      <span class="level-chip" style="background:var(--lvl0-bg); color:var(--lvl0-text);"><i style="background:var(--lvl0-text)"></i>Straightforward</span>
+      <span class="level-chip" style="background:var(--lvl1-bg); color:var(--lvl1-text);"><i style="background:var(--lvl1-text)"></i>Solid Recall</span>
+      <span class="level-chip" style="background:var(--lvl2-bg); color:var(--lvl2-text);"><i style="background:var(--lvl2-text)"></i>Tricky</span>
+      <span class="level-chip" style="background:var(--lvl3-bg); color:var(--lvl3-text);"><i style="background:var(--lvl3-text)"></i>Trickiest</span>
+    </div>
+    <h4>Mistakes</h4>
+    <p>You get <b>4 mistakes</b> before the puzzle ends. If you select four tiles and only three belong together, you'll see a "One away..." hint. Watch out for terms that seem to fit more than one group; that overlap is the whole game.</p>
+    <h4>Tools</h4>
+    <p><b>Shuffle</b> rearranges the remaining tiles if the grid gets confusing. <b>Deselect All</b> clears your current picks.</p>
+  </div>
+
+  <div class="continue-bar">
+    <button class="btn-cta" id="instructionsContinueBtn">Choose an Era →</button>
+  </div>
+</section>
+
+<!-- ============ PUZZLE SELECT SCREEN ============ -->
+<section id="screen-select" class="screen">
+  <div class="masthead">
+    <span class="eyebrow">A US History Review Game</span>
+    <h1>Choose an Era</h1>
+    <p class="sub">Each puzzle covers a different stretch of American history. Play them in order as a unit review, or jump to whatever you're studying right now.</p>
+  </div>
+
+  <div class="diff-toggle-wrap">
+    <div class="diff-toggle">
+      <button class="diff-btn active" id="diffEasyBtn" data-diff="easy">Easy Mode</button>
+      <button class="diff-btn" id="diffHardBtn" data-diff="hard">Hard Mode</button>
+    </div>
+    <p class="diff-desc" id="diffDesc"></p>
+  </div>
+
+  <div class="puzzle-grid" id="puzzleGrid"></div>
+
+  <div class="review-rules-bar">
+    <button class="btn-link" id="reviewRulesBtn">↺ Review how to play again</button>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="game-topbar">
+    <div>
+      <span class="game-eyebrow" id="gameEra">—</span>
+      <h2 id="gameTitle">—</h2>
+    </div>
+    <button class="switch-link" id="switchPuzzleBtn">↺ Choose another era</button>
+  </div>
+
+  <p class="game-instructions">Find four groups of four. Select tiles, then hit Submit.</p>
+
+  <div class="mistakes-row">
+    <span>Mistakes remaining</span>
+    <span class="dots" id="mistakeDots"></span>
+  </div>
+
+  <div class="msg-area" id="msgArea"></div>
+
+  <div class="solved-bars" id="solvedBars"></div>
+  <div class="tile-grid" id="tileGrid"></div>
+
+  <div class="controls-row">
+    <button class="ctrl-btn" id="shuffleBtn">Shuffle</button>
+    <button class="ctrl-btn" id="deselectBtn">Deselect All</button>
+    <button class="ctrl-btn primary" id="submitBtn" disabled>Submit</button>
+  </div>
+</section>
+
+<!-- ============ END SCREEN ============ -->
+<section id="screen-end" class="screen">
+  <div class="end-eyebrow" id="endEyebrow">PUZZLE COMPLETE</div>
+  <h1 id="endHeadline">—</h1>
+  <div class="end-sub" id="endSub">—</div>
+
+  <div class="end-bars" id="endBars"></div>
+
+  <div class="end-actions">
+    <button class="btn-primary-end" id="playAgainBtn">Play This Era Again</button>
+    <button class="btn-secondary-end" id="chooseAnotherBtn">Choose Another Era</button>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   LEVELS: difficulty tiers, ordered easiest to trickiest. Every puzzle
+   below lists its four categories in this same order.
+========================================================================= */
+const LEVELS = [
+  { label:"Straightforward", bg:"var(--lvl0-bg)", text:"var(--lvl0-text)" },
+  { label:"Solid Recall",    bg:"var(--lvl1-bg)", text:"var(--lvl1-text)" },
+  { label:"Tricky",          bg:"var(--lvl2-bg)", text:"var(--lvl2-text)" },
+  { label:"Trickiest",       bg:"var(--lvl3-bg)", text:"var(--lvl3-text)" }
+];
+const MAX_MISTAKES = 4;
+const DIFF_DESC = {
+  easy: "Categories mostly group like with like, people with people, laws with laws. A good first pass.",
+  hard: "Categories cut across types on purpose: a year, a nickname, a bit of vocabulary. Expect more overlap traps."
+};
+
+/* =========================================================================
+   ERAS: each era has an Easy category set and a Hard category set. Hard
+   sets are built from shared years, nicknames, and vocabulary rather than
+   "these are all people" / "these are all laws" groupings.
+========================================================================= */
+const ERAS = [
+  {
+    id:"revolution", icon:"🗽", era:"1763–1783", title:"Revolutionary America",
+    easy:{
+      blurb:"Signers, resistance leaders, battles, and the words of the Declaration.",
+      categories:[
+        { name:"Declaration of Independence Signers", items:["Thomas Jefferson","Benjamin Franklin","John Hancock","Roger Sherman"] },
+        { name:"Voices of Colonial Resistance", items:["Samuel Adams","Paul Revere","Patrick Henry","James Otis"] },
+        { name:"Revolutionary War Battles", items:["Lexington and Concord","Saratoga","Yorktown","Bunker Hill"] },
+        { name:"Phrases from the Declaration of Independence", items:["unalienable rights","self-evident","consent of the governed","pursuit of happiness"] }
+      ]
+    },
+    hard:{
+      blurb:"A shared year, a drafting committee, patriot nicknames, and the era's famous lines.",
+      categories:[
+        { name:"All Happened in 1776", items:["Common Sense Published","British Evacuate Boston","Declaration of Independence Signed","Battle of Trenton"] },
+        { name:"Committee of Five (Declaration Drafters)", items:["Thomas Jefferson","John Adams","Benjamin Franklin","Roger Sherman"] },
+        { name:"Names for Those Who Backed Independence", items:["Patriots","Rebels","Whigs","Continentals"] },
+        { name:"Famous Lines of the Revolutionary Era", items:["The Shot Heard Round the World","Give Me Liberty, or Give Me Death!","These Are the Times That Try Men's Souls","Join, or Die"] }
+      ]
+    }
+  },
+  {
+    id:"constitution", icon:"📜", era:"1787–1800", title:"The Constitution & Early Republic",
+    easy:{
+      blurb:"What the Constitution created, freedoms it protects, and who argued over ratifying it.",
+      categories:[
+        { name:"Structures Created by the Constitution", items:["Congress","The Presidency","Supreme Court","Electoral College"] },
+        { name:"First Amendment Freedoms", items:["Speech","Press","Religion","Assembly"] },
+        { name:"Constitutional Convention Delegates", items:["James Madison","Alexander Hamilton","Benjamin Franklin","George Washington"] },
+        { name:"Pseudonyms Used in the Ratification Debate", items:["Publius","Brutus","Cato","Federal Farmer"] }
+      ]
+    },
+    hard:{
+      blurb:"The Convention's deals, its loudest critics, ratification order, and the document's own wording.",
+      categories:[
+        { name:"Compromises of the Constitutional Convention", items:["Great Compromise","Three-Fifths Compromise","Commerce Compromise","Electoral College"] },
+        { name:"Leading Anti-Federalist Voices", items:["George Mason","Elbridge Gerry","Patrick Henry","Richard Henry Lee"] },
+        { name:"First Four States to Ratify the Constitution", items:["Delaware","Pennsylvania","New Jersey","Georgia"] },
+        { name:"Phrases Found in the Constitution's Text", items:["Necessary and Proper","Full Faith and Credit","General Welfare","Natural-Born Citizen"] }
+      ]
+    }
+  },
+  {
+    id:"expansion", icon:"🤠", era:"1803–1853", title:"Westward Expansion",
+    easy:{
+      blurb:"Trails, land deals, explorers, and the nations already living on the land.",
+      categories:[
+        { name:"Famous Trails West", items:["Oregon Trail","Santa Fe Trail","California Trail","Mormon Trail"] },
+        { name:"Ways the US Gained Western Territory", items:["Louisiana Purchase","Texas Annexation","Mexican Cession","Gadsden Purchase"] },
+        { name:"Explorers of the American West", items:["Meriwether Lewis","William Clark","Sacagawea","John C. Frémont"] },
+        { name:"Native Nations of the West", items:["Cherokee","Lakota Sioux","Comanche","Nez Perce"] }
+      ]
+    },
+    hard:{
+      blurb:"Where the land came from, the lesser-known members of the Corps of Discovery, and frontier slang.",
+      categories:[
+        { name:"Nations the US Acquired Western Territory From", items:["Mexico","Spain","France","Great Britain"] },
+        { name:"Ideas & Agreements Behind Westward Expansion", items:["Manifest Destiny","Monroe Doctrine","Indian Removal Act","Treaty of Guadalupe Hidalgo"] },
+        { name:"Members of the Lewis & Clark Expedition", items:["York","Sacagawea","John Colter","George Drouillard"] },
+        { name:"Frontier & Gold Rush Vocabulary", items:["Squatter","Prairie Schooner","Boomtown","Forty-Niner"] }
+      ]
+    }
+  },
+  {
+    id:"civilwar", icon:"⚔️", era:"1820–1865", title:"Causes & Course of the Civil War",
+    easy:{
+      blurb:"Battles, leaders, political deals over slavery, and the era's landmark texts.",
+      categories:[
+        { name:"Major Civil War Battles", items:["Gettysburg","Antietam","Bull Run","Vicksburg"] },
+        { name:"Key Figures of the Civil War", items:["Abraham Lincoln","Jefferson Davis","Ulysses S. Grant","Robert E. Lee"] },
+        { name:"Political Deals Over the Expansion of Slavery", items:["Missouri Compromise","Compromise of 1850","Kansas-Nebraska Act","Crittenden Compromise"] },
+        { name:"Landmark Texts & Rulings", items:["Emancipation Proclamation","Gettysburg Address","Dred Scott Decision","Fugitive Slave Act"] }
+      ]
+    },
+    hard:{
+      blurb:"A single pivotal year, generals' nicknames, army names, and Underground Railroad code words.",
+      categories:[
+        { name:"All Happened in 1863", items:["Emancipation Proclamation Takes Effect","Battle of Gettysburg","Fall of Vicksburg","Gettysburg Address Delivered"] },
+        { name:"Civil War General Nicknames", items:["Stonewall","Unconditional Surrender","Fighting Joe","Little Mac"] },
+        { name:"Union Army Names", items:["Army of the Potomac","Army of the Tennessee","Army of the Cumberland","Army of the James"] },
+        { name:"Underground Railroad Vocabulary", items:["Conductor","Station","Stationmaster","Passenger"] }
+      ]
+    }
+  },
+  {
+    id:"reconstruction", icon:"🏭", era:"1865–1900", title:"Reconstruction & the Gilded Age",
+    easy:{
+      blurb:"Amendments and laws, industrial titans, Reconstruction-era groups, and new technology.",
+      categories:[
+        { name:"Reconstruction-Era Laws & Amendments", items:["13th Amendment","14th Amendment","15th Amendment","Reconstruction Act of 1867"] },
+        { name:"Gilded Age Industrialists", items:["Andrew Carnegie","John D. Rockefeller","J.P. Morgan","Cornelius Vanderbilt"] },
+        { name:"Reconstruction-Era Groups & Terms", items:["Freedmen's Bureau","Ku Klux Klan","Radical Republicans","Carpetbaggers"] },
+        { name:"Innovations of the Gilded Age", items:["Bessemer Process","Transcontinental Railroad","Telephone","Light Bulb"] }
+      ]
+    },
+    hard:{
+      blurb:"Monopolies by industry (not name), new tech, the South's new order, and machine politics.",
+      categories:[
+        { name:"Industries Dominated by Gilded Age Monopolies", items:["Steel","Oil","Banking","Railroads"] },
+        { name:"Gilded Age Innovations", items:["Phonograph","Skyscraper","Linotype Machine","Elevator"] },
+        { name:"The New Economic & Legal Order in the Reconstruction South", items:["Sharecropping","Tenant Farming","Black Codes","Jim Crow"] },
+        { name:"Gilded Age Political Corruption", items:["Tammany Hall","Boss Tweed","Political Machine","Spoils System"] }
+      ]
+    }
+  },
+  {
+    id:"progressive", icon:"📢", era:"1890–1919", title:"Progressive Era & World War I",
+    easy:{
+      blurb:"Constitutional amendments, reformers, wartime terms, and muckraking books.",
+      categories:[
+        { name:"Progressive Era Amendments (16th–19th)", items:["16th Amendment","17th Amendment","18th Amendment","19th Amendment"] },
+        { name:"Progressive Era Reformers", items:["Theodore Roosevelt","Jane Addams","Robert La Follette","William Jennings Bryan"] },
+        { name:"World War I Events & Terms", items:["Trench Warfare","Zimmermann Telegram","Lusitania","Treaty of Versailles"] },
+        { name:"Progressive Era Muckraking Books", items:["The Jungle","How the Other Half Lives","The Shame of the Cities","History of the Standard Oil Company"] }
+      ]
+    },
+    hard:{
+      blurb:"What the amendments actually did, democratic reform tools, WWI alliances, and Wilson's peace.",
+      categories:[
+        { name:"Reforms Enacted by Progressive Era Amendments", items:["Income Tax","Direct Election of Senators","Prohibition","Women's Suffrage"] },
+        { name:"Progressive Era Political Reforms", items:["Trust-Busting","Initiative and Referendum","Recall","Direct Primary"] },
+        { name:"WWI Alliance Systems", items:["Central Powers","Allied Powers","Triple Entente","Triple Alliance"] },
+        { name:"Wilson's Vision & the War's Aftermath", items:["War Guilt Clause","Reparations","League of Nations","Fourteen Points"] }
+      ]
+    }
+  },
+  {
+    id:"twenties", icon:"🎷", era:"1920–1939", title:"The Roaring Twenties & Great Depression",
+    easy:{
+      blurb:"Jazz Age culture, New Deal agencies, causes of the crash, and interwar figures.",
+      categories:[
+        { name:"1920s Culture", items:["Flappers","Jazz","Speakeasies","Prohibition"] },
+        { name:"New Deal Agencies", items:["Civilian Conservation Corps","Works Progress Administration","Tennessee Valley Authority","Social Security Administration"] },
+        { name:"The Great Depression", items:["Stock Market Crash of 1929","Dust Bowl","Bank Runs","Buying on Margin"] },
+        { name:"Figures of the Interwar Era", items:["Franklin D. Roosevelt","Herbert Hoover","Al Capone","Charles Lindbergh"] }
+      ]
+    },
+    hard:{
+      blurb:"Lesser-known New Deal agencies, cultural movements, what really caused the crash, and Depression slang.",
+      categories:[
+        { name:"New Deal Alphabet Agencies", items:["FDIC","SEC","NRA","AAA"] },
+        { name:"1920s Cultural Movements", items:["Harlem Renaissance","Lost Generation","Jazz Age","Flapper Culture"] },
+        { name:"Causes & Accelerants of the Great Depression", items:["Overproduction","Bank Failures","Smoot-Hawley Tariff","Farm Crisis"] },
+        { name:"Slang & Nicknames of the Depression Era", items:["Hooverville","Hoover Blanket","Bonus Army","Okies"] }
+      ]
+    }
+  },
+  {
+    id:"wwii", icon:"🌍", era:"1941–1945", title:"World War II",
+    easy:{
+      blurb:"Pacific and European battles, the home front, and Allied leadership.",
+      categories:[
+        { name:"WWII Pacific Battles", items:["Pearl Harbor","Midway","Iwo Jima","Okinawa"] },
+        { name:"WWII European Battles & Operations", items:["D-Day","Battle of the Bulge","Battle of Stalingrad","Battle of Britain"] },
+        { name:"The American Home Front", items:["Rosie the Riveter","Rationing","War Bonds","Japanese American Internment"] },
+        { name:"Allied Leaders of WWII", items:["Franklin D. Roosevelt","Winston Churchill","Joseph Stalin","Dwight D. Eisenhower"] }
+      ]
+    },
+    hard:{
+      blurb:"One pivotal year across every theater, Allied conferences, operation code names, and home front terms.",
+      categories:[
+        { name:"All Happened in 1944", items:["D-Day","Battle of the Bulge Begins","Liberation of Paris","Battle of Leyte Gulf"] },
+        { name:"WWII Allied Conferences", items:["Tehran Conference","Yalta Conference","Potsdam Conference","Casablanca Conference"] },
+        { name:"Code Names for WWII Military Operations", items:["Operation Overlord","Operation Torch","Operation Barbarossa","Operation Market Garden"] },
+        { name:"The American Home Front (Beyond Rationing)", items:["Victory Gardens","Scrap Drives","Blackout Drills","War Production Board"] }
+      ]
+    }
+  },
+  {
+    id:"coldwar", icon:"☢️", era:"1947–1991", title:"The Cold War",
+    easy:{
+      blurb:"Crises, containment policy, international organizations, and Cold War symbols.",
+      categories:[
+        { name:"Cold War Crises", items:["Cuban Missile Crisis","Berlin Blockade","Korean War","Vietnam War"] },
+        { name:"Cold War Policies & Doctrines", items:["Containment","Truman Doctrine","Marshall Plan","Domino Theory"] },
+        { name:"Cold War-Era Organizations", items:["NATO","Warsaw Pact","CIA","United Nations"] },
+        { name:"Symbols & Struggles of the Cold War", items:["Berlin Wall","Iron Curtain","Space Race","Arms Race"] }
+      ]
+    },
+    hard:{
+      blurb:"Doctrines named for presidents, proxy conflicts, spy vocabulary, and Cold War firsts.",
+      categories:[
+        { name:"Presidential Doctrines of the Cold War", items:["Truman Doctrine","Eisenhower Doctrine","Nixon Doctrine","Reagan Doctrine"] },
+        { name:"Cold War Proxy Conflicts", items:["Korean War","Vietnam War","Bay of Pigs Invasion","Soviet-Afghan War"] },
+        { name:"Cold War Espionage Vocabulary", items:["Double Agent","Mole","Defector","Cipher"] },
+        { name:"Cold War Firsts & Milestones", items:["Sputnik","Apollo 11","U-2 Incident","Moscow-Washington Hotline"] }
+      ]
+    }
+  },
+  {
+    id:"civilrights", icon:"✊", era:"1954–1968", title:"The Civil Rights Movement",
+    easy:{
+      blurb:"Leaders, legal milestones, protests, and the organizations behind the movement.",
+      categories:[
+        { name:"Civil Rights Leaders", items:["Martin Luther King Jr.","Rosa Parks","Malcolm X","John Lewis"] },
+        { name:"Civil Rights Legal Milestones", items:["Civil Rights Act of 1964","Voting Rights Act of 1965","Brown v. Board of Education","Fair Housing Act of 1968"] },
+        { name:"Civil Rights Protests & Marches", items:["Montgomery Bus Boycott","March on Washington","Freedom Rides","Selma to Montgomery March"] },
+        { name:"Civil Rights Organizations", items:["NAACP","SNCC","SCLC","CORE"] }
+      ]
+    },
+    hard:{
+      blurb:"A single landmark year, lesser-known court cases, full organization names, and movement slang.",
+      categories:[
+        { name:"All Happened in 1963", items:["March on Washington","Birmingham Campaign","Assassination of Medgar Evers","“I Have a Dream” Speech Delivered"] },
+        { name:"Civil Rights Era Supreme Court Cases", items:["Loving v. Virginia","Heart of Atlanta Motel v. United States","Boynton v. Virginia","Cooper v. Aaron"] },
+        { name:"Civil Rights Organizations (Full Names)", items:["National Association for the Advancement of Colored People","Student Nonviolent Coordinating Committee","Southern Christian Leadership Conference","Congress of Racial Equality"] },
+        { name:"Civil Rights Movement Terms & Nicknames", items:["Bloody Sunday","Freedom Summer","Sit-In","Massive Resistance"] }
+      ]
+    }
+  }
+];
+
+/* =========================================================================
+   STATE
+========================================================================= */
+let S = null;
+let currentDifficulty = "easy";
+const completedPuzzles = new Set(); // keys like "revolution:hard"
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* -------- puzzle select screen -------- */
+function setDifficulty(diff){
+  currentDifficulty = diff;
+  document.getElementById("diffEasyBtn").classList.toggle("active", diff === "easy");
+  document.getElementById("diffHardBtn").classList.toggle("active", diff === "hard");
+  document.getElementById("diffDesc").textContent = DIFF_DESC[diff];
+  renderPuzzleGrid();
+}
+
+function renderPuzzleGrid(){
+  const grid = document.getElementById("puzzleGrid");
+  grid.innerHTML = "";
+  ERAS.forEach(era=>{
+    const variant = era[currentDifficulty];
+    const card = document.createElement("button");
+    card.className = "puzzle-card";
+    card.innerHTML = `
+      <span class="icon">${era.icon}</span>
+      <span class="era-tag">${era.era}</span>
+      <h3>${era.title}</h3>
+      <p>${variant.blurb}</p>
+      ${completedPuzzles.has(era.id+":"+currentDifficulty) ? '<span class="played">✓ Solved</span>' : ''}
+    `;
+    card.addEventListener("click", ()=> startPuzzle(era.id, currentDifficulty));
+    grid.appendChild(card);
+  });
+}
+
+/* -------- start / init a puzzle -------- */
+function startPuzzle(eraId, difficulty){
+  const era = ERAS.find(e=>e.id===eraId);
+  const variant = era[difficulty];
+  const tiles = [];
+  let tid = 0;
+  variant.categories.forEach((cat, ci)=>{
+    cat.items.forEach(word=>{
+      tiles.push({ id: tid++, word, cat: ci });
+    });
+  });
+  S = {
+    era, difficulty,
+    categories: variant.categories,
+    title: era.title,
+    tiles,
+    order: shuffle(tiles.map(t=>t.id)),
+    selected: new Set(),
+    solvedOrder: [],
+    mistakesUsed: 0,
+    triedCombos: new Set(),
+    status: "playing"
+  };
+  document.getElementById("gameEra").textContent = era.era;
+  document.getElementById("gameTitle").innerHTML =
+    `${era.title} <span class="diff-tag ${difficulty}">${difficulty === "hard" ? "Hard Mode" : "Easy Mode"}</span>`;
+  clearMessage();
+  showScreen("screen-game");
+  renderGame();
+}
+
+function tileById(id){ return S.tiles.find(t=>t.id===id); }
+
+/* -------- rendering -------- */
+function renderGame(){
+  renderMistakeDots();
+  renderSolvedBars();
+  renderTileGrid();
+  renderSubmitState();
+}
+
+function renderMistakeDots(){
+  const wrap = document.getElementById("mistakeDots");
+  wrap.innerHTML = "";
+  const remaining = MAX_MISTAKES - S.mistakesUsed;
+  for(let i=0; i<MAX_MISTAKES; i++){
+    const dot = document.createElement("span");
+    dot.className = "dot" + (i < remaining ? "" : " used");
+    wrap.appendChild(dot);
+  }
+}
+
+function renderSolvedBars(){
+  const wrap = document.getElementById("solvedBars");
+  wrap.innerHTML = "";
+  S.solvedOrder.forEach(catIndex=>{
+    const cat = S.categories[catIndex];
+    const lvl = LEVELS[catIndex];
+    const bar = document.createElement("div");
+    bar.className = "solved-bar";
+    bar.style.background = lvl.bg;
+    bar.style.color = lvl.text;
+    bar.innerHTML = `<div class="cat-name">${cat.name}</div><div class="cat-items">${cat.items.join(" · ")}</div>`;
+    wrap.appendChild(bar);
+  });
+}
+
+function renderTileGrid(){
+  const wrap = document.getElementById("tileGrid");
+  wrap.innerHTML = "";
+  S.order.forEach(id=>{
+    const t = tileById(id);
+    const btn = document.createElement("button");
+    btn.className = "tile" + (S.selected.has(id) ? " selected" : "");
+    btn.textContent = t.word;
+    btn.addEventListener("click", ()=> toggleTile(id));
+    wrap.appendChild(btn);
+  });
+}
+
+function renderSubmitState(){
+  document.getElementById("submitBtn").disabled = S.selected.size !== 4 || S.status !== "playing";
+}
+
+function clearMessage(){
+  document.getElementById("msgArea").innerHTML = "";
+}
+
+function showMessage(text, kind){
+  const area = document.getElementById("msgArea");
+  area.innerHTML = `<span class="msg${kind ? " "+kind : ""}">${text}</span>`;
+}
+
+/* -------- interactions -------- */
+function toggleTile(id){
+  if(S.status !== "playing") return;
+  if(S.selected.has(id)){
+    S.selected.delete(id);
+  } else {
+    if(S.selected.size >= 4) return;
+    S.selected.add(id);
+  }
+  clearMessage();
+  renderTileGrid();
+  renderSubmitState();
+}
+
+function deselectAll(){
+  if(S.status !== "playing") return;
+  S.selected.clear();
+  clearMessage();
+  renderTileGrid();
+  renderSubmitState();
+}
+
+function shuffleTiles(){
+  if(S.status !== "playing") return;
+  S.order = shuffle(S.order);
+  renderTileGrid();
+}
+
+function submitGuess(){
+  if(S.status !== "playing" || S.selected.size !== 4) return;
+  const ids = Array.from(S.selected);
+  const cats = ids.map(id=> tileById(id).cat);
+  const combo = ids.slice().sort((a,b)=>a-b).join(",");
+
+  const allSame = cats.every(c=> c === cats[0]);
+
+  if(allSame){
+    const catIndex = cats[0];
+    S.solvedOrder.push(catIndex);
+    S.order = S.order.filter(id=> !ids.includes(id));
+    S.selected.clear();
+    showMessage("Correct!", "good");
+    renderGame();
+    if(S.solvedOrder.length === 4){
+      S.status = "won";
+      setTimeout(endGame, 500);
+    }
+    return;
+  }
+
+  if(S.triedCombos.has(combo)){
+    showMessage("You already tried that group.");
+    return;
+  }
+  S.triedCombos.add(combo);
+  S.mistakesUsed++;
+
+  const counts = {};
+  cats.forEach(c=> counts[c] = (counts[c]||0) + 1);
+  const maxCount = Math.max(...Object.values(counts));
+  if(maxCount === 3){
+    showMessage("One away...", "err");
+  } else {
+    showMessage("Not quite. Try again.", "err");
+  }
+
+  flashShake(ids);
+  renderMistakeDots();
+  renderSubmitState();
+
+  if(S.mistakesUsed >= MAX_MISTAKES){
+    S.status = "lost";
+    setTimeout(endGame, 900);
+  }
+}
+
+function flashShake(ids){
+  const wrap = document.getElementById("tileGrid");
+  Array.from(wrap.children).forEach((btn, i)=>{
+    if(ids.includes(S.order[i])){
+      btn.classList.add("shake");
+      setTimeout(()=> btn.classList.remove("shake"), 400);
+    }
+  });
+}
+
+/* -------- end screen -------- */
+function endGame(){
+  const won = S.status === "won";
+  completedPuzzles.add(S.era.id+":"+S.difficulty);
+
+  const diffLabel = S.difficulty === "hard" ? "Hard Mode" : "Easy Mode";
+  document.getElementById("endEyebrow").textContent = won ? "PUZZLE SOLVED" : "PUZZLE OVER";
+  document.getElementById("endHeadline").textContent = won
+    ? (S.mistakesUsed === 0 ? "Perfect!" : "Solved It!")
+    : "Nice Try!";
+  document.getElementById("endSub").textContent = won
+    ? `You solved ${S.title} (${diffLabel}) with ${S.mistakesUsed} mistake${S.mistakesUsed===1?"":"s"}.`
+    : `You ran out of mistakes on ${S.title} (${diffLabel}). Here's how it breaks down — review it before trying again.`;
+
+  const wrap = document.getElementById("endBars");
+  wrap.innerHTML = "";
+  S.categories.forEach((cat, ci)=>{
+    const lvl = LEVELS[ci];
+    const bar = document.createElement("div");
+    bar.className = "end-bar";
+    bar.style.background = lvl.bg;
+    bar.style.color = lvl.text;
+    bar.innerHTML = `<div class="cat-name">${lvl.label}: ${cat.name}</div><div class="cat-items">${cat.items.join(" · ")}</div>`;
+    wrap.appendChild(bar);
+  });
+
+  showScreen("screen-end");
+}
+
+/* =========================================================================
+   EVENTS
+========================================================================= */
+document.getElementById("instructionsContinueBtn").addEventListener("click", ()=>{
+  setDifficulty(currentDifficulty);
+  showScreen("screen-select");
+});
+document.getElementById("reviewRulesBtn").addEventListener("click", ()=> showScreen("screen-instructions"));
+document.getElementById("switchPuzzleBtn").addEventListener("click", ()=>{
+  setDifficulty(S.difficulty);
+  showScreen("screen-select");
+});
+document.getElementById("diffEasyBtn").addEventListener("click", ()=> setDifficulty("easy"));
+document.getElementById("diffHardBtn").addEventListener("click", ()=> setDifficulty("hard"));
+document.getElementById("shuffleBtn").addEventListener("click", shuffleTiles);
+document.getElementById("deselectBtn").addEventListener("click", deselectAll);
+document.getElementById("submitBtn").addEventListener("click", submitGuess);
+document.getElementById("playAgainBtn").addEventListener("click", ()=> startPuzzle(S.era.id, S.difficulty));
+document.getElementById("chooseAnotherBtn").addEventListener("click", ()=>{
+  setDifficulty(S.difficulty);
+  showScreen("screen-select");
+});
+
+setDifficulty("easy");
+
+})();
+</script>
+</body>
+</html>
