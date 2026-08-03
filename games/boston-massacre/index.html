@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="en" class="fs-md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Was Responsible for the Boston Massacre? — A Historical Investigation</title>
+<meta name="description" content="A single-file classroom investigation game. Examine 10 primary sources, weigh conflicting eyewitness accounts, and build your own historical argument about who bears responsibility for the Boston Massacre.">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<style>
+*,*::before,*::after{ box-sizing:border-box; }
+:root{
+  --navy:#16305c; --navy-dark:#0c1e3d; --navy-light:#274a82;
+  --red:#7a2118; --red-light:#9f3f20; --red-lighter:#c1522c;
+  --parchment:#f4e8cc; --parchment-dark:#e6d5a8; --parchment-edge:#cdb281;
+  --wood:#4d3018; --wood-dark:#231407; --wood-light:#6b4426;
+  --gold:#a97d2f; --gold-light:#d1a856;
+  --ink:#241c12; --ink-soft:#4a3d2a;
+  --green:#2e6b3e; --amber:#a5720f; --danger:#7a2118;
+  --font-head:Georgia,'Times New Roman',serif;
+  --font-body:Georgia,'Times New Roman',serif;
+  --font-hand:'Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+  --shadow:0 10px 28px rgba(15,9,2,.4);
+  --focus:#3b7fd6;
+}
+html{ scroll-behavior:smooth; }
+html.fs-sm{ font-size:14px; } html.fs-md{ font-size:16px; } html.fs-lg{ font-size:19px; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:var(--font-body); color:var(--ink); line-height:1.55;
+  background:
+    radial-gradient(ellipse at top, var(--wood-light) 0%, var(--wood) 55%, var(--wood-dark) 100%);
+  min-height:100vh;
+}
+a{ color:var(--red-light); }
+button{ font-family:inherit; }
+:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+.visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+#app{ max-width:1240px; margin:0 auto; padding:16px 16px 48px; }
+
+/* ---------- HEADER ---------- */
+header.top{
+  background:linear-gradient(180deg,var(--navy-light),var(--navy) 60%,var(--navy-dark));
+  border:3px solid var(--navy-dark); border-radius:12px;
+  padding:14px 22px; box-shadow:var(--shadow); color:#f4e8cc;
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between;
+}
+.brandblock{ display:flex; align-items:center; gap:12px; }
+.wax-seal{
+  width:44px; height:44px; border-radius:50%; flex:none;
+  background:radial-gradient(circle at 32% 28%, var(--gold-light), var(--gold) 55%, #6b4c1c 100%);
+  box-shadow:inset 0 0 6px rgba(0,0,0,.5), 0 2px 5px rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center; font-size:19px;
+}
+.brandblock h1{ font-family:var(--font-head); font-size:1.05rem; margin:0; letter-spacing:.01em; }
+.brandblock .sub{ font-size:.7rem; opacity:.8; text-transform:uppercase; letter-spacing:.1em; }
+.progresswrap{ display:flex; flex-direction:column; gap:4px; font-size:.75rem; min-width:190px; }
+.progressbar{ width:100%; height:8px; border-radius:5px; background:rgba(0,0,0,.4); overflow:hidden; }
+.progressbar>span{ display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); transition:width .4s ease; }
+.progress-time{ opacity:.75; }
+.header-controls{ display:flex; gap:6px; align-items:center; }
+.iconbtn{
+  background:rgba(244,232,204,.08); border:1px solid rgba(244,232,204,.35); color:#f4e8cc;
+  border-radius:7px; padding:5px 9px; font-size:.76rem; cursor:pointer;
+}
+.iconbtn:hover{ background:rgba(244,232,204,.2); }
+.iconbtn.on{ background:var(--gold); color:#2a1a05; border-color:var(--gold-light); font-weight:700; }
+
+/* ---------- TABS ---------- */
+nav.tabs{ display:flex; flex-wrap:wrap; gap:6px; margin:14px 0; }
+nav.tabs button{
+  flex:1 1 auto; min-width:96px; background:var(--parchment-dark); color:var(--ink);
+  border:2px solid var(--parchment-edge); border-bottom:4px solid var(--parchment-edge);
+  border-radius:8px 8px 4px 4px; padding:8px 6px; font-size:.72rem; font-weight:700;
+  cursor:pointer; text-align:center;
+}
+nav.tabs button.active{ background:var(--parchment); border-color:var(--red-light); color:var(--red-light); }
+nav.tabs button:hover{ filter:brightness(1.05); }
+
+/* ---------- MAIN GRID ---------- */
+.main-grid{ display:grid; grid-template-columns:1fr 300px; gap:18px; align-items:start; }
+.main-grid.no-board{ grid-template-columns:1fr; }
+main.paper{
+  background:var(--parchment);
+  background-image:repeating-linear-gradient(0deg, rgba(0,0,0,.025) 0px, transparent 2px, transparent 5px);
+  border:1px solid var(--parchment-edge); border-radius:12px; padding:24px;
+  box-shadow:var(--shadow); min-height:60vh;
+}
+.screen{ animation:fadein .25s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+h2.screen-title{ font-family:var(--font-head); font-size:1.5rem; margin:0 0 6px; color:var(--red-light); }
+p.screen-sub{ margin:0 0 18px; color:var(--ink-soft); font-size:.92rem; }
+.hint{ font-size:.78rem; color:var(--ink-soft); font-style:italic; }
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  background:var(--navy); color:#f4e8cc; border:none; border-radius:7px;
+  padding:10px 18px; font-size:.88rem; font-weight:700; cursor:pointer;
+  box-shadow:0 3px 0 var(--navy-dark);
+}
+.btn:hover{ background:var(--navy-light); }
+.btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--navy-dark); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+.btn.small{ padding:6px 11px; font-size:.76rem; }
+.btn.secondary{ background:var(--parchment-dark); color:var(--ink); box-shadow:0 3px 0 var(--parchment-edge); border:1px solid var(--parchment-edge); }
+.btn.secondary:hover{ filter:brightness(.97); }
+.btn.danger{ background:var(--danger); box-shadow:0 3px 0 #4a140e; }
+.btn.full{ width:100%; }
+.btn.wax{
+  background:radial-gradient(circle at 32% 28%, var(--red-lighter), var(--red) 60%, #4a140e 100%);
+  box-shadow:inset 0 0 8px rgba(0,0,0,.35), 0 3px 0 #3a0f0a;
+  border-radius:24px; padding:12px 26px; font-family:var(--font-head); letter-spacing:.02em;
+}
+.btn.wax:hover{ filter:brightness(1.08); }
+
+/* ---------- INTRO ---------- */
+.intro-screen{ text-align:center; max-width:680px; margin:0 auto; padding:8px 0 12px; }
+.parchment-seal{ font-size:2.6rem; margin-bottom:6px; }
+.case-title{ font-family:var(--font-head); color:var(--navy); font-size:1.9rem; line-height:1.25; margin:0 0 4px; }
+.case-sub{ font-family:var(--font-hand); font-size:1.1rem; color:var(--red-light); margin:0 0 20px; }
+.intro-copy p{ text-align:left; margin:0 0 12px; }
+.intro-meta{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:18px 0 24px; font-size:.85rem; color:var(--ink-soft); }
+.parchment-block{ background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px; padding:18px 22px; margin-bottom:16px; }
+
+/* ---------- SUSPECTS ---------- */
+.suspect-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-bottom:20px; }
+.suspect-card{ background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px; padding:16px; text-align:center; }
+.suspect-card h3{ font-family:var(--font-head); margin:6px 0 2px; font-size:1rem; color:var(--navy); }
+.suspect-role{ font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--red-light); margin-bottom:8px; }
+.suspect-card p{ font-size:.82rem; text-align:left; margin:0 0 12px; }
+
+/* silhouette icon */
+.silhouette{ position:relative; width:56px; height:56px; margin:0 auto; }
+.silhouette.sz-lg{ width:78px; height:78px; }
+.silhouette.sz-sm{ width:32px; height:32px; }
+.sil-body{ position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:72%; height:46%; background:var(--navy); border-radius:40% 40% 0 0; }
+.sil-head{ position:absolute; left:50%; top:4%; transform:translateX(-50%); width:44%; height:44%; background:var(--navy); border-radius:50%; }
+.sil-badge{ position:absolute; right:-4px; bottom:-2px; width:20px; height:20px; border-radius:50%; background:var(--parchment); border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1; }
+.silhouette.sz-sm .sil-badge{ width:15px; height:15px; font-size:8px; border-width:1px; right:-3px; bottom:-1px; }
+.hat.hat-officer::before, .sil-badge.hat-officer::before{ content:"⭐"; }
+.hat.hat-soldier::before, .sil-badge.hat-soldier::before{ content:"🪖"; }
+.hat.hat-civilian::before, .sil-badge.hat-civilian::before{ content:"🧺"; }
+.hat.hat-liberty::before, .sil-badge.hat-liberty::before{ content:"🔥"; }
+.hat.hat-parliament::before, .sil-badge.hat-parliament::before{ content:"🏛️"; }
+.hat.hat-mob::before, .sil-badge.hat-mob::before{ content:"👥"; }
+.hat.hat-chance::before, .sil-badge.hat-chance::before{ content:"❓"; }
+.hat{ display:inline-block; width:15px; text-align:center; margin-right:3px; font-size:11px; }
+
+/* ---------- METERS ---------- */
+.meter-row{ margin-bottom:9px; font-size:.78rem; }
+.meter-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:3px; }
+.meter-label{ display:flex; align-items:center; gap:3px; font-weight:600; }
+.meter-track{ height:8px; border-radius:5px; background:rgba(0,0,0,.12); overflow:hidden; }
+.meter-fill{ height:100%; background:linear-gradient(90deg,var(--red-light),var(--red-lighter)); transition:width .5s ease; }
+.meter-pct{ font-weight:700; flex:none; }
+
+/* ---------- EVIDENCE BOARD ---------- */
+.evidence-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+.ev-card{
+  background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px;
+  padding:14px; text-align:left; cursor:pointer; font-family:inherit; color:inherit;
+  display:flex; flex-direction:column; gap:4px;
+}
+.ev-card:hover{ transform:translateY(-2px); box-shadow:0 5px 14px rgba(0,0,0,.18); }
+.ev-card.confirmed{ border-color:var(--green); background:#e4ecd9; }
+.ev-icon{ font-size:1.6rem; }
+.ev-num{ font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--red-light); font-weight:700; }
+.ev-card h3{ font-family:var(--font-head); margin:0; font-size:.98rem; }
+.ev-kind{ font-size:.72rem; color:var(--ink-soft); }
+.ev-badge{ margin-top:6px; font-size:.72rem; font-weight:700; color:var(--green); }
+.ev-badge.pending{ color:var(--ink-soft); font-weight:400; }
+
+/* ---------- EVIDENCE DETAIL ---------- */
+.detail-card{ margin-top:12px; }
+.detail-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.detail-icon{ font-size:2.2rem; }
+.detail-head h2{ font-family:var(--font-head); margin:0; color:var(--navy); font-size:1.3rem; }
+.detail-kind{ font-size:.78rem; color:var(--ink-soft); }
+.detail-block{ margin-bottom:20px; padding-bottom:18px; border-bottom:1px dashed var(--parchment-edge); }
+.detail-block:last-of-type{ border-bottom:none; }
+.detail-block h3{ font-family:var(--font-head); font-size:1rem; color:var(--red-light); margin:0 0 8px; }
+.source-block blockquote{ margin:8px 0; padding:12px 16px; background:var(--parchment); border-left:4px solid var(--gold); font-style:italic; }
+.source-label{ font-size:.76rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); }
+.tag-primary,.tag-paraphrase{ font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; padding:2px 8px; border-radius:999px; margin-left:8px; vertical-align:middle; }
+.tag-primary{ background:#dcece0; color:var(--green); }
+.tag-paraphrase{ background:#f4e3c8; color:var(--amber); }
+.paraphrase-flag{ font-size:.76rem; color:var(--amber); margin-top:4px; }
+
+.widget-intro{ font-size:.86rem; color:var(--ink-soft); margin:0 0 10px; }
+.widget-hint{ font-size:.78rem; color:var(--ink-soft); font-style:italic; }
+.widget-note{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:8px; padding:10px 12px; font-size:.85rem; margin:6px 0 10px; }
+
+/* hotspots / map widget */
+.hotspot-frame{ position:relative; width:100%; aspect-ratio:2.5/1; background:linear-gradient(180deg,#e9dcc0,#dcc99a); border:2px solid var(--wood); border-radius:8px; margin-bottom:4px; overflow:hidden; }
+@supports not (aspect-ratio:1/1){ .hotspot-frame{ height:260px; } }
+.hotspot-frame.frame-map{ background:linear-gradient(180deg,#d8e6d8,#c3d8c3); }
+.scene-svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.scene-caption{ margin:0 0 8px; font-size:.7rem; font-style:italic; color:var(--ink-soft); text-align:right; }
+.hotspot-dot{
+  position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%;
+  background:var(--red); color:#fff; border:2px solid #fff; font-weight:700; font-size:.78rem;
+  cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+.hotspot-dot.active,.hotspot-dot:hover{ background:var(--gold); }
+
+/* highlight / phrase */
+.phrase-list{ display:flex; flex-direction:column; gap:6px; }
+.phrase-btn{ text-align:left; background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:8px; padding:8px 12px; cursor:pointer; font-style:italic; font-size:.88rem; }
+.phrase-btn.open{ border-color:var(--gold); background:#f8f0dd; }
+
+/* toggle / compare */
+.toggle-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.toggle-btn{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:999px; padding:7px 14px; font-size:.8rem; cursor:pointer; }
+.toggle-btn.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* reveal */
+.reveal-row{ margin-bottom:4px; }
+.reveal-btn{ background:none; border:none; padding:6px 0; font-weight:700; font-size:.86rem; cursor:pointer; color:var(--navy); text-align:left; }
+.reveal-btn.big{ font-size:.92rem; }
+
+/* tally table */
+.tally-table{ width:100%; border-collapse:collapse; font-size:.8rem; margin-bottom:8px; }
+.tally-table th,.tally-table td{ border:1px solid var(--parchment-edge); padding:7px 9px; text-align:left; vertical-align:top; }
+.tally-table thead th{ background:var(--parchment-dark); }
+
+/* myth */
+.myth-row{ margin-bottom:2px; }
+.myth-btn{ background:none; border:none; padding:6px 0; font-weight:700; font-size:.86rem; cursor:pointer; color:var(--navy); text-align:left; }
+
+/* wordchoice */
+.wordchoice-grid{ display:flex; flex-direction:column; gap:6px; }
+.wordchoice-pair{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:8px; padding:8px 12px; cursor:pointer; width:100%; text-align:left; }
+.wordchoice-pair.open{ border-color:var(--gold); }
+.wc-loaded{ font-weight:700; color:var(--red-light); }
+.wc-vs{ font-size:.72rem; color:var(--ink-soft); }
+.wc-neutral{ color:var(--green); }
+
+/* reliability pills */
+.pill-group{ display:flex; gap:8px; flex-wrap:wrap; }
+.pill{ background:var(--parchment); border:2px solid var(--parchment-edge); border-radius:999px; padding:7px 14px; font-size:.8rem; font-weight:600; cursor:pointer; }
+.pill.selected{ background:var(--red-light); color:#fff; border-color:var(--red-light); }
+
+/* suspect checkboxes + sliders */
+.suspect-check-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:6px; margin-bottom:10px; }
+.suspect-check{ display:flex; align-items:center; gap:6px; font-size:.84rem; background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:6px; padding:6px 10px; }
+.slider-block{ background:var(--parchment); border:1px dashed var(--parchment-edge); border-radius:8px; padding:12px; margin-top:6px; }
+.slider-row{ display:grid; grid-template-columns:1fr 2fr auto; align-items:center; gap:10px; margin-bottom:8px; font-size:.82rem; }
+.slider-row input[type=range]{ width:100%; }
+.slider-row output{ font-weight:700; width:3.4em; text-align:right; }
+
+/* notebook */
+.notebook-block label{ display:block; font-family:var(--font-hand); font-size:1.05rem; color:var(--navy); margin-bottom:12px; }
+.notebook-block textarea{ display:block; width:100%; margin-top:6px; font-family:var(--font-body); font-size:.88rem; padding:8px 10px; border:1px solid var(--parchment-edge); border-radius:6px; background:#fffdf6; resize:vertical; min-height:56px; }
+
+.confirm-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
+
+/* thread board */
+.thread-board{ margin-top:16px; display:flex; gap:14px; align-items:flex-start; background:var(--wood); border-radius:10px; padding:14px 16px; }
+.thread-source{ font-size:1.4rem; }
+.thread-lines{ display:flex; flex-direction:column; gap:8px; flex:1; }
+.thread-line{ display:flex; align-items:center; gap:8px; }
+.thread-dash{ height:2px; background:var(--gold-light); flex:1; max-width:60px; animation:draw .6s ease forwards; transform-origin:left; }
+@keyframes draw{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+.thread-chip{ background:var(--parchment); color:var(--ink); font-size:.76rem; font-weight:700; padding:4px 10px; border-radius:999px; }
+
+/* ---------- COMPARISON ---------- */
+.compare-card{ background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px; padding:16px 18px; margin-bottom:18px; }
+.compare-card.done{ border-color:var(--green); }
+.compare-card h3{ font-family:var(--font-head); color:var(--navy); margin-top:0; }
+.compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:12px; }
+.compare-col{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:8px; padding:10px 12px; font-size:.85rem; }
+.compare-col h4{ margin:0 0 6px; font-size:.82rem; color:var(--red-light); }
+.compare-questions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.compare-questions label{ font-size:.82rem; font-weight:600; }
+.compare-questions textarea{ display:block; width:100%; margin-top:4px; padding:7px 9px; border:1px solid var(--parchment-edge); border-radius:6px; font-family:inherit; font-size:.84rem; min-height:50px; background:#fffdf6; }
+
+/* ---------- TIMELINE / ORDERING ---------- */
+.order-list{ list-style:none; margin:0 0 12px; padding:0; display:flex; flex-direction:column; gap:8px; }
+.order-item{
+  display:flex; align-items:center; gap:10px; background:var(--parchment-dark);
+  border:1px solid var(--parchment-edge); border-radius:8px; padding:9px 12px; cursor:grab;
+}
+.order-item.correct{ border-color:var(--green); background:#e4ecd9; }
+.order-item.incorrect{ border-color:var(--red-light); background:#f3ded7; }
+.order-pos{ font-family:var(--font-head); font-weight:700; color:var(--navy); width:1.6em; }
+.order-text{ flex:1; font-size:.86rem; }
+.order-controls{ display:flex; gap:4px; }
+.order-controls button{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:5px; cursor:pointer; padding:2px 7px; }
+.order-check{ font-weight:700; }
+.order-check.ok{ color:var(--green); } .order-check.bad{ color:var(--red-light); }
+.order-actions{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.order-feedback{ font-size:.84rem; font-weight:600; }
+.order-feedback.ok{ color:var(--green); } .order-feedback.bad{ color:var(--red-light); }
+
+/* ---------- MATRIX ---------- */
+.matrix-table{ display:flex; flex-direction:column; gap:12px; margin-bottom:10px; }
+.matrix-row{ display:grid; grid-template-columns:200px 1fr; gap:12px; align-items:center; }
+.matrix-name{ display:flex; align-items:center; gap:8px; font-size:.86rem; font-weight:700; }
+.matrix-levels{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+.matrix-seg{ background:var(--parchment); border:1px solid var(--parchment-edge); border-radius:5px; padding:8px 4px; font-size:.7rem; cursor:pointer; text-align:center; }
+.matrix-seg.filled{ background:var(--gold-light); }
+.matrix-seg.selected{ background:var(--red-light); color:#fff; border-color:var(--red-light); font-weight:700; }
+
+/* ---------- ARGUMENT ---------- */
+.arg-block{ margin-bottom:22px; }
+.arg-block h3{ font-family:var(--font-head); color:var(--red-light); }
+.arg-suspect-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+.arg-suspect{ background:var(--parchment-dark); border:2px solid var(--parchment-edge); border-radius:10px; padding:10px; cursor:pointer; text-align:center; font-size:.8rem; font-weight:700; }
+.arg-suspect span{ display:block; margin-top:6px; }
+.arg-suspect.selected{ border-color:var(--red-light); background:#f3ded7; }
+.arg-evidence-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.arg-evidence-row label{ font-size:.82rem; font-weight:600; display:block; }
+.arg-evidence-row select,.arg-evidence-row textarea{ display:block; width:100%; margin-top:4px; padding:7px 9px; border:1px solid var(--parchment-edge); border-radius:6px; font-family:inherit; font-size:.84rem; background:#fffdf6; }
+.arg-evidence-row textarea{ min-height:56px; }
+
+/* ---------- HISTORIANS ---------- */
+.historian-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-bottom:16px; }
+.historian-card{ background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px; padding:14px 16px; }
+.historian-card h3{ font-family:var(--font-head); color:var(--navy); font-size:.96rem; margin:0 0 6px; }
+.historian-card p{ font-size:.85rem; margin:0; }
+
+/* ---------- REFLECTION ---------- */
+.reflect-row{ display:block; font-family:var(--font-hand); font-size:1.08rem; color:var(--navy); margin-bottom:16px; }
+.reflect-row textarea{ display:block; width:100%; margin-top:6px; font-family:var(--font-body); font-size:.88rem; padding:9px 11px; border:1px solid var(--parchment-edge); border-radius:6px; background:#fffdf6; min-height:64px; }
+
+/* ---------- REPORT ---------- */
+.report-badge{ display:flex; align-items:center; gap:12px; background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:10px; padding:12px 16px; margin-bottom:16px; }
+.report-badge.earned{ border-color:var(--gold); background:#f8f0dd; }
+.badge-seal{ font-size:2rem; }
+.report-section{ margin-bottom:22px; }
+.report-section h3{ font-family:var(--font-head); color:var(--red-light); }
+.report-note{ background:var(--parchment-dark); border:1px solid var(--parchment-edge); border-radius:8px; padding:10px 12px; margin-bottom:8px; font-size:.85rem; }
+.report-note strong{ display:block; margin-bottom:4px; color:var(--navy); }
+.report-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+
+/* ---------- BOARD ASIDE ---------- */
+aside#board{
+  background:var(--wood); background-image:
+    repeating-linear-gradient(45deg, rgba(0,0,0,.08) 0, rgba(0,0,0,.08) 2px, transparent 2px, transparent 10px);
+  border:3px solid var(--wood-dark); border-radius:12px; padding:16px; color:var(--parchment);
+  position:sticky; top:12px; box-shadow:var(--shadow);
+}
+.board-head h2{ font-family:var(--font-head); font-size:1rem; margin:0 0 12px; color:var(--gold-light); }
+.board-section{ background:rgba(244,232,204,.08); border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+.board-section h3{ font-family:var(--font-head); font-size:.82rem; margin:0 0 8px; color:var(--parchment); }
+#board .meter-label{ color:var(--parchment); }
+#board .meter-track{ background:rgba(0,0,0,.35); }
+.board-stats{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.stat{ display:flex; flex-direction:column; }
+.stat-num{ font-family:var(--font-head); font-size:1rem; color:var(--gold-light); }
+.stat-label{ font-size:.66rem; opacity:.85; }
+
+/* ---------- MODALS / TEACHER ---------- */
+.modal-backdrop,.teacher-overlay{
+  position:fixed; inset:0; background:rgba(10,6,2,.65); display:flex; align-items:flex-start; justify-content:center;
+  padding:40px 16px; z-index:500; overflow-y:auto;
+}
+.modal-panel,.teacher-panel{
+  background:var(--parchment); border-radius:12px; padding:22px 26px; max-width:640px; width:100%;
+  box-shadow:var(--shadow); max-height:85vh; overflow-y:auto;
+}
+.teacher-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.teacher-panel h2{ font-family:var(--font-head); color:var(--navy); margin:0; }
+.teacher-panel section{ margin-bottom:16px; }
+.teacher-panel h3{ font-family:var(--font-head); color:var(--red-light); font-size:.94rem; margin:0 0 6px; }
+.teacher-panel ul{ margin:0; padding-left:20px; font-size:.86rem; }
+.teacher-panel p{ font-size:.86rem; }
+.teacher-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+.locked-card{ text-align:center; background:var(--parchment-dark); border:2px dashed var(--gold); border-radius:10px; padding:32px 20px; }
+.locked-seal{ font-size:2rem; margin-bottom:8px; }
+.locked-card h3{ font-family:var(--font-head); color:var(--red-light); margin:0 0 8px; }
+
+/* ---------- TOAST ---------- */
+.toast{
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  background:var(--navy-dark); color:#f4e8cc; padding:10px 20px; border-radius:20px; font-size:.85rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.5); z-index:600; opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+
+/* ---------- FOOTER ---------- */
+footer.sitefoot{ text-align:center; color:#d8c9a3; font-size:.75rem; padding:18px 0 4px; }
+footer.sitefoot button.linklike{ background:none; border:none; color:#d8c9a3; text-decoration:underline; cursor:pointer; font-size:.75rem; padding:0; }
+
+/* ---------- PRINT ---------- */
+#printArea{ display:none; }
+@media print{
+  body *{ visibility:hidden; }
+  #printArea,#printArea *{ visibility:visible; }
+  #printArea{ display:block; position:absolute; top:0; left:0; width:100%; padding:24px; color:#000; background:#fff; font-family:Georgia,serif; }
+  #printArea h1{ font-size:1.4rem; } #printArea h2{ font-size:1.1rem; } #printArea h3{ font-size:1rem; margin-top:14px; }
+  .packet-ex{ border-top:1px solid #999; padding-top:8px; margin-top:12px; }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .main-grid{ grid-template-columns:1fr; }
+  aside#board{ position:static; }
+}
+@media (max-width:640px){
+  #app{ padding:10px; }
+  header.top{ padding:12px 14px; }
+  main.paper{ padding:16px; }
+  .suspect-check-grid{ grid-template-columns:1fr; }
+  .compare-grid,.compare-questions,.arg-evidence-row{ grid-template-columns:1fr; }
+  .matrix-row{ grid-template-columns:1fr; }
+  .matrix-levels{ grid-template-columns:repeat(5,1fr); }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="brandblock">
+      <div class="wax-seal" aria-hidden="true">⚖️</div>
+      <div>
+        <h1>Who Was Responsible?</h1>
+        <div class="sub">The Boston Massacre &middot; March 5, 1770</div>
+      </div>
+    </div>
+    <div class="progresswrap" aria-live="polite">
+      <span id="progressLabel">Progress: 0/26 steps</span>
+      <div class="progressbar"><span id="progressFill" style="width:0%"></span></div>
+      <span class="progress-time" id="progressTime">~20 min remaining</span>
+    </div>
+    <div class="header-controls">
+      <button type="button" class="iconbtn" data-action="font-set" data-size="sm" aria-label="Smaller text">A-</button>
+      <button type="button" class="iconbtn" data-action="font-set" data-size="lg" aria-label="Larger text">A+</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabStrip" role="tablist" aria-label="Investigation sections"></nav>
+
+  <div class="main-grid" id="mainGrid">
+    <main class="paper" id="screenRoot" tabindex="-1"></main>
+    <aside id="board" aria-label="Investigation Board"></aside>
+  </div>
+
+  <footer class="sitefoot">
+    <div>A free classroom investigation from Humanities Immersed Learning &middot; No accounts, no tracking &mdash; your progress is saved only on this device.</div>
+    <div><button type="button" class="linklike" data-action="teacher-open">Teacher Access</button> &middot; <a href="../">Back to Games</a></div>
+  </footer>
+
+  <div id="printArea"></div>
+  <div class="toast" id="toast"></div>
+  <div id="overlays"></div>
+</div>
+<script>
+/* ============================================================
+   WHO WAS RESPONSIBLE FOR THE BOSTON MASSACRE? — game logic
+   Data lives in DATA.*; render functions read state and DATA
+   and never mutate DATA. State mutations go through setState-ish
+   helper functions that always call saveState() + a re-render.
+   ============================================================ */
+
+/* ---------------------------------------------------------------
+   1. DATA
+   --------------------------------------------------------------- */
+const DATA = {};
+
+DATA.suspects = [
+  {
+    id: 'preston', name: 'Captain Thomas Preston',
+    role: 'Officer of the Guard, 29th Regiment',
+    hat: 'officer',
+    blurb: 'The British officer who marched the guard to King Street. He insisted, then and forever after, that he never gave an order to fire.'
+  },
+  {
+    id: 'soldiers', name: 'The British Soldiers',
+    role: 'Eight privates of the 29th Regiment',
+    hat: 'soldier',
+    blurb: 'Surrounded, jeered at, and struck with clubs and ice, the sentries and the men sent to relieve them fired muskets into the crowd.'
+  },
+  {
+    id: 'civilians', name: 'Boston Civilians',
+    role: 'Dockworkers, apprentices, sailors, ropemakers',
+    hat: 'civilian',
+    blurb: 'A crowd formed around a lone sentry, grew by the minute, and pressed in close, throwing snowballs, oyster shells, and chunks of ice.'
+  },
+  {
+    id: 'sons', name: 'The Sons of Liberty',
+    role: 'Organized resistance to British policy',
+    hat: 'liberty',
+    blurb: 'Samuel Adams and allies had spent two years agitating against the occupation — and moved fast to publicize the shooting once it happened.'
+  },
+  {
+    id: 'parliament', name: 'British Parliament',
+    role: 'The government in London',
+    hat: 'parliament',
+    blurb: 'Parliament taxed the colonies through the Townshend Acts and answered colonial defiance by stationing four regiments in a civilian city.'
+  },
+  {
+    id: 'mob', name: 'Mob Mentality',
+    role: 'The psychology of the crowd itself',
+    hat: 'mob',
+    blurb: 'Not a person but a force: the way a handful of teenagers taunting a sentry became eighty people screaming for blood within the hour.'
+  },
+  {
+    id: 'chance', name: 'Chance & Confusion',
+    role: 'Accident, panic, and the fog of the moment',
+    hat: 'chance',
+    blurb: 'A bell that meant "fire" (the other kind) drew a crowd expecting a blaze. A shout of "fire!" may have been a command, a taunt, or a mistake.'
+  }
+];
+
+// Reliability rating options shared by every evidence card
+DATA.reliabilityLevels = [
+  { id: 'very', label: 'Very reliable', weight: 4 },
+  { id: 'somewhat', label: 'Somewhat reliable', weight: 3 },
+  { id: 'questionable', label: 'Questionable', weight: 2 },
+  { id: 'biased', label: 'Highly biased', weight: 1 }
+];
+
+// Responsibility matrix levels
+DATA.matrixLevels = [
+  { id: 'none', label: 'No responsibility' },
+  { id: 'minor', label: 'Minor' },
+  { id: 'moderate', label: 'Moderate' },
+  { id: 'major', label: 'Major' },
+  { id: 'primary', label: 'Primary' }
+];
+
+/* Each evidence item:
+   id, num, title, kind (badge text), icon (emoji, text glyph — not an image file),
+   background (historical context, secondary/explanatory),
+   source: { label, isParaphrase, text } — primary source excerpt or clearly-marked paraphrase
+   interactive: { type, ...config } — rendered by renderInteractive()
+   suggested: { suspectId: defaultSliderValue, ... } — starting slider positions students can drag
+   notebook: { suggests, questions } — the two prompts shown (text is student-facing prompt copy)
+*/
+DATA.evidence = [
+  {
+    id: 'engraving', num: 1, title: "Paul Revere's Engraving", kind: 'Political Print · 1770', icon: '🖨️',
+    background: "Three weeks after the shooting, silversmith and engraver Paul Revere published a hand-colored print titled “The Bloody Massacre.” He based it closely on a drawing by Henry Pelham (who accused Revere of stealing it). Copies sold across the colonies and were reprinted as far as London.",
+    source: {
+      label: "Caption printed beneath Revere's engraving, 1770",
+      isParaphrase: false,
+      text: "“The Bloody Massacre perpetrated in King Street Boston on March 5th 1770 by a party of the 29th Regt.”"
+    },
+    interactive: {
+      type: 'hotspots',
+      intro: "Click each detail Revere chose to draw. Compare it with what depositions and trial testimony actually documented.",
+      spots: [
+        { x: 53, y: 18, label: 'Captain Preston', note: "Accurate/Inaccurate: Revere draws an officer with his sword raised behind the line, arm extended as if signaling — implying a deliberate order. No trial witness, colonial or British, ever placed Preston in front of the muskets giving a visible hand signal." },
+        { x: 34, y: 34, label: 'The firing line', note: "Inaccurate: the soldiers stand in a crisp, straight rank firing in unison on command, like a battlefield volley. Witnesses described a ragged, scattered sequence of shots seconds apart, from soldiers being jostled and struck." },
+        { x: 72, y: 56, label: 'The crowd', note: "Inaccurate: the crowd is small, orderly, unarmed, and standing well back — several are even falling as if in a firing-squad execution. Depositions describe a dense, close crowd pressing the soldiers and swinging clubs." },
+        { x: 12, y: 12, label: 'Broad daylight', note: "Inaccurate: the shooting happened after 9 p.m. on a moonlit but snowy night. Revere shows a bright, clear sky so viewers can see every face and detail." },
+        { x: 90, y: 85, label: 'A dog, calmly seated', note: "Detail: a small dog sits undisturbed in the foreground. A minor touch, but it reinforces the print's overall message — this was calm, orderly murder, not chaos." }
+      ]
+    },
+    suggested: { soldiers: 20, preston: 15, sons: 10 },
+    notebook: {
+      suggests: "What does this engraving suggest about who was responsible — and about how the Sons of Liberty wanted Bostonians to see the event?",
+      questions: "What questions do you still have about what actually happened on King Street?"
+    }
+  },
+  {
+    id: 'preston-testimony', num: 2, title: 'Captain Preston’s Own Account', kind: 'Testimony · Written soon after', icon: '✒️',
+    background: "Awaiting trial in jail, Preston wrote an account of the night that was published in a London newspaper before his trial began — likely to sway British public opinion in his favor. He was tried separately from his men and acquitted in October 1770; the jury found no proof he ordered the soldiers to fire.",
+    source: {
+      label: "Captain Thomas Preston, written account, 1770",
+      isParaphrase: false,
+      text: "“The mob still increased and were more outrageous, striking their clubs or bludgeons one against another, and calling out, ‘Come on you rascals, you bloody backs, you lobster scoundrels, fire if you dare, God damn you, fire and be damned, we know you dare not’... On my asking the soldiers why they fired without orders, they said they heard the word fire and supposed it came from me.”"
+    },
+    interactive: {
+      type: 'highlight',
+      intro: "Preston is arguing a specific case. Click the phrases below to see what each one is doing for his defense.",
+      phrases: [
+        { text: "fire if you dare, God damn you, fire and be damned, we know you dare not", note: "This quotes the crowd daring the soldiers to shoot — it frames the soldiers as provoked past reason, not as aggressors." },
+        { text: "they heard the word fire and supposed it came from me", note: "This is the crux of Preston's whole defense: someone shouted “fire,” the soldiers assumed it was his order, and he says it was not. It shifts blame onto confusion, not command." },
+        { text: "without orders", note: "Preston repeats, in slightly different words, across his account that he gave no order — because the entire legal case against him depends on whether he did." }
+      ]
+    },
+    suggested: { civilians: 15, chance: 20, preston: -10 },
+    notebook: {
+      suggests: "Preston wrote this himself, before his trial, and had it published. What does that tell you about how to read it?",
+      questions: "What would you need to check to know if Preston is telling the truth?"
+    }
+  },
+  {
+    id: 'soldier-testimony', num: 3, title: "A Soldier's Account", kind: 'Trial Testimony · Oct. 1770', icon: '🪖',
+    background: "Six of the eight soldiers were acquitted; two — Privates Hugh Montgomery and Matthew Kilroy — were convicted of manslaughter, not murder, and avoided hanging by claiming “benefit of clergy” (branded on the thumb instead). Trial testimony from soldiers and bystanders described Montgomery being struck to the ground moments before the first shot.",
+    source: {
+      label: "Paraphrase of trial testimony concerning Pvt. Hugh Montgomery (multiple witnesses; wording varies between transcript sources)",
+      isParaphrase: true,
+      text: "Witnesses testified that Montgomery was hit and knocked down by a thrown club. Several said that as he rose, he shouted a word — some heard “fire,” others could not say — and discharged his musket. It is generally reported as the first shot fired that night."
+    },
+    interactive: {
+      type: 'compare',
+      intro: "Two different soldiers, tried for the same shooting, gave testimony that pulled in different directions. Toggle between them.",
+      items: [
+        { label: 'Pvt. Hugh Montgomery (convicted, manslaughter)', text: "Struck down by a club before firing — the defense argued this made his shot an act of immediate self-defense, not premeditated murder. It was the detail that helped keep him off the gallows." },
+        { label: 'Pvt. Matthew Kilroy (convicted, manslaughter)', text: "Witnesses at trial recalled Kilroy had been heard, days earlier, saying he hoped to “fire on the inhabitants” if given the chance — testimony that made his conviction more likely than the others'." }
+      ]
+    },
+    suggested: { soldiers: 25, civilians: 15, chance: 10 },
+    notebook: {
+      suggests: "Two soldiers, two very different outcomes at trial. What does that suggest about treating “the soldiers” as one single suspect?",
+      questions: "What would change your mind about how responsible the soldiers were?"
+    }
+  },
+  {
+    id: 'adams', num: 4, title: 'John Adams, for the Defense', kind: 'Courtroom Argument · Dec. 1770', icon: '⚖️',
+    background: "John Adams — a Patriot and future President — agreed to defend the soldiers, believing everyone deserved a fair trial and fearing mob justice more than an unpopular case. It nearly ended his career. He later called it “one of the best pieces of service I ever rendered my country.”",
+    source: {
+      label: "John Adams, closing argument for the defense, December 1770",
+      isParaphrase: false,
+      text: "“Facts are stubborn things; and whatever may be our wishes, our inclinations, or the dictates of our passion, they cannot alter the state of facts and evidence.”"
+    },
+    interactive: {
+      type: 'reveal',
+      intro: "Adams built his defense point by point. Reveal each argument he made to the jury.",
+      points: [
+        "The soldiers were legally stationed there and had a right to defend themselves once physically attacked.",
+        "The crowd was not a peaceful assembly but, in his words, a “motley rabble” — he used class prejudice against Boston's own laboring men to make the soldiers seem the more sympathetic party.",
+        "No credible evidence proved Preston gave an order to fire.",
+        "A soldier struck by a club is entitled, under law, to defend his own life — which reduces murder to manslaughter or justifies acquittal entirely."
+      ]
+    },
+    suggested: { civilians: 15, mob: 10, soldiers: -10 },
+    notebook: {
+      suggests: "Adams was a Patriot defending British soldiers. What does his argument suggest about where responsibility lies — and about his own courage or motives?",
+      questions: "Does a good legal argument mean Adams was right about who was responsible?"
+    }
+  },
+  {
+    id: 'eyewitness', num: 5, title: 'Ninety-Six Eyewitnesses', kind: 'Depositions · Two Rival Pamphlets', icon: '🗣️',
+    background: "Boston's town government quickly gathered about 96 sworn depositions and rushed them into print as “A Short Narrative of the Horrid Massacre in Boston” — a document meant to build the colonial case. The British government answered with its own pamphlet, “A Fair Account of the Late Unhappy Disturbance at Boston,” built from different witnesses.",
+    source: {
+      label: "Secondary description of the two competing 1770 pamphlets",
+      isParaphrase: true,
+      text: "“A Short Narrative” depositions overwhelmingly describe an unprovoked, close-range attack: soldiers pushing through the crowd with bayonets, striking first, firing without cause. “A Fair Account” depositions describe a dangerous mob, closing in, throwing ice and clubs, that left terrified soldiers no real choice."
+    },
+    interactive: {
+      type: 'tally',
+      intro: "Both pamphlets collected real sworn testimony from real people who were there. Explore what that tells you.",
+      rows: [
+        { q: 'Was the crowd threatening the soldiers?', a: '“Short Narrative” witnesses: mostly no, or only mildly.', b: '“Fair Account” witnesses: yes, seriously — clubs, ice, and threats.' },
+        { q: 'Did Preston give an order to fire?', a: '“Short Narrative” witnesses: several say yes.', b: '“Fair Account” witnesses: no witness says so.' },
+        { q: 'Who selected these witnesses?', a: 'Boston’s town government, sympathetic to the Patriot cause.', b: 'Royal officials and the soldiers’ defense, sympathetic to the Crown.' }
+      ],
+      closing: "Both pamphlets contain real, sworn testimony — and they still point in opposite directions. That's not proof anyone lied; it's a reminder that honest witnesses standing in different spots, in the dark, in a frightening crowd, can walk away with genuinely different memories."
+    },
+    suggested: { soldiers: 10, civilians: 10, preston: 5 },
+    notebook: {
+      suggests: "Ninety-six witnesses were there and still couldn't agree. What does that suggest about eyewitness testimony in general?",
+      questions: "If you had to trust one pamphlet more than the other, which — and why?"
+    }
+  },
+  {
+    id: 'samuel-gray', num: 6, title: 'Samuel Gray, Ropemaker', kind: 'Victim File', icon: '🪢',
+    background: "Samuel Gray was one of five colonists killed. He worked at John Gray's ropewalk (rope-making yard), the site of a brawl three days earlier — on March 2 — between off-duty soldiers looking for work and the ropemakers who refused to hire them, which grew into a much larger street fight between soldiers and workers.",
+    source: {
+      label: "Modern historians' interpretation (secondary source, not a direct quotation)",
+      isParaphrase: true,
+      text: "Historians such as Hiller Zobel have argued the ropewalk brawl on March 2 was not a separate incident but the true beginning of the chain of events that ended in the shooting three nights later — that March 5 cannot be understood without it."
+    },
+    interactive: {
+      type: 'mythbust',
+      intro: "Popular memory sometimes turns victims into symbols. Check the claim against the record.",
+      claims: [
+        { claim: 'Samuel Gray was a leader of the crowd that night.', verdict: 'Not established.', note: 'No deposition places him as an organizer. He was a bystander, killed steps from where he had once brawled with soldiers days earlier.' },
+        { claim: 'Gray had personal history with the soldiers before March 5.', verdict: 'Plausible / documented context.', note: 'He worked at the ropewalk where the March 2 brawl happened, a fact historians treat as meaningful background, not proof he personally fought there.' }
+      ]
+    },
+    suggested: { soldiers: 5, civilians: 5, chance: 15 },
+    notebook: {
+      suggests: "Does the ropewalk brawl change how “sudden” the shooting on March 5 looks?",
+      questions: "What don't we know about Samuel Gray that would help you judge this?"
+    }
+  },
+  {
+    id: 'gazette', num: 7, title: 'The Boston Gazette', kind: 'Newspaper · March 12, 1770', icon: '📰',
+    background: "Edes and Gill's Boston Gazette was the colonies' leading Patriot newspaper — Samuel Adams himself sometimes wrote for it. Its account of the shooting, printed a week after the event, gave the killings the name they still carry: it was among the first to use the phrase that stuck, “the bloody massacre.”",
+    source: {
+      label: "Description of the Boston Gazette's coverage, March 12, 1770 (secondary summary — exact wording of the original varies across surviving reprints)",
+      isParaphrase: true,
+      text: "The Gazette's account emphasized the soldiers' aggression and the innocence of the victims, printed the names and wounds of the dead in detail, and helped organize the enormous funeral procession — estimated at over ten thousand people — that followed days later."
+    },
+    interactive: {
+      type: 'wordchoice',
+      intro: "Newspapers choose their words. Compare loaded language against neutral language for the same event.",
+      pairs: [
+        { loaded: '“the bloody massacre”', neutral: '“the shooting” / “the deaths on King Street”', note: '“Massacre” implies a one-sided slaughter of the defenseless — it pre-decides the soldiers were purely the aggressors before the reader has seen any evidence.' },
+        { loaded: '“murderous soldiery”', neutral: '“the soldiers who fired”', note: '“Murderous” assumes criminal intent — the very question the courts had not yet decided when this ran.' },
+        { loaded: '“innocent townsmen, wantonly slaughtered”', neutral: '“five colonists killed”', note: '“Innocent” and “wantonly” both do argumentative work: they rule out, in advance, any version where the crowd provoked the shooting.' }
+      ]
+    },
+    suggested: { soldiers: 10, sons: 15, parliament: 5 },
+    notebook: {
+      suggests: "The word “massacre” is doing work. What does using it — instead of “shooting” or “incident” — suggest about who the Gazette blamed?",
+      questions: "Should historians still call it a “massacre” today? Why or why not?"
+    }
+  },
+  {
+    id: 'town-records', num: 8, title: "Boston's Town Records", kind: 'Official Record · Coroner & Selectmen', icon: '📜',
+    background: "Boston's town officers recorded the five deaths that resulted from the shooting. Three men died that night; two more died of their wounds in the days and weeks that followed. The town also recorded the massive public funeral, a deliberate show of unity and grief.",
+    source: {
+      label: "Compiled from Boston town and coroner's records, 1770",
+      isParaphrase: true,
+      text: "Crispus Attucks, dockworker of mixed African and Native American descent — died that night. Samuel Gray, ropemaker — died that night. James Caldwell, mariner — died that night. Samuel Maverick, 17-year-old apprentice, struck by a ricochet — died three days later. Patrick Carr, Irish immigrant leatherworker — died about two weeks later."
+    },
+    interactive: {
+      type: 'lastwords',
+      intro: "One detail from the record changes how several students read this whole case. Reveal it.",
+      reveal: {
+        prompt: "What did Patrick Carr say before he died?",
+        text: "According to the trial testimony of Dr. John Jeffries, who treated Carr, Carr said before his death that he did not blame the soldiers — he believed they had fired because they thought their lives were in danger, and that he forgave the man who shot him. His account was allowed as testimony at trial and helped the defense."
+      }
+    },
+    suggested: { civilians: 5, chance: 15, soldiers: -5 },
+    notebook: {
+      suggests: "Patrick Carr, a victim, forgave the soldiers before he died. What does that suggest — and how much should one dying man's opinion count as evidence?",
+      questions: "What would you want to ask Patrick Carr if you could?"
+    }
+  },
+  {
+    id: 'map', num: 9, title: 'The Street', kind: 'Reconstructed Map · King Street', icon: '🗺️',
+    background: "King Street ran from the Town House (the seat of colonial government) down to Long Wharf on Boston Harbor. The Custom House stood at the corner of King Street and what is now known as Exchange Lane, guarded that night by a single sentry, Private Hugh White.",
+    source: {
+      label: "Reconstructed from trial testimony and depositions describing troop and crowd positions",
+      isParaphrase: true,
+      text: "The sentry stood alone at the Custom House door. Preston led seven or eight privates from the main guard through the crowd to reinforce him, forming a rough semicircle with their backs nearly to the building. The crowd pressed in from King Street itself, hemming the soldiers against the Custom House wall with little room to retreat."
+    },
+    interactive: {
+      type: 'map',
+      intro: "Click each location to see what happened there.",
+      points: [
+        { x: 50, y: 15, label: 'Custom House', note: "Where Private Hugh White stood sentry alone before Preston brought reinforcements — the building the soldiers had their backs against, with nowhere to retreat." },
+        { x: 52, y: 45, label: 'The Guard', note: "Preston and 7-8 privates formed a loose semicircle here, muskets loaded, packed shoulder to shoulder against the wall." },
+        { x: 18, y: 75, label: 'Dense Crowd', note: "Estimated at 50-400 people by different accounts, pressing in from King Street, some within arm's reach of the bayonets." },
+        { x: 84, y: 80, label: 'Royal Exchange Lane', note: "A narrow side street feeding more people into the crowd as church and fire bells drew them from across Boston." },
+        { x: 20, y: 31, label: 'Where the dead fell', note: "Attucks and Caldwell fell close to the soldiers' line; Gray, Maverick, and Carr further back in the crowd — a detail some historians use to question how threatening the crowd truly was at the moment of firing." }
+      ]
+    },
+    suggested: { soldiers: 10, civilians: 10, chance: 10 },
+    notebook: {
+      suggests: "Does the physical layout — the soldiers backed against a wall, hemmed in on a narrow street — change how you read their decision to fire?",
+      questions: "What about the map still feels uncertain to you?"
+    }
+  },
+  {
+    id: 'chronology', num: 10, title: 'A Fragmented Chronology', kind: 'Comparative Sources', icon: '⏱️',
+    background: "No two surviving accounts agree on exact timing. Some depositions say minutes passed between the first shot and the rest; others suggest they came almost together. Reconstructing the order of events — not just what happened, but when — is one of the hardest jobs a historian faces with this case.",
+    source: {
+      label: "Historians' summary of where the sources conflict (secondary synthesis)",
+      isParaphrase: true,
+      text: "Sources disagree on how long the crowd had been gathering before the first shot (estimates range from a few minutes to nearly an hour), how many shots were fired in total (accounts range from five to eleven), and whether there was a pause between the first shot and the rest, or whether they came almost as one volley."
+    },
+    interactive: {
+      type: 'miniorder',
+      intro: "Before you tackle the full timeline later, try ordering just these four fragments correctly.",
+      items: [
+        { id: 'a', text: 'A bell rings, and Bostonians run toward it expecting a fire.' },
+        { id: 'b', text: 'A crowd gathers around the lone sentry at the Custom House.' },
+        { id: 'c', text: 'The crowd throws snowballs, ice, and oyster shells at the soldiers.' },
+        { id: 'd', text: 'Private Hugh Montgomery fires the first shot.' }
+      ],
+      correctOrder: ['a', 'b', 'c', 'd']
+    },
+    suggested: { chance: 15, mob: 15 },
+    notebook: {
+      suggests: "Why might it matter — for judging responsibility — exactly how much time passed between the bell and the first shot?",
+      questions: "What's the one fact about the timing you'd most want confirmed?"
+    }
+  }
+];
+
+// Full timeline reconstruction activity (separate, larger, from the spec)
+DATA.timelineEvents = [
+  { id: 't1', text: 'A heated argument breaks out between wigmaker’s apprentice Edward Garrick and sentry Pvt. Hugh White outside the Custom House.' },
+  { id: 't2', text: 'Church and fire bells begin ringing across Boston, drawing people into the streets who believe a fire has broken out.' },
+  { id: 't3', text: 'A crowd gathers around the lone sentry at the Custom House door.' },
+  { id: 't4', text: 'Captain Preston leads seven or eight privates through the crowd to reinforce the sentry.' },
+  { id: 't5', text: 'The crowd presses closer, throwing snowballs, ice, and oyster shells at the soldiers.' },
+  { id: 't6', text: 'Crowd members brandish clubs and sticks; someone shouts the word “fire.”' },
+  { id: 't7', text: 'Pvt. Hugh Montgomery, struck by a thrown club, discharges the first musket shot.' },
+  { id: 't8', text: 'A pause, then a scattered volley of additional shots from several other soldiers.' },
+  { id: 't9', text: 'Five colonists lie dead or mortally wounded on King Street.' },
+  { id: 't10', text: 'Captain Preston and the eight soldiers stand trial in Boston, defended by John Adams and Josiah Quincy.' }
+];
+
+// Source comparison pairs
+DATA.comparisons = [
+  {
+    id: 'engraving-vs-preston',
+    title: 'Paul Revere’s Engraving vs. Captain Preston’s Account',
+    a: { label: "Revere's Engraving (visual, Patriot-published)", text: "A tight, disciplined line of soldiers fires in unison, seemingly on a visible order from Preston, into a small, unarmed, retreating crowd, in broad daylight." },
+    b: { label: "Preston's Own Account (written, self-defense)", text: "“The mob still increased and were more outrageous... calling out, ‘fire if you dare, God damn you, fire and be damned, we know you dare not’... they heard the word fire and supposed it came from me.”" }
+  },
+  {
+    id: 'gazette-vs-fairaccount',
+    title: 'The Boston Gazette vs. the British “Fair Account” Pamphlet',
+    a: { label: "Boston Gazette (Patriot newspaper)", text: "Frames the event as “the bloody massacre,” emphasizes the soldiers' aggression and the victims' innocence, and helps organize a funeral procession of thousands." },
+    b: { label: "“A Fair Account of the Late Unhappy Disturbance” (British-sympathetic pamphlet)", text: "Built from depositions describing a dangerous mob closing in with clubs and ice, leaving frightened, outnumbered soldiers with little real choice." }
+  },
+  {
+    id: 'eyewitness-vs-carr',
+    title: 'The 96 Depositions vs. Patrick Carr’s Dying Statement',
+    a: { label: "Short Narrative depositions (colonial)", text: "Many witnesses describe an unprovoked attack: soldiers pushing through the crowd with bayonets and firing without real cause." },
+    b: { label: "Patrick Carr, dying victim, to Dr. Jeffries", text: "Reportedly said he did not blame the soldiers, believing they fired because they thought their lives were in danger, and that he forgave the man who shot him." }
+  }
+];
+
+// Historian interpretations shown after the student's final argument
+DATA.historians = [
+  {
+    school: 'The Traditional Patriot Interpretation',
+    body: "For generations after 1770, American textbooks largely followed the Sons of Liberty's own framing: British soldiers, sent to occupy a peaceful city, opened fire on unarmed civilians. This view treats the soldiers and the policies that put them on King Street — the Townshend Acts, the occupation itself — as primarily responsible, and casts the crowd as protesters, not aggressors."
+  },
+  {
+    school: 'The Revisionist Interpretation',
+    body: "Beginning in the 20th century, some historians pushed back on the “innocent victims” framing, using the depositions gathered for the soldiers' defense. This view emphasizes the crowd's real aggression — the clubs, the ice, the shouted threats — and argues the soldiers, hemmed against a wall with nowhere to retreat, fired in genuine (if poorly disciplined) self-defense."
+  },
+  {
+    school: 'The Military / Legal Interpretation',
+    body: "Historians who focus on military law and courtroom evidence, following John Adams's own argument, emphasize that no credible testimony proved Preston ordered the shooting, that soldiers struck by clubs have a legal right to defend themselves, and that the jury's split verdict — six acquittals, two manslaughter convictions — reflects genuine uncertainty about intent, not a whitewash."
+  },
+  {
+    school: 'The Balanced / Structural Interpretation',
+    body: "Many historians today argue that asking “who pulled the trigger” misses the larger point: Parliament's decision to station troops in a hostile civilian city created the conditions for violence long before March 5. On this view, no single person is fully “responsible” — the tragedy was close to inevitable given the policy choices that put armed soldiers and an angry, taxed population on the same narrow street."
+  }
+];
+
+DATA.reflectionPrompts = [
+  { id: 'r1', text: 'Which single piece of evidence changed your thinking the most? What did it change your mind about?' },
+  { id: 'r2', text: 'Did any suspect surprise you — someone you expected to be more (or less) responsible than the evidence suggested?' },
+  { id: 'r3', text: 'Can more than one person or group be responsible for the same event at the same time? Explain using this case.' },
+  { id: 'r4', text: 'Why do you think historians still disagree about the Boston Massacre, 250 years later?' },
+  { id: 'r5', text: 'How confident are you in your final verdict — and what would it take to change your mind?' }
+];
+
+DATA.teacher = {
+  objectives: [
+    'Analyze primary sources for point of view, purpose, and reliability.',
+    'Explain how historians construct interpretations from incomplete and conflicting evidence.',
+    'Evaluate multiple causes and degrees of responsibility for a single historical event.',
+    'Distinguish primary sources, secondary explanations, and modern historical interpretation.',
+    'Construct a written, evidence-based historical argument and support it with citations.'
+  ],
+  standards: [
+    'C3 Framework: D2.His.1, D2.His.9, D2.His.14, D2.His.16 (historical sourcing, causation, and argumentation)',
+    'Common Core: RH.9-10.1, RH.9-10.6, RH.9-10.9 (citing evidence, analyzing point of view, comparing sources)',
+    'Many state U.S. History standards addressing the Coming of the American Revolution / causes of the Revolutionary War'
+  ],
+  answerGuide: "There is no single correct verdict. A strong student argument (from any suspect) cites at least three specific pieces of evidence, acknowledges at least one piece of contradictory evidence, and explains its own confidence level honestly. Watch for students who ignore the soldiers-as-individuals distinction (Montgomery/Kilroy vs. the six acquitted) or who treat Revere's engraving as a literal photograph rather than propaganda.",
+  historicalNotes: "Key facts to have on hand for discussion: 5 dead (Attucks, Gray, Caldwell, Maverick, Carr); trial held Oct-Dec 1770; Preston acquitted; 6 soldiers acquitted; 2 (Montgomery, Kilroy) convicted of manslaughter and branded on the thumb, not hanged; John Adams and Josiah Quincy II defended the soldiers; the ropewalk brawl (March 2) is widely seen by historians as an underappreciated precipitating incident.",
+  discussion: [
+    'If you had been on the jury in 1770, what verdict would you have reached — and does that match your verdict today?',
+    'Why might it matter that John Adams, a Patriot, chose to defend the soldiers?',
+    'Is a crowd throwing snowballs and ice the same as a crowd that is "attacking"? Where is the line?',
+    'How does calling this event a "massacre" (rather than a "shooting" or "incident") shape how we remember it?',
+    'What responsibility, if any, does Parliament bear for a decision made by individual soldiers on the ground?'
+  ]
+};
+/* ---------------------------------------------------------------
+   2. STATE — a single mutable object, always saved via saveState()
+      and always re-rendered via render() after a change.
+   --------------------------------------------------------------- */
+const STORAGE_KEY = 'bostonMassacreInvestigation_v1';
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function defaultState(){
+  const evidence = {};
+  DATA.evidence.forEach(e => {
+    evidence[e.id] = { visited: false, confirmed: false, reliability: null, suspects: [], sliders: {}, notesA: '', notesB: '', touched: {} };
+  });
+  const comparisons = {};
+  DATA.comparisons.forEach(c => {
+    comparisons[c.id] = { agreement: '', disagreement: '', missing: '', motivation: '', done: false };
+  });
+  const matrix = {};
+  DATA.suspects.forEach(s => { matrix[s.id] = null; });
+  return {
+    screen: 'intro',
+    currentEvidence: null,
+    teacherMode: false,
+    fontSize: 'md',
+    evidence: evidence,
+    comparisons: comparisons,
+    timeline: { order: ['t4','t1','t7','t2','t9','t5','t3','t10','t6','t8'], checked: false, solved: false },
+    matrix: matrix,
+    argument: {
+      primary: null,
+      strongest: [{ evidenceId: '', reason: '' }, { evidenceId: '', reason: '' }, { evidenceId: '', reason: '' }],
+      contradictoryId: '', contradictoryReason: '',
+      confidence: null,
+      submitted: false
+    },
+    reflection: { r1: '', r2: '', r3: '', r4: '', r5: '' },
+    historiansViewed: false,
+    startedAt: Date.now()
+  };
+}
+
+function loadState(){
+  const base = defaultState();
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return base;
+    const saved = JSON.parse(raw);
+    const merged = Object.assign({}, base, saved);
+    merged.evidence = Object.assign({}, base.evidence, saved.evidence);
+    merged.comparisons = Object.assign({}, base.comparisons, saved.comparisons);
+    merged.matrix = Object.assign({}, base.matrix, saved.matrix);
+    merged.argument = Object.assign({}, base.argument, saved.argument || {});
+    merged.reflection = Object.assign({}, base.reflection, saved.reflection || {});
+    merged.timeline = Object.assign({}, base.timeline, saved.timeline || {});
+    return merged;
+  } catch (err) {
+    console.warn('Could not read saved investigation — starting fresh.', err);
+    return base;
+  }
+}
+
+let state = loadState();
+
+function saveState(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (err) { console.warn('Could not save progress.', err); }
+}
+
+/* ---------------------------------------------------------------
+   3. COMPUTED VALUES
+   --------------------------------------------------------------- */
+function evidenceById(id){ return DATA.evidence.find(e => e.id === id); }
+function suspectById(id){ return DATA.suspects.find(s => s.id === id); }
+
+function evidenceConfirmedCount(){
+  return Object.values(state.evidence).filter(e => e.confirmed).length;
+}
+function comparisonsDoneCount(){
+  return Object.values(state.comparisons).filter(c => c.done).length;
+}
+function matrixCompleteCount(){
+  return Object.values(state.matrix).filter(v => v).length;
+}
+function reflectionAnsweredCount(){
+  return Object.values(state.reflection).filter(v => v && v.trim().length > 0).length;
+}
+
+function suspectTotal(id){
+  let total = 0;
+  DATA.evidence.forEach(e => {
+    const rec = state.evidence[e.id];
+    if (rec && rec.confirmed && rec.sliders && typeof rec.sliders[id] === 'number') {
+      total += rec.sliders[id];
+    }
+  });
+  return Math.max(0, Math.min(100, Math.round(total)));
+}
+
+function reliabilityAverageLabel(){
+  const weights = [];
+  Object.values(state.evidence).forEach(e => {
+    if (e.confirmed && e.reliability) {
+      const lvl = DATA.reliabilityLevels.find(l => l.id === e.reliability);
+      if (lvl) weights.push(lvl.weight);
+    }
+  });
+  if (!weights.length) return 'No evidence rated yet';
+  const avg = weights.reduce((a, b) => a + b, 0) / weights.length;
+  if (avg >= 3.5) return 'Very reliable (avg)';
+  if (avg >= 2.5) return 'Somewhat reliable (avg)';
+  if (avg >= 1.5) return 'Questionable (avg)';
+  return 'Highly biased (avg)';
+}
+
+function biasFlagCount(){
+  return Object.values(state.evidence).filter(e => e.confirmed && (e.reliability === 'biased' || e.reliability === 'questionable')).length;
+}
+
+const TOTAL_STEPS = DATA.evidence.length + DATA.comparisons.length + 1 + 1 + 1 + 1 + 1; // evidence + comparisons + timeline + matrix + argument + historians + reflection
+
+function completedSteps(){
+  let n = evidenceConfirmedCount() + comparisonsDoneCount();
+  if (state.timeline.solved) n += 1;
+  if (matrixCompleteCount() === DATA.suspects.length) n += 1;
+  if (state.argument.submitted) n += 1;
+  if (state.historiansViewed) n += 1;
+  if (reflectionAnsweredCount() === DATA.reflectionPrompts.length) n += 1;
+  return n;
+}
+function progressPct(){ return Math.round((completedSteps() / TOTAL_STEPS) * 100); }
+function estRemainingMinutes(){
+  const remain = TOTAL_STEPS - completedSteps();
+  return Math.max(0, Math.round((remain / TOTAL_STEPS) * 20));
+}
+
+/* Screen unlock rules. Screens are never hard-blocked from view once the
+   app has started — "locked" just means a friendly explanation replaces
+   the normal content, so a class can move at its own pace. */
+function unlockInfo(screenId){
+  switch (screenId) {
+    case 'comparison':
+      return evidenceConfirmedCount() >= 3 ? null : `Investigate at least 3 pieces of evidence to unlock source comparison. (${evidenceConfirmedCount()}/3)`;
+    case 'timeline':
+      return evidenceConfirmedCount() >= 6 ? null : `Investigate at least 6 pieces of evidence to unlock the timeline. (${evidenceConfirmedCount()}/6)`;
+    case 'matrix':
+      return state.timeline.solved ? null : `Correctly order the timeline to unlock the Responsibility Matrix.`;
+    case 'argument':
+      return matrixCompleteCount() === DATA.suspects.length ? null : `Rate every suspect on the Responsibility Matrix to unlock your Final Argument. (${matrixCompleteCount()}/${DATA.suspects.length})`;
+    case 'historians':
+      return state.argument.submitted ? null : `Submit your Final Argument to see how professional historians have interpreted the case.`;
+    case 'reflection':
+      return state.historiansViewed ? null : `Read the historian interpretations to unlock reflection.`;
+    default:
+      return null;
+  }
+}
+/* ---------------------------------------------------------------
+   4. TRANSIENT UI STATE (never persisted — resets on navigation)
+   --------------------------------------------------------------- */
+let ui = {};
+function resetUi(){ ui = {}; }
+
+const TABS = [
+  { id: 'intro', label: 'Start', icon: '🏛️' },
+  { id: 'context', label: 'Background', icon: '📖' },
+  { id: 'suspects', label: 'Suspects', icon: '🕵️' },
+  { id: 'evidence', label: 'Evidence', icon: '🔎' },
+  { id: 'comparison', label: 'Compare', icon: '⚖️' },
+  { id: 'timeline', label: 'Timeline', icon: '⏱️' },
+  { id: 'matrix', label: 'Matrix', icon: '📊' },
+  { id: 'argument', label: 'Argument', icon: '✍️' },
+  { id: 'historians', label: 'Historians', icon: '🎓' },
+  { id: 'reflection', label: 'Reflect', icon: '💭' },
+  { id: 'report', label: 'Report', icon: '📋' }
+];
+
+/* ---------------------------------------------------------------
+   5. SMALL REUSABLE COMPONENTS
+   --------------------------------------------------------------- */
+function reliabilityLabel(id){
+  const l = DATA.reliabilityLevels.find(x => x.id === id);
+  return l ? l.label : 'Not yet rated';
+}
+
+function meterRowHTML(s){
+  const pct = suspectTotal(s.id);
+  return `<div class="meter-row">
+    <div class="meter-top">
+      <div class="meter-label"><span class="hat hat-${s.hat}" aria-hidden="true"></span><span>${esc(s.name)}</span></div>
+      <div class="meter-pct">${pct}%</div>
+    </div>
+    <div class="meter-track" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(s.name)} responsibility">
+      <div class="meter-fill" style="width:${pct}%"></div>
+    </div>
+  </div>`;
+}
+
+function silhouetteHTML(hat, size){
+  size = size || 'md';
+  return `<div class="silhouette sz-${size}" aria-hidden="true"><div class="sil-body"></div><div class="sil-head"></div><div class="sil-badge hat-${hat}"></div></div>`;
+}
+
+function orderingHTML(items, order, opts){
+  return `<ol class="order-list">` + order.map((id, i) => {
+    const item = items.find(it => it.id === id);
+    const status = opts.results ? (opts.results[i] ? 'correct' : 'incorrect') : '';
+    return `<li class="order-item ${status}" draggable="true" data-drag-group="${opts.actionPrefix}" data-id="${esc(id)}" data-idx="${i}">
+      <span class="order-pos">${i + 1}</span>
+      <span class="order-text">${esc(item ? item.text : '')}</span>
+      <span class="order-controls">
+        <button type="button" data-action="${opts.actionPrefix}-up" data-idx="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>▲</button>
+        <button type="button" data-action="${opts.actionPrefix}-down" data-idx="${i}" aria-label="Move down" ${i === order.length - 1 ? 'disabled' : ''}>▼</button>
+      </span>
+      ${status === 'correct' ? '<span class="order-check ok">✔</span>' : ''}${status === 'incorrect' ? '<span class="order-check bad">✘</span>' : ''}
+    </li>`;
+  }).join('') + `</ol>`;
+}
+
+function moveInArray(arr, idx, dir){
+  const j = idx + dir;
+  if (j < 0 || j >= arr.length) return arr;
+  const copy = arr.slice();
+  const tmp = copy[idx]; copy[idx] = copy[j]; copy[j] = tmp;
+  return copy;
+}
+
+function reorderByDrag(arr, dragId, dropId){
+  if (dragId === dropId) return arr;
+  const copy = arr.slice();
+  const from = copy.indexOf(dragId);
+  const to = copy.indexOf(dropId);
+  if (from === -1 || to === -1) return arr;
+  copy.splice(from, 1);
+  copy.splice(to, 0, dragId);
+  return copy;
+}
+
+/* ---------------------------------------------------------------
+   6. INTERACTIVE-EVIDENCE WIDGETS (one distinct widget type each)
+   --------------------------------------------------------------- */
+function renderInteractive(e){
+  const cfg = e.interactive;
+  switch (cfg.type) {
+    case 'hotspots': return hotspotsHTML(cfg, 'engraving');
+    case 'map': return hotspotsHTML(cfg, 'map');
+    case 'highlight': return highlightHTML(cfg);
+    case 'compare': return compareHTML(cfg);
+    case 'reveal': return revealHTML(cfg);
+    case 'tally': return tallyHTML(cfg);
+    case 'mythbust': return mythbustHTML(cfg);
+    case 'wordchoice': return wordchoiceHTML(cfg);
+    case 'lastwords': return lastwordsHTML(cfg);
+    case 'miniorder': return miniorderHTML(e, cfg);
+    default: return '';
+  }
+}
+
+/* Small reusable SVG pictogram — a head + body, optionally armed / arm raised / fallen.
+   Coordinates are in the same 0-100 space as hotspot x/y percentages, so a figure
+   drawn at (x,y) always sits directly under a marker placed at that same (x,y). */
+function figureMarkSVG(x, y, opts){
+  opts = opts || {};
+  const scale = opts.scale || 1;
+  const color = opts.color || '#241c12';
+  const rot = opts.fallen ? ' rotate(75)' : '';
+  let extra = '';
+  if (opts.armed) extra += `<line x1="1.3" y1="-1" x2="4.3" y2="-2.6" stroke="${color}" stroke-width="0.6" stroke-linecap="round"/>`;
+  if (opts.raisedArm) extra += `<line x1="1.1" y1="-2" x2="3.8" y2="-6.2" stroke="${color}" stroke-width="0.7" stroke-linecap="round"/>`;
+  return `<g transform="translate(${x},${y}) scale(${scale})${rot}">
+    <rect x="-1.3" y="-2.2" width="2.6" height="5" rx="0.7" fill="${color}"/>
+    <circle cx="0" cy="-3.3" r="1.15" fill="${color}"/>
+    ${extra}
+  </g>`;
+}
+
+/* The frame is a fixed 2.5:1 box (see .hotspot-frame in CSS). Its viewBox below
+   (0 0 100 40) matches that ratio exactly, so the SVG scales uniformly — no
+   squashing. x stays a plain 0-100 percent (matching hotspot dot placement
+   directly); Y() converts a "percent down the frame" position into this
+   viewBox's shorter 0-40 range. Only frame-relative *positions* go through Y() —
+   a figure's own local proportions (head/body offsets) are left alone, since
+   those already render correctly once the scale is uniform. */
+const SCENE_VB_H = 40;
+function Y(percent){ return +(percent * SCENE_VB_H / 100).toFixed(2); }
+
+/* A stylized recreation of the composition of Revere's engraving — not a literal
+   reproduction (which no CSS/SVG could honestly claim to be), but a diagram that
+   lets students see roughly where each disputed detail sits so the hotspots have
+   something to point at. */
+function engravingSceneSVG(){
+  const sunCx = 12, sunCy = Y(12);
+  const sun = `<circle cx="${sunCx}" cy="${sunCy}" r="4.5" fill="none" stroke="#a97d2f" stroke-width="1"/>` +
+    [0, 45, 90, 135, 180, 225, 270, 315].map(a => {
+      const rad = a * Math.PI / 180, r1 = 4.5, r2 = 7;
+      const x1 = (sunCx + r1 * Math.cos(rad)).toFixed(1), y1 = (sunCy + r1 * Math.sin(rad)).toFixed(1);
+      const x2 = (sunCx + r2 * Math.cos(rad)).toFixed(1), y2 = (sunCy + r2 * Math.sin(rad)).toFixed(1);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a97d2f" stroke-width="1"/>`;
+    }).join('');
+  const building = `<rect x="80" y="${Y(20)}" width="18" height="${Y(56)}" fill="#cbb789" stroke="#3a2a18" stroke-width="0.8"/>
+    <polygon points="78,${Y(20)} 89,${Y(8)} 100,${Y(20)}" fill="#a8926a" stroke="#3a2a18" stroke-width="0.8"/>
+    <rect x="86" y="${Y(58)}" width="6" height="${Y(18)}" fill="#3a2a18"/>`;
+  const ground = `<line x1="0" y1="${Y(88)}" x2="100" y2="${Y(88)}" stroke="#6b5636" stroke-width="0.6"/>`;
+  const soldiers = [18, 25, 32, 39, 46].map(x => figureMarkSVG(x, Y(34), { armed: true })).join('');
+  const officer = figureMarkSVG(53, Y(18), { scale: 1.15, raisedArm: true });
+  const crowd = [[58, 60], [64, 50], [71, 63], [77, 52], [83, 61], [65, 70]]
+    .map(([x, y], i) => figureMarkSVG(x, Y(y), { scale: 0.85, color: '#4a3d2a', fallen: i % 3 === 0 })).join('');
+  const dog = `<g transform="translate(90,${Y(85)})"><ellipse cx="0" cy="0" rx="4" ry="2" fill="#241c12"/><circle cx="4.4" cy="-1" r="1.3" fill="#241c12"/><line x1="-4" y1="0" x2="-6.2" y2="-2" stroke="#241c12" stroke-width="0.8" stroke-linecap="round"/></g>`;
+  return `<svg class="scene-svg" viewBox="0 0 100 ${SCENE_VB_H}" preserveAspectRatio="none" aria-hidden="true">${sun}${building}${ground}${soldiers}${officer}${crowd}${dog}</svg>`;
+}
+
+/* A schematic top-down reconstruction of King Street, built from trial testimony —
+   scenery for the "Map of the Street" exhibit's hotspots. */
+function mapSceneSVG(){
+  const street = `<rect x="0" y="${Y(58)}" width="100" height="${Y(38)}" fill="#c7b892" opacity="0.55"/>`;
+  const lane = `<polygon points="64,${Y(58)} 100,${Y(70)} 100,${Y(96)} 72,${Y(96)}" fill="#b6a578" opacity="0.6"/>`;
+  const building = `<rect x="38" y="${Y(4)}" width="24" height="${Y(22)}" fill="#cbb789" stroke="#3a2a18" stroke-width="0.8"/><rect x="47" y="${Y(16)}" width="6" height="${Y(10)}" fill="#3a2a18"/>`;
+  const sentryBox = `<rect x="32" y="${Y(18)}" width="4.5" height="${Y(9)}" fill="#8a6f45" stroke="#3a2a18" stroke-width="0.5"/>`;
+  const guard = [40, 46, 52, 58, 64].map(x => figureMarkSVG(x, Y(45), { armed: true })).join('');
+  const crowd = [[12, 62], [19, 70], [8, 76], [26, 78], [16, 85], [30, 66], [6, 65]]
+    .map(([x, y]) => figureMarkSVG(x, Y(y), { scale: 0.8, color: '#5a3a2a' })).join('');
+  const deadMarks = [[16, 27], [24, 33]].map(([x, y]) =>
+    `<g transform="translate(${x},${Y(y)})"><line x1="-1.8" y1="-1.8" x2="1.8" y2="1.8" stroke="#7a2118" stroke-width="1" stroke-linecap="round"/><line x1="-1.8" y1="1.8" x2="1.8" y2="-1.8" stroke="#7a2118" stroke-width="1" stroke-linecap="round"/></g>`
+  ).join('');
+  return `<svg class="scene-svg" viewBox="0 0 100 ${SCENE_VB_H}" preserveAspectRatio="none" aria-hidden="true">${street}${lane}${building}${sentryBox}${guard}${crowd}${deadMarks}</svg>`;
+}
+
+function hotspotsHTML(cfg, variant){
+  const spots = cfg.spots || cfg.points;
+  const activeIdx = ui.hotspot != null ? ui.hotspot : null;
+  const scene = variant === 'engraving' ? engravingSceneSVG() : (variant === 'map' ? mapSceneSVG() : '');
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <div class="hotspot-frame frame-${variant}">
+    ${scene}
+    ${spots.map((p, i) => `<button type="button" class="hotspot-dot ${activeIdx === i ? 'active' : ''}" style="left:${p.x}%;top:${p.y}%" data-action="hotspot" data-idx="${i}">${i + 1}</button>`).join('')}
+  </div>
+  <p class="scene-caption">A simplified diagram for analysis — not a literal reproduction.</p>
+  ${activeIdx != null
+    ? `<div class="widget-note"><strong>${esc(spots[activeIdx].label)}.</strong> ${esc(spots[activeIdx].note)}</div>`
+    : `<div class="widget-hint">Click a numbered marker to analyze that detail.</div>`}`;
+}
+
+function highlightHTML(cfg){
+  ui.highlight = ui.highlight || {};
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <div class="phrase-list">
+    ${cfg.phrases.map((p, i) => `
+      <button type="button" class="phrase-btn ${ui.highlight[i] ? 'open' : ''}" data-action="toggle-phrase" data-idx="${i}">“${esc(p.text)}”</button>
+      ${ui.highlight[i] ? `<div class="widget-note">${esc(p.note)}</div>` : ''}
+    `).join('')}
+  </div>`;
+}
+
+function compareHTML(cfg){
+  const idx = ui.compareIdx || 0;
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <div class="toggle-row">
+    ${cfg.items.map((it, i) => `<button type="button" class="toggle-btn ${idx === i ? 'active' : ''}" data-action="set-compare" data-idx="${i}">${esc(it.label)}</button>`).join('')}
+  </div>
+  <div class="widget-note">${esc(cfg.items[idx].text)}</div>`;
+}
+
+function revealHTML(cfg){
+  ui.reveal = ui.reveal || {};
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  ${cfg.points.map((pt, i) => `
+    <div class="reveal-row">
+      <button type="button" class="reveal-btn" data-action="toggle-reveal" data-idx="${i}">${ui.reveal[i] ? '▾' : '▸'} Argument ${i + 1}</button>
+      ${ui.reveal[i] ? `<div class="widget-note">${esc(pt)}</div>` : ''}
+    </div>`).join('')}`;
+}
+
+function tallyHTML(cfg){
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <table class="tally-table">
+    <thead><tr><th></th><th>“Short Narrative”</th><th>“Fair Account”</th></tr></thead>
+    <tbody>
+      ${cfg.rows.map(r => `<tr><th>${esc(r.q)}</th><td>${esc(r.a)}</td><td>${esc(r.b)}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <button type="button" class="reveal-btn" data-action="toggle-tally-close">${ui.tallyClosing ? '▾' : '▸'} So what does this tell us?</button>
+  ${ui.tallyClosing ? `<div class="widget-note">${esc(cfg.closing)}</div>` : ''}`;
+}
+
+function mythbustHTML(cfg){
+  ui.myth = ui.myth || {};
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  ${cfg.claims.map((c, i) => `
+    <div class="myth-row">
+      <button type="button" class="myth-btn" data-action="toggle-myth" data-idx="${i}">${ui.myth[i] ? '▾' : '▸'} “${esc(c.claim)}”</button>
+      ${ui.myth[i] ? `<div class="widget-note"><strong>Verdict: ${esc(c.verdict)}</strong> — ${esc(c.note)}</div>` : ''}
+    </div>`).join('')}`;
+}
+
+function wordchoiceHTML(cfg){
+  ui.wordchoice = ui.wordchoice || {};
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <div class="wordchoice-grid">
+    ${cfg.pairs.map((p, i) => `
+      <button type="button" class="wordchoice-pair ${ui.wordchoice[i] ? 'open' : ''}" data-action="toggle-wc" data-idx="${i}">
+        <span class="wc-loaded">${esc(p.loaded)}</span>
+        <span class="wc-vs">vs. plain language</span>
+        <span class="wc-neutral">${esc(p.neutral)}</span>
+      </button>
+      ${ui.wordchoice[i] ? `<div class="widget-note">${esc(p.note)}</div>` : ''}`).join('')}
+  </div>`;
+}
+
+function lastwordsHTML(cfg){
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  <button type="button" class="reveal-btn big" data-action="toggle-lastwords">${ui.lastwords ? '▾' : '▸'} ${esc(cfg.reveal.prompt)}</button>
+  ${ui.lastwords ? `<div class="widget-note">${esc(cfg.reveal.text)}</div>` : ''}`;
+}
+
+function miniorderHTML(e, cfg){
+  if (!ui.miniorderOrder) ui.miniorderOrder = cfg.items.map(it => it.id).slice().reverse();
+  const results = ui.miniorderChecked ? ui.miniorderOrder.map((id, i) => id === cfg.correctOrder[i]) : null;
+  return `<p class="widget-intro">${esc(cfg.intro)}</p>
+  ${orderingHTML(cfg.items, ui.miniorderOrder, { actionPrefix: 'mini', results: results })}
+  <div class="order-actions">
+    <button type="button" class="btn small secondary" data-action="mini-check">Check Order</button>
+    ${ui.miniorderChecked ? (results.every(Boolean) ? `<span class="order-feedback ok">All four in order — nicely done.</span>` : `<span class="order-feedback bad">Not quite — check the highlighted rows.</span>`) : ''}
+  </div>`;
+}
+/* ---------------------------------------------------------------
+   7. SCREEN RENDERERS
+   --------------------------------------------------------------- */
+function lockedCardHTML(msg){
+  return `<div class="locked-card">
+    <div class="locked-seal">🔒</div>
+    <h3>Not yet unlocked</h3>
+    <p>${esc(msg)}</p>
+    <button type="button" class="btn" data-action="nav" data-screen="evidence">Go to the Evidence Board</button>
+  </div>`;
+}
+
+function renderIntro(){
+  return `<section class="screen intro-screen">
+    <div class="parchment-seal">⚖️</div>
+    <h1 class="case-title">Who Was Responsible for the<br>Boston Massacre?</h1>
+    <p class="case-sub">A Historical Investigation — March 5, 1770</p>
+    <div class="intro-copy">
+      <p>You have been called in as an investigator, two and a half centuries late.</p>
+      <p>The truth has been buried beneath centuries of propaganda. Engravings, newspapers, courtroom speeches, and sworn testimony all survive — and every one of them tells a slightly different story.</p>
+      <p><strong>Your task is to determine who bears the greatest responsibility for the Boston Massacre.</strong></p>
+      <p>You will examine ten pieces of evidence, compare conflicting sources, reconstruct the timeline, and ultimately build your own case — one a classmate sitting next to you may reach a completely different verdict on, from the very same evidence.</p>
+    </div>
+    <div class="intro-meta">
+      <span>⏱️ About 20 minutes</span>
+      <span>📁 10 pieces of evidence</span>
+      <span>🕵️ 7 suspects</span>
+    </div>
+    <button type="button" class="btn wax" data-action="nav" data-screen="context">Begin the Investigation →</button>
+  </section>`;
+}
+
+function renderContext(){
+  return `<section class="screen">
+    <h2 class="screen-title">The Situation in Boston, 1770</h2>
+    <div class="parchment-block">
+      <p>By 1770, Boston had been an occupied city for two years. In 1768, Britain sent four regiments of soldiers to enforce order and collect taxes after colonists resisted the <strong>Townshend Acts</strong> — duties on glass, lead, paint, paper, and tea, passed by Parliament to raise revenue without colonial consent. Bostonians boycotted British goods, smuggled what they could, and increasingly saw the soldiers camped in their streets not as protectors but as an occupying army.</p>
+      <p>Soldiers, poorly paid, often took off-duty jobs that competed with local laborers for scarce work, breeding resentment on the docks and in the ropewalks. Fights between soldiers and townspeople became common. On March 2, 1770, one such fight at a Boston ropewalk grew into a brawl involving dozens of men. Three nights later, on the cold evening of March 5, a dispute between a wigmaker's apprentice and a lone sentry outside the Custom House drew a crowd — and within the hour, five colonists lay dead or dying on King Street.</p>
+    </div>
+    <button type="button" class="btn" data-action="nav" data-screen="suspects">Meet the Suspects →</button>
+  </section>`;
+}
+
+function renderSuspects(){
+  return `<section class="screen">
+    <h2 class="screen-title">The Suspects</h2>
+    <p class="screen-sub">Seven people, groups, and forces stand accused, in one degree or another. Every Responsibility Meter starts at zero — you will fill them in yourself, evidence by evidence.</p>
+    <div class="suspect-grid">
+      ${DATA.suspects.map(s => `
+        <div class="suspect-card">
+          ${silhouetteHTML(s.hat, 'lg')}
+          <h3>${esc(s.name)}</h3>
+          <div class="suspect-role">${esc(s.role)}</div>
+          <p>${esc(s.blurb)}</p>
+          ${meterRowHTML(s)}
+        </div>`).join('')}
+    </div>
+    <button type="button" class="btn" data-action="nav" data-screen="evidence">Open the Evidence Board →</button>
+  </section>`;
+}
+
+function renderEvidenceScreen(){
+  if (state.currentEvidence) return renderEvidenceDetail(evidenceById(state.currentEvidence));
+  return `<section class="screen">
+    <h2 class="screen-title">Evidence Board</h2>
+    <p class="screen-sub">Investigate every exhibit. Read closely, then decide how reliable it is and who it points toward — you can always come back and change your mind.</p>
+    <div class="evidence-grid">
+      ${DATA.evidence.map(e => {
+        const rec = state.evidence[e.id];
+        return `<button type="button" class="ev-card ${rec.confirmed ? 'confirmed' : ''}" data-action="open-evidence" data-id="${e.id}">
+          <div class="ev-icon">${e.icon}</div>
+          <div class="ev-num">Exhibit ${e.num}</div>
+          <h3>${esc(e.title)}</h3>
+          <div class="ev-kind">${esc(e.kind)}</div>
+          ${rec.confirmed ? `<div class="ev-badge">✔ Logged · ${esc(reliabilityLabel(rec.reliability))}</div>` : `<div class="ev-badge pending">${rec.visited ? 'In progress' : 'Not yet opened'}</div>`}
+        </button>`;
+      }).join('')}
+    </div>
+  </section>`;
+}
+
+function renderEvidenceDetail(e){
+  const rec = state.evidence[e.id];
+  const canConfirm = !!rec.reliability && rec.suspects.length > 0;
+  return `<section class="screen">
+    <button type="button" class="btn secondary small" data-action="close-evidence">← Back to Evidence Board</button>
+    <div class="detail-card">
+      <div class="detail-head">
+        <span class="detail-icon">${e.icon}</span>
+        <div><h2>${esc(e.title)}</h2><div class="detail-kind">${esc(e.kind)} · Exhibit ${e.num} of ${DATA.evidence.length}</div></div>
+      </div>
+
+      <section class="detail-block">
+        <h3>Historical Background</h3>
+        <p>${esc(e.background)}</p>
+      </section>
+
+      <section class="detail-block source-block">
+        <h3>Primary Source ${e.source.isParaphrase ? '<span class="tag-paraphrase">Paraphrase</span>' : '<span class="tag-primary">Direct Quotation</span>'}</h3>
+        <div class="source-label">${esc(e.source.label)}</div>
+        <blockquote>${esc(e.source.text)}</blockquote>
+        ${e.source.isParaphrase ? `<div class="paraphrase-flag">⚠ This is a historian's paraphrase or summary, not a word-for-word quotation.</div>` : ''}
+      </section>
+
+      <section class="detail-block interactive-block">
+        <h3>Interactive Analysis</h3>
+        ${renderInteractive(e)}
+      </section>
+
+      <section class="detail-block">
+        <h3>How reliable is this evidence?</h3>
+        <div class="pill-group" role="radiogroup" aria-label="Reliability rating">
+          ${DATA.reliabilityLevels.map(l => `<button type="button" class="pill ${rec.reliability === l.id ? 'selected' : ''}" data-action="set-reliability" data-level="${l.id}">${esc(l.label)}</button>`).join('')}
+        </div>
+      </section>
+
+      <section class="detail-block">
+        <h3>Who does this evidence increase responsibility for?</h3>
+        <p class="hint">Choose everyone this evidence points toward. You can select more than one — or reduce a suspect's responsibility if the evidence clears them.</p>
+        <div class="suspect-check-grid">
+          ${DATA.suspects.map(s => `<label class="suspect-check"><input type="checkbox" data-action="toggle-suspect" data-suspect="${s.id}" ${rec.suspects.includes(s.id) ? 'checked' : ''}> ${esc(s.name)}</label>`).join('')}
+        </div>
+        ${rec.suspects.length ? sliderBlockHTML(e, rec) : ''}
+      </section>
+
+      <section class="detail-block notebook-block">
+        <h3>📓 Detective Notebook</h3>
+        <label>${esc(e.notebook.suggests)}<textarea data-action="note-input" data-field="notesA" placeholder="Type your thoughts…">${esc(rec.notesA)}</textarea></label>
+        <label>${esc(e.notebook.questions)}<textarea data-action="note-input" data-field="notesB" placeholder="Type your thoughts…">${esc(rec.notesB)}</textarea></label>
+      </section>
+
+      <div class="confirm-row">
+        <button type="button" class="btn wax" data-action="confirm-evidence" ${canConfirm ? '' : 'disabled'}>${rec.confirmed ? 'Update Findings on the Board ✔' : 'Log Findings to the Board'}</button>
+        ${!canConfirm ? '<span class="hint">Rate its reliability and choose at least one suspect first.</span>' : ''}
+      </div>
+      ${rec.confirmed ? threadBoardHTML(rec) : ''}
+    </div>
+  </section>`;
+}
+
+function sliderBlockHTML(e, rec){
+  return `<div class="slider-block">
+    ${rec.suspects.map(sid => {
+      const s = suspectById(sid);
+      const val = (typeof rec.sliders[sid] === 'number') ? rec.sliders[sid] : (e.suggested[sid] != null ? e.suggested[sid] : 10);
+      return `<div class="slider-row">
+        <label for="sl-${sid}">${esc(s.name)}</label>
+        <input id="sl-${sid}" type="range" min="-15" max="30" step="5" value="${val}" data-action="slider-input" data-suspect="${sid}">
+        <output>${val >= 0 ? '+' : ''}${val}%</output>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function threadBoardHTML(rec){
+  return `<div class="thread-board" aria-hidden="true">
+    <div class="thread-source">📌</div>
+    <div class="thread-lines">
+      ${rec.suspects.map(sid => {
+        const s = suspectById(sid);
+        const val = rec.sliders[sid] || 0;
+        return `<div class="thread-line"><span class="thread-dash"></span><span class="thread-chip">${esc(s.name)} ${val >= 0 ? '+' : ''}${val}%</span></div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderComparisonScreen(){
+  const lock = unlockInfo('comparison');
+  if (lock) return `<section class="screen"><h2 class="screen-title">Compare Sources</h2>${lockedCardHTML(lock)}</section>`;
+  return `<section class="screen">
+    <h2 class="screen-title">Source Comparison</h2>
+    <p class="screen-sub">Two sources, same night, two different stories. There's no grading here — just look closely.</p>
+    ${DATA.comparisons.map(c => {
+      const rec = state.comparisons[c.id];
+      return `<div class="compare-card ${rec.done ? 'done' : ''}">
+        <h3>${esc(c.title)}</h3>
+        <div class="compare-grid">
+          <div class="compare-col"><h4>${esc(c.a.label)}</h4><p>${esc(c.a.text)}</p></div>
+          <div class="compare-col"><h4>${esc(c.b.label)}</h4><p>${esc(c.b.text)}</p></div>
+        </div>
+        <div class="compare-questions">
+          <label>Where do these sources agree?<textarea data-action="cmp-input" data-id="${c.id}" data-field="agreement">${esc(rec.agreement)}</textarea></label>
+          <label>Where do they disagree?<textarea data-action="cmp-input" data-id="${c.id}" data-field="disagreement">${esc(rec.disagreement)}</textarea></label>
+          <label>What information is missing from both?<textarea data-action="cmp-input" data-id="${c.id}" data-field="missing">${esc(rec.missing)}</textarea></label>
+          <label>What might explain each source's point of view?<textarea data-action="cmp-input" data-id="${c.id}" data-field="motivation">${esc(rec.motivation)}</textarea></label>
+        </div>
+        <button type="button" class="btn small secondary" data-action="cmp-done" data-id="${c.id}">${rec.done ? 'Marked Complete ✔' : 'Mark Comparison Complete'}</button>
+      </div>`;
+    }).join('')}
+  </section>`;
+}
+
+function timelineResults(){
+  if (!state.timeline.checked) return null;
+  return state.timeline.order.map((id, i) => id === DATA.timelineEvents[i].id);
+}
+
+function renderTimelineScreen(){
+  const lock = unlockInfo('timeline');
+  if (lock) return `<section class="screen"><h2 class="screen-title">Timeline Reconstruction</h2>${lockedCardHTML(lock)}</section>`;
+  const results = timelineResults();
+  let hint = '';
+  if (results && !results.every(Boolean)) {
+    const firstBad = results.indexOf(false);
+    hint = `<div class="order-feedback bad">Row ${firstBad + 1} isn't right yet. Hint: think carefully about what has to happen before a crowd can even gather.</div>`;
+  } else if (results) {
+    hint = `<div class="order-feedback ok">You've reconstructed the night correctly.</div>`;
+  }
+  return `<section class="screen">
+    <h2 class="screen-title">Timeline Reconstruction</h2>
+    <p class="screen-sub">Drag the cards, or use the arrow buttons, to put the night of March 5, 1770 in order.</p>
+    ${orderingHTML(DATA.timelineEvents, state.timeline.order, { actionPrefix: 'tl', results: results })}
+    <div class="order-actions">
+      <button type="button" class="btn secondary" data-action="tl-check">Check Order</button>
+      ${hint}
+    </div>
+  </section>`;
+}
+
+function renderMatrixScreen(){
+  const lock = unlockInfo('matrix');
+  if (lock) return `<section class="screen"><h2 class="screen-title">Responsibility Matrix</h2>${lockedCardHTML(lock)}</section>`;
+  return `<section class="screen">
+    <h2 class="screen-title">Build Your Responsibility Matrix</h2>
+    <p class="screen-sub">Based on everything you've read, assign each suspect a level of responsibility. This is your interpretation — the Investigation Board's meters are only a starting point.</p>
+    <div class="matrix-table">
+      ${DATA.suspects.map(s => {
+        const current = state.matrix[s.id];
+        const levelIdx = DATA.matrixLevels.findIndex(l => l.id === current);
+        return `<div class="matrix-row">
+          <div class="matrix-name">${silhouetteHTML(s.hat, 'sm')}<span>${esc(s.name)}</span></div>
+          <div class="matrix-levels" role="radiogroup" aria-label="${esc(s.name)} responsibility level">
+            ${DATA.matrixLevels.map((l, i) => `<button type="button" class="matrix-seg ${current === l.id ? 'selected' : ''} ${levelIdx >= i && current ? 'filled' : ''}" data-action="matrix-set" data-suspect="${s.id}" data-level="${l.id}">${esc(l.label)}</button>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <p class="hint">${matrixCompleteCount()}/${DATA.suspects.length} suspects rated.</p>
+  </section>`;
+}
+
+function evidenceOptionsHTML(selectedId){
+  return `<option value="">Choose a piece of evidence…</option>` + DATA.evidence.map(e => `<option value="${e.id}" ${selectedId === e.id ? 'selected' : ''}>Exhibit ${e.num}: ${esc(e.title)}</option>`).join('');
+}
+
+function renderArgumentScreen(){
+  const lock = unlockInfo('argument');
+  if (lock) return `<section class="screen"><h2 class="screen-title">Final Argument</h2>${lockedCardHTML(lock)}</section>`;
+  const arg = state.argument;
+  const confidenceOptions = [
+    { id: 'very', label: 'Very confident' },
+    { id: 'somewhat', label: 'Somewhat confident' },
+    { id: 'unsure', label: 'Still not sure' }
+  ];
+  const ready = arg.primary && arg.strongest.every(s => s.evidenceId && s.reason.trim()) && arg.contradictoryId && arg.contradictoryReason.trim() && arg.confidence;
+  return `<section class="screen">
+    <h2 class="screen-title">Write Your Final Argument</h2>
+    <p class="screen-sub">This is a historian's conclusion, not a quiz answer. Choose one suspect who bears the <em>greatest</em> responsibility, and defend it with evidence.</p>
+
+    <div class="arg-block">
+      <h3>Who bears the greatest responsibility?</h3>
+      <div class="arg-suspect-grid">
+        ${DATA.suspects.map(s => `<button type="button" class="arg-suspect ${arg.primary === s.id ? 'selected' : ''}" data-action="arg-primary" data-suspect="${s.id}">${silhouetteHTML(s.hat, 'sm')}<span>${esc(s.name)}</span></button>`).join('')}
+      </div>
+    </div>
+
+    <div class="arg-block">
+      <h3>Three strongest pieces of evidence</h3>
+      ${arg.strongest.map((slot, i) => `
+        <div class="arg-evidence-row">
+          <label>Evidence ${i + 1}
+            <select data-action="arg-strongest-select" data-idx="${i}">${evidenceOptionsHTML(slot.evidenceId)}</select>
+          </label>
+          <label>Why this supports your verdict
+            <textarea data-action="arg-strongest-reason" data-idx="${i}" placeholder="Explain in your own words…">${esc(slot.reason)}</textarea>
+          </label>
+        </div>`).join('')}
+    </div>
+
+    <div class="arg-block">
+      <h3>One piece of contradictory evidence</h3>
+      <p class="hint">A strong argument admits what doesn't fit. What evidence pushes against your own verdict?</p>
+      <div class="arg-evidence-row">
+        <label>Contradictory evidence
+          <select data-action="arg-contra-select">${evidenceOptionsHTML(arg.contradictoryId)}</select>
+        </label>
+        <label>How does it complicate your case?
+          <textarea data-action="arg-contra-reason" placeholder="Explain in your own words…">${esc(arg.contradictoryReason)}</textarea>
+        </label>
+      </div>
+    </div>
+
+    <div class="arg-block">
+      <h3>How confident are you in this conclusion?</h3>
+      <div class="pill-group" role="radiogroup">
+        ${confidenceOptions.map(c => `<button type="button" class="pill ${arg.confidence === c.id ? 'selected' : ''}" data-action="arg-confidence" data-level="${c.id}">${esc(c.label)}</button>`).join('')}
+      </div>
+    </div>
+
+    <button type="button" class="btn wax" data-action="arg-submit" ${ready ? '' : 'disabled'}>${arg.submitted ? 'Update My Argument' : 'Submit My Argument'}</button>
+    ${!ready ? '<p class="hint">Complete every field above to submit.</p>' : ''}
+  </section>`;
+}
+
+function renderHistoriansScreen(){
+  const lock = unlockInfo('historians');
+  if (lock) return `<section class="screen"><h2 class="screen-title">How Historians See It</h2>${lockedCardHTML(lock)}</section>`;
+  return `<section class="screen">
+    <h2 class="screen-title">How Historians Have Interpreted the Massacre</h2>
+    <p class="screen-sub">You just wrote your own verdict. Professional historians, working from the same surviving evidence, have reached genuinely different conclusions — read why before you move on.</p>
+    <div class="historian-grid">
+      ${DATA.historians.map(h => `<div class="historian-card"><h3>${esc(h.school)}</h3><p>${esc(h.body)}</p></div>`).join('')}
+    </div>
+    <div class="parchment-block">
+      <p><strong>Why do historians disagree?</strong> Not because some are careless and some are careful — but because the surviving sources themselves conflict, because each historian asks a slightly different question ("who fired?" vs. "who created the conditions?"), and because judging responsibility always requires weighing values, not just facts. No interpretation on this page is "the answer." That is the point.</p>
+    </div>
+    <button type="button" class="btn" data-action="nav" data-screen="reflection">Continue to Reflection →</button>
+  </section>`;
+}
+
+function renderReflectionScreen(){
+  const lock = unlockInfo('reflection');
+  if (lock) return `<section class="screen"><h2 class="screen-title">Reflection</h2>${lockedCardHTML(lock)}</section>`;
+  return `<section class="screen">
+    <h2 class="screen-title">Reflection</h2>
+    <p class="screen-sub">Five honest questions. There is no wrong answer.</p>
+    ${DATA.reflectionPrompts.map(p => `
+      <label class="reflect-row">${esc(p.text)}
+        <textarea data-action="reflect-input" data-id="${p.id}" placeholder="Type your response…">${esc(state.reflection[p.id])}</textarea>
+      </label>`).join('')}
+    <button type="button" class="btn" data-action="nav" data-screen="report">View My Completion Report →</button>
+  </section>`;
+}
+
+function renderReportScreen(){
+  const arg = state.argument;
+  const primarySuspect = arg.primary ? suspectById(arg.primary) : null;
+  const complete = evidenceConfirmedCount() === DATA.evidence.length && arg.submitted && reflectionAnsweredCount() === DATA.reflectionPrompts.length;
+  const rankedEvidence = DATA.evidence
+    .filter(e => state.evidence[e.id].confirmed)
+    .slice()
+    .sort((a, b) => {
+      const wa = DATA.reliabilityLevels.find(l => l.id === state.evidence[a.id].reliability).weight;
+      const wb = DATA.reliabilityLevels.find(l => l.id === state.evidence[b.id].reliability).weight;
+      return wb - wa;
+    });
+  const notedEvidence = DATA.evidence.filter(e => (state.evidence[e.id].notesA || '').trim() || (state.evidence[e.id].notesB || '').trim());
+
+  return `<section class="screen">
+    <h2 class="screen-title">Completion Report</h2>
+    <div class="report-badge ${complete ? 'earned' : ''}">
+      <div class="badge-seal">${complete ? '🏅' : '📄'}</div>
+      <div>
+        <strong>${complete ? 'Investigation Complete' : 'Investigation In Progress'}</strong>
+        <div class="hint">${evidenceConfirmedCount()}/${DATA.evidence.length} evidence · ${arg.submitted ? 'Argument submitted' : 'Argument not yet submitted'} · ${reflectionAnsweredCount()}/${DATA.reflectionPrompts.length} reflections</div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>Responsibility Graph</h3>
+      ${DATA.suspects.map(s => meterRowHTML(s)).join('')}
+    </div>
+
+    <div class="report-section">
+      <h3>My Verdict</h3>
+      <p><strong>Primary responsibility:</strong> ${primarySuspect ? esc(primarySuspect.name) : '(not yet chosen)'}</p>
+      <p><strong>Confidence:</strong> ${arg.confidence ? esc({ very: 'Very confident', somewhat: 'Somewhat confident', unsure: 'Still not sure' }[arg.confidence]) : '(not yet set)'}</p>
+      <h4>Strongest evidence</h4>
+      <ul>${arg.strongest.filter(s => s.evidenceId).map(s => `<li><strong>${esc((evidenceById(s.evidenceId) || {}).title || '')}:</strong> ${esc(s.reason)}</li>`).join('') || '<li>(none selected)</li>'}</ul>
+      <h4>Contradictory evidence considered</h4>
+      <p>${arg.contradictoryId ? `<strong>${esc((evidenceById(arg.contradictoryId) || {}).title || '')}:</strong> ${esc(arg.contradictoryReason)}` : '(none selected)'}</p>
+    </div>
+
+    <div class="report-section">
+      <h3>Evidence Reliability Ranking</h3>
+      <ol>${rankedEvidence.map(e => `<li>${esc(e.title)} — ${esc(reliabilityLabel(state.evidence[e.id].reliability))}</li>`).join('') || '<li>No evidence logged yet.</li>'}</ol>
+    </div>
+
+    <div class="report-section">
+      <h3>Detective Notebook</h3>
+      ${notedEvidence.length ? notedEvidence.map(e => `<div class="report-note"><strong>${esc(e.title)}</strong><p>${esc(state.evidence[e.id].notesA)}</p><p>${esc(state.evidence[e.id].notesB)}</p></div>`).join('') : '<p class="hint">No notes recorded yet.</p>'}
+    </div>
+
+    <div class="report-section">
+      <h3>Reflection Responses</h3>
+      ${DATA.reflectionPrompts.map(p => `<div class="report-note"><strong>${esc(p.text)}</strong><p>${esc(state.reflection[p.id]) || '<span class="hint">(not answered)</span>'}</p></div>`).join('')}
+    </div>
+
+    <div class="report-actions">
+      <button type="button" class="btn" data-action="report-print">🖨️ Print</button>
+      <button type="button" class="btn secondary" data-action="report-copy">📋 Copy</button>
+      <button type="button" class="btn secondary" data-action="report-restart">↺ Restart Investigation</button>
+    </div>
+  </section>`;
+}
+
+/* ---------------------------------------------------------------
+   8. TEACHER MODE
+   --------------------------------------------------------------- */
+function renderTeacherPanel(){
+  const t = DATA.teacher;
+  return `<div class="teacher-overlay" data-action="teacher-backdrop">
+    <div class="teacher-panel" role="dialog" aria-label="Teacher Mode" data-action="noop">
+      <div class="teacher-head"><h2>🎓 Teacher Mode</h2><button type="button" class="btn secondary small" data-action="teacher-close">Close</button></div>
+      <section><h3>Learning Objectives</h3><ul>${t.objectives.map(o => `<li>${esc(o)}</li>`).join('')}</ul></section>
+      <section><h3>Standards</h3><ul>${t.standards.map(o => `<li>${esc(o)}</li>`).join('')}</ul></section>
+      <section><h3>Answer Guide</h3><p>${esc(t.answerGuide)}</p></section>
+      <section><h3>Historical Notes</h3><p>${esc(t.historicalNotes)}</p></section>
+      <section><h3>Discussion Questions</h3><ul>${t.discussion.map(o => `<li>${esc(o)}</li>`).join('')}</ul></section>
+      <div class="teacher-actions">
+        <button type="button" class="btn secondary" data-action="teacher-print-packet">🖨️ Print Blank Investigation Packet</button>
+        <button type="button" class="btn danger" data-action="teacher-reset">🗑️ Reset Student Data</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------------------------------------------------------
+   9. INVESTIGATION BOARD (persistent aside)
+   --------------------------------------------------------------- */
+function renderBoard(){
+  return `<div class="board-head"><h2>🗂️ Investigation Board</h2></div>
+  <div class="board-section">
+    <h3>Responsibility Meters</h3>
+    ${DATA.suspects.map(s => meterRowHTML(s)).join('')}
+  </div>
+  <div class="board-section board-stats">
+    <div class="stat"><span class="stat-num">${evidenceConfirmedCount()}/${DATA.evidence.length}</span><span class="stat-label">Evidence collected</span></div>
+    <div class="stat"><span class="stat-num">${esc(reliabilityAverageLabel())}</span><span class="stat-label">Reliability average</span></div>
+    <div class="stat"><span class="stat-num">${biasFlagCount()}</span><span class="stat-label">Bias flags raised</span></div>
+    <div class="stat"><span class="stat-num">${state.timeline.solved ? 'Complete' : 'Incomplete'}</span><span class="stat-label">Timeline</span></div>
+  </div>
+  <div class="board-section">
+    <button type="button" class="btn secondary small full" data-action="open-notebook">📓 Open Detective Notebook</button>
+  </div>`;
+}
+
+function renderNotebookModal(){
+  const withNotes = DATA.evidence.filter(e => (state.evidence[e.id].notesA || '').trim() || (state.evidence[e.id].notesB || '').trim());
+  return `<div class="modal-backdrop" data-action="close-notebook">
+    <div class="modal-panel" data-action="noop">
+      <div class="teacher-head"><h2>📓 Detective Notebook</h2><button type="button" class="btn secondary small" data-action="close-notebook">Close</button></div>
+      ${withNotes.length ? withNotes.map(e => `<div class="report-note"><strong>${esc(e.title)}</strong><p>${esc(state.evidence[e.id].notesA)}</p><p>${esc(state.evidence[e.id].notesB)}</p></div>`).join('') : '<p class="hint">No notes yet — write your thoughts as you investigate each exhibit.</p>'}
+    </div>
+  </div>`;
+}
+/* ---------------------------------------------------------------
+   10. MAIN RENDER LOOP
+   --------------------------------------------------------------- */
+function currentEvidenceRec(){ return state.evidence[state.currentEvidence]; }
+
+function showBoard(screenId){ return screenId !== 'intro'; }
+
+function screenHTML(id){
+  switch (id) {
+    case 'intro': return renderIntro();
+    case 'context': return renderContext();
+    case 'suspects': return renderSuspects();
+    case 'evidence': return renderEvidenceScreen();
+    case 'comparison': return renderComparisonScreen();
+    case 'timeline': return renderTimelineScreen();
+    case 'matrix': return renderMatrixScreen();
+    case 'argument': return renderArgumentScreen();
+    case 'historians': return renderHistoriansScreen();
+    case 'reflection': return renderReflectionScreen();
+    case 'report': return renderReportScreen();
+    default: return renderIntro();
+  }
+}
+
+function render(){
+  document.documentElement.className = 'fs-' + state.fontSize;
+  const strip = document.getElementById('tabStrip');
+  strip.innerHTML = TABS.map(t => {
+    const locked = unlockInfo(t.id);
+    return `<button type="button" role="tab" aria-selected="${state.screen === t.id}" class="${state.screen === t.id ? 'active' : ''}" data-action="nav" data-screen="${t.id}" title="${locked ? esc(locked) : ''}">${t.icon} ${t.label}${locked ? ' 🔒' : ''}</button>`;
+  }).join('');
+
+  document.getElementById('progressLabel').textContent = `Progress: ${completedSteps()}/${TOTAL_STEPS} steps`;
+  document.getElementById('progressFill').style.width = progressPct() + '%';
+  document.getElementById('progressTime').textContent = `~${estRemainingMinutes()} min remaining`;
+
+  document.getElementById('screenRoot').innerHTML = screenHTML(state.screen);
+
+  const board = document.getElementById('board');
+  const mainGrid = document.getElementById('mainGrid');
+  if (showBoard(state.screen)) {
+    board.hidden = false; board.innerHTML = renderBoard();
+    mainGrid.classList.remove('no-board');
+  } else {
+    board.hidden = true; board.innerHTML = '';
+    mainGrid.classList.add('no-board');
+  }
+
+  document.getElementById('overlays').innerHTML =
+    (ui.teacherOpen ? renderTeacherPanel() : '') +
+    (ui.notebookOpen ? renderNotebookModal() : '');
+}
+
+function goTo(screenId){
+  state.screen = screenId;
+  if (screenId === 'evidence') state.currentEvidence = null;
+  if (screenId === 'historians') state.historiansViewed = true;
+  resetUi();
+  saveState();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------------------------------------------------------------
+   11. ACTIONS
+   --------------------------------------------------------------- */
+function confirmEvidence(){
+  const e = evidenceById(state.currentEvidence);
+  const rec = currentEvidenceRec();
+  if (!rec.reliability || !rec.suspects.length) return;
+  rec.suspects.forEach(sid => {
+    if (typeof rec.sliders[sid] !== 'number') {
+      rec.sliders[sid] = (e.suggested[sid] != null) ? e.suggested[sid] : 10;
+    }
+  });
+  Object.keys(rec.sliders).forEach(sid => { if (rec.suspects.indexOf(sid) === -1) delete rec.sliders[sid]; });
+  rec.confirmed = true;
+  saveState();
+  render();
+  toast('Findings logged to the Investigation Board.');
+}
+
+function restartInvestigation(){
+  if (!confirm('This erases all saved progress and starts a brand-new investigation. Continue?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  state = defaultState();
+  resetUi();
+  render();
+  window.scrollTo({ top: 0 });
+  toast('Investigation restarted.');
+}
+
+function teacherReset(){
+  if (!confirm("This erases this device's saved student progress. Continue?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  state = defaultState();
+  render();
+  toast('Student data reset.');
+}
+
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+let saveTimer = null;
+function debouncedSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 350);
+}
+
+/* ---------------------------------------------------------------
+   12. PRINT + COPY
+   --------------------------------------------------------------- */
+function buildReportPrintHTML(){
+  const arg = state.argument;
+  const primarySuspect = arg.primary ? suspectById(arg.primary) : null;
+  const confLabel = { very: 'Very confident', somewhat: 'Somewhat confident', unsure: 'Still not sure' }[arg.confidence] || '(not set)';
+  let html = `<h1>Who Was Responsible for the Boston Massacre?</h1><h2>Completion Report</h2>`;
+  html += `<h3>Responsibility Graph</h3><ul>` + DATA.suspects.map(s => `<li>${esc(s.name)}: ${suspectTotal(s.id)}%</li>`).join('') + `</ul>`;
+  html += `<h3>My Verdict</h3><p>Primary responsibility: <strong>${primarySuspect ? esc(primarySuspect.name) : '(not chosen)'}</strong></p>`;
+  html += `<p>Confidence: ${esc(confLabel)}</p>`;
+  html += `<h4>Strongest evidence</h4><ul>` + arg.strongest.filter(s => s.evidenceId).map(s => `<li>${esc((evidenceById(s.evidenceId) || {}).title || '')}: ${esc(s.reason)}</li>`).join('') + `</ul>`;
+  html += `<h4>Contradictory evidence</h4><p>${arg.contradictoryId ? esc((evidenceById(arg.contradictoryId) || {}).title || '') + ': ' + esc(arg.contradictoryReason) : '(none)'}</p>`;
+  html += `<h3>Evidence Log</h3>`;
+  DATA.evidence.forEach(e => {
+    const rec = state.evidence[e.id];
+    if (rec.confirmed) {
+      html += `<p><strong>${esc(e.title)}</strong> — ${esc(reliabilityLabel(rec.reliability))}<br>${esc(rec.notesA)}<br>${esc(rec.notesB)}</p>`;
+    }
+  });
+  html += `<h3>Reflection</h3>`;
+  DATA.reflectionPrompts.forEach(p => {
+    html += `<p><strong>${esc(p.text)}</strong><br>${esc(state.reflection[p.id])}</p>`;
+  });
+  return html;
+}
+
+function buildBlankPacketHTML(){
+  let html = `<h1>Who Was Responsible for the Boston Massacre?</h1><h2>Investigation Packet</h2>`;
+  html += `<p>Name: _______________________&nbsp;&nbsp;&nbsp; Class: ____________&nbsp;&nbsp;&nbsp; Date: ____________</p>`;
+  html += `<h3>Suspects</h3><ul>` + DATA.suspects.map(s => `<li><strong>${esc(s.name)}</strong> — ${esc(s.role)}</li>`).join('') + `</ul>`;
+  DATA.evidence.forEach(e => {
+    html += `<div class="packet-ex"><h3>Exhibit ${e.num}: ${esc(e.title)}</h3><p>${esc(e.background)}</p>`;
+    html += `<p><em>${esc(e.source.label)}${e.source.isParaphrase ? ' (paraphrase)' : ''}:</em> “${esc(e.source.text)}”</p>`;
+    html += `<p>Reliability (circle one): Very reliable&nbsp;&nbsp;/&nbsp;&nbsp;Somewhat reliable&nbsp;&nbsp;/&nbsp;&nbsp;Questionable&nbsp;&nbsp;/&nbsp;&nbsp;Highly biased</p>`;
+    html += `<p>Who does this increase responsibility for? _______________________________________________</p>`;
+    html += `<p>${esc(e.notebook.suggests)}</p><p>_______________________________________________</p>`;
+    html += `<p>${esc(e.notebook.questions)}</p><p>_______________________________________________</p></div>`;
+  });
+  html += `<h3>Final Argument</h3><p>Who bears the greatest responsibility for the Boston Massacre, and why? Cite at least three pieces of evidence and one piece of contradictory evidence.</p>`;
+  html += `<p>_______________________________________________</p><p>_______________________________________________</p><p>_______________________________________________</p>`;
+  return html;
+}
+
+function printReport(){
+  document.getElementById('printArea').innerHTML = buildReportPrintHTML();
+  window.print();
+}
+function printBlankPacket(){
+  document.getElementById('printArea').innerHTML = buildBlankPacketHTML();
+  window.print();
+}
+
+function buildReportPlainText(){
+  const arg = state.argument;
+  const primarySuspect = arg.primary ? suspectById(arg.primary) : null;
+  const confLabel = { very: 'Very confident', somewhat: 'Somewhat confident', unsure: 'Still not sure' }[arg.confidence] || '(not set)';
+  let text = 'WHO WAS RESPONSIBLE FOR THE BOSTON MASSACRE? — Completion Report\n\n';
+  text += 'Responsibility Graph:\n' + DATA.suspects.map(s => `  ${s.name}: ${suspectTotal(s.id)}%`).join('\n') + '\n\n';
+  text += `Verdict: ${primarySuspect ? primarySuspect.name : '(not chosen)'}\n`;
+  text += `Confidence: ${confLabel}\n\n`;
+  text += 'Strongest evidence:\n' + arg.strongest.filter(s => s.evidenceId).map(s => `  - ${(evidenceById(s.evidenceId) || {}).title}: ${s.reason}`).join('\n') + '\n\n';
+  text += `Contradictory evidence: ${arg.contradictoryId ? (evidenceById(arg.contradictoryId) || {}).title + ': ' + arg.contradictoryReason : '(none)'}\n\n`;
+  text += 'Reflection:\n' + DATA.reflectionPrompts.map(p => `  ${p.text}\n  ${state.reflection[p.id] || ''}`).join('\n\n');
+  return text;
+}
+
+function copyReport(){
+  const text = buildReportPlainText();
+  const done = () => toast('Report copied to clipboard.');
+  const fail = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    } catch (err) { toast('Could not copy automatically — select the report text and copy manually.'); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(fail);
+  } else fail();
+}
+
+/* ---------------------------------------------------------------
+   13. EVENT DELEGATION
+   --------------------------------------------------------------- */
+document.addEventListener('click', function (e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+  const idx = el.dataset.idx != null ? Number(el.dataset.idx) : null;
+
+  switch (action) {
+    case 'nav': goTo(el.dataset.screen); break;
+    case 'open-evidence':
+      state.evidence[el.dataset.id].visited = true;
+      state.currentEvidence = el.dataset.id;
+      resetUi(); saveState(); render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+    case 'close-evidence': state.currentEvidence = null; resetUi(); saveState(); render(); break;
+
+    case 'hotspot': ui.hotspot = (ui.hotspot === idx) ? null : idx; render(); break;
+    case 'toggle-phrase': ui.highlight = ui.highlight || {}; ui.highlight[idx] = !ui.highlight[idx]; render(); break;
+    case 'set-compare': ui.compareIdx = idx; render(); break;
+    case 'toggle-reveal': ui.reveal = ui.reveal || {}; ui.reveal[idx] = !ui.reveal[idx]; render(); break;
+    case 'toggle-tally-close': ui.tallyClosing = !ui.tallyClosing; render(); break;
+    case 'toggle-myth': ui.myth = ui.myth || {}; ui.myth[idx] = !ui.myth[idx]; render(); break;
+    case 'toggle-wc': ui.wordchoice = ui.wordchoice || {}; ui.wordchoice[idx] = !ui.wordchoice[idx]; render(); break;
+    case 'toggle-lastwords': ui.lastwords = !ui.lastwords; render(); break;
+    case 'mini-up': ui.miniorderOrder = moveInArray(ui.miniorderOrder, idx, -1); ui.miniorderChecked = false; render(); break;
+    case 'mini-down': ui.miniorderOrder = moveInArray(ui.miniorderOrder, idx, 1); ui.miniorderChecked = false; render(); break;
+    case 'mini-check': ui.miniorderChecked = true; render(); break;
+
+    case 'set-reliability': currentEvidenceRec().reliability = el.dataset.level; saveState(); render(); break;
+    case 'confirm-evidence': confirmEvidence(); break;
+
+    case 'tl-up': state.timeline.order = moveInArray(state.timeline.order, idx, -1); state.timeline.checked = false; saveState(); render(); break;
+    case 'tl-down': state.timeline.order = moveInArray(state.timeline.order, idx, 1); state.timeline.checked = false; saveState(); render(); break;
+    case 'tl-check':
+      state.timeline.checked = true;
+      state.timeline.solved = state.timeline.order.every((id, i) => id === DATA.timelineEvents[i].id);
+      saveState(); render();
+      break;
+
+    case 'matrix-set': state.matrix[el.dataset.suspect] = el.dataset.level; saveState(); render(); break;
+
+    case 'arg-primary': state.argument.primary = el.dataset.suspect; saveState(); render(); break;
+    case 'arg-confidence': state.argument.confidence = el.dataset.level; saveState(); render(); break;
+    case 'arg-submit':
+      state.argument.submitted = true; saveState(); render();
+      toast('Argument submitted — historian interpretations unlocked.');
+      break;
+
+    case 'cmp-done':
+      state.comparisons[el.dataset.id].done = !state.comparisons[el.dataset.id].done;
+      saveState(); render();
+      break;
+
+    case 'open-notebook': ui.notebookOpen = true; render(); break;
+    case 'close-notebook': ui.notebookOpen = false; render(); break;
+
+    case 'teacher-open': ui.teacherOpen = true; render(); break;
+    case 'teacher-close': ui.teacherOpen = false; render(); break;
+    case 'teacher-backdrop': ui.teacherOpen = false; render(); break;
+    case 'teacher-reset': teacherReset(); break;
+    case 'teacher-print-packet': printBlankPacket(); break;
+
+    case 'report-print': printReport(); break;
+    case 'report-copy': copyReport(); break;
+    case 'report-restart': restartInvestigation(); break;
+
+    case 'font-set': state.fontSize = el.dataset.size; saveState(); render(); break;
+    default: break;
+  }
+});
+
+document.addEventListener('change', function (e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+  if (action === 'toggle-suspect') {
+    const rec = currentEvidenceRec();
+    const sid = el.dataset.suspect;
+    const at = rec.suspects.indexOf(sid);
+    if (el.checked && at === -1) rec.suspects.push(sid);
+    if (!el.checked && at > -1) rec.suspects.splice(at, 1);
+    saveState(); render();
+  } else if (action === 'arg-strongest-select') {
+    state.argument.strongest[Number(el.dataset.idx)].evidenceId = el.value;
+    saveState(); render();
+  } else if (action === 'arg-contra-select') {
+    state.argument.contradictoryId = el.value;
+    saveState(); render();
+  }
+});
+
+document.addEventListener('input', function (e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+  if (action === 'note-input') {
+    currentEvidenceRec()[el.dataset.field] = el.value;
+    debouncedSave();
+  } else if (action === 'cmp-input') {
+    state.comparisons[el.dataset.id][el.dataset.field] = el.value;
+    debouncedSave();
+  } else if (action === 'reflect-input') {
+    state.reflection[el.dataset.id] = el.value;
+    debouncedSave();
+  } else if (action === 'arg-strongest-reason') {
+    state.argument.strongest[Number(el.dataset.idx)].reason = el.value;
+    debouncedSave();
+  } else if (action === 'arg-contra-reason') {
+    state.argument.contradictoryReason = el.value;
+    debouncedSave();
+  } else if (action === 'slider-input') {
+    const rec = currentEvidenceRec();
+    rec.sliders[el.dataset.suspect] = Number(el.value);
+    const out = el.parentElement.querySelector('output');
+    if (out) out.textContent = (Number(el.value) >= 0 ? '+' : '') + el.value + '%';
+    debouncedSave();
+  }
+});
+
+/* Drag-and-drop reordering for timeline / mini-order widgets */
+let dragState = null;
+document.addEventListener('dragstart', function (e) {
+  const li = e.target.closest('.order-item');
+  if (!li) return;
+  dragState = { group: li.dataset.dragGroup, id: li.dataset.id };
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+});
+document.addEventListener('dragover', function (e) {
+  const li = e.target.closest('.order-item');
+  if (!li || !dragState || li.dataset.dragGroup !== dragState.group) return;
+  e.preventDefault();
+});
+document.addEventListener('drop', function (e) {
+  const li = e.target.closest('.order-item');
+  if (!li || !dragState || li.dataset.dragGroup !== dragState.group) return;
+  e.preventDefault();
+  const dropId = li.dataset.id;
+  if (dragState.group === 'tl') {
+    state.timeline.order = reorderByDrag(state.timeline.order, dragState.id, dropId);
+    state.timeline.checked = false;
+    saveState();
+  } else if (dragState.group === 'mini') {
+    ui.miniorderOrder = reorderByDrag(ui.miniorderOrder, dragState.id, dropId);
+    ui.miniorderChecked = false;
+  }
+  dragState = null;
+  render();
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.ctrlKey && e.altKey && (e.key === 't' || e.key === 'T')) {
+    ui.teacherOpen = !ui.teacherOpen; render(); e.preventDefault();
+  } else if (e.key === 'Escape') {
+    if (ui.teacherOpen) { ui.teacherOpen = false; render(); }
+    if (ui.notebookOpen) { ui.notebookOpen = false; render(); }
+  }
+});
+
+/* ---------------------------------------------------------------
+   14. INIT
+   --------------------------------------------------------------- */
+render();
+</script></body></html>
