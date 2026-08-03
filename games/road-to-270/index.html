@@ -240,7 +240,8 @@
     box-shadow:0 1px 2px rgba(0,0,0,.4); flex-shrink:0;
   }
 
-  .side-panel{display:flex; flex-direction:column; gap:12px;}
+  .side-panel{display:flex; flex-direction:column; gap:16px;}
+  .player-cards{display:flex; flex-direction:column; gap:12px;}
   .pcard{
     border-radius:12px; padding:12px 14px; background:rgba(245,239,220,.06);
     border:1px solid rgba(240,193,75,.16);
@@ -256,6 +257,54 @@
   .pcard .stat .v{font-size:17px; font-family:var(--font-mono); font-weight:600; font-variant-numeric:tabular-nums;}
   .pcard .bar{height:5px; border-radius:3px; background:rgba(255,255,255,.1); margin-top:4px; overflow:hidden;}
   .pcard .bar i{display:block; height:100%; border-radius:3px;}
+
+  /* ============ NEWS TICKER ============ */
+  .news-ticker{
+    border-radius:12px; background:rgba(43,22,11,.45);
+    border:1px solid rgba(240,193,75,.16); overflow:hidden;
+    display:flex; flex-direction:column; min-height:0;
+  }
+  .ticker-header{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:10px 14px; font-family:var(--font-display); font-weight:600;
+    font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--gold-bright); border-bottom:1px solid rgba(240,193,75,.16);
+    flex-shrink:0;
+  }
+  .ticker-live{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.06em;
+    color:#7fd39a; opacity:.9;
+  }
+  .ticker-list{
+    max-height:420px; overflow-y:auto; padding:6px 0;
+  }
+  .ticker-entry{
+    display:flex; align-items:flex-start; gap:8px;
+    padding:8px 14px; border-bottom:1px solid rgba(245,239,220,.07);
+    font-size:12.5px; line-height:1.5; animation:tickerIn .25s ease;
+  }
+  .ticker-entry:last-child{border-bottom:none;}
+  .ticker-entry .te-icon{flex-shrink:0; font-size:14px; line-height:1.4;}
+  .ticker-entry .te-text{color:#e9dfc8; opacity:.92;}
+  .ticker-entry .te-text b{color:var(--parchment); font-weight:600;}
+  @keyframes tickerIn{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);}}
+  .ticker-empty{padding:14px; font-size:12.5px; color:#c7b89a; opacity:.7; text-align:center;}
+
+  .recap-box{
+    background:linear-gradient(180deg, var(--parchment), var(--parchment-dark));
+    color:var(--ink); border-radius:14px; padding:26px 28px; border:1px solid #b79f6e;
+    margin-bottom:26px;
+  }
+  .recap-box h2{color:var(--navy); font-size:20px; margin-bottom:6px;}
+  .recap-box p.lead{font-size:13.5px; color:#4a3f28; margin:0 0 16px;}
+  .recap-list{max-height:420px; overflow-y:auto; border-top:1px solid #d8c795;}
+  .recap-entry{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:9px 2px; border-bottom:1px solid #e3d6ae;
+    font-size:13.5px; line-height:1.55; color:#28210f;
+  }
+  .recap-entry .re-icon{flex-shrink:0; font-size:14.5px;}
+  .recap-entry .re-text b{color:var(--navy);}
 
   /* ============ MODAL ============ */
   .modal-overlay{
@@ -330,7 +379,7 @@
   .end-actions{display:flex; gap:14px; justify-content:center; margin-top:26px; flex-wrap:wrap;}
 
   @media print{
-    .topbar, .end-actions, .winner-banner{display:none !important;}
+    .topbar, .end-actions, .winner-banner, .recap-box{display:none !important;}
     body{background:#fff; color:#000;}
     .reflect-box{border:none; box-shadow:none; color:#000; background:#fff;}
     .reflect-box li{color:#000;}
@@ -456,7 +505,13 @@
           </div>
         </div>
       </div>
-      <div class="side-panel" id="side-panel"></div>
+      <div class="side-panel">
+        <div id="side-panel" class="player-cards"></div>
+        <div class="news-ticker">
+          <div class="ticker-header">📻 Campaign Wire <span class="ticker-live">● LIVE</span></div>
+          <div class="ticker-list" id="ticker-list"></div>
+        </div>
+      </div>
     </div>
   </div>
   <footer class="gamefoot">Road to 270 · Humanities Immersed Learning</footer>
@@ -474,6 +529,11 @@
       <h2 id="winner-heading">—</h2>
     </div>
     <table class="results-table" id="results-table"></table>
+    <div class="recap-box">
+      <h2>Campaign Trail Recap</h2>
+      <p class="lead">Everything that happened on the road to the White House.</p>
+      <div class="recap-list" id="recap-list"></div>
+    </div>
     <div class="reflect-box">
       <h2>Reflection Questions</h2>
       <p class="lead">Answer on your own or discuss as a class.</p>
@@ -795,8 +855,37 @@ function newGameState(playerConfigs){
     keyEventCycle: 0,
     keyEventActiveIdx: null,
     gameOver:false,
-    winnerIdx:null
+    winnerIdx:null,
+    log: []
   };
+}
+
+function fmtDelta(f, s){
+  const parts = [];
+  if(f) parts.push(`${f>0?'+':''}$${f}M`);
+  if(s) parts.push(`${s>0?'+':''}${s} EV`);
+  return parts.length ? parts.join(', ') : 'no change';
+}
+
+function logEvent(icon, html){
+  state.log.push({icon, html});
+  renderTicker();
+}
+
+function renderTicker(){
+  const list = document.getElementById('ticker-list');
+  if(!list) return;
+  if(state.log.length === 0){
+    list.innerHTML = `<div class="ticker-empty">The trail is quiet. Roll to make the first headline.</div>`;
+    return;
+  }
+  const items = state.log.slice().reverse();
+  list.innerHTML = items.map(e=>`
+    <div class="ticker-entry">
+      <span class="te-icon">${e.icon}</span>
+      <span class="te-text">${e.html}</span>
+    </div>
+  `).join('');
 }
 
 /* ================= SETUP SCREEN ================= */
@@ -844,7 +933,10 @@ document.getElementById('btn-start-game').addEventListener('click', ()=>{
   state = newGameState(configs);
   buildBoard();
   renderSidePanel();
+  renderTicker();
   updateKeyEventNote();
+  const names = state.players.map(p=>`<b>${escapeHtml(p.name)}</b> (${PARTY_LABEL[p.party]})`).join(', ');
+  logEvent('🇺🇸', `The race begins. ${names} enter the campaign trail.`);
   goToScreen('screen-game');
   beginTurn();
 });
@@ -1070,6 +1162,12 @@ function showOutcome({icon, tag, title, effects, note, onClose}){
   renderSidePanel();
 }
 
+const CARD_VERB = {
+  'Campaign Event':'has a strong day on the trail',
+  'Scandal':'takes a hit',
+  'Endorsement':'lands a major endorsement'
+};
+
 function showCardStory(icon, tag, card){
   const p = currentPlayer();
   showStory({
@@ -1080,6 +1178,7 @@ function showCardStory(icon, tag, card){
       const effects = [];
       if(card.f) effects.push({label:`${card.f>0?'+':''}$${card.f}M`, cls: card.f>=0?'pos':'neg'});
       if(card.s) effects.push({label:`${card.s>0?'+':''}${card.s} EV`, cls: card.s>=0?'pos':'neg'});
+      logEvent(icon, `<b>${escapeHtml(p.name)}</b> ${CARD_VERB[tag]||tag} (${fmtDelta(card.f, card.s)})`);
       showOutcome({icon, tag, title:'Outcome', effects, onClose: ()=> afterTurn('advance')});
     }
   });
@@ -1109,6 +1208,7 @@ function showTrivia(p){
       if(!correct) optsWrap.children[q.correct].classList.add('correct');
       const fGain = correct?15:5, sGain = correct?15:5;
       p.funds += fGain; p.support += sGain;
+      logEvent('🎤', `<b>${escapeHtml(p.name)}</b> ${correct?'nails':'fumbles'} a debate question (${fmtDelta(fGain, sGain)})`);
       setTimeout(()=>{
         showOutcome({
           icon: correct?'✅':'🤔',
@@ -1142,6 +1242,7 @@ function showSwingState(p, sq){
     </div>
   `;
   box.querySelector('#swing-skip').addEventListener('click', ()=>{
+    logEvent('🏟️', `<b>${escapeHtml(p.name)}</b> saves their cash in ${escapeHtml(info.label)}`);
     closeModalThen(()=> afterTurn('advance'));
   });
   box.querySelector('#swing-spend').addEventListener('click', ()=>{
@@ -1149,6 +1250,7 @@ function showSwingState(p, sq){
     p.funds -= SWING_COST;
     p.support += SWING_GAIN;
     renderSidePanel();
+    logEvent('🏟️', `<b>${escapeHtml(p.name)}</b> goes all-in on ${escapeHtml(info.label)} (${fmtDelta(-SWING_COST, SWING_GAIN)})`);
     closeModalThen(()=> afterTurn('advance'));
   });
   overlay.classList.add('active');
@@ -1163,6 +1265,7 @@ function showSpecial(p, sq){
       narrative,
       buttonLabel:'See What Happens →',
       onReveal: ()=>{
+        logEvent('⏭️', `<b>${escapeHtml(p.name)}</b> gets to go again`);
         showOutcome({
           icon:'⏭️', tag:'Go Again', title:'Take another turn!',
           effects:[], onClose: ()=> afterTurn('again')
@@ -1176,6 +1279,7 @@ function showSpecial(p, sq){
       buttonLabel:'See What Happens →',
       onReveal: ()=>{
         p.skipNext = true;
+        logEvent('⏸️', `<b>${escapeHtml(p.name)}</b> loses their next turn`);
         showOutcome({
           icon:'⏸️', tag:'Lose a Turn', title:"You'll sit out your next turn",
           effects:[], onClose: ()=> afterTurn('advance')
@@ -1307,6 +1411,7 @@ function runNextKeyEventPlayer(){
       player.funds += arche.f;
       player.support += arche.s;
       renderSidePanel();
+      logEvent(m.icon, `<b>${escapeHtml(player.name)}</b> at ${escapeHtml(m.label)}: ${escapeHtml(choice.label)} (${fmtDelta(arche.f, arche.s)})`);
       showOutcome({
         icon:m.icon, tag:`Key Event · ${player.name}`, title:`Chose: ${choice.label}`,
         effects:[{label:`+$${arche.f}M`, cls:'pos'},{label:`+${arche.s} EV`, cls:'pos'}],
@@ -1331,6 +1436,7 @@ function endGame(winnerIdx){
   state.winnerIdx = winnerIdx;
   state.keyEventActiveIdx = null;
   const winner = state.players[winnerIdx];
+  logEvent('🏆', `<b>${escapeHtml(winner.name)}</b> (${PARTY_LABEL[winner.party]}) clinches the presidency with ${winner.support} electoral votes and $${winner.funds}M in the war chest!`);
 
   document.getElementById('winner-heading').textContent =
     `President-Elect ${winner.name} (${PARTY_LABEL[winner.party]})`;
@@ -1348,6 +1454,14 @@ function endGame(winnerIdx){
       </tr>
     `).join('')}
   `;
+
+  const recapList = document.getElementById('recap-list');
+  recapList.innerHTML = state.log.map(e=>`
+    <div class="recap-entry">
+      <span class="re-icon">${e.icon}</span>
+      <span class="re-text">${e.html}</span>
+    </div>
+  `).join('');
 
   const reflectList = document.getElementById('reflect-list');
   reflectList.innerHTML = REFLECTION_QUESTIONS.map(q=>`<li>${escapeHtml(q)}</li>`).join('');
